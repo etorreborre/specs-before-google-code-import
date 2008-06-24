@@ -75,20 +75,48 @@ class SutSuite(sut: Sut) extends Suite {
    */
   override def testNames: Set[java.lang.String] = {
     var result: Set[String] = Set()
-     sut.examples foreach {e => result = result + e.description}
-     result
+    sut.examples foreach {e => result = result + e.description}
+    result
   }
 
   /**
-   * Report the result of an example given its description to the reporter.  
+   * Report the result of several examples, checking if they are included or not  
    */
-  override def runTest(testName: java.lang.String, 
+  override def runTests(testName: Option[java.lang.String], 
+                         reporter: org.scalatest.Reporter, 
+                         stopper: Stopper, 
+                         includes: scala.collection.immutable.Set[String],
+                         excludes: scala.collection.immutable.Set[String],
+                         properties: Map[java.lang.String, Any]): Unit = {
+      val testGroups = groups
+      def isNotExcluded(name: String) = excludes.forall(!testGroups.get(_).exists(set => set.contains(name)))
+      def isIncluded(name: String) = includes.exists(testGroups.get(_).exists(set => set.contains(name)))
+      if (includes.isEmpty) {
+        testName match {
+          case None => testNames.foreach(name => if (isNotExcluded(name)) runTest(name, reporter, stopper, properties))
+          case Some(name) => if (isNotExcluded(name)) runTest(name, reporter, stopper, properties)
+        }
+      }
+      for (name <- testNames;
+           included <- includes) {
+        testGroups.get(included) match {
+          case None => ()
+          case Some(includedNames) => {
+            if (isIncluded(name) && isNotExcluded(name))
+              runTest(name, reporter, stopper, properties)
+          } 
+        }
+      }
+    }
+    /**
+     * Report the result of an example given its description to the reporter.  
+     */
+    override def runTest(testName: java.lang.String, 
                          reporter: org.scalatest.Reporter, 
                          stopper: Stopper, 
                          properties: Map[java.lang.String, Any]): Unit = {
-      val example = sut.examples find {_.description == testName}
-      example.map(e => runExample(e, reporter))
-    }
+      sut.examples.find(_.description == testName).map(e => runExample(e, reporter))
+    } 
     
   /**
    * Report the result of an example: ignored if it is skipped, failed if it has failures or errors, succeeded otherwise
@@ -99,7 +127,7 @@ class SutSuite(sut: Sut) extends Suite {
     e.skipped foreach {skipped => reporter.testIgnored(new Report(e.description, skipped.message))}
     e.failures foreach {f => reporter.testFailed(new Report(e.description, f.getMessage))}
     e.errors foreach {error => reporter.testFailed(new Report(e.description, error.getMessage, Some(error), None))}
-    if (e.failures.isEmpty)
+    if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
       reporter.testSucceeded(new Report(e.description, ""))
     e.subExamples foreach { sub => runExample(sub, reporter) }
   }
@@ -116,9 +144,8 @@ class SutSuite(sut: Sut) extends Suite {
           case None => new HashSet[String]
           case Some(set) => set
         }
-        exampleTags = exampleTags.update(tag.name, exampleNames + e.description)
+        exampleTags = exampleTags + (tag.name -> (exampleNames + e.description))
     }
     exampleTags
   }
-      
 }

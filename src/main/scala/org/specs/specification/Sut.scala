@@ -104,14 +104,19 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
     cycle.afterExample(ex)
     after.foreach {_.apply()}
   }
-  override def accept(t: Tag*) = { 
-    super.accept(t:_*)
-    this.examples.foreach(_.accept(t:_*))
+  override def accept(s: String*) = { 
+    super.accept(s:_*)
+    this.examples.foreach(_.accept(s:_*))
     this
   }
-  override def reject(t: Tag*) = {
-    super.reject(t:_*)
-    this.examples.foreach(_.reject(t:_*))
+  override def addTag(t: String) = { 
+    super.addTag(t)
+    this.examples.foreach(_.addTag(t))
+    this
+  }
+  override def reject(s: String*) = {
+    super.reject(s:_*)
+    this.examples.foreach(_.reject(s:_*))
     this
   }
 

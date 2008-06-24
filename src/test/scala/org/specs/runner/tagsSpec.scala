@@ -36,6 +36,15 @@ object tagsSpec extends LiteralSpecification with Fixtures {
   This will output: 
  { specOutput }
   
+  <ex>If a tag is applied to a sut, it also applied to all its examples</ex>:
+{"""    
+    object specWithSut extends Specification {
+      "this sut" should {
+        "be tagged 1" in { 1 must_== 1 } 
+        "be tagged 2" in { 1 must_== 1 } 
+      } tag("be tagged")
+    } """ }{sutExamplesAreTagged}
+  
 </t> isSut
 }
 trait Fixtures extends LiteralSpecification {
@@ -50,6 +59,15 @@ trait Fixtures extends LiteralSpecification {
      val acceptedExamples = mySpec.suts.flatMap(_.examples).filter(_.isAccepted) 
      acceptedExamples.size must_== 1
      acceptedExamples.first.description must_== "example 2"
+   }
+   object specWithSut extends Specification {
+     "this sut" should {
+        "be tagged 1" in { 1 must_== 1 } 
+        "be tagged 2" in { 1 must_== 1 } 
+      } tag("be tagged")
+    }
+   def sutExamplesAreTagged = check {
+     specWithSut.suts.flatMap(_.examples).flatMap(_.tags).size must_== 2 
    }
    import org.specs.io.mock.MockOutput
    def specOutput = {
