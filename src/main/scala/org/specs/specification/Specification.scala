@@ -106,6 +106,12 @@ abstract class Specification extends Matchers with AssertFactory
     this.suts.foreach(_.tagWith(this))
     this
   }
+  override def addTag(t: String) = { 
+    super.addTag(t)
+    this.subSpecifications.foreach(_.addTag(t))
+    this.suts.foreach(_.addTag(t))
+    this
+  }
   override def reject(s: String*) = {
     super.reject(s:_*)
     this.subSpecifications.foreach(_.tagWith(this))
