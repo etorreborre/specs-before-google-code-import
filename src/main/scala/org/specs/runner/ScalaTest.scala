@@ -104,9 +104,21 @@ class SutSuite(sut: Sut) extends Suite {
     e.subExamples foreach { sub => runExample(sub, reporter) }
   }
     
+  import scala.collection.immutable._
   /**
-   * @return an empty map for now. The notion of group may be added later to specifications
+   * @return a map with the keys being the examples tags and the values the example names for each tag
    */
-  override def groups = Map()
+  override def groups: Map[String, Set[String]] = {
+    var exampleTags: Map[String, Set[String]] = new HashMap[String, Set[String]]()
+    for (e <- sut.examples;
+         tag <- e.tags) {
+        val exampleNames: Set[String] = exampleTags.get(tag.name) match {
+          case None => new HashSet[String]
+          case Some(set) => set
+        }
+        exampleTags = exampleTags.update(tag.name, exampleNames + e.description)
+    }
+    exampleTags
+  }
       
 }
