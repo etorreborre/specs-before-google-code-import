@@ -4,8 +4,8 @@ import org.specs.runner._
 import org.specs.xml.ExtendedNode._
 import org.specs.xml.NodeFunctions._
 import scala.xml.NodeSeq._
+import scala.xml._
 
-class extendedNodeTest extends JUnit3(extendedNodeUnit)
 object extendedNodeUnit extends Specification {
   "An isSpaceNode function" should {
     "return false for a node with a simple label" in {
@@ -43,5 +43,12 @@ object extendedNodeUnit extends Specification {
     "return false for <a>1</a> ==/ <a></a>" in {
       <a>1</a> ==/ <a></a> mustBe false
     }
+    "return true for Text(1) ==/ Text( 1 )" in {
+      Text("1").isEqualIgnoreSpace(Text(" 1 ")) must beTrue
+    }
+    "return false for Text(1) ==/ Text(2)" in {
+      Text("1").isEqualIgnoreSpace(Text("2")) must beFalse
+    }
   }
 }
+class extendedNodeTest extends JUnit4(extendedNodeUnit)

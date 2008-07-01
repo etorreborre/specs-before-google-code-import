@@ -36,7 +36,7 @@ object NodeFunctions {
   /**
    * @returns true if the Node represents some empty text (containing spaces or newlines)
    */
-  def isSpaceNode(n1: Node): Boolean = {n1.label.equals("#PCDATA") && n1.text.matches("\\s*")}
+  def isSpaceNode(n1: Node): Boolean = n1.label.equals("#PCDATA") && n1.text.matches("\\s*")
 
   /**
    * Alias for isEqualIgnoreSpace
@@ -50,6 +50,7 @@ object NodeFunctions {
     (node, n) match {
       case (null, other) => other == null
       case (other, null) => other == null
+      case (n1: Text, n2:Text) => n1.text.trim == n2.text.trim
       case (n1: Node, n2:Node) => (isSpaceNode(n1) && isSpaceNode(n2)) ||
                                   n1.prefix == n2.prefix && 
                                   n1.attributes == n2.attributes && 
