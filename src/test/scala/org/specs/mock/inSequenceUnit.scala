@@ -38,7 +38,7 @@ object inSequenceUnit extends Specification with TestData with Scalacheck {
 
     sameReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
       inSequence.consume(expected, received) must be_==((emptyExpected, emptyReceived)).when(expected == received) 
-    }(set(maxSize->5))
+    }(set(maxSize->5, maxDiscarded -> 1000))
   }
   "consume all expected calls if they are a prefix of received calls" in {
     val moreReceivedCalls = receivedSizeIs(_ > _)
