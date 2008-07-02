@@ -65,19 +65,25 @@ abstract class Specification extends Matchers with AssertFactory
   }
 
   /** @return the failures of each sut */
-  def failures: List[FailureException] = subSpecifications.flatMap{_.failures} ::: suts.flatMap {_.failures}
+  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: suts.flatMap(_.failures)
 
   /** @return the skipped of each sut */
-  def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: suts.flatMap {_.skipped}
+  def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: suts.flatMap(_.skipped)
 
   /** @return the errors of each sut */
-  def errors: List[Throwable] = subSpecifications.flatMap{_.errors} ::: suts.flatMap {_.errors}
+  def errors: List[Throwable] = subSpecifications.flatMap(_.errors) ::: suts.flatMap(_.errors)
+
+  /** @return all the examples with no errors, failures or skip messages */
+  def successes: List[Example] = subSpecifications.flatMap(_.successes) ::: suts.flatMap(_.successes)
+
+  /** @return all the examples */
+  def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: suts.flatMap(_.examples)
 
   /** @return the total number of assertions for each sut */
-  def assertionsNb: Int = subSpecifications.foldLeft(0) {_ + _.assertionsNb} + suts.foldLeft(0) {_ + _.assertionsNb}
+  def assertionsNb: Int = subSpecifications.foldLeft(0)(_ + _.assertionsNb) + suts.foldLeft(0)(_ + _.assertionsNb)
 
   /** @return a description of this specification with all its suts (used for the ConsoleReporter) */
-  def pretty = description + suts.foldLeft("") {_ + _.pretty(addSpace("\n"))}
+  def pretty = description + suts.foldLeft("")(_ + _.pretty(addSpace("\n")))
 
   /** 
    * Convenience method: adds a new failure to the latest example<br>

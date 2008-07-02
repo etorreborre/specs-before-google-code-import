@@ -77,9 +77,9 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      def printResult(succeeded: Int, discarded: Int): Unit = {
        if (!verbose) return
        if (discarded == 0) 
-         printf("\rPassed {0} tests", succeeded)
+         printf("\rPassed %d tests", succeeded)
        else 
-         printf("\rPassed {0} tests; {1} discarded", succeeded, discarded)
+         printf("\rPassed %d tests; %d discarded", succeeded, discarded)
        flush
      }
      
@@ -89,7 +89,7 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      // display the final result if verbose = true
      if (verbose) {
        val s = prettyTestStats(statistics)
-       printf("\r{0} {1}{2}\n", if (statistics.result.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
+       printf("\r%s %s%s\n", if (statistics.result.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
      }
 
      // depending on the result, return the appropriate success status and messages
