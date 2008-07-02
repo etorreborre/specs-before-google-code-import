@@ -49,6 +49,8 @@ trait Tagged {
     propagateTagsToComponents
     this
   }
+  /** alias for the accept method */
+  def accepts(t: Tag*): this.type = accept(t:_*) 
 
   /** 
    * Declare that this element should be rejected if it has one of the rejected tags.
@@ -59,6 +61,8 @@ trait Tagged {
     propagateTagsToComponents
     this 
   }
+  /** alias for the reject method */
+  def rejects(t: Tag*): this.type = reject(t:_*) 
 
   /** 
    * Return true if this Tagged element:<ul>

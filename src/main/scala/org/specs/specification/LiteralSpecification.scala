@@ -14,8 +14,9 @@ import org.specs.Sugar._
  * <li>xmlRunnerSpec
  * </ul>
  */
-trait LiteralSpecification  extends Specification with DataTables {
+class LiteralSpecification extends Specification with DataTables {
   setSequential
+  def this(n: String) = { this(); name = n; description = n; this }
   
   /**
    * This method is used to silence the result of a call in an action. For example: <pre>
