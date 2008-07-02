@@ -100,18 +100,8 @@ abstract class Specification extends Matchers with AssertFactory
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
   
-  override def accept(t: Tag*) = { 
-    super.accept(t:_*)
-    this.subSpecifications.foreach(_.tagWith(this))
-    this.suts.foreach(_.tagWith(this))
-    this
-  }
-  override def reject(t: Tag*) = {
-    super.reject(t:_*)
-    this.subSpecifications.foreach(_.tagWith(this))
-    this.suts.foreach(_.tagWith(this))
-    this
-  }
+  /** Declare the subspecifications and suts as components to be tagged when the specification is tagged */
+  override def taggedComponents = this.subSpecifications ++ this.suts
 }
 /**
  * This trait can be reused in any test based framework to access Matchers functionalities

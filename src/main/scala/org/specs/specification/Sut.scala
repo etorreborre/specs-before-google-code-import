@@ -104,16 +104,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
     cycle.afterExample(ex)
     after.foreach {_.apply()}
   }
-  override def accept(t: Tag*) = { 
-    super.accept(t:_*)
-    this.examples.foreach(_.accept(t:_*))
-    this
-  }
-  override def reject(t: Tag*) = {
-    super.reject(t:_*)
-    this.examples.foreach(_.reject(t:_*))
-    this
-  }
-
+  /** Declare the examples as components to be tagged when the sut is tagged */
+  override def taggedComponents = this.examples
 }
 

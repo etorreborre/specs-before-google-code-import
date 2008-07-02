@@ -36,11 +36,37 @@ object taggedSpec extends Specification {
       tagged.rejected must_== other.rejected
     }
   }
+  "A Tag object" should {
+    "match another tag with the same name" in {
+      Tag("hello") must beMatching(Tag("hello"))
+    }
+    "match another tag with a regex" in {
+      Tag("hello") must beMatching(Tag("h.*"))
+    }
+    "match another tag with a name if it is itself a regex" in {
+      Tag("h.*") must beMatching(Tag("hello"))
+    }
+    "match another tag with a name if both are regexes" in {
+      Tag("h.*") must beMatching(Tag("h.*"))
+    }
+    "not match another tag even if its regex is not formed ok" in {
+      Tag("h.*") must beMatching(Tag("h][")).not
+    }
+    "not match another tag even if it is null" in {
+      Tag("h.*") must beMatching(Tag(null)).not
+    }
+    "not match another tag even if it is itself null" in {
+      Tag(null) must beMatching(Tag("sdf")).not
+    }
+  }
   var tagged = new Object with Tagged
   def createTagged = tagged = new Object with Tagged
   def beRejected = beAccepted.not
   def beAccepted = new Matcher[Tagged] {
     def apply(v: => Tagged) = (v.isAccepted, "the tag is accepted", "the tag isn't accepted")
+  }
+  def beMatching(other: Tag) = new Matcher[Tag] {
+    def apply(v: => Tag) = (v.matches(other), v + " matches " + other, v + " doesn't match " + other)
   }
 }
 class taggedSpecTest extends org.specs.runner.JUnit4(taggedSpec)
