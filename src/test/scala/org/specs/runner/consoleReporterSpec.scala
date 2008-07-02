@@ -73,8 +73,9 @@ object consoleReporterSpec extends Specification with MockOutput {
       specWithOneExample(that.isSkipped) must existMatch("(consoleReporterSpec.scala:\\d)") 
     } 
     "report the time for each system and add times for the total" in {
+      specWithTwoSystems.messages
       val sutTime1 :: sutTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
-      sutTime1 + sutTime2 must beCloseTo(total, 1) // to account for rounding errors
+      (sutTime1 + sutTime2) must beCloseTo(total, 1) // to account for rounding errors
     }
   }
   "A console reporter" should {
