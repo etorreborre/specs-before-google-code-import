@@ -17,13 +17,13 @@ object timerSpecificationSpec extends TimerSpecificationActionWords {
    then {"the person must be named Peter" in checkName}
 </p>
 }
-class TimerSpecification extends LiteralSpecification {
+class TimerSpecification extends LiterateSpecification {
   val timer = new SimpleTimer
   class Person {var name: String = ""; def setName(n: String) = name = n}
   val person = new Person; val Peter = "Peter"
 }
 
-class TimerSpecificationActionWords extends LiteralSpecification {
+class TimerSpecificationActionWords extends LiterateSpecification {
   val timer = new SimpleTimer
   class Person {var name: String = ""; def setName(n: String) = name = n}
   val person = new Person; 

@@ -4,7 +4,7 @@ import org.specs.util._
 import scala.xml._
 
 
-trait RunnerFixture extends LiteralSpecification with RunnerTestData {
+trait RunnerFixture extends LiterateSpecification with RunnerTestData {
   def createSimpleSpecRunner = runner = simpleSpecRunner
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpec.shh }

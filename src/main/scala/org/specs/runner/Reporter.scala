@@ -111,7 +111,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def printSut(sut: Sut, padding: String) = {
     println(padding + sut.description + " " + sut.verb + sut.skippedSut.map(" (skipped: " + _ + ")").getOrElse(""))
-    sut.literalDescription foreach {s => println(padding + s)}
+    sut.literateDescription foreach {s => println(padding + s)}
     reportExamples(sut.examples, padding)
     println("")
   }

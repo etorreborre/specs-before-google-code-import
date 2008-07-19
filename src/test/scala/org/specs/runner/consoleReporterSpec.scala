@@ -64,7 +64,7 @@ object consoleReporterSpec extends Specification with MockOutput {
       specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustExistMatch "o " 
     }
     "report the literal description of a sut if it is set"  in {
-      new SpecWithLiteralDescription(that.isOk).run mustExistMatch "Some text with embedded assertions"
+      new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded assertions"
     }
     "report the reason for a skipped example" in {
       specWithOneExample(that.isSkipped) mustExistMatch "irrelevant" 
@@ -99,7 +99,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
-abstract class TestSpec extends LiteralSpecification with ConsoleReporter with MockOutput {
+abstract class TestSpec extends LiterateSpecification with ConsoleReporter with MockOutput {
   val success = () => true mustBe true
   val isSkipped = () => skip("irrelevant")
   val isSkippedBecauseOfAFaultyMatcher = () => 1 must be(0).orSkipExample
@@ -156,7 +156,7 @@ class SpecWithTwoSystems extends TestSpec {
     this
   }   
 }
-class SpecWithLiteralDescription(behaviours: List[(that.Value)]) extends TestSpec {
+class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpec {
   def run = {
     "The specification" is <p> 
       Some text with {"embedded assertions" in {assertions(behaviours) foreach {_.apply}}}

@@ -28,7 +28,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
    * instead of using several examples, a whole text with embedded assertions can be used to
    * specify the Sut
    */
-  var literalDescription: Option[String] = None
+  var literateDescription: Option[String] = None
 
   /** examples describing the sut behaviour */
   var examples = new Queue[Example]

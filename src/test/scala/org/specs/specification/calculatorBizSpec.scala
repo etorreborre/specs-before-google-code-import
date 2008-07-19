@@ -5,9 +5,9 @@ import org.specs.runner._
 import org.specs.util.DataTables
 
 object calcRunner extends ConsoleRunner(calcSpecificationSpec)
-object calcSpecificationSpec extends LiteralSpecification with DataTables {
+object calcSpecificationSpec extends LiterateSpecification with DataTables {
   val calc = new Object {def add(x: Int, y: int): Int = x + y }
-  "A literal spec for the calculator" is 
+  "A literate spec for the calculator" is 
 <p>
 A calculator can { "add integers: calc.add(a, b) == c" inTable { 
                      "a" 	| "b" | "c" | 

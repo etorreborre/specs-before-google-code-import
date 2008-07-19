@@ -4,7 +4,7 @@ import org.specs.util.DataTables
 import org.specs.Sugar._
 
 class xmlRunnerUnitTest extends JUnit4(xmlRunnerUnit)
-object xmlRunnerUnit extends LiteralSpecification with TestData {
+object xmlRunnerUnit extends Specification with TestData {
   "An xml runner" should {
     "create an xml file in the default directory if nothing is specified" in {
        xmlRunner.reportSpec
@@ -18,15 +18,12 @@ object xmlRunnerUnit extends LiteralSpecification with TestData {
        "result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
        "/result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "\\result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
-       "result/xml" ! 	"spec1"     !	"./result/xml/spec1.xml"	| {
-       (dir: String, 	spec: String, 	result: String) => {
+       "result/xml" ! 	"spec1"     !	"./result/xml/spec1.xml"	| { (dir, spec, result) =>
            xmlRunner.reset
            xmlRunner.outputDir = dir; spec1.name = spec;
            xmlRunner.reportSpec
            xmlRunner.files.keySet must contain(result)
-         }
        }
-       
     }
   }
 }
