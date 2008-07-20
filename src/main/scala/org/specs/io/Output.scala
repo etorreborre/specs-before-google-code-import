@@ -42,5 +42,5 @@ trait ConsoleOutput extends Output {
   /**
    * flushes the content if necessary
    */
-  def flush() = Console.flush()
+  override def flush() = Console.flush()
 }
