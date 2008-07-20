@@ -10,7 +10,6 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 
-class consoleReporterTest extends Runner(consoleReporterSpec) with JUnit with Console
 object consoleReporterSpec extends Specification with MockOutput {
   "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
@@ -94,11 +93,39 @@ object consoleReporterSpec extends Specification with MockOutput {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
+  "A console trait" can {
+    "accept a --exclude argument to only exclude examples having some tags in the specification" in {
+      runWith("--exclude", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a -excl argument to only exclude examples having some tags in the specification" in {
+      runWith("-excl", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a --include argument to only include examples having some tags in the specification" in {
+      runWith("--include", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a -incl argument to only exclude examples having some tags in the specification" in {
+      runWith("-incl", "in").printEach(Console) must (containMatch("\\+ included") and containMatch("o excluded")) 
+    } tag "only"
+  }
+  def runWith(args: String*): List[String] = {
+    specRunner.messages.clear
+    spec.tags.clear
+    specRunner.args = args.toArray
+    specRunner.reportSpecs
+    specRunner.messages.toList
+  }
+  object spec extends Specification { 
+    ("excluded" in {}).tag("out") 
+    ("included" in {}).tag("in") 
+  }
+  object specRunner extends Runner(spec) with Console with MockOutput
 
   def specWithOneExample(assertions: (that.Value)*) = new SpecWithOneExample(assertions.toList).run
   def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
+class consoleReporterTest extends JUnit4(consoleReporterSpec.accept(Tag("only") ))
+
 abstract class TestSpec extends LiteralSpecification with ConsoleReporter with MockOutput {
   val success = () => true mustBe true
   val isSkipped = () => skip("irrelevant")

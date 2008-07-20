@@ -8,7 +8,7 @@ import org.specs.runner._
 
 class specsRunnerTest extends JUnit3(specsRunnerSpec)
 object specsRunnerSpec extends Specification with TestRunner {
-  "A specs file runner" should {doBefore { runner.messages.clear }
+  "A specs file runner" should { runner.messages.clear.before
     
     "execute a specification contained in a file" in { 
       runTheFileWithClassName("org.specs.samples.sampleSpec1$")

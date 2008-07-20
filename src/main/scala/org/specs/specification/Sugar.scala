@@ -48,6 +48,8 @@ trait Sugar extends Products with Output { outer =>
   class PrintableIterable[T](a: Iterable[T]){
       /** print each element and return the iterable */ 
       def printEach = { a foreach(outer.println(_)); a }
+      /** print each element forcing a given output object */ 
+      def printEach(output: { def println(x: Any) }) = { a foreach(output.println(_)); a }
   }
 }
 

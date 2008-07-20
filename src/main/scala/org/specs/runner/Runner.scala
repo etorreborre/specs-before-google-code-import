@@ -2,6 +2,7 @@ package org.specs.runner
 import org.specs.log.ConsoleLog
 import org.specs.collection.JavaCollectionsConversion
 import _root_.org.junit.runner._
+import org.specs.specification._
 
 /**
  * The SpecsHolder trait can be inherited by runners to get access to the specifications to report 
@@ -51,12 +52,20 @@ trait Console extends ConsoleReporter with SpecsHolder {
   var args: Array[String] = Array()
   def reportSpecs = {
     if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
+    args.findIndexOf(arg => arg == "-excl" || arg == "--exclude") match {
+      case -1 => ()
+      case i => this.specs.foreach(_.reject(Tag(args(i + 1))))
+    }
+    args.findIndexOf(arg => arg == "-incl" || arg == "--include") match {
+      case -1 => ()
+      case i => this.specs.foreach(_.accept(Tag(args(i + 1))))
+    }
     report(specs) 
   }
   def main(arguments: Array[java.lang.String]) = {
     args = args ++ arguments
     reportSpecs
-    if (specs.exists { _.isFailing }) System.exit(1) else System.exit(0)
+    if (specs.exists(_.isFailing)) System.exit(1) else System.exit(0)
   }
 }
 
