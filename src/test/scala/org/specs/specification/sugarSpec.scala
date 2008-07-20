@@ -1,9 +1,9 @@
 package org.specs
 import org.specs.runner._
+import org.specs.io.mock._
 
-object sugarRunner extends ConsoleRunner(sugarSpec)
-class sugarTest extends JUnit3(sugarSpec)
-object sugarSpec extends Specification with Sugar {
+class sugarTest extends JUnit4(sugarSpec)
+object sugarSpec extends Specification with Sugar with MockOutput {
   "A sugar trait" should {
     "allow tuples to have List methods, like (1, 2, 3).tail // List(2, 3)" in {
        (1, 2, 3).tail must_== List(2, 3)
@@ -12,6 +12,9 @@ object sugarSpec extends Specification with Sugar {
       var j = 0
       3 times {j += _}
       j mustBe 6
+    }
+    "have a printEach method printing each element of an iterable" in {
+      List(1, 2, 3) printEach
     }
   }
   
