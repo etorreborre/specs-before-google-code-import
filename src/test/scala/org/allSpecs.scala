@@ -16,6 +16,7 @@ object allSpecs extends Specification {
         allUtilSpec,
         matchersSpec, 
         specificationSpec, 
+        exampleSpec,
         sugarSpec, 
         consoleReporterSpec,  
         beforeAfterSpec, 
