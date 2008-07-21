@@ -65,19 +65,22 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   def should(noExampleGiven: Unit) = { verb = "should"; this }
   
   /** @return all examples failures */
-  def failures = examples.flatMap {_.failures}
+  def failures = examples.flatMap(_.failures)
 
   /** @return all examples skipped messages */
-  def skipped = examples.flatMap {_.skipped}
+  def skipped = examples.flatMap(_.skipped)
 
   /** @return all examples errors */
-  def errors = examples.flatMap {_.errors}
+  def errors = examples.flatMap(_.errors)
+
+  /** @return all the examples with no errors, failures or skip messages */
+  def successes = examples.filter { e => e.errors.isEmpty && e.failures.isEmpty && e.skipped.isEmpty }
 
   /** @return the total number of assertions for this sut */
-  def assertionsNb = examples.foldLeft(0) {_ + _.assertionsNb}
+  def assertionsNb = examples.foldLeft(0)(_ + _.assertionsNb)
 
   /** @return a description of this sut with all its examples (used for the ConsoleReporter) */
-  def pretty(tab: String) = tab + description + " " + verb + " " + examples.foldLeft("") {_ + _.pretty(addSpace(tab))}
+  def pretty(tab: String) = tab + description + " " + verb + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
   
   /** forwards the call to the "parent" cycle */
   override def until = { cycle.until && this.untilPredicate.getOrElse(() => true)() }
@@ -106,5 +109,11 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   }
   /** Declare the examples as components to be tagged when the sut is tagged */
   override def taggedComponents = this.examples
+
+  /** reset in order to be able to run all the examples again */
+  def resetForExecution: this.type = {
+    examples.foreach(_.resetForExecution)
+    this
+  }
 }
 

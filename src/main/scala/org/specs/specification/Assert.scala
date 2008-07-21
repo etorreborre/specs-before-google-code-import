@@ -3,8 +3,38 @@ import org.specs.matcher._
 import org.specs.matcher.Matchers._
 import org.specs.ExtendedThrowable._
 
+/**
+ * An assertable is an object supporting the execution of assertions through matchers.<pre>
+ *   thisAssertable must passMatcher
+ * </pre>
+ * It can be optionally related to an example when created for an anonymous example.
+ * Otherwise it just fires a FailureException when failing:<pre>
+ * object spec extends Specification {
+ *   // is automatically related to an anonymous example
+ *   // it will be executed only once the example is executed
+ *   // @see org.specs.specification.AssertFactory
+ *   // @see org.specs.specification.ExampleAssertionListener
+ *   1 must_== 1 
+ * 
+ *   // in that case, no example is set but during the execution of the "in" part
+ *   // the failure exception will be caught by the example and stored
+ *   "this example fails" in { 1 must_== 0 }
+ * }
+ * object test extends SpecsMatchers {
+ *   // this assertable is not related to any example and executes right away throwing an exception if failing
+ *   1 must_== 1 
+ * }
+ * </pre>
+ */
 trait Assertable[T] {
+  /** related example. */
   private var example: Option[Example] = None
+
+  /** 
+   * Apply a matcher for this assertable value.
+   * 
+   * Execute the matcher directly or add it to its related example for execution.
+   */
   def applyMatcher[S >: T](m: => Matcher[S], value: => T): boolean = {
     def executeMatch = {
       val (result, _, koMessage) = m.apply(value) 
@@ -17,11 +47,14 @@ trait Assertable[T] {
       case None => executeMatch
       case Some(e) => {
         var res: Boolean = true
-        e in { res = executeMatch}
+        e in { res = executeMatch }
         res
       }
     }
   }  
+  /**
+   * Set a specific example to hold the results of this matcher
+   */
   def setExample[T](ex: Example) = example = Some(ex)
 }
 /**

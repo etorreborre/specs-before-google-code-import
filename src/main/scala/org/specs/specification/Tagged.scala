@@ -30,6 +30,15 @@ trait Tagged {
   /** Add one or several tags to this element */
   def tag(t: String*): this.type = addTags(t:_*)
 
+  /** Clear all tags, accepted and rejected */
+  def clearTags: this.type = { 
+    tags.clear
+    accepted.clear
+    rejected.clear
+    taggedComponents.foreach(_.clearTags)
+    this 
+  }
+
   /** Add one tag to this element */
   def addTag(t: String): this.type = { 
     tags.enqueue(Tag(t))
@@ -49,7 +58,17 @@ trait Tagged {
     propagateTagsToComponents
     this
   }
-
+  /** alias for the acceptTag method */
+  def acceptTag(s: String*): this.type = acceptTags(s:_*) 
+  /** alias for the accept method with strings */
+  def acceptTags(s: String*): this.type = { s.foreach(accept(_)); this } 
+  /** reset accepted and rejected to an empty queue */
+  def acceptAnyTag: this.type = {
+    accepted.clear
+    rejected.clear
+    taggedComponents.foreach(_.acceptAnyTag)
+    this 
+ }
   /** 
    * Declare that this element should be rejected if it has one of the rejected tags.
    *  This method declares the same thing for the components of this element.
@@ -59,6 +78,10 @@ trait Tagged {
     propagateTagsToComponents
     this 
   }
+  /** alias for the reject method with strings */
+  def rejectTag(s: String*): this.type = { s.foreach(reject(_)); this } 
+  /** alias for the reject method with several strings */
+  def rejectTags(s: String*): this.type = rejectTag(s:_*) 
 
   /** 
    * Return true if this Tagged element:<ul>

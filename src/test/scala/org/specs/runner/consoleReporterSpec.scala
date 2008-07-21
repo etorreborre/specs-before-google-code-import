@@ -10,7 +10,6 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 
-class consoleReporterTest extends Runner(consoleReporterSpec) with JUnit with Console
 object consoleReporterSpec extends Specification with MockOutput {
   "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
@@ -94,6 +93,44 @@ object consoleReporterSpec extends Specification with MockOutput {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
+  "A console trait" can { clean.before
+    "accept a --reject argument to only exclude examples having some tags in the specification" in {
+      runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a -rej argument to only exclude examples having some tags in the specification" in {
+      runWith("-rej", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a --accept argument to only include examples having some tags in the specification" in {
+      runWith("--accept", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+    "accept a -acc argument to only exclude examples having some tags in the specification" in {
+      runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
+  }
+  "A console trait" should { clean.before
+    "print a warning message if a accept/reject argument is not followed by tags" in {
+      runWith("-acc") must containMatch("warning: accept/reject tags omitted") 
+    }
+    "work with several tags separated by a comma" in {
+      runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
+    }
+  } 
+  def runWith(args: String*): List[String] = {
+    specRunner.args = args.toArray
+    specRunner.reportSpecs
+    specRunner.messages.toList
+  }
+  def clean = {
+    specRunner.args = Array()
+    spec.acceptAnyTag
+    spec.resetForExecution
+    specRunner.messages.clear
+  }
+  object spec extends Specification { 
+    ("excluded" in {}).tag("out") 
+    ("included" in {}).tag("in") 
+  }
+  object specRunner extends Runner(spec) with Console with MockOutput
 
   def specWithOneExample(assertions: (that.Value)*) = new SpecWithOneExample(assertions.toList).run
   def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
@@ -106,7 +143,7 @@ abstract class TestSpec extends LiterateSpecification with ConsoleReporter with 
   val failure1 = () => "ok" mustBe "first failure"
   val failure2 = () => "ok" mustBe "second failure"
   val failMethod = () => fail("failure with the fail method")
-  val exception = () => throw new Exception("new Error")
+  val exception= () => throw new Exception("new Error")
   def assertions(behaviours: List[that.Value]) = behaviours map { 
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped

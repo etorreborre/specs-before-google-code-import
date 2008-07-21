@@ -31,7 +31,7 @@ object tagsSpec extends LiterateSpecification with Fixtures {
       "example 1" in { 1 must_== 1 }
       "example 2" in { 2 must_== 2 } tag("only this")
     } 
-    mySpec accepts ("only this")  """ }{onlyTaggedExamples}
+    mySpec accept ("only this")  """ }{onlyTaggedExamples}
   
   This will output: 
  { specOutput }

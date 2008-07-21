@@ -14,8 +14,9 @@ import org.specs.Sugar._
  * <li>xmlRunnerSpec
  * </ul>
  */
-trait LiterateSpecification  extends Specification with DataTables {
+class LiterateSpecification extends Specification with DataTables {
   setSequential
+  def this(n: String) = { this(); name = n; description = n; this }
   
   /**
    * This method is used to silence the result of a call in an action. For example: <pre>
@@ -82,7 +83,4 @@ trait LiterateSpecification  extends Specification with DataTables {
   def check(test: =>Any) = (forExample in test).shh
   def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
-}
-
-
-
+} 

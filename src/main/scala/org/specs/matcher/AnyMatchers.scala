@@ -131,7 +131,10 @@ trait AnyMatchers {
    * Matches if any object with an <code>isEmpty</code> method returns true: (Any {def isEmpty: Boolean}).isEmpty
    */   
   def beEmpty[S <: Any {def isEmpty: Boolean}] = new Matcher[S](){
-    def apply(v: => S) = {val iterable = v; (iterable.isEmpty, iterable + " is empty", iterable + " is not empty")}
+    def apply(v: => S) = {
+      val iterable = v
+      (iterable.isEmpty, iterable + " is empty", iterable + " is not empty")
+    }
   }
 
   /**

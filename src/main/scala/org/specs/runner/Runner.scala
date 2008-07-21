@@ -2,6 +2,7 @@ package org.specs.runner
 import org.specs.log.ConsoleLog
 import org.specs.collection.JavaCollectionsConversion
 import _root_.org.junit.runner._
+import org.specs.specification._
 
 /**
  * The SpecsHolder trait can be inherited by runners to get access to the specifications to report 
@@ -49,14 +50,34 @@ trait Console extends ConsoleReporter with SpecsHolder {
    * optional arguments to the main method if called from the code directly
    */
   var args: Array[String] = Array()
+  
+  /** 
+   * Report the specifications. 
+   * 
+   * Set the command-line arguments for the stacktrace display (-ns) or the included/excluded tags.
+   */
   def reportSpecs = {
     if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
+
+    def printWarning = println("warning: accept/reject tags omitted")
+    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(args(i + 1).split(","):_*)
+    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(args(i + 1).split(","):_*)
+    def setAcceptedTags(arguments: List[String], f: (Specification, Int) => Specification) = {
+      args.findIndexOf(arg => arguments.contains(arg)) match {
+        case -1 => ()
+        case i if (i < args.length - 1) => this.specs.foreach(f(_, i))
+        case _ => printWarning
+      }
+    } 
+    setAcceptedTags(List("-acc", "--accept"), acceptSpecTags(_, _))
+    setAcceptedTags(List("-rej", "--reject"), rejectSpecTags(_, _))
+    
     report(specs) 
   }
   def main(arguments: Array[java.lang.String]) = {
     args = args ++ arguments
     reportSpecs
-    if (specs.exists { _.isFailing }) System.exit(1) else System.exit(0)
+    if (specs.exists(_.isFailing)) System.exit(1) else System.exit(0)
   }
 }
 

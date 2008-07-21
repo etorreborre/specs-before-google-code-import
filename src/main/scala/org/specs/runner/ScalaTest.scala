@@ -34,7 +34,7 @@ trait ScalaTest extends SpecsHolder with org.scalatest.Suite {
   /**
    * @return an empty map for now. The notion of group may be added later to specifications
    */
-  override def groups: Map[String, Set[String]] = Map()
+  override def groups: Map[String, Set[String]] = Map() 
 
   /**
    * @return the subspecifications or the suts as ScalaTest suites

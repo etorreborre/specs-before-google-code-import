@@ -113,7 +113,15 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
     exampleContainer.addExample(newExample) 
     newExample
   }
+  
+  /**
+   * Create an anonymous example, giving it a number depending on the existing created examples/
+   */
   def forExample: Example = forExample("example " + (currentSut.examples.size + 1))
+  
+  /**
+   * Return the example being currently executed if any
+   */
   def lastExample: Option[Example] = example
   
   /** 
@@ -127,25 +135,4 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
       case None => currentSut 
     }
   }
-}
-
-/** 
- * This abstract trait is used to represent how examples should be executed:<ul>
- * <li>sequentially or not ("not" is the default)
- * <li>with functions being executed before / after the example
- * <li>with functions being executed before / after the example tests
- * </ul>
- */ 
-trait ExampleLifeCycle {
-  protected var sequential = false
-  def isSequential = sequential
-  def setSequential = sequential = true
-  
-  protected[this] var example: Option[Example] = None
-  def until = true 
-  def beforeExample(ex: Example) = {} 
-  def beforeTest(ex: Example)= {}
-  def afterTest(ex: Example) = {}
-  def executeTest(ex: Example, t: =>Any): Any = { example = Some(ex); t }
-  def afterExample(ex: Example) = { example = None }
 }

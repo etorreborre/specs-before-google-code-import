@@ -128,17 +128,27 @@ case class Example(var description: String, cycle: org.specs.specification.Examp
   def addSkipped(skip: SkippedException) = thisSkipped += skip
 
   /** @return the failures of this example and its subexamples, executing the example if necessary */
-  def failures: Seq[FailureException] = {execute; thisFailures ++ subExamples.flatMap { _.failures }}
+  def failures: Seq[FailureException] = { execute; thisFailures ++ subExamples.flatMap { _.failures } }
 
   /** @return the skipped messages for this example and its subexamples, executing the example if necessary  */
-  def skipped: Seq[SkippedException] = {execute; thisSkipped ++ subExamples.flatMap { _.skipped }}
+  def skipped: Seq[SkippedException] = { execute; thisSkipped ++ subExamples.flatMap { _.skipped } }
 
   /** @return the errors of this example and its subexamples, executing the example if necessary  */
-  def errors: Seq[Throwable] = {execute; thisErrors ++ subExamples.flatMap {_.errors}}
+  def errors: Seq[Throwable] = { execute; thisErrors ++ subExamples.flatMap {_.errors} }
 
   /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} + 
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
   /** @return the example description */
   override def toString = description
+  
+  /** reset in order to be able to run the example again */
+  def resetForExecution: this.type = {
+    executed = false
+    thisFailures.clear
+    thisErrors.clear
+    thisSkipped.clear
+    subExs.foreach(_.resetForExecution)
+    this
+  }
 }
