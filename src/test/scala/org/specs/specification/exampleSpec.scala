@@ -12,7 +12,7 @@ object exampleSpec extends Specification {
     }
   }
   "An example" can {
-    "be resetted" in {
+    "be resetted for execution" in {
       ex.resetExample
       ex.hasBeenExecuted must beFalse
       ex.failures 
@@ -26,6 +26,6 @@ object ex extends Specification {
     hasBeenExecuted = true
   }
   override def failures = testExample.failures.toList
-  def resetExample = { hasBeenExecuted = false; testExample.reset }
+  def resetExample = { hasBeenExecuted = false; testExample.resetForExecution }
 }
 class exampleSpecTest extends org.specs.runner.JUnit4(exampleSpec)

@@ -143,12 +143,12 @@ case class Example(var description: String, cycle: org.specs.specification.Examp
   override def toString = description
   
   /** reset in order to be able to run the example again */
-  def reset: this.type = {
+  def resetForExecution: this.type = {
     executed = false
     thisFailures.clear
     thisErrors.clear
     thisSkipped.clear
-    subExs.foreach(_.reset)
+    subExs.foreach(_.resetForExecution)
     this
   }
 }

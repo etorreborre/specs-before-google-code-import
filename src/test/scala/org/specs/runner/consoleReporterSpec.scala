@@ -123,7 +123,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   def clean = {
     specRunner.args = Array()
     spec.acceptAnyTag
-    spec.reset
+    spec.resetForExecution
     specRunner.messages.clear
   }
   object spec extends Specification { 

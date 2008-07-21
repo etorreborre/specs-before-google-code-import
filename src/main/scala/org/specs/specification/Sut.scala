@@ -111,8 +111,8 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   override def taggedComponents = this.examples
 
   /** reset in order to be able to run all the examples again */
-  def reset: this.type = {
-    examples.foreach(_.reset)
+  def resetForExecution: this.type = {
+    examples.foreach(_.resetForExecution)
     this
   }
 }

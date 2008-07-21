@@ -88,11 +88,12 @@ trait MockFileSystem extends FileSystem {
     override def write(m: String): Unit = files(path) = files(path) + m
   }
   /** removes all specified files */
-  def reset = {
+  def reset: this.type = {
     files = new HashMap[String, String]
     children = new HashMap[String, ListBuffer[String]]
     readableFiles = Nil
     writableFiles = Nil
+    this
   }
   
   override def exists(path: String) = files.contains(path)

@@ -110,9 +110,9 @@ abstract class Specification extends Matchers with AssertFactory
   override def taggedComponents = this.subSpecifications ++ this.suts
   
   /** reset in order to be able to run the examples again */
-  def reset: this.type = {
-    subSpecifications.foreach(_.reset)
-    suts.foreach(_.reset)
+  def resetForExecution: this.type = {
+    subSpecifications.foreach(_.resetForExecution)
+    suts.foreach(_.resetForExecution)
     this
   }
 }
