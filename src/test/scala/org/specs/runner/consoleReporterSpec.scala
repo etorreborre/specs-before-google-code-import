@@ -94,25 +94,25 @@ object consoleReporterSpec extends Specification with MockOutput {
     }
   }
   "A console trait" can { clean.before
-    "accept a --exclude argument to only exclude examples having some tags in the specification" in {
-      runWith("--exclude", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    "accept a --reject argument to only exclude examples having some tags in the specification" in {
+      runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
-    "accept a -excl argument to only exclude examples having some tags in the specification" in {
-      runWith("-excl", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    "accept a -rej argument to only exclude examples having some tags in the specification" in {
+      runWith("-rej", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
-    "accept a --include argument to only include examples having some tags in the specification" in {
-      runWith("--include", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    "accept a --accept argument to only include examples having some tags in the specification" in {
+      runWith("--accept", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
-    "accept a -incl argument to only exclude examples having some tags in the specification" in {
-      runWith("-incl", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    "accept a -acc argument to only exclude examples having some tags in the specification" in {
+      runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
   }
   "A console trait" should { clean.before
-    "print a warning message if a inclusion/exclusion argument is not followed by tags" in {
-      runWith("-incl") must containMatch("warning: include/exclude tags omitted") 
+    "print a warning message if a accept/reject argument is not followed by tags" in {
+      runWith("-acc") must containMatch("warning: accept/reject tags omitted") 
     }
     "work with several tags separated by a comma" in {
-      runWith("-incl", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
+      runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
     }
   } 
   def runWith(args: String*): List[String] = {

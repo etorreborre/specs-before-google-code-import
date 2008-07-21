@@ -59,7 +59,7 @@ trait Console extends ConsoleReporter with SpecsHolder {
   def reportSpecs = {
     if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
 
-    def printWarning = println("warning: include/exclude tags omitted")
+    def printWarning = println("warning: accept/reject tags omitted")
     def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(args(i + 1).split(","):_*)
     def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(args(i + 1).split(","):_*)
     def setAcceptedTags(arguments: List[String], f: (Specification, Int) => Specification) = {
@@ -69,8 +69,8 @@ trait Console extends ConsoleReporter with SpecsHolder {
         case _ => printWarning
       }
     } 
-    setAcceptedTags(List("-incl", "--include"), acceptSpecTags(_, _))
-    setAcceptedTags(List("-excl", "--exclude"), rejectSpecTags(_, _))
+    setAcceptedTags(List("-acc", "--accept"), acceptSpecTags(_, _))
+    setAcceptedTags(List("-rej", "--reject"), rejectSpecTags(_, _))
     
     report(specs) 
   }
