@@ -8,11 +8,9 @@ package org.specs.specification
  * </code>or<br><code>
  * theDouble(2.1) must beCloseTo(2.0, .1)
  * </code><p> 
- * Most of those definitions are declared because the implicit def mechanism doesn't seem to select
- * the most specific definition (to my understanding)<br>
- * The implicit def for Strings is even stranger since values are supposed to have String as a lower bound.
+ * 
  * Then StringMatchers are expecting values with String as an upper bound so that effectively only String instances
- * will be used with the implicit def (only solution found to make it all work, to my current understanding again)
+ * will be used with the implicit def (only solution found to make it all work, to my current understanding)
  */
 trait AssertFactory extends ExampleAssertionListener {
 
@@ -30,6 +28,10 @@ trait AssertFactory extends ExampleAssertionListener {
     a
   }
 
+  /** 
+   * implicit transformation of a block returning Nothing. 
+   * This is necessary when testing thrown exceptions <pre>stream.close must throwA(new IOException)</pre> 
+   */
   implicit def theBlock(value: =>Nothing) = {
     val a = new Assert[Nothing](value)
     addAssertion(Some(a))
@@ -48,36 +50,5 @@ trait AssertFactory extends ExampleAssertionListener {
     addAssertion(Some(a))
     a
   }
-}
-/** trait declaring the ability to listen to a new assertion */
-trait AssertionListener {
-  def addAssertion: Example
-}
-/** trait doing nothing on a new assertion */
-trait DefaultAssertionListener extends AssertionListener {
-  override def addAssertion: Example = null
-}
-trait DefaultExampleAssertionListener extends ExampleAssertionListener {
-  override def addAssertion: Example = null
-  override def addAssertion[T](assertable: Option[Assertable[T]]): Example = null
-  def lastExample: Option[Example] = None
-  def forExample = null 
-}
-/** trait adding the new assertion to an example */
-trait ExampleAssertionListener extends AssertionListener {
-
-  def addAssertion: Example = addAssertion(None)
-  def addAssertion[T](assertable: Option[Assertable[T]]): Example = {
-    lastExample match {
-      case None => { 
-        val ex = forExample.addAssertion; 
-        assertable.map(setExample(_, ex))
-        ex }
-      case Some(e) => e.addAssertion
-    }
-  }
-  def setExample[T](assertable: Assertable[T], ex: Example) = assertable.setExample(ex)
-  def forExample: Example
-  def lastExample: Option[Example]
 }
 	
