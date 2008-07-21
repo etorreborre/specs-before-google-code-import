@@ -50,21 +50,28 @@ trait Console extends ConsoleReporter with SpecsHolder {
    * optional arguments to the main method if called from the code directly
    */
   var args: Array[String] = Array()
+  
+  /** 
+   * Report the specifications. 
+   * 
+   * Set the command-line arguments for the stacktrace display (-ns) or the included/excluded tags.
+   */
   def reportSpecs = {
-    def printWarning = println("warning: include/exclude tags omitted")
-
     if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
-    args.findIndexOf(arg => arg == "-excl" || arg == "--exclude") match {
-      case -1 => ()
-      case i if (i < args.length - 1) => this.specs.foreach(_.rejectTag(args(i + 1).split(","):_*))
-      case _ => printWarning
-      
-    }
-    args.findIndexOf(arg => arg == "-incl" || arg == "--include") match {
-      case -1 => ()
-      case i if (i < args.length - 1) => this.specs.foreach(_.acceptTag(args(i + 1).split(","):_*))
-      case _ => printWarning
-    }
+
+    def printWarning = println("warning: include/exclude tags omitted")
+    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(args(i + 1).split(","):_*)
+    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(args(i + 1).split(","):_*)
+    def setAcceptedTags(arguments: List[String], f: (Specification, Int) => Specification) = {
+      args.findIndexOf(arg => arguments.contains(arg)) match {
+        case -1 => ()
+        case i if (i < args.length - 1) => this.specs.foreach(f(_, i))
+        case _ => printWarning
+      }
+    } 
+    setAcceptedTags(List("-incl", "--include"), acceptSpecTags(_, _))
+    setAcceptedTags(List("-excl", "--exclude"), rejectSpecTags(_, _))
+    
     report(specs) 
   }
   def main(arguments: Array[java.lang.String]) = {
