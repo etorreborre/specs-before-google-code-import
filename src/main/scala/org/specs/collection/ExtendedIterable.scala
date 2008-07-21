@@ -61,7 +61,7 @@ object ExtendedIterable {
     def sameElementsAs(that: Iterable[A], f: (A, A) => Boolean): Boolean = {
 	  def matchTwo(x: A, y: A): Boolean = {
 		(x, y) match {
-		  case (a: Iterable[A], b:Iterable[A]) => a.sameElementsAs(b, f)
+		  case (a: Iterable[_], b:Iterable[_]) => x.asInstanceOf[Iterable[A]].sameElementsAs(y.asInstanceOf[Iterable[A]], f)
 		  case (a: A, b: A) => f(a, b)
 		  case _ => false
 		}
