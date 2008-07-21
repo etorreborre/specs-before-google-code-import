@@ -93,7 +93,7 @@ object consoleReporterSpec extends Specification with MockOutput {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
-  "A console trait" can {
+  "A console trait" can { clean.before
     "accept a --exclude argument to only exclude examples having some tags in the specification" in {
       runWith("--exclude", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
@@ -104,15 +104,27 @@ object consoleReporterSpec extends Specification with MockOutput {
       runWith("--include", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
     }
     "accept a -incl argument to only exclude examples having some tags in the specification" in {
-      runWith("-incl", "in").printEach(Console) must (containMatch("\\+ included") and containMatch("o excluded")) 
-    } tag "only"
+      runWith("-incl", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+    }
   }
+  "A console trait" should { clean.before
+    "print a warning message if a inclusion/exclusion argument is not followed by tags" in {
+      runWith("-incl") must containMatch("warning: include/exclude tags omitted") 
+    }
+    "work with several tags separated by a comma" in {
+      runWith("-incl", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
+    }
+  } 
   def runWith(args: String*): List[String] = {
-    specRunner.messages.clear
-    spec.tags.clear
     specRunner.args = args.toArray
     specRunner.reportSpecs
     specRunner.messages.toList
+  }
+  def clean = {
+    specRunner.args = Array()
+    spec.acceptAnyTag
+    spec.reset
+    specRunner.messages.clear
   }
   object spec extends Specification { 
     ("excluded" in {}).tag("out") 
@@ -124,7 +136,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
-class consoleReporterTest extends JUnit4(consoleReporterSpec.accept(Tag("only") ))
+class consoleReporterTest extends JUnit4(consoleReporterSpec)
 
 abstract class TestSpec extends LiteralSpecification with ConsoleReporter with MockOutput {
   val success = () => true mustBe true
@@ -133,7 +145,7 @@ abstract class TestSpec extends LiteralSpecification with ConsoleReporter with M
   val failure1 = () => "ok" mustBe "first failure"
   val failure2 = () => "ok" mustBe "second failure"
   val failMethod = () => fail("failure with the fail method")
-  val exception = () => throw new Exception("new Error")
+  val exception= () => throw new Exception("new Error")
   def assertions(behaviours: List[that.Value]) = behaviours map { 
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped

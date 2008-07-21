@@ -51,14 +51,19 @@ trait Console extends ConsoleReporter with SpecsHolder {
    */
   var args: Array[String] = Array()
   def reportSpecs = {
+    def printWarning = println("warning: include/exclude tags omitted")
+
     if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
     args.findIndexOf(arg => arg == "-excl" || arg == "--exclude") match {
       case -1 => ()
-      case i => this.specs.foreach(_.reject(Tag(args(i + 1))))
+      case i if (i < args.length - 1) => this.specs.foreach(_.rejectTag(args(i + 1).split(","):_*))
+      case _ => printWarning
+      
     }
     args.findIndexOf(arg => arg == "-incl" || arg == "--include") match {
       case -1 => ()
-      case i => this.specs.foreach(_.accept(Tag(args(i + 1))))
+      case i if (i < args.length - 1) => this.specs.foreach(_.acceptTag(args(i + 1).split(","):_*))
+      case _ => printWarning
     }
     report(specs) 
   }

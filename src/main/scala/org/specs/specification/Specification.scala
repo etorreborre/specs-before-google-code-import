@@ -108,6 +108,13 @@ abstract class Specification extends Matchers with AssertFactory
   
   /** Declare the subspecifications and suts as components to be tagged when the specification is tagged */
   override def taggedComponents = this.subSpecifications ++ this.suts
+  
+  /** reset in order to be able to run the examples again */
+  def reset: this.type = {
+    subSpecifications.foreach(_.reset)
+    suts.foreach(_.reset)
+    this
+  }
 }
 /**
  * This trait can be reused in any test based framework to access Matchers functionalities

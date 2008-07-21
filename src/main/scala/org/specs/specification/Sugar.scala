@@ -4,13 +4,13 @@ import org.specs.io._
  * Synctactic sugar for specifications. Since it makes heavy uses of implicit definitions,<br>
  * The name reminds that it must be used with caution
  */
-object Sugar extends Sugar with ConsoleOutput
+object Sugar extends Sugar
 
 /**
  * Synctactic sugar for specifications. Since it makes heavy uses of implicit definitions,<br>
  * The name reminds that it must be used with caution
  */
-trait Sugar extends Products with Output { outer =>
+trait Sugar extends Products with ConsoleOutput { outer =>
   
   /** alias for the value true. Allows to write <code> myObject.status mustBe ok </code>*/
   val ok = true

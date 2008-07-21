@@ -2,7 +2,7 @@ package org.specs.specification
 import org.specs.matcher._
 
 object taggedSpec extends Specification {
-  "A tagged object" should { doBefore(createTagged)
+  "A tagged object" should { createTagged.before
     "be accepted if there is no tag added" in {
       tagged must beAccepted
     }
@@ -59,8 +59,31 @@ object taggedSpec extends Specification {
       Tag(null) must beMatching(Tag("sdf")).not
     }
   }
+  "A tagged object with subcomponents" should { createTaggedTree.before
+    "propagate its tags to the subcomponents" in {
+      taggedTree.tag("1")
+      taggedTree.taggedComponents.first.tags must haveSameElementsAs(List(Tag("1")))
+    }
+    "clear the subcomponents tags when clearing its own" in {
+      taggedTree.tag("1")
+      taggedTree.clearTags
+      taggedTree.taggedComponents.first.tags must beEmpty
+    }
+    "be able to accept all tags if some tags were previously rejected" in {
+      taggedTree.tag("1")
+      taggedTree.acceptTag("1")
+      taggedTree.acceptAnyTag
+      taggedTree.taggedComponents.first.accepted must beEmpty
+      taggedTree.taggedComponents.first.rejected must beEmpty
+    }
+  }
   var tagged = new Object with Tagged
+  var taggedTree = new Object with Tagged
   def createTagged = tagged = new Object with Tagged
+  def createTaggedTree = {
+    val child = new Object with Tagged
+    taggedTree = new Object with Tagged { override def taggedComponents = List(child) }
+  }
   def beRejected = beAccepted.not
   def beAccepted = new Matcher[Tagged] {
     def apply(v: => Tagged) = (v.isAccepted, "the tag is accepted", "the tag isn't accepted")
