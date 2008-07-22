@@ -27,6 +27,8 @@ class LiterateSpecification extends Specification with DataTables {
   class Silenced {
     def shh = ""
   }
+  /** This silence function allows to silence calls with this style: shh { a call } */
+  def shh(a: =>Any) = { a; "" }
   /**
    * This method is used setup a property value, in order to avoid repeting a string. For example: <pre>
    * The name of the person should be {"john" as personName in checkPersonName}
@@ -68,7 +70,7 @@ class LiterateSpecification extends Specification with DataTables {
     }
     private def format(e: => Elem) = {
       val content = e
-      val anonymous = sut.examples.filter(_.description.matches("example \\d"))
+      val anonymous = sut.examples.filter(_.description.matches("example \\d+"))
       val exNodes = content.\("ex")
       exNodes.theSeq.toList.zip(anonymous.toList).foreach( pair => pair._2.description = pair._1.first.text)
       sut.literateDescription = Some(content.text)

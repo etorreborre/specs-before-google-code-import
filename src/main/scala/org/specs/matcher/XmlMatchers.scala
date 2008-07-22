@@ -114,11 +114,13 @@ case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[No
     // and build a MatcherResult being a success if the function retrieves some node
     pathFunctions match {
       case function::rest => {
+         val functionResult = function(nodes) 
+         val searched = searchedElements(function)
          checkFunctions(rest, 
-                        function(nodes), 
-                        (result.success && !function(nodes).isEmpty, 
-                        result.okMessage + (if (result.okMessage == nodes.toString) "" else " and") + " contains " + searchedElements(function), 
-                        result.okMessage + (if (result.okMessage == nodes.toString) "" else " but") + " doesn't contain " + searchedElements(function)))
+                        functionResult, 
+                        (result.success && !functionResult.isEmpty, 
+                        result.okMessage + (if (result.okMessage == nodes.toString) "" else " and") + " contains " + searched, 
+                        result.okMessage + (if (result.okMessage == nodes.toString) "" else " but") + " doesn't contain " + searched))
       }
       case _ => result
     }
