@@ -1,7 +1,9 @@
 package org.specs.matcher
 import org.specs.runner._
 import org.specs.Sugar._
-
+import org.specs.xml.NodeFunctions._
+import org.specs.collection.ExtendedIterable._
+import scala.xml._
 object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
   "A equals ignore spaces matcher" should { 
     "not take care of spaces when comparing nodes [Alias ==/]" in {
@@ -10,6 +12,9 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "fail if 2 nodes are not equal, even ignoring spaces" in {
       assertion(<a><b/></a> must equalIgnoreSpace(<a> <c/></a>)) must failWith("<a><b></b></a> is not equal to <a> <c></c></a>")
+    }
+    "fail if 2 nodes are a Text and an Atom with different datat" in {
+      assertion(new Atom("hello").toSeq must ==/(new Text("world").toSeq)) must failWith("hello is not equal to world")
     }
   }
   "A \\ matcher" should {
@@ -100,6 +105,11 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "not match two nodes if they don't contain the same text" in {
       assertion(<a><b>hello</b></a> must \\(<b>world</b>)) must failWith("<a><b>hello</b></a> doesn't contain <b>world</b>")
+    }
+    "not match two nodes if they don't contain the same text even if one is an Atom and the other one a Text" in {
+      val h = "hello"
+      val expected = <a><b>{h}</b></a>  
+      assertion(expected must \\(<b>world</b>)) must failWith("<a><b>hello</b></a> doesn't contain <b>world</b>")
     }
     "not evaluate the expressions twice" in {
       val nodes: Iterable[scala.xml.Node] = <c/>

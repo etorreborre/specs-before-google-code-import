@@ -51,6 +51,8 @@ object NodeFunctions {
       case (null, other) => other == null
       case (other, null) => other == null
       case (n1: Text, n2:Text) => n1.text.trim == n2.text.trim
+      case (n1: Text, n2:Atom[_]) => n1.text.trim == n2.text.trim
+      case (n1: Atom[_], n2:Text) => n1.text.trim == n2.text.trim
       case (n1: Node, n2:Node) => (isSpaceNode(n1) && isSpaceNode(n2)) ||
                                   n1.prefix == n2.prefix && 
                                   n1.attributes == n2.attributes && 
