@@ -57,6 +57,6 @@ trait htmlRunnerRules extends LiterateSpecification {
     }
   }
   lazy val run = { runner.reportSpecs; runner.output }
-  object runner extends HtmlRunner(specification)
+  object runner extends org.specs.runner.HtmlRunner(specification)
 }
 class htmlRunnerTest extends org.specs.runner.JUnit4(htmlRunnerSpec)

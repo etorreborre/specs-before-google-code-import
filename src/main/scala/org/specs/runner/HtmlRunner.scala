@@ -14,6 +14,7 @@ class HtmlRunner(spec: Specification) extends ConsoleRunner(spec) {
   </html>
   
   def sutTables: NodeSeq = spec.suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
+  
   def sutTable(sut: Sut): NodeSeq = <h3>{sut.description}</h3>.toSeq ++ <table>
     {exampleRows(sut.examples)}
     </table>
