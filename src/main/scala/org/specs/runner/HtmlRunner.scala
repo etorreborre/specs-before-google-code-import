@@ -2,8 +2,8 @@ package org.specs.runner
 import scala.xml._
 import org.specs.specification._
 import org.specs.io._
-import java.io.Writer
-import java.net._
+import org.specs.util._
+
 class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   outputDirPath = normalize(outputDir)
   override def fileName = "specs-report.html"
@@ -73,12 +73,24 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   
   def message(example: Example) = {
     if (!example.failures.isEmpty)
-      example.failures.map(_.getMessage).mkString(", ")
+      example.failures.foldLeft(NodeSeq.Empty.toSeq)( (res, f) => res ++ failure(f))
     else if (!example.errors.isEmpty)
-      example.errors.map(_.getMessage).mkString(", ")
+      example.errors.foldLeft(NodeSeq.Empty.toSeq)( (res, e) => res ++ new Text(e.getMessage))
     else if (!example.skipped.isEmpty)
-      example.skipped.map(_.getMessage).mkString(", ")
+      example.skipped.foldLeft(NodeSeq.Empty.toSeq)( (res, s) => res ++ new Text(s.getMessage))
     else
       ""
+  }
+  def failure(f: FailureException): NodeSeq = {
+    f match {
+      case DataTableFailureException(table) => xmlFor(table)
+      case regular => new Text(regular.getMessage) 
+    }
+  }
+  def xmlFor[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = {
+    <table>table</table>
+//<table>{table.header}</table>
+
+    //    <table>{table.header.titles.foldLeft(NodeSeq.Empty.toSeq)( (res, s) => res ++ new Text(s))}</table>
   }
 }

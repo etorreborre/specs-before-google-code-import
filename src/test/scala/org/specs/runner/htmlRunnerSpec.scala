@@ -34,16 +34,20 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
 
     5. Output directory
     
-       4.1 File name
+       5.1 File name
       
        The output of an HtmlRunner can be specified by specifiying an output directory.
        In that case, <ex>the runner generates a file named specs-report.html in that directory.</ex>{outputFile} 
     
-       4.2 Stylesheets and images
+       5.2 Stylesheets and images
       
        <ex>The stylesheets for the report must be created in a directory named css, relative to the output directory.</ex>{cssDir} 
        <ex>The images for the report must be created in a directory named images, relative to the output directory.</ex>{imagesDir} 
    
+    6. DataTables
+      
+       <ex>DataTables failures should be displayed as an inner table in the message cell</ex>{dataTableFailure}
+       
 </spec>
 }
  
@@ -53,7 +57,7 @@ import org.specs.io.mock._
 trait htmlRunnerRules extends LiterateSpecification {
   def title = run must \\(<title>{specification.name}</title>) <|
   def oneTablePerSut = run must \\(<table></table>) <|
-  def subSpecsHeader = run must \\(<h1>Sample subspecification</h1>) <|
+  def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>) <|
   def systemName = run must \\(<h3>The system should</h3>) <|
   def oneRowPerExample = run.toString must beMatching("ex1") <|
   def exampleDescription = run.toString must beMatching("ex1") <|
@@ -68,6 +72,7 @@ trait htmlRunnerRules extends LiterateSpecification {
   def outputFile = htmlFile must_== "./target/specs-report.html" <|
   def cssDir = createdDirs must contain("./target/css") <|
   def imagesDir = createdDirs must contain("./target/images") <|
+  def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>)) <|
     
   object specification extends Specification("Sample Specification") {
     include(subSpecification)
@@ -76,6 +81,14 @@ trait htmlRunnerRules extends LiterateSpecification {
       "ex2" in { 1 must_== 0 }
       "ex3" in { error("bug") }
       "ex4" in { skip("skipped") }
+      "data table failure" in {
+        "a"    | "b"  | "result" |>
+          1    !  1   ! 2        |
+          1    !  1   ! 2        |
+          3    !  1   ! 5        | { (a: Int, b: Int, c: Int) => 
+            a + b must_== c 
+          }
+      }
     }
   }
   object subSpecification extends Specification("Sample subspecification") {

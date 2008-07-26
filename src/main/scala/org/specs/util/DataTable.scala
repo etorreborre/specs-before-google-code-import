@@ -28,12 +28,12 @@ trait DataTables {
  * A header can be closed using the | method which will return the TableHeader object<p>
  * A header can be followed by data rows which only requirement is to have a <code>def header_=(t: TableHeader)</code> function
  */
-case class TableHeader(h: List[String]) {
+case class TableHeader(val titles: List[String]) {
   /**
    * Adds a new column to the header
    * @returns the extended header
    */
-  def |(s: String) = TableHeader(h:::List(s))
+  def |(s: String) = TableHeader(titles ::: List(s))
 
   /**
   * Used to close the header
@@ -57,7 +57,7 @@ case class TableHeader(h: List[String]) {
   /**
    * @returns the header as string: |"a" | "b" | "c = a + b"|
    */
-   override def toString = h.mkString("|", "|", "|")
+   override def toString = titles.mkString("|", "|", "|")
 }
 
 /**
@@ -212,8 +212,9 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * This function can be overriden to provide another behaviour upon table failure
    */  
-  def failureFunction(table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) : Unit = throw new FailureException(table.results) 
-  
+  def failureFunction(table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) : Unit = {
+    throw DataTableFailureException(table) 
+  }
   /**
    * @returns the result of the function execution on each row: the string representation of the row and an optional error message in case of a failure
    */  
@@ -486,3 +487,7 @@ case class DataRow19[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
 case class DataRow20[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](v0: T0, v1: T1, v2: T2, v3: T3, v4: T4, v5: T5, v6: T6, v7: T7, v8: T8, v9: T9, v10: T10, v11: T11, v12: T12, v13: T13, v14: T14, v15: T15, v16: T16, v17: T17, v18: T18, v19: T19) extends DataRow((v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19)) {
   
 }
+/**
+ * Extension of a FailureException to allow a better display of this kind of failure (used in HtmlRunner)
+ */
+case class DataTableFailureException[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](val table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) extends FailureException(table.results)

@@ -114,6 +114,9 @@ trait Tagged {
   /** this method should be overriden if the Tagged element has Tagged components which should be tagged when this element is tagged */
   def taggedComponents: Seq[Tagged] = List()
 
+  /** create another tagged with this new tags */
+  def makeTagged(s: String*) = (new Tagged() {}).tagWith(this).tag(s:_*)
+
   /** add tags, accepted and rejected to the tagged components if there are some */
   private def propagateTagsToComponents = taggedComponents.foreach(_.tagWith(this))
 }

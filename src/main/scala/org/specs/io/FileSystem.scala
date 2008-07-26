@@ -6,7 +6,8 @@ import scala.collection.mutable.Queue
 import org.specs.log.Log
 import java.net.URL
 import java.util.zip._
-
+import org.specs.specification.Tagged
+import org.specs.specification.Tag
 /**
  * The fs object offers a simple interface to the file system (see the description of the FileSystem trait)
  */
@@ -138,11 +139,28 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
   def copyDir(url: URL, dest: String): Unit = copyDir(new File(url.toURI).getPath, dest)
   /** 
    * copy the content of a directory to another.
+   * @param url url of the directory to copy
+   * @param dest destination directory path
+   * @param included names for included files
+   * @param excluded names for excluded files
+   */
+  def copyDir(url: URL, dest: String, tagged: Tagged): Unit = copyDir(new File(url.toURI).getPath, dest, tagged)
+  /** 
+   * copy the content of a directory to another.
    * @param path path of the directory to copy
    * @param dest destination directory path
    */
-  def copyDir(src: String, dest: String): Unit = listFiles(src).foreach { name => 
-    copyFile(src + "/" + name, dest) 
+  def copyDir(src: String, dest: String): Unit = copyDir(src, dest, new Tagged() {})
+  /** 
+   * copy the content of a directory to another.
+   * @param path path of the directory to copy
+   * @param dest destination directory path
+   * @param included names for included files
+   * @param excluded names for excluded files
+   */
+  def copyDir(src: String, dest: String, tagged: Tagged): Unit = listFiles(src).foreach { name => 
+    if (tagged.makeTagged(src + "/" + name).isAccepted)
+      copyFile(src + "/" + name, dest) 
   }
   /** 
    * Copy the content of a directory to another.
@@ -231,7 +249,7 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
         if (dirUrl.toString.toLowerCase.contains("specs")) 
           unjar(dirUrl.toString.replace("jar:file:/", "").takeWhile(_ != '!').mkString, outputDir, ".*" + src + "/.*")
       } else {
-         copyDir(dirUrl, outputDir + src)
+         copyDir(dirUrl, outputDir + src, new Tagged() {}.accept(Tag(".*")).reject(Tag(".*\\.svn.*"), Tag(".*CVS.*")))
       }
       
     } 

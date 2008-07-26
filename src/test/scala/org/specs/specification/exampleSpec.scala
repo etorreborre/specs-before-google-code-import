@@ -2,6 +2,7 @@ package org.specs.specification
 import org.specs._
 
 object exampleSpec extends Specification {
+  setSequential
   "An example" should {
     "not be executed if not asked for results" in {
       ex.hasBeenExecuted must beFalse
