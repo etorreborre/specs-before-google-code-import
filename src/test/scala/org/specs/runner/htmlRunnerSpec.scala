@@ -104,4 +104,4 @@ trait htmlRunnerRules extends LiterateSpecification {
 }
 class htmlRunnerTest extends org.specs.runner.JUnit4(htmlRunnerSpec)
 object realRunner extends org.specs.runner.HtmlRunner(htmlRunnerSpec.specification, "target/")
-object allSpecsRunner extends org.specs.runner.HtmlRunner(org.specs.matcher.allMatchersUnit, "target/allSpecs/")
+object allSpecsRunner extends org.specs.runner.HtmlRunner(org.specs.allSpecsAndUnits, "target/allSpecs/")

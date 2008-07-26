@@ -218,7 +218,8 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
     val data = new Array[Byte](2048)
     def readData(count: Int): Unit = {
       if (count != -1) {
-        output.write(data, 0, count)  
+        output.write(data, 0, count)
+        output.flush
         readData(input.read(data, 0, 2048))
       }
     }

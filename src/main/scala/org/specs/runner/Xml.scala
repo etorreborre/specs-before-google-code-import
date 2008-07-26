@@ -66,7 +66,7 @@ trait Xml extends FileSystem with ConsoleLog with FileWriter with Console {
    */
   def reportSpec = {
     report(List(spec))
-    createFile(filePath)
+    mkdirs(outputDirPath)
     write(filePath) { out: Writer =>
       out.write(new PrettyPrinter(200, 2).format(specOutput))
     }
