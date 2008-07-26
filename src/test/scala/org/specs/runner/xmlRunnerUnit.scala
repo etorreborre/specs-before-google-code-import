@@ -15,7 +15,7 @@ object xmlRunnerUnit extends Specification with TestData {
        "output dir" | 	"spec name" | 	"file path"  				|>
        "" 		    ! 	"spec1" 	!	"./spec1.xml"				|  
        "result" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
-       "1result/" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
+       "result/" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
        "result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
        "/result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "\\result" 	!	"spec1" 	!	"/result/spec1.xml" 		|

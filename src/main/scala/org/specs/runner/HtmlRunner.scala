@@ -88,13 +88,20 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     }
   }
   type DT = DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] forSome { type T0; type T1; type  T2; type T3; type T4; type T5; type T6; type T7; type T8; type T9; type T10; type T11; type T12; type T13; type T14; type T15; type T16; type T17; type T18; type T19 } 
-  def xmlFor[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = {
+  def xmlFor(table: DT) = {
     val header = table.header.titles.foldLeft(<td/>.toSeq)( (res, s) => res ++ <td>{s}</td>)
-    def tableResult(rowResult: DT#RowResult) = {
+    def tableResult(rowResult: RowResult) = {
       status(rowResult) ++
-      rowResult.row.valuesList.foldLeft(NodeSeq.Empty.toSeq)( (res, value) => res ++ <td>{value.toString}</td>)
+      rowResult.row.valuesList.foldLeft(NodeSeq.Empty.toSeq)( (res, value) => res ++ <td>{value.toString}</td>) ++
+      failureMessage(rowResult)
     }
-    def status(rowResult: DT#RowResult) = {
+    def failureMessage(rowResult: RowResult) = {
+      rowResult match {
+        case RowOk(_) => NodeSeq.Empty
+        case RowKo(row, failure) => <tr><td/><td colspan={row.valuesList.size.toString} class="failureMessage">{failure.getMessage}</td></tr>
+      }
+    }
+    def status(rowResult: RowResult) = {
       if (rowResult.isOk) <td/>
       else <td class="noBorder"><img src="images/icon_warning_sml.gif"/></td>
     }

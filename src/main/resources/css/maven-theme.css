@@ -111,6 +111,10 @@ table.nested td {
 table.nested td.noBorder {
   border: 0px #666666 
 }
+table.nested td.failureMessage {
+  border: 1px #900 dashed;
+  color: #900;
+}
 .source {
   border: 1px solid #999;
 }

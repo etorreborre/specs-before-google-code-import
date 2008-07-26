@@ -277,18 +277,6 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    * @returns a string representation of the table
    */  
   override def toString = (header.toString + "\n" + rows.mkString("\n"))
-  sealed abstract class RowResult(val row: AbstractDataRow) {
-    def isOk: boolean
-  }
-  case class RowOk(override val row: AbstractDataRow) extends RowResult(row) {
-    def isOk = true
-    override def toString = row.toString
-  }
-  
-  case class RowKo(override val row: AbstractDataRow, e: Throwable) extends RowResult(row) {
-    def isOk = false
-    override def toString = ("x" + row.toString + " " + e.getMessage)
-  }
   /**
    * execute a row by checking the execution of the user-supplied function and
    * either displaying the row or displaying the row and an error message
@@ -493,3 +481,16 @@ case class DataRow20[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
  * Extension of a FailureException to allow a better display of this kind of failure (used in HtmlRunner)
  */
 case class DataTableFailureException[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](val table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) extends FailureException(table.results)
+sealed abstract class RowResult(val row: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] forSome { type T0; type T1; type  T2; type T3; type T4; type T5; type T6; type T7; type T8; type T9; type T10; type T11; type T12; type T13; type T14; type T15; type T16; type T17; type T18; type T19 }) { 
+  def isOk: boolean
+}
+case class RowOk(override val row: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] forSome { type T0; type T1; type  T2; type T3; type T4; type T5; type T6; type T7; type T8; type T9; type T10; type T11; type T12; type T13; type T14; type T15; type T16; type T17; type T18; type T19 }) extends RowResult(row) {
+  def isOk = true
+  override def toString = row.toString
+}
+  
+case class RowKo(override val row: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] forSome { type T0; type T1; type  T2; type T3; type T4; type T5; type T6; type T7; type T8; type T9; type T10; type T11; type T12; type T13; type T14; type T15; type T16; type T17; type T18; type T19 }, 
+                 e: Throwable) extends RowResult(row) {
+  def isOk = false
+  override def toString = ("x" + row.toString + " " + e.getMessage)
+}
