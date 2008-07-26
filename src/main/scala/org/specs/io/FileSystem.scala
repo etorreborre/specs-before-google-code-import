@@ -78,7 +78,7 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
    * creates a file for a given path. Create the parent directory if necessary
    */
   def createFile(path: String) = {
-    if (!new File(path).getParentFile.exists) createDir(new File(path).getParent) 
+    if (!new File(path).getParentFile.exists) mkdirs(new File(path).getParent) 
     new File(path).createNewFile
   }
 
@@ -232,7 +232,7 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
    * @param outputDir output directory where to copy the files to
    */
   def copySpecResourcesDir(src: String, outputDir: String) = {
-    val dirUrls = ClassLoader.getSystemResource(src) :: this.getClass.getClassLoader.getResources(src) 
+    val dirUrls = getResourcesNamed(src)
     Set(dirUrls.toList:_*) foreach { dirUrl => 
       if (dirUrl.toString.startsWith("jar")) {
         if (dirUrl.toString.toLowerCase.contains("specs")) 
@@ -243,6 +243,13 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
       
     } 
   }
-  
+  /** 
+   * Return urls of the resources containing the name "name" from this ClassLoader and the System classLoader.
+   * @param name name of the resource to find
+   * @return a list of URL
+   */
+  def getResourcesNamed(name: String): List[URL] = {
+    ClassLoader.getSystemResource(name) :: this.getClass.getClassLoader.getResources(name)
+  }
 
 }

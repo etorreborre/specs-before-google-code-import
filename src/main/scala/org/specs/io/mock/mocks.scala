@@ -84,7 +84,9 @@ trait MockFileSystem extends FileSystem {
   override def createFile(path: String) = {files += (path -> ""); true}
 
   /** create a new directory */
-  override def mkdirs(path: String) = { path :: createdDirs; true }
+  override def mkdirs(path: String) = { createdDirs = path :: createdDirs; true }
+  /** create a new directory */
+  override def createDir(path: String) = mkdirs(path)
 
   /** @returns a mock FileWriter for a specific path */
   override def getWriter(path: String) = MockFileWriter(path)

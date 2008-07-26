@@ -72,10 +72,21 @@ trait htmlRunnerRules extends LiterateSpecification {
       "ex4" in { skip("skipped") }
     }
   }
-  lazy val run = { runner.reportSpecs; runner.specOutput }
-  lazy val htmlFile = { runner.reportSpecs; runner.files.keySet.elements.next }
-  lazy val createdDirs = { runner.reportSpecs; runner.createdDirs }
-  object runner extends org.specs.runner.HtmlRunner(specification, "target/") with MockOutput with MockFileSystem
+  lazy val executeRunner = { 
+    runner.reportSpecs
+    runner
+  } 
+  val run = executeRunner.specOutput
+  val htmlFile = executeRunner.files.keySet.elements.next
+  val createdDirs = executeRunner.createdDirs
+  object runner extends org.specs.runner.HtmlRunner(specification, "target/") with MockOutput with MockFileSystem {
+    override def copySpecResourcesDir(src: String, outputDir: String) = {
+      mkdirs("./target/css")
+      mkdirs("./target/images")
+      addFile("./target/css/maven-base.css", "")
+      addFile("./target/images/success.gif", "")
+    }
+  }
 }
 class htmlRunnerTest extends org.specs.runner.JUnit4(htmlRunnerSpec)
 object realRunner extends org.specs.runner.HtmlRunner(htmlRunnerSpec.specification, "target/")
