@@ -26,37 +26,56 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
       - <ex>an exception message if any</ex>{errorExample}
       - <ex>a skip message if any</ex>{skippedExample}
 
-   <ex>The rows must alternate in style for better visibility</ex>{rowsAlternation}
-   {println(run)}
+    <ex>The rows must alternate in style for better visibility</ex>{rowsAlternation}
+
+    4. Output directory
+    
+       4.1 File name
+      
+       The output of an HtmlRunner can be specified by specifiying an output directory.
+       In that case, <ex>the runner generates a file named specs-report.html in that directory.</ex>{outputFile} 
+    
+       4.2 Stylesheets and images
+      
+       <ex>The stylesheets for the report must be created in a directory named css, relative to the output directory.</ex>{cssDir} 
+       <ex>The images for the report must be created in a directory named images, relative to the output directory.</ex>{imagesDir} 
+   
 </spec>
 }
  
 import org.specs.specification._
 import org.specs.Sugar._
+import org.specs.io.mock._
 trait htmlRunnerRules extends LiterateSpecification {
-  def title = (run must \\(<title>{specification.name}</title>)).shh
-  def oneTablePerSut = (run must \\(<table></table>)).shh
-  def systemName = (run must \\(<h3>sut1</h3>)).shh
-  def oneRowPerExample = (run must \\(<td>ex1</td>)).pp.shh
-  def exampleDescription = (run must \\(<td>ex1</td>)).shh
-  def exampleSuccess =(run must \\(<td><img src="images/icon_success_sml.gif"/></td>)).shh
-  def failedExampleImage  =(run must \\(<td><img src="images/icon_warning_sml.gif"/></td>)).shh
-  def errorExampleImage  =(run must \\(<td><img src="images/icon_error_sml.gif"/></td>)).shh
-  def skippedExampleImage  =(run must \\(<td><img src="images/icon_info_sml.gif"/></td>)).shh
-  def failedExample = (run must \\(<td>'1' is not equal to '0'</td>)).shh
-  def errorExample = (run must \\(<td>bug</td>)).shh
-  def skippedExample = (run must \\(<td>skipped</td>)).shh
-  def rowsAlternation = shh { run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) }  
-  
+  def title = run must \\(<title>{specification.name}</title>) >|
+  def oneTablePerSut = run must \\(<table></table>) >|
+  def systemName = run must \\(<h3>The system should</h3>) >|
+  def oneRowPerExample = run must \\(<td>ex1</td>) >|
+  def exampleDescription = run must \\(<td>ex1</td>) >|
+  def exampleSuccess = run must \\(<td><img src="images/icon_success_sml.gif"/></td>) >|
+  def failedExampleImage = run must \\(<td><img src="images/icon_warning_sml.gif"/></td>) >|
+  def errorExampleImage = run must \\(<td><img src="images/icon_error_sml.gif"/></td>) >|
+  def skippedExampleImage = run must \\(<td><img src="images/icon_info_sml.gif"/></td>) >|
+  def failedExample = run must \\(<td>'1' is not equal to '0'</td>) >|
+  def errorExample = run must \\(<td>bug</td>) >|
+  def skippedExample = run must \\(<td>skipped</td>) >|
+  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) >|  
+  def outputFile = htmlFile must_== "./target/specs-report.html" >|
+  def cssDir = createdDirs must contain("./target/css") >|
+  def imagesDir = createdDirs must contain("./target/images") >|
+    
   object specification extends Specification("Sample Specification") {
-    "sut1" should {
+    "The system" should {
       "ex1" in { 1 must_== 1 }
       "ex2" in { 1 must_== 0 }
       "ex3" in { error("bug") }
       "ex4" in { skip("skipped") }
     }
   }
-  lazy val run = { runner.reportSpecs; runner.output }
-  object runner extends org.specs.runner.HtmlRunner(specification)
+  lazy val run = { runner.reportSpecs; runner.specOutput }
+  lazy val htmlFile = { runner.reportSpecs; runner.files.keySet.elements.next }
+  lazy val createdDirs = { runner.reportSpecs; runner.createdDirs }
+  object runner extends org.specs.runner.HtmlRunner(specification, "target/") with MockOutput with MockFileSystem
 }
 class htmlRunnerTest extends org.specs.runner.JUnit4(htmlRunnerSpec)
+object realRunner extends org.specs.runner.HtmlRunner(htmlRunnerSpec.specification, "target/")

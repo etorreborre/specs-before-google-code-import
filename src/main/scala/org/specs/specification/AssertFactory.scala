@@ -16,15 +16,15 @@ trait AssertFactory extends ExampleAssertionListener {
 
   /** implicit transformation of a String into an object supporting String matchers */
   implicit def theString[A >: String](value: =>A) = {
-    val a = new AssertString[String](value.toString)
+    val a = new AssertString(value.toString)
     addAssertion(Some(a))
     a
   }
 
   /** implicit transformation of an object into one supporting AnyMatcher matchers */
   implicit def theValue[A](value: =>A) = {
-    val a = new Assert[A](value)
-    addAssertion(Some(a))
+    val a = new Assert(value)
+    addAssertion(Some(a)) 
     a
   }
 
@@ -33,7 +33,7 @@ trait AssertFactory extends ExampleAssertionListener {
    * This is necessary when testing thrown exceptions <pre>stream.close must throwA(new IOException)</pre> 
    */
   implicit def theBlock(value: =>Nothing) = {
-    val a = new Assert[Nothing](value)
+    val a = new Assert(value)
     addAssertion(Some(a))
     a
   }
@@ -46,7 +46,7 @@ trait AssertFactory extends ExampleAssertionListener {
 
   /** implicit transformation of an Iterable into an object supporting Iterable matchers */
   implicit def toIterableAssert[I <: AnyRef](value: =>Iterable[I]) = {
-    val a = new AssertIterable[I](value)
+    val a = new AssertIterable(value)
     addAssertion(Some(a))
     a
   }

@@ -1,21 +1,47 @@
 package org.specs.runner
 import scala.xml._
 import org.specs.specification._
+import org.specs.io._
+import java.io.Writer
+import java.net._
+class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
+  outputDirPath = outputDir
+  override def fileName = "specs-report.html"
 
-class HtmlRunner(spec: Specification) extends ConsoleRunner(spec) {
-  def output: NodeSeq = <html>
+  val specs: Seq[Specification] = List(specification)
+  
+  def this(spec: Specification) = this(spec, ".")
+
+  override def report(specs: Iterable[Specification]) = {}
+  override def reportSpec = {
+    super.reportSpec
+    copySpecResourcesDir("images", outputDir)
+    copySpecResourcesDir("css", outputDir)
+  }
+ 
+  override def specOutput = asHtml(specs(0))
+  
+  def asHtml(spec: Specification): Elem = <html>
     <head>
       <title>{spec.name}</title>
+	    <style type="text/css" media="all">
+	      @import url('./css/maven-base.css');
+	      @import url('./css/maven-theme.css');
+	      @import url('./css/site.css');
+	    </style>
+        <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
     <body>
+    <div id="bodyColumn">
     {sutTables}
+    </div>
     </body>
   </html>
   
   def sutTables: NodeSeq = spec.suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
   
-  def sutTable(sut: Sut): NodeSeq = <h3>{sut.description}</h3>.toSeq ++ <table>
+  def sutTable(sut: Sut): NodeSeq = <h3>{sut.header}</h3>.toSeq ++ <table class="bodyTable">
     {exampleRows(sut.examples)}
     </table>
     
@@ -24,8 +50,8 @@ class HtmlRunner(spec: Specification) extends ConsoleRunner(spec) {
     (node ++ exampleRow(ex, alternation), !alternation) 
   }._1
   
-  def exampleRow(example: Example, alternation: Boolean) = <tr class="{if (alternation) a else b}">
-    <td>{statusIcon(example)}</td><td>{example.description}</td>{message(example)}</tr>
+  def exampleRow(example: Example, alternation: Boolean) = <tr class={if (alternation) "b" else "a"}>
+    <td>{statusIcon(example)}</td><td>{example.description}</td><td>{message(example)}</td></tr>
     
   def statusIcon(example: Example) = {
     if (!example.failures.isEmpty)
@@ -40,12 +66,12 @@ class HtmlRunner(spec: Specification) extends ConsoleRunner(spec) {
   
   def message(example: Example) = {
     if (!example.failures.isEmpty)
-      <td>{example.failures.map(_.getMessage).mkString(", ")}</td>
+      example.failures.map(_.getMessage).mkString(", ")
     else if (!example.errors.isEmpty)
-      <td>{example.errors.map(_.getMessage).mkString(", ")}</td>
+      example.errors.map(_.getMessage).mkString(", ")
     else if (!example.skipped.isEmpty)
-      <td>{example.skipped.map(_.getMessage).mkString(", ")}</td>
+      example.skipped.map(_.getMessage).mkString(", ")
     else
-      NodeSeq.Empty.toSeq
+      ""
   }
 }

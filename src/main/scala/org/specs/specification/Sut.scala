@@ -50,6 +50,9 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
     verb = "should"
     specifyExamples(ex)
   }
+  /** header for the full sut description: description + " " + verb */
+  def header = description + " " + verb
+  
   /** Alias method to describe more advanced or optional behaviour. This will change the verb used to report the sut behavior */
   def can(ex: =>Example) = { verb = "can"; specifyExamples(ex) }
 

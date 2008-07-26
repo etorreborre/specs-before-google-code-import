@@ -51,14 +51,14 @@ trait Xml extends FileSystem with ConsoleLog with FileWriter with Console {
   def spec = specs(0)
   
   /**
-   * the default name of the file is the specification name 
+   * the default name of the file is the specification name + .xml
    */
-  def fileName = spec.name
+  def fileName = spec.name + ".xml"
   
   /**
-   * the default path is the output dir + specification name + .xml 
+   * the default path is the output dir + specification name  
    */
-  def filePath = {normalize(outputDirPath) + fileName + ".xml"}
+  def filePath = normalize(outputDirPath) + fileName
 
   override def reportSpecs = reportSpec
   /**
@@ -68,7 +68,7 @@ trait Xml extends FileSystem with ConsoleLog with FileWriter with Console {
     report(List(spec))
     createFile(filePath)
     write(filePath) { out: Writer =>
-      out.write(new PrettyPrinter(200, 2).format(asXml(spec)))
+      out.write(new PrettyPrinter(200, 2).format(specOutput))
     }
   }
 
@@ -84,14 +84,16 @@ trait Xml extends FileSystem with ConsoleLog with FileWriter with Console {
     properDir
   }
 
+  def specOutput = asXml(specs(0))
   /**
    * @returns the specification results translated as to xml (including subspecifications)
    */
-  def asXml(s: Specification): Elem =
+  def asXml(s: Specification): Elem = {
     <spec name={s.name} description={s.description} assertions={s.assertionsNb.toString} failures={s.failures.size.toString} errors={s.errors.size.toString}>
       {s.subSpecifications map (asXml(_))}{
        s.suts map (asXml(_))}
     </spec>
+  }
 
   /**
    * @returns the sut results translated as to xml 

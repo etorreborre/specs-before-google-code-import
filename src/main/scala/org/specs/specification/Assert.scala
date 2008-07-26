@@ -35,7 +35,7 @@ trait Assertable[T] {
    * 
    * Execute the matcher directly or add it to its related example for execution.
    */
-  def applyMatcher[S >: T](m: => Matcher[S], value: => T): boolean = {
+  def applyMatcher[U >: T](m: => Matcher[U], value: => T): Boolean = {
     def executeMatch = {
       val (result, _, koMessage) = m.apply(value) 
       result match {
@@ -46,7 +46,7 @@ trait Assertable[T] {
     example match {
       case None => executeMatch
       case Some(e) => {
-        var res: Boolean = true
+        var res = true
         e in { res = executeMatch }
         res
       }
@@ -69,15 +69,15 @@ class Assert[T](value: => T) extends Assertable[T] {
   /**
    * applies a matcher to the current value and throw a failure is the result is not true 
    */
-  def must[S >: T](m: => Matcher[S]): Boolean = applyMatcher[S](m, value)
+  def must[S >: T](m: => Matcher[S]) = applyMatcher[S](m, value)
   
   /**
    * applies the negation of a matcher 
    */
-  def mustNot[S >: T](m: => Matcher[S]): Boolean =  must(m.not)
+  def mustNot[S >: T](m: => Matcher[S]) =  must(m.not)
 
   /** alias for <code>must verify(f)</code>  */
-  def mustVerify[S >: T](f: S => Boolean): Boolean = must(verify(f))
+  def mustVerify[S >: T](f: S => Boolean) = must(verify(f))
 
   /** alias for <code>mustVerify(f)</code>  */
   def verifies(f: T => Boolean) = mustVerify(f)

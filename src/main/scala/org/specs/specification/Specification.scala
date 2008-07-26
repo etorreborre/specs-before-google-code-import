@@ -22,15 +22,15 @@ import org.specs.ExtendedThrowable._
  * be collected with the corresponding methods
  *
  */
-abstract class Specification extends Matchers with AssertFactory
+abstract class Specification extends Matchers with AssertFactory with SpecificationStructure
                with DetailedFailures
-               with Application with Contexts { outer =>
+               with Contexts { outer =>
 
   /** nested reporter so that a specification is executable on the console */
   private val reporter = new ConsoleRunner(this)
 
   /** A specification has a main method to be executable and print its result on a Console */
-  override def main(args: Array[String]) = reporter.main(args)
+  def main(args: Array[String]) = reporter.main(args)
   
   /**
    * Alternate constructor with the name of the specification
@@ -120,6 +120,7 @@ abstract class Specification extends Matchers with AssertFactory
  * This trait can be reused in any test based framework to access Matchers functionalities
  */
 trait SpecsMatchers extends Matchers with AssertFactory with DefaultExampleAssertionListener with DetailedFailures
+
 
 /** utility object to indent a string with 2 spaces */
 object SpecUtils {
