@@ -47,5 +47,5 @@ trait FileWriter {
    * The getWriter function can be overriden to provide a mock writer writing to the console for example
    * @return a Writer object opened on the file designated by <code>path</code>
    */
-  def getWriter(path: String): Writer = {scala.Console.println("getting the real writer!!!!");new BufferedWriter(new java.io.FileWriter(path))}
+  def getWriter(path: String): Writer = new BufferedWriter(new java.io.FileWriter(path))
 }
