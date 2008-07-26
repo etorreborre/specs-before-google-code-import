@@ -108,7 +108,9 @@ table.bodyTable tr.b {
 table.nested td {
   border: 1px #666666 solid
 }
-
+table.nested td.noBorder {
+  border: 0px #666666 
+}
 .source {
   border: 1px solid #999;
 }

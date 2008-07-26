@@ -174,12 +174,15 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
   def |>[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9, 
         S10 >: T10, S11 >: T11, S12 >: T12, S13 >: T13, S14 >: T14, 
         S15 >: T15, S16 >: T16, S17 >: T17, S18 >: T18, S19 >: T19](row: DataRow[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19]): DataTable[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19] = DataTable(header, List(this, row), true)
-  override def toString = {
+  def valuesList = {
     var l: List[Any] = Nil
     for (i <- new Range(0, values.productArity, 1);
          e <- values.productElement(i) if (e != None))
            l = l:::List(e)
-    l.mkString("|", "|", "|")
+    l
+  }
+  override def toString = {
+    valuesList.mkString("|", "|", "|")
   }
 }
 trait ExecutableDataTable {
@@ -208,7 +211,6 @@ trait ExecutableDataTable {
 case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](header: TableHeader, rows: List[DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]], var shouldExecute: Boolean) extends ExecutableDataTable { outer =>
   
   type AbstractDataRow = DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]
-  
   /**
    * This function can be overriden to provide another behaviour upon table failure
    */  
@@ -275,15 +277,15 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    * @returns a string representation of the table
    */  
   override def toString = (header.toString + "\n" + rows.mkString("\n"))
-  sealed abstract class RowResult {
+  sealed abstract class RowResult(val row: AbstractDataRow) {
     def isOk: boolean
   }
-  case class RowOk(row: AbstractDataRow) extends RowResult {
+  case class RowOk(override val row: AbstractDataRow) extends RowResult(row) {
     def isOk = true
     override def toString = row.toString
   }
   
-  case class RowKo(row: AbstractDataRow, e: Throwable) extends RowResult {
+  case class RowKo(override val row: AbstractDataRow, e: Throwable) extends RowResult(row) {
     def isOk = false
     override def toString = ("x" + row.toString + " " + e.getMessage)
   }
@@ -297,7 +299,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
     catch {
       case e: Throwable => result = RowKo(row, e)
     }
-    rowResults = rowResults:::List(result)
+    rowResults = rowResults ::: List(result)
   }
   /**
    * apply a function of one argument to the table and set the table for execution
