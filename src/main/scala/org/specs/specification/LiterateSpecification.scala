@@ -28,7 +28,9 @@ class LiterateSpecification extends Specification with AssertFactory with DataTa
   
   class Silenced {
     def shh = ""
-    def >| = shh
+    
+    /** the pipe bar must be interpreted visually as a stop and the < sign as a pike. */
+    def <| = shh
   }
   /** This silence function allows to silence calls with this style: shh { a call } */
   def shh(a: =>Any) = { a; "" }

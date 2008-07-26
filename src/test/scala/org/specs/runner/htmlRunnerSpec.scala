@@ -47,22 +47,22 @@ import org.specs.specification._
 import org.specs.Sugar._
 import org.specs.io.mock._
 trait htmlRunnerRules extends LiterateSpecification {
-  def title = run must \\(<title>{specification.name}</title>) >|
-  def oneTablePerSut = run must \\(<table></table>) >|
-  def systemName = run must \\(<h3>The system should</h3>) >|
-  def oneRowPerExample = run must \\(<td>ex1</td>) >|
-  def exampleDescription = run must \\(<td>ex1</td>) >|
-  def exampleSuccess = run must \\(<td><img src="images/icon_success_sml.gif"/></td>) >|
-  def failedExampleImage = run must \\(<td><img src="images/icon_warning_sml.gif"/></td>) >|
-  def errorExampleImage = run must \\(<td><img src="images/icon_error_sml.gif"/></td>) >|
-  def skippedExampleImage = run must \\(<td><img src="images/icon_info_sml.gif"/></td>) >|
-  def failedExample = run must \\(<td>'1' is not equal to '0'</td>) >|
-  def errorExample = run must \\(<td>bug</td>) >|
-  def skippedExample = run must \\(<td>skipped</td>) >|
-  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) >|  
-  def outputFile = htmlFile must_== "./target/specs-report.html" >|
-  def cssDir = createdDirs must contain("./target/css") >|
-  def imagesDir = createdDirs must contain("./target/images") >|
+  def title = run must \\(<title>{specification.name}</title>) <|
+  def oneTablePerSut = run must \\(<table></table>) <|
+  def systemName = run must \\(<h3>The system should</h3>) <|
+  def oneRowPerExample = run must \\(<td>ex1</td>) <|
+  def exampleDescription = run must \\(<td>ex1</td>) <|
+  def exampleSuccess = run must \\(<td><img src="images/icon_success_sml.gif"/></td>) <|
+  def failedExampleImage = run must \\(<td><img src="images/icon_warning_sml.gif"/></td>) <|
+  def errorExampleImage = run must \\(<td><img src="images/icon_error_sml.gif"/></td>) <|
+  def skippedExampleImage = run must \\(<td><img src="images/icon_info_sml.gif"/></td>) <|
+  def failedExample = run must \\(<td>'1' is not equal to '0'</td>) <|
+  def errorExample = run must \\(<td>bug</td>) <|
+  def skippedExample = run must \\(<td>skipped</td>) <|
+  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) <|  
+  def outputFile = htmlFile must_== "./target/specs-report.html" <|
+  def cssDir = createdDirs must contain("./target/css") <|
+  def imagesDir = createdDirs must contain("./target/images") <|
     
   object specification extends Specification("Sample Specification") {
     "The system" should {
