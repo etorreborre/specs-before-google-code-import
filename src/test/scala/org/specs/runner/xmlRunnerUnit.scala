@@ -20,7 +20,8 @@ object xmlRunnerUnit extends Specification with TestData {
        "\\result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "result/xml" ! 	"spec1"     !	"./result/xml/spec1.xml"	| { (dir, spec, result) =>
            xmlRunner.reset
-           xmlRunner.outputDir = dir; spec1.name = spec;
+           xmlRunner.outputDir = dir
+           spec1.name = spec
            xmlRunner.reportSpec
            xmlRunner.files.keySet must contain(result)
        }
