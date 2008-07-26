@@ -105,6 +105,9 @@ table.bodyTable tr.a {
 table.bodyTable tr.b {
   background-color: #eee;
 }
+table.nested td {
+  border: 1px #666666 solid
+}
 
 .source {
   border: 1px solid #999;

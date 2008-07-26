@@ -14,9 +14,9 @@ object xmlRunnerUnit extends Specification with TestData {
     "create an xml file in the specified output directory, handling file separators" in {
        "output dir" | 	"spec name" | 	"file path"  				|>
        "" 		    ! 	"spec1" 	!	"./spec1.xml"				|  
-       "1result" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
+       "result" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
        "1result/" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
-       "1result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
+       "result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
        "/result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "\\result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "result/xml" ! 	"spec1"     !	"./result/xml/spec1.xml"	| { (dir, spec, result) =>

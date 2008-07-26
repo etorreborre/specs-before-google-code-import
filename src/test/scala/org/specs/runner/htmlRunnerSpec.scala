@@ -100,13 +100,13 @@ trait htmlRunnerRules extends LiterateSpecification {
     }
   }
   lazy val executeRunner = { 
-    runner.reportSpecs
-    runner
+    hRunner.reportSpecs
+    hRunner
   } 
   val run = executeRunner.specOutput
   val htmlFile = executeRunner.files.keySet.elements.next
   val createdDirs = executeRunner.createdDirs
-  object runner extends org.specs.runner.HtmlRunner(specification, "target/") with MockOutput with MockFileSystem {
+  object hRunner extends org.specs.runner.HtmlRunner(specification, "target/") with MockOutput with MockFileSystem {
     override def copySpecResourcesDir(src: String, outputDir: String) = {
       mkdirs("./target/css")
       mkdirs("./target/images")

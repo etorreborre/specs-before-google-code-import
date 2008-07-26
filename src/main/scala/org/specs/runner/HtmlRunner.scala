@@ -88,9 +88,7 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     }
   }
   def xmlFor[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = {
-    <table>table</table>
-//<table>{table.header}</table>
-
-    //    <table>{table.header.titles.foldLeft(NodeSeq.Empty.toSeq)( (res, s) => res ++ new Text(s))}</table>
+    val header = table.header.titles.foldLeft(<td/>.toSeq)( (res, s) => res ++ <td>{s}</td>)
+    <table class="nested">{header}</table>
   }
 }

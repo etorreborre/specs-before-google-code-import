@@ -8,7 +8,7 @@ import _root_.junit.framework._
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 
-class JUnit3TestRunner extends Runner(junit3TestSuiteSpec) with JUnit with Console with ScalaTest
+class JUnit3TestRunner extends Runner(junit3TestSuiteSpec) with JUnit with ScalaTest
 object junit3TestSuiteSpec extends Specification {
   "A junit 3 test suite for a composite specification" should {
     "create one test suite per specification" in {
@@ -16,8 +16,8 @@ object junit3TestSuiteSpec extends Specification {
       object S2 extends Specification 
       object Composite extends Specification { "this composite spec" isSpecifiedBy (S1, S2) }
 
-      makeRunners(Composite) foreach { runner =>
-        runner.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("S1", "S2")
+      makeRunners(Composite) foreach { r =>
+        r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("S1", "S2")
       }
     }
     "create one test suite per sut" in {
@@ -25,16 +25,16 @@ object junit3TestSuiteSpec extends Specification {
         "sut1" should {}
         "sut2" should {}
       }
-      makeRunners(S1) foreach { runner =>
-        runner.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sut1 should", "sut2 should")
+      makeRunners(S1) foreach { r =>
+        r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sut1 should", "sut2 should")
       }
     }
     "create one test case per example" in {
       object S1 extends Specification {
         "sut1" should { "ex1" in {}; "ex2" in {}}
       }
-      makeRunners(S1) foreach { runner =>
-        runner.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).map(_.asInstanceOf[TestCase].getName) must_== List("ex1", "ex2")
+      makeRunners(S1) foreach { r =>
+        r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).map(_.asInstanceOf[TestCase].getName) must_== List("ex1", "ex2")
       }
     }
     "report a failure with a stacktrace pointing to the assertion causing it in the executed specification" in {
