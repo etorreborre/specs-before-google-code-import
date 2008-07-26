@@ -5,7 +5,7 @@ import org.specs.io._
 import java.io.Writer
 import java.net._
 class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
-  outputDirPath = outputDir
+  outputDirPath = normalize(outputDir)
   override def fileName = "specs-report.html"
 
   val specs: Seq[Specification] = List(specification)
@@ -15,8 +15,8 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   override def report(specs: Iterable[Specification]) = {}
   override def reportSpec = {
     super.reportSpec
-    copySpecResourcesDir("images", outputDir)
-    copySpecResourcesDir("css", outputDir)
+    copySpecResourcesDir("images", outputDirPath)
+    copySpecResourcesDir("css", outputDirPath)
   }
  
   override def specOutput = asHtml(specs(0))
@@ -34,12 +34,19 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     </head>
     <body>
     <div id="bodyColumn">
-    {sutTables}
+    {subspecsTables(spec.subSpecifications)}
+    {sutTables(spec.suts)}
     </div>
     </body>
   </html>
   
-  def sutTables: NodeSeq = spec.suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
+  def subspecsTables(subSpecs: List[Specification]): NodeSeq = subSpecs.foldRight(NodeSeq.Empty.toSeq) { (subSpec, node) => 
+    node ++ subSpecTable(subSpec) 
+  }
+  def subSpecTable(subSpec: Specification) = {
+    <h2>{subSpec.description}</h2> ++ subspecsTables(subSpec.subSpecifications) ++ sutTables(subSpec.suts)
+  }
+  def sutTables(suts: List[Sut]): NodeSeq = suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
   
   def sutTable(sut: Sut): NodeSeq = <h3>{sut.header}</h3>.toSeq ++ <table class="bodyTable">
     {exampleRows(sut.examples)}
@@ -51,7 +58,7 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   }._1
   
   def exampleRow(example: Example, alternation: Boolean) = <tr class={if (alternation) "b" else "a"}>
-    <td>{statusIcon(example)}</td><td>{example.description}</td><td>{message(example)}</td></tr>
+    <td>{statusIcon(example)}{example.description}</td><td>{message(example)}</td></tr>
     
   def statusIcon(example: Example) = {
     if (!example.failures.isEmpty)

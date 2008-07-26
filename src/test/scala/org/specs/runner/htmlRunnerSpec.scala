@@ -8,13 +8,17 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
     
     <ex>The title of the html page should be the title of the specification.</ex>{title}
     
-    2. System tables
+    2. Specifications headers
+    
+    <ex>There should be one header per specification</ex>{subSpecsHeader}
+
+    3. System tables
     
     <ex>There should be a table for each system under test.</ex>{oneTablePerSut}
     <ex>The table must be preceded by the system name as a separate header.</ex>{systemName}
     <ex>In each table, there should be a row per example</ex>{oneRowPerExample}
     
-    3. Example rows
+    4. Example rows
     
     On each row, there should be:
       - <ex>the description of the example</ex>{exampleDescription}
@@ -28,7 +32,7 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
 
     <ex>The rows must alternate in style for better visibility</ex>{rowsAlternation}
 
-    4. Output directory
+    5. Output directory
     
        4.1 File name
       
@@ -49,22 +53,32 @@ import org.specs.io.mock._
 trait htmlRunnerRules extends LiterateSpecification {
   def title = run must \\(<title>{specification.name}</title>) <|
   def oneTablePerSut = run must \\(<table></table>) <|
+  def subSpecsHeader = run must \\(<h1>Sample subspecification</h1>) <|
   def systemName = run must \\(<h3>The system should</h3>) <|
-  def oneRowPerExample = run must \\(<td>ex1</td>) <|
-  def exampleDescription = run must \\(<td>ex1</td>) <|
-  def exampleSuccess = run must \\(<td><img src="images/icon_success_sml.gif"/></td>) <|
-  def failedExampleImage = run must \\(<td><img src="images/icon_warning_sml.gif"/></td>) <|
-  def errorExampleImage = run must \\(<td><img src="images/icon_error_sml.gif"/></td>) <|
-  def skippedExampleImage = run must \\(<td><img src="images/icon_info_sml.gif"/></td>) <|
+  def oneRowPerExample = run.toString must beMatching("ex1") <|
+  def exampleDescription = run.toString must beMatching("ex1") <|
+  def exampleSuccess = run must \\(<img src="images/icon_success_sml.gif"/>) <|
+  def failedExampleImage = run must \\(<img src="images/icon_warning_sml.gif"/>) <|
+  def errorExampleImage = run must \\(<img src="images/icon_error_sml.gif"/>) <|
+  def skippedExampleImage = run must \\(<img src="images/icon_info_sml.gif"/>) <|
   def failedExample = run must \\(<td>'1' is not equal to '0'</td>) <|
-  def errorExample = run must \\(<td>bug</td>) <|
-  def skippedExample = run must \\(<td>skipped</td>) <|
+  def errorExample = run.toString must beMatching("bug") <|
+  def skippedExample = run.toString must beMatching("skipped") <|
   def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) <|  
   def outputFile = htmlFile must_== "./target/specs-report.html" <|
   def cssDir = createdDirs must contain("./target/css") <|
   def imagesDir = createdDirs must contain("./target/images") <|
     
   object specification extends Specification("Sample Specification") {
+    include(subSpecification)
+    "The system" should {
+      "ex1" in { 1 must_== 1 }
+      "ex2" in { 1 must_== 0 }
+      "ex3" in { error("bug") }
+      "ex4" in { skip("skipped") }
+    }
+  }
+  object subSpecification extends Specification("Sample subspecification") {
     "The system" should {
       "ex1" in { 1 must_== 1 }
       "ex2" in { 1 must_== 0 }
@@ -90,3 +104,4 @@ trait htmlRunnerRules extends LiterateSpecification {
 }
 class htmlRunnerTest extends org.specs.runner.JUnit4(htmlRunnerSpec)
 object realRunner extends org.specs.runner.HtmlRunner(htmlRunnerSpec.specification, "target/")
+object allSpecsRunner extends org.specs.runner.HtmlRunner(org.specs.matcher.allMatchersUnit, "target/allSpecs/")
