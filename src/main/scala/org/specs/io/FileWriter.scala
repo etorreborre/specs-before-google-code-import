@@ -16,9 +16,7 @@ trait FileWriter {
    * @param path path of the file to write
    */
   def write(path: String)(function: Writer => Unit): Unit = {
-    if (new File(path).getParent != null)
-      mkdirs(new File(path).getParent)
-    new File(path).createNewFile
+    createFile(path)
     val out = getWriter(path)
     try {
       function(out)
@@ -28,6 +26,14 @@ trait FileWriter {
       } catch { case _ => }
     }
   }
+  /**
+   * creates a file for a given path. Create the parent directory if necessary.
+   */
+  def createFile(path: String) = {
+    if (!new File(path).getParentFile.exists) mkdirs(new File(path).getParent) 
+    if (!new File(path).exists) new File(path).createNewFile
+  }
+
   /** creates a new directory */
   def mkdirs(path: String) = new File(path).mkdirs
   /**
@@ -41,5 +47,5 @@ trait FileWriter {
    * The getWriter function can be overriden to provide a mock writer writing to the console for example
    * @return a Writer object opened on the file designated by <code>path</code>
    */
-  def getWriter(path: String): Writer = new BufferedWriter(new java.io.FileWriter(path))
+  def getWriter(path: String): Writer = {scala.Console.println("getting the real writer!!!!");new BufferedWriter(new java.io.FileWriter(path))}
 }

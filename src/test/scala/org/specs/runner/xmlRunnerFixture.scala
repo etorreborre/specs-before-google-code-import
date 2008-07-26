@@ -26,7 +26,6 @@ trait RunnerFixture extends LiterateSpecification with RunnerTestData {
 trait RunnerTestData {
   import org.specs.io.mock._
   import org.specs.io._
-  import org.specs.specification._
   var path = Property("")
   var xml: Property[Elem] = Property(<p></p>).onToString(e => new PrettyPrinter(200, 2).format(e))
   var runner: XmlRunner with MockFileSystem = _

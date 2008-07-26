@@ -75,14 +75,6 @@ trait FileSystem extends FileReader with FileWriter with JavaConversions {
   def createDir(path: String) = (new File(path)).mkdirs
 
   /**
-   * creates a file for a given path. Create the parent directory if necessary
-   */
-  def createFile(path: String) = {
-    if (!new File(path).getParentFile.exists) mkdirs(new File(path).getParent) 
-    new File(path).createNewFile
-  }
-
-  /**
    * deletes the directory and all directory contents at the specified path and return the parent path of that directory
    */
   def removeDir(path: String): String = {

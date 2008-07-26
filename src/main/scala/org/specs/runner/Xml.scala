@@ -7,7 +7,6 @@ import java.io.Writer
 import scala.xml.{Elem, PrettyPrinter}
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-
 /**
  * Concrete class for the Xml trait. It allows to select a specification to run and an output path
  * Usage: <code>object runner extends XmlRunner(mySpec, "./results/specs")</code>
@@ -37,7 +36,7 @@ class XmlRunner(val specification: Specification, path: String) extends Xml {
  * The output directory can be overriden if necessary:<pre>
  * class mySpecRunner extends Runner(mySpec) with Xml { override def outputDir = "./results/specs" }</pre>
  */
-trait Xml extends FileSystem with ConsoleLog with FileWriter with Console {
+trait Xml extends FileSystem with ConsoleLog with Console {
   /** private variable storing the output directory path */
   protected var outputDirPath = "."
   
