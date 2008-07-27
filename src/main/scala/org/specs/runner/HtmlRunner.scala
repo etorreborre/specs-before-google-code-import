@@ -33,6 +33,7 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
     <body>
+    {upAnchor}
     <div id="bodyColumn">
     {subspecsTables(spec.subSpecifications)}
     {sutTables(spec.suts)}
@@ -48,10 +49,11 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   }
   def sutTables(suts: List[Sut]): NodeSeq = suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
   
-  def sutTable(sut: Sut): NodeSeq = <h3>{sut.header}</h3>.toSeq ++ <table class="bodyTable">
+  def sutTable(sut: Sut): NodeSeq = <h3>{sut.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
     {exampleRows(sut.examples)}
     </table>
-    
+  def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
+  def upAnchor = <a href="top"/>
   def exampleRows(examples: Iterable[Example]) = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
     val (node, alternation) = result
     (node ++ exampleRow(ex, alternation), !alternation) 
