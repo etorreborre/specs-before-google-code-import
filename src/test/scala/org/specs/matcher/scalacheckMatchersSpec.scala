@@ -50,7 +50,7 @@ trait ScalacheckExamples extends Specification with Scalacheck {
   val exceptionValues = Gen(p => throw new Exception("e"))
   val isTrue = ((x: Boolean) => true)
   val isFalse = ((x: Boolean) => false)
-  val identityAssert: Boolean => Boolean = ((x: Boolean) => x must beTrue)
+  val identityAssert: Boolean => Boolean = ((x: Boolean) => x mustBe true)
   val exceptionProperty = ((x: Boolean) => throw new Exception("e"))
 }
 object CounterSpecification extends Commands {
