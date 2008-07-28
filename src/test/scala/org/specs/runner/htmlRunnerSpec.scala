@@ -55,26 +55,27 @@ import org.specs.specification._
 import org.specs.Sugar._
 import org.specs.io.mock._
 trait htmlRunnerRules extends LiterateSpecification {
-  def title = run must \\(<title>{specification.name}</title>) <|
-  def oneTablePerSut = run must \\(<table></table>) <|
-  def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>) <|
-  def systemName = run must \\(<h3>The system should<a href="#top">   <img src="images/up.gif"/></a></h3>) <|
+  
+  def title = run must \\(<title>{specification.name}</title>)
+  def oneTablePerSut = run must \\(<table></table>)
+  def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>)
+  def systemName = run must \\(<h3>The system should<a href="#top">   <img src="images/up.gif"/></a></h3>)
   def topArrow = run must (\\(<a href="top"/>) and
-                           \\(<a href="#top"><img src="images/up.gif"/></a>)) <|
-  def oneRowPerExample = run.toString must beMatching("ex1") <|
-  def exampleDescription = run.toString must beMatching("ex1") <|
-  def exampleSuccess = run must \\(<img src="images/icon_success_sml.gif"/>) <|
-  def failedExampleImage = run must \\(<img src="images/icon_warning_sml.gif"/>) <|
-  def errorExampleImage = run must \\(<img src="images/icon_error_sml.gif"/>) <|
-  def skippedExampleImage = run must \\(<img src="images/icon_info_sml.gif"/>) <|
-  def failedExample = run must \\(<td>'1' is not equal to '0'</td>) <|
-  def errorExample = run.toString must beMatching("bug") <|
-  def skippedExample = run.toString must beMatching("skipped") <|
-  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>)) <|  
-  def outputFile = htmlFile must_== "./target/specs-report.html" <|
-  def cssDir = createdDirs must contain("./target/css") <|
-  def imagesDir = createdDirs must contain("./target/images") <|
-  def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>)) <|
+                           \\(<a href="#top"><img src="images/up.gif"/></a>))
+  def oneRowPerExample = run.toString must beMatching("ex1")
+  def exampleDescription = run.toString must beMatching("ex1")
+  def exampleSuccess = run must \\(<img src="images/icon_success_sml.gif"/>)
+  def failedExampleImage = run must \\(<img src="images/icon_warning_sml.gif"/>)
+  def errorExampleImage = run must \\(<img src="images/icon_error_sml.gif"/>)
+  def skippedExampleImage = run must \\(<img src="images/icon_info_sml.gif"/>)
+  def failedExample = run must \\(<td>'1' is not equal to '0'</td>)
+  def errorExample = run.toString must beMatching("bug")
+  def skippedExample = run.toString must beMatching("skipped")
+  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>))  
+  def outputFile = htmlFile must_== "./target/specs-report.html"
+  def cssDir = createdDirs must contain("./target/css")
+  def imagesDir = createdDirs must contain("./target/images")
+  def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>))
     
   object specification extends Specification("Sample Specification") {
     include(subSpecification)

@@ -29,24 +29,26 @@ import org.specs.ExtendedThrowable._
 trait Assertable[T] {
   /** related example. */
   private var example: Option[Example] = None
-
+  /** function used to display success values . */
+  private var successValueToString: SuccessValue => String = s => ""
   /** 
    * Apply a matcher for this assertable value.
    * 
    * Execute the matcher directly or add it to its related example for execution.
-   */
-  def applyMatcher[U >: T](m: => Matcher[U], value: => T): Boolean = {
+   * It either throws a FailureException or return a SuccessValue object. 
+    */
+  def applyMatcher[U >: T](m: => Matcher[U], value: => T): SuccessValue = {
     def executeMatch = {
       val (result, _, koMessage) = m.apply(value) 
       result match {
         case false => FailureException(koMessage).rethrowFrom(this)
-        case _ => true
+        case _ => SuccessValue(successValueToString)
       }
     }
     example match {
       case None => executeMatch
       case Some(e) => {
-        var res = true
+        var res = SuccessValue(successValueToString)
         e in { res = executeMatch }
         res
       }
@@ -56,6 +58,10 @@ trait Assertable[T] {
    * Set a specific example to hold the results of this matcher
    */
   def setExample[T](ex: Example) = example = Some(ex)
+  /**
+   * Set a new function to render success values
+   */
+  def setSuccessValueToString(f: SuccessValue =>  String) = successValueToString = f
 }
 /**
  * The assert class adds matcher methods to objects which are being specified<br>
@@ -155,4 +161,26 @@ class AssertIterableString(value: =>Iterable[String]) extends Assertable[Iterabl
 
   /** alias for <code>must(notExistMatch(pattern))</code> */
   def mustNotExistMatch(pattern: String) = applyMatcher(notExistMatch(pattern), value)
+}
+
+/**
+ * By default the result value of an assertable expression doesn't output anything when 
+ * toString is called.
+ */
+/**
+ * This trait transforms SuccessValue objects to a Boolean value if it is necessary, for example in 
+ * ScalaCheck properties.
+ */
+trait SuccessValues {
+
+  /** transforms a SuccessValue to a boolean */
+  implicit def successValueToBoolean(s: SuccessValue) = true
+  
+  /** by default a SuccessValue is "silent" */
+  def successValueToString(s: SuccessValue) = ""
+  
+}
+/** value returned by an assertable whose string representation can vary. */
+case class SuccessValue(f: SuccessValue => String) {
+  override def toString = f(this)
 }

@@ -8,13 +8,19 @@ import org.specs.io.ConsoleOutput
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils.q
 import org.specs.specification.FailureException
-
+import org.specs.specification._
 /**
  * The <code>ScalacheckMatchers</code> trait provides matchers which allow to 
  * assess properties multiple times with generated data.
  * @see the <a href="http://code.google.com/p/scalacheck/">Scalacheck project</a>
  */
-trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters {
+trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues {
+  
+  /**
+   * This implicit value is useful to transform the SuccessValue returned by matchers to properties
+   */
+  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => Prop.property(true)
+
    /**
     * default parameters. Uses Scalacheck default values and doesn't print to the console
     */
@@ -33,7 +39,7 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
     * Matches ok if the <code>function T => Boolean</code> returns <code>true</code> for any generated value<br>
     * Usage: <code>generated_values must pass(function)</code>
     */
-   def pass[T](f: T => Boolean)(implicit params: Parameters) = new Matcher[Gen[T]](){
+   def pass[T, S](f: T => Boolean)(implicit params: Parameters) = new Matcher[Gen[T]](){
       def apply(g: => Gen[T]) = checkFunction(g)(f)(params)
    }
 

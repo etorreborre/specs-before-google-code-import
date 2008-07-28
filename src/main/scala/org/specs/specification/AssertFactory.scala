@@ -12,12 +12,13 @@ package org.specs.specification
  * Then StringMatchers are expecting values with String as an upper bound so that effectively only String instances
  * will be used with the implicit def (only solution found to make it all work, to my current understanding)
  */
-trait AssertFactory extends ExampleAssertionListener {
+trait AssertFactory extends ExampleAssertionListener with SuccessValues {
 
   /** implicit transformation of a String into an object supporting String matchers */
   implicit def theString[A >: String](value: =>A) = {
     val a = new AssertString(value.toString)
     addAssertion(Some(a))
+    a.setSuccessValueToString(successValueToString _)
     a
   }
 
@@ -25,6 +26,7 @@ trait AssertFactory extends ExampleAssertionListener {
   implicit def theValue[A](value: =>A) = {
     val a = new Assert(value)
     addAssertion(Some(a)) 
+    a.setSuccessValueToString(successValueToString _)
     a
   }
 
@@ -35,12 +37,14 @@ trait AssertFactory extends ExampleAssertionListener {
   implicit def theBlock(value: =>Nothing) = {
     val a = new Assert(value)
     addAssertion(Some(a))
+    a.setSuccessValueToString(successValueToString _)
     a
   }
   /** implicit transformation of an Iterable[String] into an object supporting IterableString matchers */
   implicit def toStringIterableAssert(value: =>Iterable[String]) = {
     val a = new AssertIterableString(value)
     addAssertion(Some(a))
+    a.setSuccessValueToString(successValueToString _)
     a
   }
 
@@ -48,6 +52,7 @@ trait AssertFactory extends ExampleAssertionListener {
   implicit def toIterableAssert[I <: AnyRef](value: =>Iterable[I]) = {
     val a = new AssertIterable(value)
     addAssertion(Some(a))
+    a.setSuccessValueToString(successValueToString _)
     a
   }
 }

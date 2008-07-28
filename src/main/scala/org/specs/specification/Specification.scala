@@ -24,7 +24,7 @@ import org.specs.ExtendedThrowable._
  */
 abstract class Specification extends Matchers with AssertFactory with SpecificationStructure
                with DetailedFailures
-               with Contexts { outer =>
+               with Contexts with SuccessValues { outer =>
 
   /** nested reporter so that a specification is executable on the console */
   private val reporter = new ConsoleRunner(this)

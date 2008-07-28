@@ -16,7 +16,6 @@ import org.specs.matcher._
  */
 class LiterateSpecification extends Specification with AssertFactory with DataTables {
   setSequential
-
   def this(n: String) = { this(); name = n; description = n; this }
   
   /**
