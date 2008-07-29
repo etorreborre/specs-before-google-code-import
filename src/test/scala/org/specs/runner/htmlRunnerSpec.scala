@@ -3,6 +3,11 @@ package org.specs.runner
 object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" is <spec>
   
   A specification can be run and its output displayed as an Html page.
+  On this html page we should be able to see:
+    
+    -statistics about the specification execution
+    -the list of all examples, sorted by sub-specifications and systems
+    -an overview list of all sub-specifications and systems with a status icon to allow a rapid access
   
     1. Specification Title
     
@@ -33,6 +38,9 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
 
     <ex>The rows must alternate in style for better visibility</ex>{rowsAlternation}
 
+    <ex>An example can also have sub-examples. In that case, the description of the example must be
+      displayed as a title and sub-examples displayed in a table</ex>{subExamples}
+    
     5. Output directory
     
        5.1 File name
@@ -76,7 +84,11 @@ trait htmlRunnerRules extends LiterateSpecification {
   def cssDir = createdDirs must contain("./target/css")
   def imagesDir = createdDirs must contain("./target/images")
   def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>))
-    
+  def subExamples = { 
+    run must \\(<h4>this example has sub-examples</h4>) 
+    run.toString must beMatching("subex1")  
+  }
+  
   object specification extends Specification("Sample Specification") {
     include(subSpecification)
     "The system" should {
@@ -92,6 +104,10 @@ trait htmlRunnerRules extends LiterateSpecification {
             a + b must_== c 
           }
       }
+      "this example has sub-examples" in {
+         "subex1" in { 1 must_== 1 }
+         "subex2" in { 1 must_== 1 }
+      } 
     }
   }
   object subSpecification extends Specification("Sample subspecification") {

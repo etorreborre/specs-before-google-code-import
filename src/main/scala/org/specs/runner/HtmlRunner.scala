@@ -54,13 +54,22 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     </table>
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
   def upAnchor = <a href="top"/>
-  def exampleRows(examples: Iterable[Example]) = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
+  def exampleRows(examples: Iterable[Example]): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
     val (node, alternation) = result
-    (node ++ exampleRow(ex, alternation), !alternation) 
+    (node ++ example(ex, alternation), !alternation) 
   }._1
   
-  def exampleRow(example: Example, alternation: Boolean) = <tr class={if (alternation) "b" else "a"}>
+  def example(example: Example, alternation: Boolean) = {
+      example.subExamples.toList match {
+      case Nil => exampleRow(example, alternation)
+      case subexamples => <h4>{example.description}</h4> ++ exampleRows(subexamples) 
+    }  
+  }
+  
+  def exampleRow(example: Example, alternation: Boolean) = {
+    <tr class={if (alternation) "b" else "a"}>
     <td>{statusIcon(example)}{example.description}</td><td>{message(example)}</td></tr>
+  }
     
   def statusIcon(example: Example) = {
     if (!example.failures.isEmpty)
