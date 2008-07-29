@@ -34,13 +34,33 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     </head>
     <body>
     {upAnchor}
+  	  <div id="leftColumn">
+     {summaryTable}
+      </div>        
     <div id="bodyColumn">
     {subspecsTables(spec.subSpecifications)}
     {sutTables(spec.suts)}
     </div>
     </body>
   </html>
-  
+  def specNavHeader = <tr><td colspan="2" class="navTitle">{spec.name}</td></tr>
+  def summaryTable = {
+        <table>
+          { specNavHeader }
+          { allSuts(spec).foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  summary(sut) }}
+      </table>
+  }
+  def allSuts(specification: Specification): List[Sut] = {
+    specification.suts ::: specification.subSpecifications.foldRight(Nil: List[Sut]) { (s, result) => allSuts(s) ::: result }   
+  }
+  def summary(sut: Sut) = <tr>
+	<td>{statusIcon(sut)}
+    </td><td>{anchorRef(sut.header, sut.header)}</td>
+  </tr>
+ 
+  def anchorRef(s: String, content: String) = <a href={"#" + content.replace(" ", "_")} title={content}>{shorten(content)}</a>
+  def anchorName(s: String) = <a name={s.replace(" ", "_")}/>
+  def shorten(s: String) = if (s.size <= 27) s else (s.take(27) + "...")
   def subspecsTables(subSpecs: List[Specification]): NodeSeq = subSpecs.foldRight(NodeSeq.Empty.toSeq) { (subSpec, node) => 
     node ++ subSpecTable(subSpec) 
   }
@@ -49,11 +69,12 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   }
   def sutTables(suts: List[Sut]): NodeSeq = suts.foldRight(NodeSeq.Empty.toSeq) { (sut, node) => node ++  sutTable(sut) }
   
-  def sutTable(sut: Sut): NodeSeq = <h3>{sut.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
+  def sutTable(sut: Sut): NodeSeq = anchorName(sut.header) ++ 
+    <h3>{sut.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
     {exampleRows(sut.examples)}
     </table>
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
-  def upAnchor = <a href="top"/>
+  def upAnchor = <a name="top"/>
   def exampleRows(examples: Iterable[Example]): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
     val (node, alternation) = result
     (node ++ example(ex, alternation), !alternation) 
@@ -70,13 +91,19 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     <tr class={if (alternation) "b" else "a"}>
     <td>{statusIcon(example)}{example.description}</td><td>{message(example)}</td></tr>
   }
-    
-  def statusIcon(example: Example) = {
-    if (!example.failures.isEmpty)
+  
+  type HasResults = {
+    def failures: Seq[FailureException]
+    def errors: Seq[Throwable]
+    def skipped: Seq[SkippedException]
+  }
+  
+  def statusIcon(result: HasResults) = {
+    if (!result.failures.isEmpty)
       <img src="images/icon_warning_sml.gif"/>
-    else if (!example.errors.isEmpty)
+    else if (!result.errors.isEmpty)
       <img src="images/icon_error_sml.gif"/>
-    else if (!example.skipped.isEmpty)
+    else if (!result.skipped.isEmpty)
       <img src="images/icon_info_sml.gif"/>
     else
       <img src="images/icon_success_sml.gif"/>
