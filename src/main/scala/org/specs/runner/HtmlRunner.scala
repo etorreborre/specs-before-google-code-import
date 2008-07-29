@@ -99,10 +99,10 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   }
   
   def statusIcon(result: HasResults) = {
-    if (!result.failures.isEmpty)
-      <img src="images/icon_warning_sml.gif"/>
-    else if (!result.errors.isEmpty)
+    if (!result.errors.isEmpty)
       <img src="images/icon_error_sml.gif"/>
+    else if (!result.failures.isEmpty)
+      <img src="images/icon_warning_sml.gif"/>
     else if (!result.skipped.isEmpty)
       <img src="images/icon_info_sml.gif"/>
     else
