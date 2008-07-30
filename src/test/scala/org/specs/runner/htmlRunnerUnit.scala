@@ -28,6 +28,17 @@ object htmlRunnerUnit extends Specification with DataTables {
       xml must \\(<tr><td/><td colspan="3" class="failureMessage">'4' is not equal to '5'</td></tr>)
     }
   }
+  "the sanitize function" should {
+    "remove spaces from a name" in {
+      hRunner.sanitize("hello world") must_== "hello+world"
+    }
+    "remove backslashes from a name" in {
+      hRunner.sanitize("hello\\world") must_== "hello%5Cworld"
+    }
+    "remove # from a name" in {
+      hRunner.sanitize("hello#world") must_== "hello%23world"
+    }
+  }
 }
 object hRunner extends HtmlRunner(null)
 class htmlRunnerUnitTest extends JUnit4(htmlRunnerUnit)

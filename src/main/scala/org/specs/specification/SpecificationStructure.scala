@@ -101,6 +101,11 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
 
   /** utility method to track the last sut being currently defined, in order to be able to add examples to it */ 
   protected[this] def currentSut = if (!suts.isEmpty) suts.last else specify("specifies")
+  
+  /** Return all the suts for this specification, including the ones from the sub-specifications (recursively). */
+  def allSuts: List[Sut] = {
+    suts ::: subSpecifications.foldRight(Nil: List[Sut]) { (s, result) => s.allSuts ::: result }   
+  }
 
   /** 
    * implicit definition allowing to declare a new example described by a string <code>desc</code><br>   

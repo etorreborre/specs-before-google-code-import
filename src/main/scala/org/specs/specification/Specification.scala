@@ -115,7 +115,14 @@ abstract class Specification extends Matchers with AssertFactory with Specificat
     suts.foreach(_.resetForExecution)
     this
   }
+  type HasResults = {
+    def failures: Seq[FailureException]
+    def errors: Seq[Throwable]
+    def skipped: Seq[SkippedException]
+  }
 }
+  
+
 /**
  * This trait can be reused in any test based framework to access Matchers functionalities
  */
