@@ -55,6 +55,24 @@ object htmlRunnerUnit extends Specification with DataTables {
       hRunner.statusIcon(new skipped()) must_== <img src="images/icon_info_sml.gif"/>
     }      
   }
+  "the message function for an example" should {
+    "return the failure message in a cell if there is a failure" in {
+      val failed = new Example("", null) { addFailure(new FailureException("has failed")) }
+      hRunner.message(failed, false) must_== <td>has failed</td>
+    }
+    "return the error message in a cell if there is an error" in {
+      val error = new Example("", null) { addError(new Exception("error")) }
+      hRunner.message(error, false) must_== <td>error</td>
+    }
+    "return the skipped message in a cell if the example is skipped" in {
+      val skip = new Example("", null) { addSkipped(new SkippedException("skip")) }
+      hRunner.message(skip, false) must_== <td>skip</td>
+    }
+    "return nothing if the whole sut is a success" in {
+      val ok = new Example("", null)
+      hRunner.message(ok, true) must_== scala.xml.NodeSeq.Empty
+    }
+  }
 }
 object hRunner extends HtmlRunner(null)
 class htmlRunnerUnitTest extends JUnit4(htmlRunnerUnit)

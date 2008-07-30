@@ -129,7 +129,7 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   def sutTable(sut: Sut): NodeSeq = {
     anchorName(sut.header) ++ 
     <h3>{sut.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
-    {exampleRows(sut.examples)}
+    {exampleRows(sut.examples, sut.isFullSuccess)}
     </table>
   }  
 
@@ -137,9 +137,9 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
 
   /** create rows for each example, alternating style. */
-  def exampleRows(examples: Iterable[Example]): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
+  def exampleRows(examples: Iterable[Example], fullSuccess: Boolean): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
     val (node, alternation) = result
-    (node ++ example(ex, alternation), !alternation) 
+    (node ++ example(ex, alternation, fullSuccess), !alternation) 
   }._1
   
   /** 
@@ -147,19 +147,19 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
    * 
    * If the example has subexamples, a small header is created.
    */
-  def example(example: Example, alternation: Boolean) = {
+  def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     example.subExamples.toList match {
-      case Nil => exampleRow(example, alternation)
-      case subexamples => <h4>{example.description}</h4> ++ exampleRows(subexamples) 
+      case Nil => exampleRow(example, alternation, fullSuccess)
+      case subexamples => <h4>{example.description}</h4> ++ exampleRows(subexamples, fullSuccess) 
     }  
   }
   
   /**
    * create a row for an example with its status, description and message.
    */
-  def exampleRow(example: Example, alternation: Boolean) = {
+  def exampleRow(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     <tr class={if (alternation) "b" else "a"}>
-      <td>{statusIcon(example)}{example.description}</td><td>{message(example)}</td>
+      <td>{statusIcon(example)}{example.description}</td>{message(example, fullSuccess)}
     </tr>
   }
   
@@ -181,15 +181,21 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
   }
   
   /** Message for an example. */ 
-  def message(example: Example) = {
-    if (!example.failures.isEmpty)
-      reduce[FailureException](example.failures, failure(_))
-    else if (!example.errors.isEmpty)
-      reduce[Throwable](example.errors, e => new Text(e.getMessage))
-    else if (!example.skipped.isEmpty)
-      reduce[SkippedException](example.skipped, s => new Text(s.getMessage))
+  def message(example: Example, fullSuccess: Boolean) = {
+    def msg = {
+	  if (!example.failures.isEmpty)
+	      reduce[FailureException](example.failures, failure(_))
+	    else if (!example.errors.isEmpty)
+	      reduce[Throwable](example.errors, e => new Text(e.getMessage))
+	    else if (!example.skipped.isEmpty)
+	      reduce[SkippedException](example.skipped, s => new Text(s.getMessage))
+	    else
+	      ""
+    }
+    if (fullSuccess)
+      NodeSeq.Empty
     else
-      ""
+      <td>{msg}</td>
   }
   
   /** 

@@ -25,6 +25,7 @@ object allSpecs extends Specification {
         stackSpecification,
         junit3TestSuiteSpec,
         xmlRunnerSpec,
+        htmlRunnerSpec,
         scalaTestSpec,
         mocksSpec,
         jmockSpec)
@@ -39,7 +40,8 @@ object allUnits extends Specification {
       specificationUnit, 
       allMatchersUnit, 
       protocolsUnit,
-      xmlRunnerUnit)
+      xmlRunnerUnit,
+      htmlRunnerUnit)
 }
 
 object allSpecsAndUnits extends Specification {

@@ -67,6 +67,9 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   /** alternately there may be no example given yet */
   def should(noExampleGiven: Unit) = { verb = "should"; this }
   
+  /** @return true if there are only successes */
+  def isFullSuccess = failures.isEmpty && skipped.isEmpty && errors.isEmpty
+  
   /** @return all examples failures */
   def failures = examples.flatMap(_.failures)
 
