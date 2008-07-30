@@ -3,6 +3,7 @@ import org.specs._
 import org.specs.util._
 import org.specs.runner._
 import org.specs.Sugar._
+import org.specs.specification._
 
 object htmlRunnerUnit extends Specification with DataTables {
   val table = "a"    | "b"  | "result" |
@@ -38,6 +39,21 @@ object htmlRunnerUnit extends Specification with DataTables {
     "remove # from a name" in {
       hRunner.sanitize("hello#world") must_== "hello%23world"
     }
+  }
+  "the status icon function" should {
+    case class errors { def errors = List(new Exception()); def failures = List(FailureException("")); def skipped = List(SkippedException("")) }
+    class failed extends errors { override def errors = Nil }
+    class skipped extends failed { override def failures = Nil }
+
+    "return an error icon for a result having errors" in {
+      hRunner.statusIcon(errors()) must_== <img src="images/icon_error_sml.gif"/>
+    }      
+    "return a warning icon for a result having failures" in {
+      hRunner.statusIcon(new failed()) must_== <img src="images/icon_warning_sml.gif"/>
+    }       
+    "return an info icon for a result having skipped" in {
+      hRunner.statusIcon(new skipped()) must_== <img src="images/icon_info_sml.gif"/>
+    }      
   }
 }
 object hRunner extends HtmlRunner(null)

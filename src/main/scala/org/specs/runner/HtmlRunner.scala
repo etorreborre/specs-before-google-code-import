@@ -177,7 +177,7 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
        else
          "success"
     }
-    <img src="images/icon_{imgName(result)}_sml.gif"/>
+    <img src={"images/icon_" + imgName(result) + "_sml.gif"}/>
   }
   
   /** Message for an example. */ 
