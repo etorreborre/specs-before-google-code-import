@@ -288,10 +288,7 @@ object specWithDoAfterAll extends beforeAfterTestSpec {
 }
 object specWithAll extends beforeAfterTestSpec {
   override def executeSpec = {
-    doBeforeAllSuts { 
-      println("msg doBeforeAllSpec") 
-    }
-    doAfterAllSuts { println("msg doAfterAllSpec") }
+    doBeforeAllSuts { println("msg doBeforeAllSpec") }
     "A specification" should {
       doBeforeAll 	{ println("msg doBeforeAllSut1") }
       doBefore 		{ println("msg doBeforeSut1") }
@@ -301,13 +298,14 @@ object specWithAll extends beforeAfterTestSpec {
       "have example 1.2 ok" in { println("msg example 1.2") }
     }
     "A specification" should {
-      doBeforeAll 	{ println("msg doBeforeAllSut2") }
-      doBefore 		{ println("msg doBeforeSut2") }
-      doAfterAll 	{ println("msg doAfterAllSut2") }
-      doAfter 		{ println("msg doAfterSut2") }
+      println("msg doBeforeAllSut2").beforeAll
+      println("msg doBeforeSut2").before
       "have example 2.1 ok" in { println("msg example 2.1") }
       "have example 2.2 ok" in { println("msg example 2.2") }
+      println("msg doAfterSut2").after
+      println("msg doAfterAllSut2").afterAll
     }
+    println("msg doAfterAllSpec").afterAllSuts
     reportSpec(this)
   }
 }
