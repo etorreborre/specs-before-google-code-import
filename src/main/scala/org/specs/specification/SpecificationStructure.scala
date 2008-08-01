@@ -140,4 +140,28 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
       case None => currentSut 
     }
   }
+  
+    /** the beforeAllSuts function will be invoked before all suts */
+  var beforeAllSuts: Option[() => Any] = None
+  
+  /** the afterAllSuts function will be invoked after all suts */
+  var afterAllSuts: Option[() => Any] = None
+  
+  /** 
+   * override the beforeExample method to execute actions before the 
+   * first example of the first sut 
+   */
+  override def beforeExample(ex: Example) = {
+    if (!suts.isEmpty && !suts.first.examples.isEmpty && suts.first.examples.first == ex)
+      beforeAllSuts.map(_.apply)
+  }
+
+  /** 
+   * override the afterExample method to execute actions after the 
+   * last example of the last sut 
+   */
+  override def afterExample(ex: Example) = {
+    if (!suts.isEmpty && !suts.last.examples.isEmpty && suts.last.examples.last == ex)
+      afterAllSuts.map(_.apply)
+  }
 }

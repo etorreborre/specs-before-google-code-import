@@ -4,7 +4,6 @@ import org.specs.runner._
 import org.specs._
 import org.specs.runner._
 
-class beforeAfterTest extends Runner(beforeAfterSpec) with JUnit 
 object beforeAfterSpec extends Specification {
   "A specification with before clauses" should {
     "have each example using the doBefore method before being executed" in { 
@@ -62,6 +61,47 @@ object beforeAfterSpec extends Specification {
       afterExampleFailing.messages must notExistMatch("tested")
     } 
   }
+  "A system under test" can {
+    "specify a doBeforeAll method to setup the context before any example is executed" in {
+      specWithDoBeforeAll.execute
+      specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must existMatch("doBeforeAll")
+      specWithDoBeforeAll.messages.filter(_.startsWith("msg")).drop(1) must (
+        existMatch("example 1") and 
+        existMatch("example 2") and
+        notExistMatch("doBeforeAll"))
+    }
+    "specify a doAfterAll method to setup the context after examples are executed" in {
+      specWithDoAfterAll.execute
+      specWithDoAfterAll.messages.filter(_.startsWith("msg")) must existMatch("doAfterAll")
+      specWithDoAfterAll.messages.filter(_.startsWith("msg")).drop(2) must (
+        notExistMatch("example 1") and 
+        notExistMatch("example 2") and
+        existMatch("doAfterAll"))
+    }
+    "specify a before/after clauses before and after: specification, suts, examples" in {
+      specWithAll.execute
+      specWithAll.messages.filter(_.startsWith("msg")).toList must_== List(
+      "msg doBeforeAllSpec",
+        "msg doBeforeAllSut1",
+          "msg doBeforeSut1",
+            "msg example 1.1",
+          "msg doAfterSut1",
+          "msg doBeforeSut1",
+            "msg example 1.2",
+          "msg doAfterSut1",
+        "msg doAfterAllSut1",
+
+        "msg doBeforeAllSut2",
+          "msg doBeforeSut2",
+            "msg example 2.1",
+          "msg doAfterSut2",
+          "msg doBeforeSut2",
+            "msg example 2.2",
+          "msg doAfterSut2",
+        "msg doAfterAllSut2",
+      "msg doAfterAllSpec")
+    }
+  }
   "A specification" can {
     "use a context to setup the before actions of a system under test" in {
       specWithBeforeContext.execute
@@ -88,6 +128,7 @@ object beforeAfterSpec extends Specification {
     }
   }
 }
+class beforeAfterTest extends JUnit4(beforeAfterSpec) 
 
 trait beforeAfterTestSpec extends Specification with ConsoleReporter with MockOutput {
   def execute = { suts = Nil; executeSpec }
@@ -221,6 +262,51 @@ object specWithUntil extends beforeAfterTestSpec {
     "A specification" should {
       until(counter == 10)
       "have example 1 ok" in { counter += 1 }
+    }
+    reportSpec(this)
+  }
+}
+object specWithDoBeforeAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    "A specification" should {
+      doBeforeAll { println("msg doBeforeAll") }
+      "have example 1 ok" in { println("msg example 1") }
+      "have example 2 ok" in { println("msg example 2") }
+    }
+    reportSpec(this)
+  }
+}
+object specWithDoAfterAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    "A specification" should {
+      doAfterAll { println("msg doAfterAll") }
+      "have example 1 ok" in { println("msg example 1") }
+      "have example 2 ok" in { println("msg example 2") }
+    }
+    reportSpec(this)
+  }
+}
+object specWithAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    doBeforeAllSuts { 
+      println("msg doBeforeAllSpec") 
+    }
+    doAfterAllSuts { println("msg doAfterAllSpec") }
+    "A specification" should {
+      doBeforeAll 	{ println("msg doBeforeAllSut1") }
+      doBefore 		{ println("msg doBeforeSut1") }
+      doAfterAll 	{ println("msg doAfterAllSut1") }
+      doAfter 		{ println("msg doAfterSut1") }
+      "have example 1.1 ok" in { println("msg example 1.1") }
+      "have example 1.2 ok" in { println("msg example 1.2") }
+    }
+    "A specification" should {
+      doBeforeAll 	{ println("msg doBeforeAllSut2") }
+      doBefore 		{ println("msg doBeforeSut2") }
+      doAfterAll 	{ println("msg doAfterAllSut2") }
+      doAfter 		{ println("msg doAfterSut2") }
+      "have example 2.1 ok" in { println("msg example 2.1") }
+      "have example 2.2 ok" in { println("msg example 2.2") }
     }
     reportSpec(this)
   }

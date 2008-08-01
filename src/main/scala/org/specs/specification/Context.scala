@@ -24,6 +24,18 @@ trait Contexts extends SpecificationStructure {
   /** adds a "before" function to the last sut being defined */
   def doBefore(actions: =>Any) = currentSut.before = Some(() => actions)
 
+  /** adds a "beforeAll" function to the last sut being defined */
+  def doBeforeAll(actions: =>Any) = currentSut.beforeAll = Some(() => actions)
+
+  /** adds a "afterAll" function to the last sut being defined */
+  def doAfterAll(actions: =>Any) = currentSut.afterAll = Some(() => actions)
+
+  /** adds a "beforeAllSuts" function to the current specification */
+  def doBeforeAllSuts(actions: =>Any) = this.beforeAllSuts = Some(() => actions)
+
+  /** adds a "afterAllSuts" function to the current specification */
+  def doAfterAllSuts(actions: =>Any) = this.afterAllSuts = Some(() => actions)
+
   /** 
    * @deprecated
    * adds an "after" function to the last sut being defined 
