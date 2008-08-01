@@ -30,6 +30,9 @@ object ExtendedThrowable {
     def rethrowAfter(name: String) = {
       throw removeTracesAsFarAsNameMatches(name)
     }
+    def rethrowBy(name: String, other: Throwable) = {
+      throw other.removeTracesAsFarAsNameMatches(t, name)
+    }
 
     /**
      * throws this exception as another type of exception, removing the lines where <code>origin</code> occurs 
