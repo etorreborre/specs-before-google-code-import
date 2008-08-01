@@ -2,7 +2,7 @@ package org.specs.specification
 import org.specs.matcher._
 import org.specs.matcher.Matchers._
 import org.specs.ExtendedThrowable._
-
+import org.specs.Sugar._
 /**
  * An assertable is an object supporting the execution of assertions through matchers.<pre>
  *   thisAssertable must passMatcher
@@ -38,10 +38,11 @@ trait Assertable[T] {
    * It either throws a FailureException or return a SuccessValue object. 
     */
   def applyMatcher[U >: T](m: => Matcher[U], value: => T): SuccessValue = {
+    val failureTemplate = FailureException("")
     def executeMatch = {
       val (result, _, koMessage) = m.apply(value) 
       result match {
-        case false => FailureException(koMessage).rethrowAfter("must")
+        case false =>  { failureTemplate.message = koMessage; failureTemplate.rethrowAfter("must") }
         case _ => SuccessValue(successValueToString)
       }
     }
@@ -112,7 +113,7 @@ class Assert[T](value: => T) extends Assertable[T] {
   def mustEqual(otherValue: Any)(implicit details: Detailed) = must(is_==(otherValue)(details))
 }
 /** RuntimeException carrying a matcher ko message */
-case class FailureException(message: String) extends RuntimeException(message)
+case class FailureException(var message: String) extends RuntimeException(message)
 
 /** RuntimeException carrying a matcher skip message */
 case class SkippedException(message: String) extends RuntimeException(message)
