@@ -100,7 +100,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   /** calls the before method of the "parent" cycle, then the sut before method before an example if that method is defined. */
   override def beforeExample(ex: Example) = {
     cycle.beforeExample(ex)
-    if (ex == examples.first)
+    if (!examples.isEmpty && ex == examples.first)
       firstActions.map(_.apply)
     before.foreach {_.apply()}
   }
@@ -119,7 +119,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   /** calls the after method of the "parent" cycle, then the sut after method after an example if that method is defined. */
   override def afterExample(ex: Example) = { 
     after.map {_.apply()}
-    if (ex == examples.last) lastActions.map(_.apply)
+    if (!examples.isEmpty && ex == examples.last) lastActions.map(_.apply)
     cycle.afterExample(ex)
   }
   /** Declare the examples as components to be tagged when the sut is tagged */
