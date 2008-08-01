@@ -269,7 +269,7 @@ object specWithUntil extends beforeAfterTestSpec {
 object specWithDoBeforeAll extends beforeAfterTestSpec {
   override def executeSpec = {
     "A specification" should {
-      doBeforeAll { println("msg doBeforeAll") }
+      doFirst { println("msg doBeforeAll") }
       "have example 1 ok" in { println("msg example 1") }
       "have example 2 ok" in { println("msg example 2") }
     }
@@ -279,7 +279,7 @@ object specWithDoBeforeAll extends beforeAfterTestSpec {
 object specWithDoAfterAll extends beforeAfterTestSpec {
   override def executeSpec = {
     "A specification" should {
-      doAfterAll { println("msg doAfterAll") }
+      doLast { println("msg doAfterAll") }
       "have example 1 ok" in { println("msg example 1") }
       "have example 2 ok" in { println("msg example 2") }
     }
@@ -288,24 +288,24 @@ object specWithDoAfterAll extends beforeAfterTestSpec {
 }
 object specWithAll extends beforeAfterTestSpec {
   override def executeSpec = {
-    doBeforeAllSuts { println("msg doBeforeAllSpec") }
+    doBeforeSpec { println("msg doBeforeAllSpec") }
     "A specification" should {
-      doBeforeAll 	{ println("msg doBeforeAllSut1") }
+      doFirst 	{ println("msg doBeforeAllSut1") }
       doBefore 		{ println("msg doBeforeSut1") }
-      doAfterAll 	{ println("msg doAfterAllSut1") }
+      doLast 	{ println("msg doAfterAllSut1") }
       doAfter 		{ println("msg doAfterSut1") }
       "have example 1.1 ok" in { println("msg example 1.1") }
       "have example 1.2 ok" in { println("msg example 1.2") }
     }
     "A specification" should {
-      println("msg doBeforeAllSut2").beforeAll
+      println("msg doBeforeAllSut2").doFirst
       println("msg doBeforeSut2").before
       "have example 2.1 ok" in { println("msg example 2.1") }
       "have example 2.2 ok" in { println("msg example 2.2") }
       println("msg doAfterSut2").after
-      println("msg doAfterAllSut2").afterAll
+      println("msg doAfterAllSut2").doLast
     }
-    println("msg doAfterAllSpec").afterAllSuts
+    println("msg doAfterAllSpec").afterSpec
     reportSpec(this)
   }
 }

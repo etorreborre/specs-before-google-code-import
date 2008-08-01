@@ -142,10 +142,10 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
   }
   
     /** the beforeAllSuts function will be invoked before all suts */
-  var beforeAllSuts: Option[() => Any] = None
+  var beforeSpec: Option[() => Any] = None
   
   /** the afterAllSuts function will be invoked after all suts */
-  var afterAllSuts: Option[() => Any] = None
+  var afterSpec: Option[() => Any] = None
   
   /** 
    * override the beforeExample method to execute actions before the 
@@ -153,7 +153,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    */
   override def beforeExample(ex: Example) = {
     if (!suts.isEmpty && !suts.first.examples.isEmpty && suts.first.examples.first == ex)
-      beforeAllSuts.map(_.apply)
+      beforeSpec.map(_.apply)
   }
 
   /** 
@@ -162,6 +162,6 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    */
   override def afterExample(ex: Example) = {
     if (!suts.isEmpty && !suts.last.examples.isEmpty && suts.last.examples.last == ex)
-      afterAllSuts.map(_.apply)
+      afterSpec.map(_.apply)
   }
 }

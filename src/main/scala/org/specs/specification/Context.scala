@@ -14,7 +14,7 @@ import org.specs.ExtendedThrowable._
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
  * each system under test being specified.
  */
-trait Contexts extends SpecificationStructure {
+trait Contexts extends SpecificationStructure { outer =>
   /** 
    * @deprecated
    * adds a "before" function to the last sut being defined 
@@ -24,17 +24,17 @@ trait Contexts extends SpecificationStructure {
   /** adds a "before" function to the last sut being defined */
   def doBefore(actions: =>Any) = currentSut.before = Some(() => actions)
 
-  /** adds a "beforeAll" function to the last sut being defined */
-  def doBeforeAll(actions: =>Any) = currentSut.beforeAll = Some(() => actions)
+  /** adds a "firstActions" function to the last sut being defined */
+  def doFirst(actions: =>Any) = currentSut.firstActions = Some(() => actions)
 
-  /** adds a "afterAll" function to the last sut being defined */
-  def doAfterAll(actions: =>Any) = currentSut.afterAll = Some(() => actions)
+  /** adds a "lastActions" function to the last sut being defined */
+  def doLast(actions: =>Any) = currentSut.lastActions = Some(() => actions)
 
-  /** adds a "beforeAllSuts" function to the current specification */
-  def doBeforeAllSuts(actions: =>Any) = this.beforeAllSuts = Some(() => actions)
+  /** adds a "beforeSpec" function to the current specification */
+  def doBeforeSpec(actions: =>Any) = beforeSpec = Some(() => actions)
 
-  /** adds a "afterAllSuts" function to the current specification */
-  def doAfterAllSuts(actions: =>Any) = this.afterAllSuts = Some(() => actions)
+  /** adds a "afterSpec" function to the current specification */
+  def doAfterSpec(actions: =>Any) = afterSpec = Some(() => actions)
 
   /** 
    * @deprecated
@@ -69,10 +69,10 @@ trait Contexts extends SpecificationStructure {
   class ShortActions(actions: =>Unit) {
     def before = doBefore(actions)
     def after = doAfter(actions)
-    def beforeAll = doBeforeAll(actions)
-    def afterAll = doAfterAll(actions)
-    def beforeAllSuts = doBeforeAllSuts(actions)
-    def afterAllSuts = doAfterAllSuts(actions)
+    def doFirst: Unit = outer.doFirst(actions)
+    def doLast: Unit = outer.doLast(actions)
+    def beforeSpec = outer.doBeforeSpec(actions)
+    def afterSpec = outer.doAfterSpec(actions)
   }
 
   /** 
@@ -95,17 +95,17 @@ trait Contexts extends SpecificationStructure {
     def ->-(context: Context): Sut = {
       if (context == null) throw new NullPointerException("the context is null")
       val sut = specify(s)
-      doBeforeAll(context.beforeAllActions())
+      doFirst(context.first())
       doBefore(context.beforeActions())
       doAfter(context.afterActions())
-      doAfterAll(context.afterAllActions())
+      doLast(context.last())
       until(context.predicate())
       sut
     } 
   }
 
   /** Factory method to create a context with beforeAll only actions */
-  def beforeAllContext(actions: => Any) = new Context { beforeAll(actions) }
+  def contextFirst(actions: => Any) = new Context { first(actions) }
 
   /** Factory method to create a context with before only actions */
   def beforeContext(actions: => Any) = new Context { before(actions) }
@@ -117,7 +117,7 @@ trait Contexts extends SpecificationStructure {
   def afterContext(actions: => Any) = new Context { after(actions) }
 
   /** Factory method to create a context with afterAll actions */
-  def afterAllContext(actions: => Any) = new Context { afterAll(actions) }
+  def contextLast(actions: => Any) = new Context { last(actions) }
 
   /** Factory method to create a context with after only actions and an until predicate */
   def afterContext(actions: => Any, predicate: =>Boolean) = new Context { after(actions); until(predicate()) }
@@ -126,7 +126,7 @@ trait Contexts extends SpecificationStructure {
   def context(b: => Any, a: =>Any) = new Context { before(b); after(a) }
 
   /** Factory method to create a context with before/after actions */
-  def contextAll(b: => Any, a: =>Any) = new Context { beforeAll(b); afterAll(a) }
+  def globalContext(b: => Any, a: =>Any) = new Context { first(b); last(a) }
 
   /** Factory method to create a context with before/after actions and an until predicate */
   def context(b: => Any, a: =>Any, predicate: =>Boolean) = new Context { before(b); after(a); until(predicate()) }
@@ -141,14 +141,14 @@ trait Contexts extends SpecificationStructure {
  * </pre>
  */
 case class Context {
-  var beforeAllActions: () => Any = () => () 
-  var afterAllActions: () => Any = () => ()
+  var firstActions: () => Any = () => () 
+  var lastActions: () => Any = () => ()
   var beforeActions: () => Any = () => () 
   var afterActions: () => Any = () => ()
   var predicate: () => Boolean = () => true
   def before(actions: =>Any) = { beforeActions = () => actions; this }
   def after(actions: =>Any) = { afterActions = () => actions; this }
-  def beforeAll(actions: =>Any) = { beforeAllActions = () => actions; this }
-  def afterAll(actions: =>Any) = { afterAllActions = () => actions; this }
+  def first(actions: =>Any) = { firstActions = () => actions; this }
+  def last(actions: =>Any) = { lastActions = () => actions; this }
   def until(predicate: =>Boolean) = { this.predicate = () => predicate; this }
 }

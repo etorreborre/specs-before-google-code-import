@@ -36,14 +36,14 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None
 
-  /** the beforeAll function will be invoked before all examples */
-  var beforeAll: Option[() => Any] = None
+  /** the firstActions function will be invoked before all examples */
+  var firstActions: Option[() => Any] = None
   
   /** the after function will be invoked after each example */
   var after: Option[() => Any] = None
   
-  /** the afterAll function will be invoked after all examples */
-  var afterAll: Option[() => Any] = None
+  /** the lastActions function will be invoked after all examples */
+  var lastActions: Option[() => Any] = None
 
   /** a predicate which will decide if an example must be re-executed */
   var untilPredicate: Option[() => Boolean] = None
@@ -101,7 +101,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   override def beforeExample(ex: Example) = {
     cycle.beforeExample(ex)
     if (ex == examples.first)
-      beforeAll.map(_.apply)
+      firstActions.map(_.apply)
     before.foreach {_.apply()}
   }
   
@@ -119,7 +119,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
   /** calls the after method of the "parent" cycle, then the sut after method after an example if that method is defined. */
   override def afterExample(ex: Example) = { 
     after.map {_.apply()}
-    if (ex == examples.last) afterAll.map(_.apply)
+    if (ex == examples.last) lastActions.map(_.apply)
     cycle.afterExample(ex)
   }
   /** Declare the examples as components to be tagged when the sut is tagged */
