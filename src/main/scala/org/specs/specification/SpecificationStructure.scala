@@ -152,6 +152,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    * first example of the first sut 
    */
   override def beforeExample(ex: Example) = {
+    super.beforeExample(ex)
     if (!suts.isEmpty && !suts.first.examples.isEmpty && suts.first.examples.first == ex)
       beforeSpec.map(_.apply)
   }
@@ -163,5 +164,6 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
   override def afterExample(ex: Example) = {
     if (!suts.isEmpty && !suts.last.examples.isEmpty && suts.last.examples.last == ex)
       afterSpec.map(_.apply)
+    super.afterExample(ex)
   }
 }

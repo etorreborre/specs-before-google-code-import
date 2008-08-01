@@ -17,8 +17,13 @@ trait ExampleLifeCycle {
   def beforeExample(ex: Example) = {} 
   def beforeTest(ex: Example)= {}
   def afterTest(ex: Example) = {}
-  def executeTest(ex: Example, t: =>Any): Any = { example = Some(ex); t }
-  def afterExample(ex: Example) = { example = None }
+  def executeTest(ex: Example, t: =>Any): Any = { 
+    example = Some(ex); 
+    t 
+  }
+  def afterExample(ex: Example) = { 
+    example = None 
+  }
 }
 /** Default LifeCycle with no actions before or after. */
 object DefaultLifeCycle extends ExampleLifeCycle

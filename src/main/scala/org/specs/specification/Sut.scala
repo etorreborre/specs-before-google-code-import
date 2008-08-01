@@ -30,9 +30,15 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
    */
   var literateDescription: Option[String] = None
 
+  /** return true if the literal description is a wiki. */
+  def isWiki = literateDescription.exists(_.startsWith("<wiki"))
+  
   /** examples describing the sut behaviour */
   var examples = new Queue[Example]
+
+  /** add an example to the list of examples. */
   def addExample(e: Example) = examples += e
+  
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None
 
@@ -99,6 +105,7 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
 
   /** calls the before method of the "parent" cycle, then the sut before method before an example if that method is defined. */
   override def beforeExample(ex: Example) = {
+    super.beforeExample(ex)
     cycle.beforeExample(ex)
     if (!examples.isEmpty && ex == examples.first)
       firstActions.map(_.apply)
@@ -115,12 +122,12 @@ case class Sut(description: String, var cycle: org.specs.specification.ExampleLi
 
   /** forwards the call to the "parent" cycle */
   override def afterTest(ex: Example) = { cycle.afterTest(ex) }
-
   /** calls the after method of the "parent" cycle, then the sut after method after an example if that method is defined. */
   override def afterExample(ex: Example) = { 
     after.map {_.apply()}
     if (!examples.isEmpty && ex == examples.last) lastActions.map(_.apply)
     cycle.afterExample(ex)
+    super.afterExample(ex)
   }
   /** Declare the examples as components to be tagged when the sut is tagged */
   override def taggedComponents = this.examples

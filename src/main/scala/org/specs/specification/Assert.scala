@@ -42,8 +42,8 @@ trait Assertable[T] {
     def executeMatch = {
       val (result, _, koMessage) = m.apply(value) 
       result match {
-        case false =>  { new FailureException(koMessage).rethrowBy("must", failureTemplate) }
-        case _ => SuccessValue(successValueToString)
+        case false => new FailureException(koMessage).rethrowBy("must", failureTemplate)
+        case _     => SuccessValue(successValueToString)
       }
     }
     example match {
