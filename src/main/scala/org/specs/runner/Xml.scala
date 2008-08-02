@@ -90,17 +90,17 @@ trait Xml extends FileSystem with ConsoleLog with Console {
   def asXml(s: Specification): Elem = {
     <spec name={s.name} description={s.description} assertions={s.assertionsNb.toString} failures={s.failures.size.toString} errors={s.errors.size.toString}>
       {s.subSpecifications map (asXml(_))}{
-       s.suts map (asXml(_))}
+       s.systems map (asXml(_))}
     </spec>
   }
 
   /**
-   * @returns the sut results translated as to xml 
+   * @returns the sus results translated as to xml 
    */
-  def asXml(sut: Sut): Elem = 
-    <sut description={sut.description} assertions={sut.assertionsNb.toString} failures={sut.failures.size.toString} errors={sut.errors.size.toString}>
-      {sut.examples map (asXml(_))}
-    </sut>
+  def asXml(sus: Sus): Elem = 
+    <sus description={sus.description} assertions={sus.assertionsNb.toString} failures={sus.failures.size.toString} errors={sus.errors.size.toString}>
+      {sus.examples map (asXml(_))}
+    </sus>
 
   /**
    * @returns the example results translated as to xml (including sub-examples) 

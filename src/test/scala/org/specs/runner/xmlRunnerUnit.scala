@@ -37,7 +37,7 @@ trait TestData extends DataTables {
   object xmlRunner extends XmlRunner(spec1) with ExtendedMockFileSystem with MockOutput
   object spec1 extends Specification {
     override def toString = name
-    "the sut" should { "have one ok example" in { 1 mustBe 1 } }
+    "the sus" should { "have one ok example" in { 1 mustBe 1 } }
   } 
 }
 

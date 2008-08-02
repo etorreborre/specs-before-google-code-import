@@ -52,7 +52,7 @@ trait OutputReporter extends Reporter with Output {
     timer.start
     println(padding + "Specification \"" + spec.name + "\"")
     report(spec.subSpecifications, padding + "  ")
-    reportSuts(spec.suts, padding + "  ")
+    reportSystems(spec.systems, padding + "  ")
     
     println(padding + "Total for specification \"" + spec.name + "\":")
     printStats(stats(spec), padding)   
@@ -65,19 +65,19 @@ trait OutputReporter extends Reporter with Output {
   
   /**
    * @return the number of examples, assertions, failures and errors for a specification
-   * by collecting those numbers on sub-specifications and suts
+   * by collecting those numbers on sub-specifications and systems
    */
   def stats(spec: Specification): (Int, Int, Int, Int, Int) = {
-    spec.suts.foldLeft((0, 0, 0, 0, 0))(_ + stats(_)) +
+    spec.systems.foldLeft((0, 0, 0, 0, 0))(_ + stats(_)) +
     spec.subSpecifications.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
   }
   
   /**
-   * @return the number of examples, assertions, failures and errors for a sut
+   * @return the number of examples, assertions, failures and errors for a sus
    * by collecting those numbers on examples
    */
-  def stats(sut: Sut): (Int, Int, Int, Int, Int)  = {
-    sut.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
+  def stats(sus: Sus): (Int, Int, Int, Int, Int)  = {
+    sus.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
   }
 
   /**
@@ -90,37 +90,37 @@ trait OutputReporter extends Reporter with Output {
   }
 
   /**
-   * reports the sut results. If there are more than one, then report stats for each
-   * else just print the specification of the sut, the parent specification will display the total
-   * for that sut
+   * reports the sus results. If there are more than one, then report stats for each
+   * else just print the specification of the sus, the parent specification will display the total
+   * for that sus
    */
-  def reportSuts(suts: Iterable[Sut], padding: String) = {
-    if (suts.toList.size > 1) 
-      suts foreach {reportSut(_, padding)}
+  def reportSystems(systems: Iterable[Sus], padding: String) = {
+    if (systems.toList.size > 1) 
+      systems foreach {reportSus(_, padding)}
     else
-      suts foreach {printSut(_, padding)}
+      systems foreach {printSus(_, padding)}
   }
 
   /**
-   * reports one sut results: print the sut specifications, then the statistics
+   * reports one sus results: print the sus specifications, then the statistics
    */
-  def reportSut(sut: Sut, padding: String) = { timer.start; printSut(sut, padding); printStats(sut, padding) }
+  def reportSus(sus: Sus, padding: String) = { timer.start; printSus(sus, padding); printStats(sus, padding) }
 
   /**
-   * prints one sut specification
+   * prints one sus specification
    */
-  def printSut(sut: Sut, padding: String) = {
-    println(padding + sut.description + " " + sut.verb + sut.skippedSut.map(" (skipped: " + _ + ")").getOrElse(""))
-    sut.literateDescription foreach {s => println(padding + s)}
-    reportExamples(sut.examples, padding)
+  def printSus(sus: Sus, padding: String) = {
+    println(padding + sus.description + " " + sus.verb + sus.skippedSus.map(" (skipped: " + _ + ")").getOrElse(""))
+    sus.literateDescription foreach {s => println(padding + s)}
+    reportExamples(sus.examples, padding)
     println("")
   }
   /**
-   * prints the statistics for a sut
+   * prints the statistics for a sus
    */
-  def printStats(sut: Sut, padding: String): Unit = {
-    println(padding + "Total for SUT \"" + sut.description + "\":")
-    printStats(stats(sut), padding)    
+  def printStats(sus: Sus, padding: String): Unit = {
+    println(padding + "Total for SUT \"" + sus.description + "\":")
+    printStats(stats(sus), padding)    
   }
   
   /**

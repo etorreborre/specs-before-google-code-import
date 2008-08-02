@@ -14,7 +14,7 @@ class ScalaTestSuite(specifications: Specification*) extends ScalaTest {
 
 /**
  * This trait is a ScalaTest suite which is build from one or more specifications (provided by the inherited SpecsHolder)
- * The subspecifications, as well the system under test (sut) are provided as nested suites
+ * The subspecifications, as well the system under test (sus) are provided as nested suites
  * Usage:<code>
  * class mySpecRunner extends Runner(mySpec) with ScalaTest
  * <code>
@@ -37,13 +37,13 @@ trait ScalaTest extends SpecsHolder with org.scalatest.Suite {
   override def groups: Map[String, Set[String]] = Map() 
 
   /**
-   * @return the subspecifications or the suts as ScalaTest suites
+   * @return the subspecifications or the systems as ScalaTest suites
    */
   override def nestedSuites: List[org.scalatest.Suite] = {
     var result: List[org.scalatest.Suite] = Nil 
     specs foreach { specification => 
       specification.subSpecifications.foreach { s: Specification => result = new ScalaTestSuite(s)::result }
-      specification.suts foreach {sut => result = new SutSuite(sut)::result }
+      specification.systems foreach {sus => result = new SusSuite(sus)::result }
     }
     result.reverse
   }
@@ -56,14 +56,14 @@ trait ScalaTest extends SpecsHolder with org.scalatest.Suite {
 
 /**
  * This class is a ScalaTest suite which is build from a system under test
- * its subspecifications or its systems under test (sut)
+ * its subspecifications or its systems under test (sus)
  */
-class SutSuite(sut: Sut) extends Suite {
+class SusSuite(sus: Sus) extends Suite {
   
   /**
-   * @return the description of the sut with either "should" or "can"
+   * @return the description of the sus with either "should" or "can"
    */
-  override def suiteName = sut.description + " " + sut.verb
+  override def suiteName = sus.description + " " + sus.verb
 
   /**
    * @return Nil. A system under test has no nested suites
@@ -75,7 +75,7 @@ class SutSuite(sut: Sut) extends Suite {
    */
   override def testNames: Set[java.lang.String] = {
     var result: Set[String] = Set()
-    sut.examples foreach {e => result = result + e.description}
+    sus.examples foreach {e => result = result + e.description}
     result
   }
 
@@ -115,7 +115,7 @@ class SutSuite(sut: Sut) extends Suite {
                          reporter: org.scalatest.Reporter, 
                          stopper: Stopper, 
                          properties: Map[java.lang.String, Any]): Unit = {
-      sut.examples.find(_.description == testName).map(e => runExample(e, reporter))
+      sus.examples.find(_.description == testName).map(e => runExample(e, reporter))
     } 
     
   /**
@@ -138,7 +138,7 @@ class SutSuite(sut: Sut) extends Suite {
    */
   override def groups: Map[String, Set[String]] = {
     var exampleTags: Map[String, Set[String]] = new HashMap[String, Set[String]]()
-    for (e <- sut.examples;
+    for (e <- sus.examples;
          tag <- e.tags) {
         val exampleNames: Set[String] = exampleTags.get(tag.name) match {
           case None => new HashSet[String]

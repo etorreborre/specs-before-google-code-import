@@ -3,7 +3,7 @@ import scala.collection.mutable.Queue
 
 /**
  * The Tagged trait allows to add tags to a Specification or a System under test.<p/>
- * The tags will be propagated to the specification or the sut components using the tagWith method. With this rule, 
+ * The tags will be propagated to the specification or the sus components using the tagWith method. With this rule, 
  * a Tagged component should always have its parent tags (and possibly more).<p/>
  * 
  * Tags can be used when executing a Specification to restrict the executed examples. In that case, the examples are marked as skipped:<pre>
@@ -105,7 +105,7 @@ trait Tagged {
   /** @return a description of the Tagged element showing the owned tags, the accepted and rejected tags */
   def tagSpec = "tags: " + tags.mkString(", ") + "  accepted: " + accepted.mkString(", ") + "  rejected: " + rejected.mkString(", ")
 
-  /** add the tags specification from another tagged element. This is used when propagating the tags from a specification to a sut for example */
+  /** add the tags specification from another tagged element. This is used when propagating the tags from a specification to a sus for example */
   def tagWith(other: Tagged): this.type = {
     this.addTags(other.tags.map(_.name):_*).
       accept(other.accepted.map(_.name):_*).

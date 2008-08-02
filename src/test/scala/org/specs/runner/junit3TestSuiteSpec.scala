@@ -20,18 +20,18 @@ object junit3TestSuiteSpec extends Specification {
         r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("S1", "S2")
       }
     }
-    "create one test suite per sut" in {
+    "create one test suite per sus" in {
       object S1 extends Specification {
-        "sut1" should {}
-        "sut2" should {}
+        "sus1" should {}
+        "sus2" should {}
       }
       makeRunners(S1) foreach { r =>
-        r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sut1 should", "sut2 should")
+        r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sus1 should", "sus2 should")
       }
     }
     "create one test case per example" in {
       object S1 extends Specification {
-        "sut1" should { "ex1" in {}; "ex2" in {}}
+        "sus1" should { "ex1" in {}; "ex2" in {}}
       }
       makeRunners(S1) foreach { r =>
         r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).map(_.asInstanceOf[TestCase].getName) must_== List("ex1", "ex2")

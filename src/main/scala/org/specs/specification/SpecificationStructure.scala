@@ -6,7 +6,7 @@ import org.specs.SpecUtils._
  * This trait provides a structure to a specification.<br>
  * A specification is composed of:<ul>
  * <li>sub specifications or
- * <li>systems under tests (suts)
+ * <li>systems under tests (systems)
  * <li>examples which are components of systems under tests
  * <li>sub-examples which are components of examples</ul><p>
  * 
@@ -32,7 +32,7 @@ import org.specs.SpecUtils._
  * <p>
  * A <code>SpecificationStructure</code> also implements an <code>ExampleLifeCycle</code> trait
  * allowing subclasses to refine the behaviour of the specification before/after an example and before/after 
- * a test inside an example. This is used to plug setup/teardown behaviour at the sut level and to plug
+ * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
 trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListener with Tagged {
@@ -84,7 +84,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
   implicit def declare(d: String): SpecificationStructure = { name = d; this }
   
   /** list of systems under test */ 
-  var suts : List[Sut] = Nil
+  var systems : List[Sus] = Nil
 
   /** 
    * implicit definition allowing to declare a new system under test described by a string <code>desc</code><br>   
@@ -92,19 +92,19 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specify(desc: String): Sut = { 
-    suts = suts:::List(new Sut(desc, this))
+  implicit def specify(desc: String): Sus = { 
+    systems = systems:::List(new Sus(desc, this))
     if (this.isSequential)
-      suts.last.setSequential
-    suts.last
+      systems.last.setSequential
+    systems.last
   }
 
-  /** utility method to track the last sut being currently defined, in order to be able to add examples to it */ 
-  protected[this] def currentSut = if (!suts.isEmpty) suts.last else specify("specifies")
+  /** utility method to track the last sus being currently defined, in order to be able to add examples to it */ 
+  protected[this] def currentSus = if (!systems.isEmpty) systems.last else specify("specifies")
   
-  /** Return all the suts for this specification, including the ones from the sub-specifications (recursively). */
-  def allSuts: List[Sut] = {
-    suts ::: subSpecifications.foldRight(Nil: List[Sut]) { (s, result) => s.allSuts ::: result }   
+  /** Return all the systems for this specification, including the ones from the sub-specifications (recursively). */
+  def allSystems: List[Sus] = {
+    systems ::: subSpecifications.foldRight(Nil: List[Sus]) { (s, result) => s.allSystems ::: result }   
   }
 
   /** 
@@ -114,7 +114,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
   implicit def forExample(desc: String): Example = {
-    val newExample = new Example(desc, currentSut)
+    val newExample = new Example(desc, currentSus)
     exampleContainer.addExample(newExample) 
     newExample
   }
@@ -122,7 +122,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
   /**
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
-  def forExample: Example = forExample("example " + (currentSut.examples.size + 1))
+  def forExample: Example = forExample("example " + (currentSus.examples.size + 1))
   
   /**
    * Return the example being currently executed if any
@@ -131,38 +131,38 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
   
   /** 
    * utility method to track the last example list being currently defined.<br>
-   * It is either the list of examples associated with the current sut, or
+   * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined 
    */ 
   protected[this] def exampleContainer: Any {def addExample(e: Example)} = {
     example match {
       case Some(e) => e
-      case None => currentSut 
+      case None => currentSus 
     }
   }
   
-    /** the beforeAllSuts function will be invoked before all suts */
+    /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
   
-  /** the afterAllSuts function will be invoked after all suts */
+  /** the afterAllSystems function will be invoked after all systems */
   var afterSpec: Option[() => Any] = None
   
   /** 
    * override the beforeExample method to execute actions before the 
-   * first example of the first sut 
+   * first example of the first sus 
    */
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)
-    if (!suts.isEmpty && !suts.first.examples.isEmpty && suts.first.examples.first == ex)
+    if (!systems.isEmpty && !systems.first.examples.isEmpty && systems.first.examples.first == ex)
       beforeSpec.map(_.apply)
   }
 
   /** 
    * override the afterExample method to execute actions after the 
-   * last example of the last sut 
+   * last example of the last sus 
    */
   override def afterExample(ex: Example) = {
-    if (!suts.isEmpty && !suts.last.examples.isEmpty && suts.last.examples.last == ex)
+    if (!systems.isEmpty && !systems.last.examples.isEmpty && systems.last.examples.last == ex)
       afterSpec.map(_.apply)
     super.afterExample(ex)
   }

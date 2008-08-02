@@ -62,7 +62,7 @@ object consoleReporterSpec extends Specification with MockOutput {
     "report skipped examples created with the 'orSkipExample' on a faulty matcher with a small circle" in {
       specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustExistMatch "o " 
     }
-    "report the literal description of a sut if it is set"  in {
+    "report the literal description of a sus if it is set"  in {
       new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded assertions"
     }
     "report the reason for a skipped example" in {
@@ -73,8 +73,8 @@ object consoleReporterSpec extends Specification with MockOutput {
     } 
     "report the time for each system and add times for the total" in {
       specWithTwoSystems.messages
-      val sutTime1 :: sutTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
-      (sutTime1 + sutTime2) must beCloseTo(total, 1) // to account for rounding errors
+      val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
+      (susTime1 + susTime2) must beCloseTo(total, 1) // to account for rounding errors
     }
   }
   "A console reporter" should {

@@ -30,7 +30,7 @@ object xmlRunnerSpec extends RunnerFixture { "The specification for the XML runn
   <spec name="spec1" description="spec1" assertions="3" failures="1" errors="1"></spec>.as(xml) in checkXml }
 
 - {"containing an element for the system under test:\n" +
-  <sut description="the sut" assertions="3" failures="1" errors="1"></sut>.as(xml) in checkXml }
+  <sus description="the sus" assertions="3" failures="1" errors="1"></sus>.as(xml) in checkXml }
 
 - {"containing an element for the ok example test:\n" +
   <example description="have one ok example" assertions="0" failures="0" errors="0"></example>.as(xml) in checkXml }

@@ -16,24 +16,24 @@ trait SpecificationGenerator { self: Specification =>
     } 
   }
 
-  def genExample(sut: Sut) = for (a <- genAssertion) yield {
-    val newExample = new Example("generated example", sut)
-    sut.addExample(newExample) 
+  def genExample(sus: Sus) = for (a <- genAssertion) yield {
+    val newExample = new Example("generated example", sus)
+    sus.addExample(newExample) 
     newExample.in { a() }
   }
   
-  def genSizedSut(size: Int): Gen[Sut] = genSizedSut(size, spec)
-  def genSizedSut(size: Int, s: Specification): Gen[Sut] = { 
-    val sut = new Sut("sut with " + size + " max examples", s)
+  def genSizedSus(size: Int): Gen[Sus] = genSizedSus(size, spec)
+  def genSizedSus(size: Int, s: Specification): Gen[Sus] = { 
+    val sus = new Sus("sus with " + size + " max examples", s)
     for { n <- choose(0, size) 
-          e <- vectorOf(n, genExample(sut))
-    } yield sut 
+          e <- vectorOf(n, genExample(sus))
+    } yield sus 
   }
-  def genSut = sized(size => genSizedSut(size))
+  def genSus = sized(size => genSizedSus(size))
   def genSizedSpec(size: Int): Gen[Specification] = {
-    val generatedSpec = new Specification("spec with " + size + " max sut") {}
-    for { sutsNb <- choose(0, size)
-          suts <- vectorOf(sutsNb, genSizedSut(size, generatedSpec))
+    val generatedSpec = new Specification("spec with " + size + " max sus") {}
+    for { systemsNb <- choose(0, size)
+          systems <- vectorOf(systemsNb, genSizedSus(size, generatedSpec))
           subSpecsNb <- choose(0, 1)
           subSpecs <- vectorOf(subSpecsNb, genSizedSpec(size))
     } yield {
@@ -43,15 +43,15 @@ trait SpecificationGenerator { self: Specification =>
   }
   def genSpec = sized(size => genSizedSpec(size))
   
-  implicit val arbitrarySut: Arbitrary[Sut] = Arbitrary { genSut }
+  implicit val arbitrarySus: Arbitrary[Sus] = Arbitrary { genSus }
   implicit val arbitrarySpec: Arbitrary[Specification] = Arbitrary { genSpec }
 }
 object generatorSpec extends Specification with SpecificationGenerator with Scalacheck {
 
-  "a sut" should {
+  "a sus" should {
     "have a number of error + failure + successes + skipped == the number of examples" in {
-      property {(sut: Sut) => 
-        (sut.failures.size + sut.errors.size + sut.skipped.size + sut.successes.size) must be_==(sut.examples.size)
+      property {(sus: Sus) => 
+        (sus.failures.size + sus.errors.size + sus.skipped.size + sus.successes.size) must be_==(sus.examples.size)
       } must pass(set(maxSize -> 5))
     } 
   }

@@ -68,7 +68,7 @@ object htmlRunnerUnit extends Specification with DataTables {
       val skip = new Example("", null) { addSkipped(new SkippedException("skip")) }
       hRunner.message(skip, false) must_== <td>skip</td>
     }
-    "return nothing if the whole sut is a success" in {
+    "return nothing if the whole sus is a success" in {
       val ok = new Example("", null)
       hRunner.message(ok, true) must_== scala.xml.NodeSeq.Empty
     }

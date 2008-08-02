@@ -29,14 +29,14 @@ object specificationUnit extends Specification with Scalacheck {
   }
   "A specification with one assertion only" should {
     object nudeSpec extends Specification { "name" mustEqual "name" }
-    "create a default sut" in {
-      nudeSpec.suts.size mustBe 1
+    "create a default sus" in {
+      nudeSpec.systems.size mustBe 1
     }
     "create a default example" in {
-      nudeSpec.suts.head.examples.size mustBe 1
+      nudeSpec.systems.head.examples.size mustBe 1
     }
     "create a default example named 'example 1'" in {
-      nudeSpec.suts.head.examples.first.description must_== "example 1"
+      nudeSpec.systems.head.examples.first.description must_== "example 1"
     }
     "count 1 assertion" in {
       nudeSpec.assertionsNb mustBe 1
@@ -48,7 +48,7 @@ object specificationUnit extends Specification with Scalacheck {
       spec.failures
       spec.failures(0).location must_== "specificationUnit.scala:47"
     }
-    "indicate the precise location if it is in a sut" in {
+    "indicate the precise location if it is in a sus" in {
       object spec extends Specification { "it" should { 1 must_== 0; "" in {} } }
       spec.failures
       spec.failures(0).location must_== "specificationUnit.scala:52"

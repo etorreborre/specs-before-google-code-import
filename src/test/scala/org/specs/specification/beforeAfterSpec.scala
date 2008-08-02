@@ -16,7 +16,7 @@ object beforeAfterSpec extends Specification {
       doBeforeExampleFailing.messages must existMatch("1 error")
       doBeforeExampleFailing.messages must notExistMatch("tested")
     }
-    "be executed even if the doBefore clause is not declared inside a sut" in { 
+    "be executed even if the doBefore clause is not declared inside a sus" in { 
       object badSpec extends Specification {
         doBefore {}
       }
@@ -44,7 +44,7 @@ object beforeAfterSpec extends Specification {
       doAfterExampleFailing.messages must existMatch("1 error")
       doAfterExampleFailing.messages must notExistMatch("tested")
     }
-    "work even if the doAfter clause is not declared inside a sut" in { 
+    "work even if the doAfter clause is not declared inside a sus" in { 
       object badSpec extends Specification {
         doAfter {}
       }
@@ -78,27 +78,27 @@ object beforeAfterSpec extends Specification {
         notExistMatch("example 2") and
         existMatch("doAfterAll"))
     }
-    "specify a before/after clauses before and after: specification, suts, examples" in {
+    "specify a before/after clauses before and after: specification, systems, examples" in {
       specWithAll.execute
       specWithAll.messages.filter(_.startsWith("msg")).toList must_== List(
       "msg doBeforeAllSpec",
-        "msg doBeforeAllSut1",
-          "msg doBeforeSut1",
+        "msg doBeforeAllSus1",
+          "msg doBeforeSus1",
             "msg example 1.1",
-          "msg doAfterSut1",
-          "msg doBeforeSut1",
+          "msg doAfterSus1",
+          "msg doBeforeSus1",
             "msg example 1.2",
-          "msg doAfterSut1",
-        "msg doAfterAllSut1",
+          "msg doAfterSus1",
+        "msg doAfterAllSus1",
 
-        "msg doBeforeAllSut2",
-          "msg doBeforeSut2",
+        "msg doBeforeAllSus2",
+          "msg doBeforeSus2",
             "msg example 2.1",
-          "msg doAfterSut2",
-          "msg doBeforeSut2",
+          "msg doAfterSus2",
+          "msg doBeforeSus2",
             "msg example 2.2",
-          "msg doAfterSut2",
-        "msg doAfterAllSut2",
+          "msg doAfterSus2",
+        "msg doAfterAllSus2",
       "msg doAfterAllSpec")
     }
   }
@@ -122,7 +122,7 @@ object beforeAfterSpec extends Specification {
     }
   }
   "A specification" can {
-    "use an until method to repeat the examples of a sut until a predicate is true" in {
+    "use an until method to repeat the examples of a sus until a predicate is true" in {
       specWithUntil.execute
       specWithUntil.counter must_== 10
     }
@@ -131,7 +131,7 @@ object beforeAfterSpec extends Specification {
 class beforeAfterTest extends JUnit4(beforeAfterSpec) 
 
 trait beforeAfterTestSpec extends Specification with ConsoleReporter with MockOutput {
-  def execute = { suts = Nil; executeSpec }
+  def execute = { systems = Nil; executeSpec }
   def executeSpec
 }
 
@@ -290,20 +290,20 @@ object specWithAll extends beforeAfterTestSpec {
   override def executeSpec = {
     doBeforeSpec { println("msg doBeforeAllSpec") }
     "A specification" should {
-      doFirst 	{ println("msg doBeforeAllSut1") }
-      doBefore 		{ println("msg doBeforeSut1") }
-      doLast 	{ println("msg doAfterAllSut1") }
-      doAfter 		{ println("msg doAfterSut1") }
+      doFirst 	{ println("msg doBeforeAllSus1") }
+      doBefore 		{ println("msg doBeforeSus1") }
+      doLast 	{ println("msg doAfterAllSus1") }
+      doAfter 		{ println("msg doAfterSus1") }
       "have example 1.1 ok" in { println("msg example 1.1") }
       "have example 1.2 ok" in { println("msg example 1.2") }
     }
     "A specification" should {
-      println("msg doBeforeAllSut2").doFirst
-      println("msg doBeforeSut2").before
+      println("msg doBeforeAllSus2").doFirst
+      println("msg doBeforeSus2").before
       "have example 2.1 ok" in { println("msg example 2.1") }
       "have example 2.2 ok" in { println("msg example 2.2") }
-      println("msg doAfterSut2").after
-      println("msg doAfterAllSut2").doLast
+      println("msg doAfterSus2").after
+      println("msg doAfterAllSus2").doLast
     }
     println("msg doAfterAllSpec").afterSpec
     reportSpec(this)

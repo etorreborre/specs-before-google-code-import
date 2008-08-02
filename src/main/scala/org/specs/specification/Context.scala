@@ -17,18 +17,18 @@ import org.specs.ExtendedThrowable._
 trait Contexts extends SpecificationStructure { outer =>
   /** 
    * @deprecated
-   * adds a "before" function to the last sut being defined 
+   * adds a "before" function to the last sus being defined 
    */
-  def usingBefore(actions: () => Any) = currentSut.before = Some(actions)
+  def usingBefore(actions: () => Any) = currentSus.before = Some(actions)
 
-  /** adds a "before" function to the last sut being defined */
-  def doBefore(actions: =>Any) = currentSut.before = Some(() => actions)
+  /** adds a "before" function to the last sus being defined */
+  def doBefore(actions: =>Any) = currentSus.before = Some(() => actions)
 
-  /** adds a "firstActions" function to the last sut being defined */
-  def doFirst(actions: =>Any) = currentSut.firstActions = Some(() => actions)
+  /** adds a "firstActions" function to the last sus being defined */
+  def doFirst(actions: =>Any) = currentSus.firstActions = Some(() => actions)
 
-  /** adds a "lastActions" function to the last sut being defined */
-  def doLast(actions: =>Any) = currentSut.lastActions = Some(() => actions)
+  /** adds a "lastActions" function to the last sus being defined */
+  def doLast(actions: =>Any) = currentSus.lastActions = Some(() => actions)
 
   /** adds a "beforeSpec" function to the current specification */
   def doBeforeSpec(actions: =>Any) = beforeSpec = Some(() => actions)
@@ -38,19 +38,19 @@ trait Contexts extends SpecificationStructure { outer =>
 
   /** 
    * @deprecated
-   * adds an "after" function to the last sut being defined 
+   * adds an "after" function to the last sus being defined 
    */
-  def usingAfter(actions: () => Any) = currentSut.after = Some(actions)
+  def usingAfter(actions: () => Any) = currentSus.after = Some(actions)
 
   /** 
-   * adds an "after" function to the last sut being defined 
+   * adds an "after" function to the last sus being defined 
    */
-  def doAfter(actions: =>Any) = currentSut.after = Some(() => actions)
+  def doAfter(actions: =>Any) = currentSus.after = Some(() => actions)
 
   /** 
    * repeats examples according to a predicate 
    */
-  def until(predicate: =>Boolean) = currentSut.untilPredicate = Some(() => predicate)
+  def until(predicate: =>Boolean) = currentSus.untilPredicate = Some(() => predicate)
 
   /** 
    * Syntactic sugar for before/after actions.<p>
@@ -76,31 +76,31 @@ trait Contexts extends SpecificationStructure { outer =>
   }
 
   /** 
-   * Syntactic sugar to create pass a new context before creating a sut.<p>
+   * Syntactic sugar to create pass a new context before creating a sus.<p>
    * Usage: <code>"a system" ->(context) should { 
    *  ...
    * </code>
-   * In that case before/after actions defined in the context will be set on the defined sut.
+   * In that case before/after actions defined in the context will be set on the defined sus.
    */
   implicit def toContext(s: String) = ToContext(s) 
 
   /** 
-   * Syntactic sugar to create pass a new context before creating a sut.<p>
+   * Syntactic sugar to create pass a new context before creating a sus.<p>
    * Usage: <code>"a system" ->(context) should { 
    *  ...
    * </code>
-   * In that case before/after actions defined in the context will be set on the defined sut.
+   * In that case before/after actions defined in the context will be set on the defined sus.
    */
   case class ToContext(s: String) {
-    def ->-(context: Context): Sut = {
+    def ->-(context: Context): Sus = {
       if (context == null) throw new NullPointerException("the context is null")
-      val sut = specify(s)
+      val sus = specify(s)
       doFirst(context.first())
       doBefore(context.beforeActions())
       doAfter(context.afterActions())
       doLast(context.last())
       until(context.predicate())
-      sut
+      sus
     } 
   }
 

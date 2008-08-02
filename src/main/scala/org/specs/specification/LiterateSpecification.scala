@@ -63,26 +63,26 @@ class LiterateSpecification extends Specification with AssertFactory with DataTa
   
   /** create an anonymous example which will be skipped until it is implemented */
   def notImplemented = forExample in { skip ("not implemented yet")}
-  implicit def toSut(e: => Elem) = new Object { def isSut = toLiterateSut("") ->> e }
+  implicit def toSus(e: => Elem) = new Object { def isSus = toLiterateSus("") ->> e }
   
-  implicit def toLiterateSut(string: String) = new LiterateSut(specify(string))
+  implicit def toLiterateSus(string: String) = new LiterateSus(specify(string))
   
-  /** This class acts as an extension of a Sut to provide a literate description of a sut as an xml specification */
-  class LiterateSut(sut: Sut) {
+  /** This class acts as an extension of a Sus to provide a literate description of a sus as an xml specification */
+  class LiterateSus(sus: Sus) {
     def ->>(e: => Elem)= {
-      sut.verb = ""
+      sus.verb = ""
       format(e)
     }
     private def format(e: => Elem) = {
       val content = e
-      val anonymous = sut.examples.filter(_.description.matches("example \\d+"))
+      val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
       val exNodes = content.\("ex")
       exNodes.theSeq.toList.zip(anonymous.toList).foreach( pair => pair._2.description = pair._1.first.text)
-      sut.literateDescription = Some(content.text)
+      sus.literateDescription = Some(content.text)
     }
     /** specifies the system with a literate description and embedded assertions */
     def is(e: => Elem)= {
-      sut.verb = "specifies"
+      sus.verb = "specifies"
       format(e)
     }
   }

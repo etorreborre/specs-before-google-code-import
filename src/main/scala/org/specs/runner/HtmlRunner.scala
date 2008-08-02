@@ -87,14 +87,14 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
     def specNavHeader = { <tr><td colspan="2" class="navTitle">{spec.name}</td></tr> }
     <table>
       { specNavHeader }
-      { reduce[Sut](spec.allSuts, summary(_)) }
+      { reduce[Sus](spec.allSystems, summary(_)) }
     </table>
   }
   
-  /** creates a summary row for a sut. */
-  def summary(sut: Sut) = <tr>
-	<td>{statusIcon(sut)}
-    </td><td>{anchorRef(sut.header)}</td>
+  /** creates a summary row for a sus. */
+  def summary(sus: Sus) = <tr>
+	<td>{statusIcon(sus)}
+    </td><td>{anchorRef(sus.header)}</td>
   </tr>
  
   /** 
@@ -119,17 +119,17 @@ class HtmlRunner(specification: Specification, outputDir: String) extends Xml {
 
   /** create a table for one specification. */
   def specificationTable(spec: Specification) = {
-    <h2>{spec.description}</h2> ++ subspecsTables(spec.subSpecifications) ++ sutTables(spec.suts)
+    <h2>{spec.description}</h2> ++ subspecsTables(spec.subSpecifications) ++ susTables(spec.systems)
   }
 
   /** create tables for systems. */
-  def sutTables(suts: List[Sut]): NodeSeq = reduce[Sut](suts, sutTable(_))
+  def susTables(systems: List[Sus]): NodeSeq = reduce[Sus](systems, susTable(_))
   
   /** create a table for a system. */
-  def sutTable(sut: Sut): NodeSeq = {
-    anchorName(sut.header) ++ 
-    <h3>{sut.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
-    {exampleRows(sut.examples, sut.isFullSuccess)}
+  def susTable(sus: Sus): NodeSeq = {
+    anchorName(sus.header) ++ 
+    <h3>{sus.header}{upArrow}</h3>.toSeq ++ <table class="bodyTable">
+    {exampleRows(sus.examples, sus.isFullSuccess)}
     </table>
   }  
 

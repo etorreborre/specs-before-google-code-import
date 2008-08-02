@@ -19,7 +19,7 @@ object htmlRunnerSpec extends htmlRunnerRules { "the html runner specification" 
 
     3. System tables
     
-    <ex>There should be a table for each system under test.</ex>{oneTablePerSut}
+    <ex>There should be a table for each system under test.</ex>{oneTablePerSus}
     <ex>The table must be preceded by the system name as a separate header.</ex>{systemName}
     <ex>Close to the system name, there should be a small "up" arrow to go to the top of the page</ex>{topArrow}
     <ex>In each table, there should be a row per example</ex>{oneRowPerExample}
@@ -74,7 +74,7 @@ import scala.xml._
 trait htmlRunnerRules extends LiterateSpecification {
   
   def title = run must \\(<title>{specification.name}</title>)
-  def oneTablePerSut = run must \\(<table></table>)
+  def oneTablePerSus = run must \\(<table></table>)
   def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>)
   def systemName = run must \\(<h3>The system should<a href="#top">   <img src="images/up.gif"/></a></h3>)
   def topArrow = run must (\\(<a href="top"/>) and

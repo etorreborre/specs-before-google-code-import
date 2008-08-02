@@ -53,37 +53,37 @@ abstract class Specification extends Matchers with AssertFactory with Specificat
    * Otherwise, an Exception would be thrown, causing the specification failure at construction time.
    */
   object behave {
-    def like(other: Sut): Example = {
+    def like(other: Sus): Example = {
       val behaveLike = "behave like " + other.description.uncapitalize in {}
       other.examples.foreach(behaveLike.addExample(_))
       behaveLike
     }
-    def like(sutName: String): Example = outer.suts.find(_.description == sutName) match {
-      case Some(sut) => this.like(sut)
-      case None => throw new Exception(q(sutName) + " is not specified in " + outer.name)
+    def like(susName: String): Example = outer.systems.find(_.description == susName) match {
+      case Some(sus) => this.like(sus)
+      case None => throw new Exception(q(susName) + " is not specified in " + outer.name)
     }
   }
 
-  /** @return the failures of each sut */
-  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: suts.flatMap(_.failures)
+  /** @return the failures of each sus */
+  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures)
 
-  /** @return the skipped of each sut */
-  def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: suts.flatMap(_.skipped)
+  /** @return the skipped of each sus */
+  def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: systems.flatMap(_.skipped)
 
-  /** @return the errors of each sut */
-  def errors: List[Throwable] = subSpecifications.flatMap(_.errors) ::: suts.flatMap(_.errors)
+  /** @return the errors of each sus */
+  def errors: List[Throwable] = subSpecifications.flatMap(_.errors) ::: systems.flatMap(_.errors)
 
   /** @return all the examples with no errors, failures or skip messages */
-  def successes: List[Example] = subSpecifications.flatMap(_.successes) ::: suts.flatMap(_.successes)
+  def successes: List[Example] = subSpecifications.flatMap(_.successes) ::: systems.flatMap(_.successes)
 
   /** @return all the examples */
-  def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: suts.flatMap(_.examples)
+  def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: systems.flatMap(_.examples)
 
-  /** @return the total number of assertions for each sut */
-  def assertionsNb: Int = subSpecifications.foldLeft(0)(_ + _.assertionsNb) + suts.foldLeft(0)(_ + _.assertionsNb)
+  /** @return the total number of assertions for each sus */
+  def assertionsNb: Int = subSpecifications.foldLeft(0)(_ + _.assertionsNb) + systems.foldLeft(0)(_ + _.assertionsNb)
 
-  /** @return a description of this specification with all its suts (used for the ConsoleReporter) */
-  def pretty = description + suts.foldLeft("")(_ + _.pretty(addSpace("\n")))
+  /** @return a description of this specification with all its systems (used for the ConsoleReporter) */
+  def pretty = description + systems.foldLeft("")(_ + _.pretty(addSpace("\n")))
 
   /** 
    * Convenience method: adds a new failure to the latest example<br>
@@ -106,13 +106,13 @@ abstract class Specification extends Matchers with AssertFactory with Specificat
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
   
-  /** Declare the subspecifications and suts as components to be tagged when the specification is tagged */
-  override def taggedComponents = this.subSpecifications ++ this.suts
+  /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
+  override def taggedComponents = this.subSpecifications ++ this.systems
   
   /** reset in order to be able to run the examples again */
   def resetForExecution: this.type = {
     subSpecifications.foreach(_.resetForExecution)
-    suts.foreach(_.resetForExecution)
+    systems.foreach(_.resetForExecution)
     this
   }
   type HasResults = {
