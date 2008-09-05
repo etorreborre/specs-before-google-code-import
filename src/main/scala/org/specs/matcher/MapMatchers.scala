@@ -13,7 +13,11 @@ trait MapMatchers {
    * Matches if map.contains(k)
    */   
   def haveKey[S](k: S) = new Matcher[Iterable[(S, Any)]](){ 
-    def apply(m: => Iterable[(S, Any)]) = {val map = m; (map.exists{ p => p._1 == k}, map + " has key " + q(k), map + " hasn't key " + q(k))}
+    def apply(m: => Iterable[(S, Any)]) = {
+      val map = m
+      (map.exists{ p => p._1 == k}, 
+       dUnquoted(map) + " has the key " + q(k), dUnquoted(map) + " doesn't have the key " + q(k))
+    }
   } 
 
   /**
@@ -25,7 +29,10 @@ trait MapMatchers {
    * Matches if map contains a pair (key, value) with value == v
    */   
   def haveValue[S](v: S) = new Matcher[Iterable[(Any, S)]](){ 
-    def apply(m: => Iterable[(Any, S)]) = {val map = m; (map.exists(p => p._2 == v), map + " has value " + q(v), map.toString + " hasn't value " + q(v))} 
+    def apply(m: => Iterable[(Any, S)]) = {
+      val map = m
+      (map.exists(p => p._2 == v), 
+       dUnquoted(map) + " has the value " + q(v), dUnquoted(map) + " doesn't have the value " + q(v))} 
   }
 
   /**
@@ -37,7 +44,11 @@ trait MapMatchers {
    * Matches if map contains a pair (key, value) == (k, v)
    */   
   def havePair[S, T](p: (S, T)) = new Matcher[Iterable[(S, T)]](){
-     def apply(m: => Iterable[(S, T)]) = {val map = m; (map.exists{case e => e == p}, map + " has pair " + q(p), map + " hasn't pair " + q(p))}
+     def apply(m: => Iterable[(S, T)]) = {
+       val map = m
+       (map.exists{case e => e == p}, 
+        dUnquoted(map) + " has the pair " + q(p), 
+        dUnquoted(map) + " doesn't have the pair " + q(p))}
   }
    
 
@@ -53,7 +64,9 @@ trait MapMatchers {
     def apply(f: => PartialFunction[A, Any]) = {
       val isDefined = values map {v => (v, f.isDefinedAt(v))}
       val undefined = isDefined filter { !_._2 } map { _._1 }
-      (isDefined map {_._2} forall {_ == true}, "the function is defined for " + plural("values", values.size) + " " + q(values.mkString(", ")), "the function is not defined for " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
+      (isDefined map {_._2} forall {_ == true}, 
+       description.getOrElse("the function") + " is defined for " + plural("values", values.size) + " " + q(values.mkString(", ")), 
+       description.getOrElse("the function") + " is not defined for " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
     }
   }
   
@@ -64,7 +77,9 @@ trait MapMatchers {
     def apply(f: => PartialFunction[A, B]) = {
       val isDefined = values map {v => (v, f.isDefinedAt(v._1) && f(v._1) == v._2)}
       val undefined = isDefined filter { !_._2 } map { _._1 }
-      (isDefined map {_._2} forall {_ == true}, "the function is defined by " + plural("values", values.size) + " " + q(values.mkString(", ")), "the function is not defined by " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
+      (isDefined map {_._2} forall {_ == true}, 
+       description.getOrElse("the function") + " is defined by " + plural("values", values.size) + " " + q(values.mkString(", ")), 
+       description.getOrElse("the function") + " is not defined by " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
     }
    }
 }

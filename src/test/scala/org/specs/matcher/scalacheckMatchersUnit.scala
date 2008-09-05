@@ -2,12 +2,14 @@ package org.specs.matcher
 import org.specs._
 import org.specs.runner._
 import org.specs.Sugar._
-import scalacheck._
+import org.scalacheck._
+import org.scalacheck.util._
 import org.specs.mock._
 import org.specs.io._
 import org.specs.specification._
+import scala.collection.immutable
 
-class scalacheckMatchersUnitTest extends JUnit3(scalacheckMatchersUnit)
+class scalacheckMatchersUnitTest extends JUnit4(scalacheckMatchersUnit)
 object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock with Scalacheck {
   "The ScalacheckParameters object" should {
     "provide a 'display' value which is verbose" in {
@@ -67,7 +69,7 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock 
 }
 trait ScalacheckMock extends Mocker {
   trait ScalacheckFunctionsMock extends ScalacheckFunctions {
-    def result = Test.Stats(Test.Passed, 2, 3)
+    def result = Test.Result(Test.Passed, 1, 2, FreqMap.empty[immutable.Set[Any]])
     override def check(params: Test.Params, prop: Prop, printResult: (Int, Int) => Unit) = { 
       recordAndReturn(result)
     }
@@ -79,15 +81,15 @@ trait ScalacheckMock extends Mocker {
   } 
   val matcher = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock  
   val matcherWithFailure = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
-    override def result = Test.Stats(Test.Failed(List(Arg("", null, 1))), 1, 2)
+    override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
   val matcherWithPropertyException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
-    override def result = Test.Stats(Test.PropException(List(Arg("", null, 2)), FailureException("")), 1, 2)
+    override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
   val matcherWithGenerationException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
-    override def result = Test.Stats(Test.GenException(new Exception), 1, 2)
+    override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
   val matcherWithExhaustedGeneration = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
-    override def result = Test.Stats(Test.Exhausted, 1, 2)
+    override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
 }

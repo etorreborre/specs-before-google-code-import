@@ -1,9 +1,14 @@
 package org.specs.matcher
 import scala.xml._
 import scala.xml.NodeSeq._
-import StringToElem._
 import xpath._
 import org.specs.xml.NodeFunctions._
+
+object StringToElem {
+  implicit def toElement(s: String) = new ToElem(s)
+  class ToElem(s: String) {def toElem: Elem = Elem(null, s, Null, TopScope)}
+}
+import StringToElem._
 /**
  * The <code>XmlMatchers</code> trait provides matchers which are applicable to xml nodes
  */
@@ -76,7 +81,10 @@ trait XmlMatchers {
   /**
    * Matches if <code>node</code> is equal to the tested node without testing empty text
    */   
-  def equalIgnoreSpace(node: Iterable[Node]): Matcher[Iterable[Node]] = new Matcher[Iterable[Node]] { def apply(n: =>Iterable[Node]) = (isEqualIgnoreSpace(node.toList, n.toList), n + " is equal to " + node, n + " is not equal to " + node) }
+  def equalIgnoreSpace(node: Iterable[Node]): Matcher[Iterable[Node]] = new Matcher[Iterable[Node]] { 
+    def apply(n: =>Iterable[Node]) = {
+    (isEqualIgnoreSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+  }
 
   /**
    * Alias for equalIgnoreSpace
@@ -99,7 +107,11 @@ case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[No
   /**
    * checks that the <code>nodes</code> satisfy the <code>functions</code>
    */
-  def apply(n: =>Iterable[Node]) = {val nodes = n; checkFunctions(functions, nodes, (true, nodes.toString, nodes.toString))}
+  def apply(n: =>Iterable[Node]) = {
+    val nodes = n
+    val result = checkFunctions(functions, nodes, (true, nodes.toString, nodes.toString))
+    (result.success, description.map(_ + " ").getOrElse("") + result.okMessage, description.map(_ + " ").getOrElse("") + result.koMessage) 
+  }
   
   /**
    * checks that the <code>nodes</code> satisfy the <code>functions</code>
@@ -113,7 +125,7 @@ case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[No
     // check the rest of the functions, with the nodes returned by the current function
     // and build a MatcherResult being a success if the function retrieves some node
     pathFunctions match {
-      case function::rest => {
+      case function :: rest => {
          val functionResult = function(nodes) 
          val searched = searchedElements(function)
          checkFunctions(rest, 
@@ -242,8 +254,4 @@ class PathFunction(val node: Node, val attributes: List[String], val attributeVa
    */
   def searchedAttributes = attributes.mkString(", ") + attributeValues.map(a=> a._1 + "=\"" + a._2 + "\"").mkString(" ")
   
-}
-object StringToElem {
-  implicit def toElement(s: String) = new ToElem(s)
-  class ToElem(s: String) {def toElem: Elem = Elem(null, s, Null, TopScope)}
 }

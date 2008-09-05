@@ -254,7 +254,7 @@ object jmockGoodSpec extends Mocked {
     before(mock = classOf[ToMock].expectsOne(_.isEmpty).mock)
   }
   "The JMocker trait" ->-(withMockInContext) should {
-    "allow mocks to be declared in the sut context" in {
+    "allow mocks to be declared in the sus context" in {
       withMockInContext.mock.isEmpty
     }
   }

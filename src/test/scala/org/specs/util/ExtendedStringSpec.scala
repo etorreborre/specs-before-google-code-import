@@ -24,6 +24,11 @@ object ExtendedStringSpec extends Specification {
       "he(l)(l)o".removeAll(")(") must_== "he(ll)o"
     }
   }
+  "the removeFrom function" should {
+    "remove everything from a given substring" in {
+      "hello$world$hi".removeFrom("$") must_== "hello"
+    }
+  }
   "the groups function" should {
     "return Nil if the pattern is null" in {
       "hello".groups(null) must beEmpty

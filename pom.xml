@@ -1,5 +1,4 @@
-<!--
-Copyright (c) 2007 Eric Torreborre
+<!--Copyright (c) 2007 Eric Torreborre
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +32,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <version>1.3.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>specs is a Behaviour-Driven-Design framework</description>
+  <description>specs is a Behaviour-Driven-Design
+  framework</description>
   <url>http://code.google.com/p/specs/</url>
   <inceptionYear>2007</inceptionYear>
   <licenses>
@@ -62,7 +62,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </developer>
   </developers>
   <properties>
-    <scala.version>2.7.1</scala.version>
+    <scala.version>2.7.2-rc1</scala.version>
     <java.src.version>1.5</java.src.version>
   </properties>
   <repositories>
@@ -75,6 +75,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <id>scala-tools.org - snapshots</id>
       <name>Scala-Tools Maven2 Repository - snapshots</name>
       <url>http://scala-tools.org/repo-snapshots</url>
+    </repository>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -90,6 +96,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
+    <dependency>
+      <groupId>net.java</groupId>
+      <artifactId>textile-j</artifactId>
+      <version>2.2</version>
+    </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
@@ -109,7 +120,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.scalacheck</groupId>
       <artifactId>scalacheck</artifactId>
-      <version>1.3</version>
+      <version>1.4-scSNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>
@@ -214,8 +225,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-scala-plugin</artifactId>
         <version>2.6</version>
         <configuration>
-		  <jvmArgs>
-           <jvmArg>-Xmx512m</jvmArg>
+          <jvmArgs>
+            <jvmArg>-Xmx512m</jvmArg>
           </jvmArgs>
           <vscaladocVersion>1.2-SNAPSHOT</vscaladocVersion>
           <scalaVersion>${scala.version}</scalaVersion>
@@ -240,7 +251,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         </repository>
         <site>
           <id>scala-tools.org</id>
-          <url>dav:http://dav.scala-tools.org/mvnsites/specs/${project.version}</url>
+          <url>
+          dav:http://dav.scala-tools.org/mvnsites/specs/${project.version}</url>
         </site>
       </distributionManagement>
     </profile>

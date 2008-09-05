@@ -2,7 +2,7 @@ package org.specs.specification
 import org.specs.matcher._
 import org.specs.matcher.Matchers._
 import org.specs.ExtendedThrowable._
-
+import org.specs.Sugar._
 /**
  * An assertable is an object supporting the execution of assertions through matchers.<pre>
  *   thisAssertable must passMatcher
@@ -14,7 +14,7 @@ import org.specs.ExtendedThrowable._
  *   // it will be executed only once the example is executed
  *   // @see org.specs.specification.AssertFactory
  *   // @see org.specs.specification.ExampleAssertionListener
- *   1 must_== 1 
+ *   1 must_== 1
  * 
  *   // in that case, no example is set but during the execution of the "in" part
  *   // the failure exception will be caught by the example and stored
@@ -29,24 +29,42 @@ import org.specs.ExtendedThrowable._
 trait Assertable[T] {
   /** related example. */
   private var example: Option[Example] = None
+  /** function used to display success values as a result of a match. By default nothing is displayed. */
+  private var successValueToString: SuccessValue => String = s => ""
+  /** the listener will be called for every match to register a new assertion. */
+  private var assertionListener: Option[ExampleAssertionListener] = None
+  /** 
+   * stores a precise description of the thing being asserted. 
+   * This description is meant to be passed to the matcher for better failure reporting.
+   */
+  protected var description: Option[String] = None
 
   /** 
    * Apply a matcher for this assertable value.
    * 
    * Execute the matcher directly or add it to its related example for execution.
+   * It either throws a FailureException or return a SuccessValue object. 
+   *
+   * The assertion listener gets notified of a new assertion with a fresh copy of this assertable.
+   * The matcher gets 
    */
-  def applyMatcher[S >: T](m: => Matcher[S], value: => T): boolean = {
+  def applyMatcher[U >: T](m: => Matcher[U], value: => T): SuccessValue = {
+    assertionListener.map(_.addAssertion(Some(this))) 
+
+    val failureTemplate = FailureException("")
     def executeMatch = {
-      val (result, _, koMessage) = m.apply(value) 
+      val matcher = m
+      matcher.setDescription(description)
+      val (result, _, koMessage) = matcher.apply(value) 
       result match {
-        case false => FailureException(koMessage).rethrowFrom(this)
-        case _ => true
+        case false => new FailureException(koMessage).rethrowBy("must", failureTemplate)
+        case _     => SuccessValue(successValueToString)
       }
     }
     example match {
       case None => executeMatch
       case Some(e) => {
-        var res: Boolean = true
+        var res = SuccessValue(successValueToString)
         e in { res = executeMatch }
         res
       }
@@ -56,6 +74,17 @@ trait Assertable[T] {
    * Set a specific example to hold the results of this matcher
    */
   def setExample[T](ex: Example) = example = Some(ex)
+  
+  /** setter for the assertion listener. */
+  def setAssertionListener(listener: ExampleAssertionListener): this.type = { 
+    assertionListener = Some(listener); 
+    this
+  }
+
+  /**
+   * Set a new function to render success values
+   */
+  def setSuccessValueToString(f: SuccessValue =>  String) = successValueToString = f
 }
 /**
  * The assert class adds matcher methods to objects which are being specified<br>
@@ -66,18 +95,25 @@ trait Assertable[T] {
  *
  */
 class Assert[T](value: => T) extends Assertable[T] {
+
+  override def toString() = value.toString
+  def createClone = new Assert(value)
+  
+  /** set a better description on the value. */
+  def aka(desc: String): this.type = { description = Some(desc); this }
+
   /**
    * applies a matcher to the current value and throw a failure is the result is not true 
    */
-  def must[S >: T](m: => Matcher[S]): Boolean = applyMatcher[S](m, value)
+  def must[S >: T](m: => Matcher[S]) = applyMatcher[S](m, value)
   
   /**
    * applies the negation of a matcher 
    */
-  def mustNot[S >: T](m: => Matcher[S]): Boolean =  must(m.not)
+  def mustNot[S >: T](m: => Matcher[S]) =  must(m.not)
 
   /** alias for <code>must verify(f)</code>  */
-  def mustVerify[S >: T](f: S => Boolean): Boolean = must(verify(f))
+  def mustVerify[S >: T](f: S => Boolean) = must(verify(f))
 
   /** alias for <code>mustVerify(f)</code>  */
   def verifies(f: T => Boolean) = mustVerify(f)
@@ -106,7 +142,7 @@ class Assert[T](value: => T) extends Assertable[T] {
   def mustEqual(otherValue: Any)(implicit details: Detailed) = must(is_==(otherValue)(details))
 }
 /** RuntimeException carrying a matcher ko message */
-case class FailureException(message: String) extends RuntimeException(message)
+case class FailureException(var message: String) extends RuntimeException(message)
 
 /** RuntimeException carrying a matcher skip message */
 case class SkippedException(message: String) extends RuntimeException(message)
@@ -114,6 +150,7 @@ case class SkippedException(message: String) extends RuntimeException(message)
 /** Specialized assert class with string matchers aliases */
 class AssertString[A <: String](value: => A) extends Assertable[A] {
 
+  def createClone = new AssertString(value)
   /** alias for <code>must(beMatching(a))</code> */
   def mustMatch(a: String) = applyMatcher(beMatching(a), value)
 
@@ -128,6 +165,7 @@ class AssertString[A <: String](value: => A) extends Assertable[A] {
 }
 /** Specialized assert class with iterable matchers aliases */
 class AssertIterable[I <: AnyRef](value: =>Iterable[I]) extends Assertable[Iterable[I]] {
+  def createClone = new AssertIterable(value)
 
   /** alias for <code>must(exist(function(_))</code> */
   def mustExist(function: I => Boolean) = applyMatcher(exist {x:I => function(x)}, value)
@@ -143,6 +181,7 @@ class AssertIterable[I <: AnyRef](value: =>Iterable[I]) extends Assertable[Itera
 }
 /** Specialized assert class with iterable[String] matchers aliases */
 class AssertIterableString(value: =>Iterable[String]) extends Assertable[Iterable[String]] {
+  def createClone = new AssertIterableString(value)
 
   /** alias for <code>must(existMatch(pattern))</code> */
   def mustHaveMatch(pattern: String) = applyMatcher(existMatch(pattern), value)
@@ -155,4 +194,25 @@ class AssertIterableString(value: =>Iterable[String]) extends Assertable[Iterabl
 
   /** alias for <code>must(notExistMatch(pattern))</code> */
   def mustNotExistMatch(pattern: String) = applyMatcher(notExistMatch(pattern), value)
+}
+/**
+ * By default the result value of an assertable expression doesn't output anything when 
+ * toString is called.
+ */
+/**
+ * This trait transforms SuccessValue objects to a Boolean value if it is necessary, for example in 
+ * ScalaCheck properties.
+ */
+trait SuccessValues {
+
+  /** transforms a SuccessValue to a boolean */
+  implicit def successValueToBoolean(s: SuccessValue) = true
+  
+  /** by default a SuccessValue is "silent" */
+  def successValueToString(s: SuccessValue) = ""
+  
+}
+/** value returned by an assertable whose string representation can vary. */
+case class SuccessValue(f: SuccessValue => String) {
+  override def toString = f(this)
 }

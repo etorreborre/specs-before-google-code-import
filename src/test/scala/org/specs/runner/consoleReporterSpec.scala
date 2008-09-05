@@ -62,7 +62,7 @@ object consoleReporterSpec extends Specification with MockOutput {
     "report skipped examples created with the 'orSkipExample' on a faulty matcher with a small circle" in {
       specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustExistMatch "o " 
     }
-    "report the literal description of a sut if it is set"  in {
+    "report the literal description of a sus if it is set"  in {
       new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded assertions"
     }
     "report the reason for a skipped example" in {
@@ -73,8 +73,8 @@ object consoleReporterSpec extends Specification with MockOutput {
     } 
     "report the time for each system and add times for the total" in {
       specWithTwoSystems.messages
-      val sutTime1 :: sutTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
-      (sutTime1 + sutTime2) must beCloseTo(total, 1) // to account for rounding errors
+      val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
+      (susTime1 + susTime2) must beCloseTo(total, 1) // to account for rounding errors
     }
   }
   "A console reporter" should {
@@ -86,8 +86,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
-      val spec = new SpecWithOneExample(that.throwsAnException)
-      object testSpecRunner extends Runner(spec) with Console with MockOutput
+      val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput 
       testSpecRunner.args ++= Array("-ns")
       testSpecRunner.reportSpecs
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
@@ -109,7 +108,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   "A console trait" should { clean.before
     "print a warning message if a accept/reject argument is not followed by tags" in {
-      runWith("-acc") must containMatch("warning: accept/reject tags omitted") 
+      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted") 
     }
     "work with several tags separated by a comma" in {
       runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
@@ -130,13 +129,15 @@ object consoleReporterSpec extends Specification with MockOutput {
     ("excluded" in {}).tag("out") 
     ("included" in {}).tag("in") 
   }
-  object specRunner extends Runner(spec) with Console with MockOutput
+  object specRunner extends ConsoleRunner(spec) with MockOutput
 
   def specWithOneExample(assertions: (that.Value)*) = new SpecWithOneExample(assertions.toList).run
   def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
-abstract class TestSpec extends LiterateSpecification with ConsoleReporter with MockOutput {
+abstract class TestSpec extends LiterateSpecification with Console with MockOutput {
+  val specs = List(this)
+  override def main(args: Array[String]) = super[Console].main(args)
   val success = () => true mustBe true
   val isSkipped = () => skip("irrelevant")
   val isSkippedBecauseOfAFaultyMatcher = () => 1 must be(0).orSkipExample
@@ -161,7 +162,7 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
         assertions(behaviours) foreach {_.apply}
       }
     }
-    reportSpec(this)
+    reportSpecs
     messages
   }   
 }
@@ -172,7 +173,7 @@ class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
       "have example 2.1 ok" in { assertions(behaviours).head.apply}
       "have example 2.2 ok" in { assertions(behaviours).last.apply }
     }
-    reportSpec(this)
+    reportSpecs
     messages
   }   
 }
@@ -188,7 +189,7 @@ class SpecWithTwoSystems extends TestSpec {
       "have example 2.1 ok" in { Thread.sleep(10) }
       "have example 2.2 ok" in { Thread.sleep(10) }
     }
-    reportSpec(this)
+    reportSpecs
     messages
     this
   }   
@@ -198,7 +199,7 @@ class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSp
     "The specification" is <p> 
       Some text with {"embedded assertions" in {assertions(behaviours) foreach {_.apply}}}
     </p>
-    reportSpec(this)
+    reportSpecs
     messages
   }   
 }

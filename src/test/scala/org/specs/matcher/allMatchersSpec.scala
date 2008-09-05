@@ -15,8 +15,8 @@ object matchersSpec extends Specification {
                              scalacheckMatchersSpec)
 }
 class MatchersSpecification extends Specification {
-  var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sut("", this))
-  def clearExample = { reported = new Example("", new Sut("", this)) }
+  var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sus("", this))
+  def clearExample = { reported = new Example("", new Sus("", this)) }
   def failWith(message: String) = is_==(message)
   def failWithMatch(pattern: String) = beMatching(pattern)
   def assertion(value: => Any): String = {

@@ -22,7 +22,9 @@ trait Output {
   /**
    * prints stacktraces
    */
-  def printStackTrace(t: Throwable) =  t.printStackTrace
+  def printStackTrace(t: Throwable) = t.printStackTrace(new java.io.PrintWriter(System.err) {
+    override def println(s: String) = Output.this.println(s)
+  })
 }
 
 /**

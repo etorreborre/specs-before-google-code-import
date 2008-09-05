@@ -32,7 +32,7 @@ trait HmsTimer extends Timer {
    * @return the elapsed time as a String
    */
   def stop: String = { 
-    elapsed = Calendar.getInstance.getTime.getTime - millis.first
+    elapsed = Calendar.getInstance.getTime.getTime - millis.top
     millis.pop
     preciseTime
   }
@@ -56,7 +56,7 @@ trait HmsTimer extends Timer {
    */
   def hms: String = {
     val (hours, minutes, seconds, millis) = hourMinutesSecondsMillis
-    def plural(v: long) = if (v > 1) "s" else ""
+    def plural(v: Long) = if (v > 1) "s" else ""
     var result = ""
     if (hours > 0) { result += hours + " hour" + plural(hours) + " " } 
     if (minutes > 0) { result += minutes + " minute" + plural(minutes) + " " } 

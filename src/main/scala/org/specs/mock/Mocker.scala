@@ -114,7 +114,7 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers {
   override def afterTest(ex: Example) = {
     if (protocol.isSpecified) {
       ex.addAssertion
-      (new Assert[Protocol](protocol)) must beMet
+      (new Assert(protocol)) must beMet
     } 
     super.afterTest(ex)
   }

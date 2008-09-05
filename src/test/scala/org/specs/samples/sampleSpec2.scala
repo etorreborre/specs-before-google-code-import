@@ -7,7 +7,7 @@ object sampleSpec2 extends Specification {
     "return something" in {
        "hello" mustBe "hello"
     }
-  }
+  }    
 }
 import org.specs.runner._
 class helloWorldTest extends Runner(helloWorld) with JUnit with ScalaTest

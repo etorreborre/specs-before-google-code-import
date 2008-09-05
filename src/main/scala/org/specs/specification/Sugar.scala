@@ -39,6 +39,9 @@ trait Sugar extends Products with ConsoleOutput { outer =>
 
       /** print and pass: print the value and return it */ 
       def pp = { outer.println(a); a }
+      
+      /** alias for print and pass */ 
+      def >| = pp
   }
   /** 
    * This implicit definition allows to print any iterable to the console with:<br/>

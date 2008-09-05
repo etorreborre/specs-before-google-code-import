@@ -4,9 +4,9 @@ import org.specs.specification._
 import org.specs.runner._
 import org.specs.util.DataTables
 
-object calcRunner extends ConsoleRunner(calcSpecificationSpec)
+object calcRunner extends Runner(calcSpecificationSpec) with JUnit
 object calcSpecificationSpec extends LiterateSpecification with DataTables {
-  val calc = new Object {def add(x: Int, y: int): Int = x + y }
+  val calc = new Object {def add(x: Int, y: Int): Int = x + y }
   "A literate spec for the calculator" is 
 <p>
 A calculator can { "add integers: calc.add(a, b) == c" inTable { 

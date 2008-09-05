@@ -3,7 +3,7 @@ import scala.collection.mutable.Queue
 
 /**
  * The Tagged trait allows to add tags to a Specification or a System under test.<p/>
- * The tags will be propagated to the specification or the sut components using the tagWith method. With this rule, 
+ * The tags will be propagated to the specification or the sus components using the tagWith method. With this rule, 
  * a Tagged component should always have its parent tags (and possibly more).<p/>
  * 
  * Tags can be used when executing a Specification to restrict the executed examples. In that case, the examples are marked as skipped:<pre>
@@ -26,6 +26,9 @@ trait Tagged {
 
   /** list of tags which are rejected for this element */
   val rejected: Queue[Tag] = new Queue[Tag]
+
+  /** transforms a string to a Tag object */
+  implicit def stringToTag(s: String) = Tag(s) 
 
   /** Add one or several tags to this element */
   def tag(t: String*): this.type = addTags(t:_*)
@@ -99,13 +102,10 @@ trait Tagged {
     !tags.exists(t => rejected.exists(a => t.matches(a)))
   }
 
-  /** transforms a string to a Tag object */
-  implicit def stringToTag(s: String) = Tag(s) 
-
   /** @return a description of the Tagged element showing the owned tags, the accepted and rejected tags */
   def tagSpec = "tags: " + tags.mkString(", ") + "  accepted: " + accepted.mkString(", ") + "  rejected: " + rejected.mkString(", ")
 
-  /** add the tags specification from another tagged element. This is used when propagating the tags from a specification to a sut for example */
+  /** add the tags specification from another tagged element. This is used when propagating the tags from a specification to a sus for example */
   def tagWith(other: Tagged): this.type = {
     this.addTags(other.tags.map(_.name):_*).
       accept(other.accepted.map(_.name):_*).
@@ -113,6 +113,9 @@ trait Tagged {
   }
   /** this method should be overriden if the Tagged element has Tagged components which should be tagged when this element is tagged */
   def taggedComponents: Seq[Tagged] = List()
+
+  /** create another tagged with this new tags */
+  def makeTagged(s: String*) = (new Tagged() {}).tagWith(this).tag(s:_*)
 
   /** add tags, accepted and rejected to the tagged components if there are some */
   private def propagateTagsToComponents = taggedComponents.foreach(_.tagWith(this))

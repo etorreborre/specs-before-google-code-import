@@ -10,7 +10,7 @@ import org.specs.collection.JavaCollectionsConversion._
  * -the specifications are used to create JUnit3 TestSuite and TestCase objects
  * -however, since TestSuite is not an interface, a JUnitSuite trait is used to represent it (and the JUnitSuite uses a TestSuite internally to hold the tests) 
  *   -a specification is represented as a JUnitSuite
- *   -a system under test (sut) is represented as an ExamplesTestSuite <: JUnitSuite
+ *   -a system under test (sus) is represented as an ExamplesTestSuite <: JUnitSuite
  *   -an example is represented as an ExampleTestCase <: TestCase
  * 
  * Then, the JUnitSuite which implements the junit.framework.Test interface can be run using 
@@ -68,7 +68,7 @@ trait JUnitSuite extends Test {
 /**
  * Extension of a JUnitSuite initializing the suite with one or more specifications
  */
-trait JUnit extends JUnitSuite with SpecsHolder {
+trait JUnit extends JUnitSuite with Reporter {
   def initialize = { 
     if (specs.size > 1)
       setName(this.getClass.getName.replaceAll("\\$", ""))
@@ -76,7 +76,7 @@ trait JUnit extends JUnitSuite with SpecsHolder {
 	   setName(specs(0).description)
 	specs foreach { specification => 
 	  specification.subSpecifications.foreach {s: Specification => addTest(new JUnit3(s))}
-	  specification.suts foreach {sut => addTest(new ExamplesTestSuite(sut.description + " " + sut.verb, sut.examples, sut.skippedSut))}
+	  specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skippedSus))}
 	}
   }
 }
@@ -101,7 +101,7 @@ class JUnit4(val specifications : Specification*) extends JUnit {
 
 /**
  * A <code>ExamplesTestSuite</code> is a JUnitSuite reporting the results of 
- * a System under test (sut) as a list of examples, represented by ExampleTestCase objects. If an example has subExamples, they are reported with a separate <code>ExamplesTestSuite</code>
+ * a System under test (sus) as a list of examples, represented by ExampleTestCase objects. If an example has subExamples, they are reported with a separate <code>ExamplesTestSuite</code>
  */
 class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite {
 
@@ -121,7 +121,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
   /**
    * runs the set of exemplesA <code>ExamplesTestSuite</code> is a JUnitSuite reporting the results of 
    * a list of examples. If an example has subExamples, they are reported with a separate <code>ExamplesTestSuite</code>
-   * If the list of examples is skipped (because the corresponding sut is skipped), then a SkippedAssertionError failure is sent
+   * If the list of examples is skipped (because the corresponding sus is skipped), then a SkippedAssertionError failure is sent
    * and the JUnitSuiteRunner will interpret this as an ignored test (this functionality wasn't available in JUnit3)
    */
   override def run(result: TestResult) = {

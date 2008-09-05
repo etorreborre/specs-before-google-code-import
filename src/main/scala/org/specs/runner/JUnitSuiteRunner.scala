@@ -54,7 +54,7 @@ trait TestDescription {
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
-   * For specs it is different as there can be the same name in 2 different suts (and those suts will be represented by the
+   * For specs it is different as there can be the same name in 2 different systems (and those systems will be represented by the
    * same JUnit class: ExampleTestCase).
    * 
    * This uses the createSuiteDescription method from JUnit as it is the only way to create a Description object having

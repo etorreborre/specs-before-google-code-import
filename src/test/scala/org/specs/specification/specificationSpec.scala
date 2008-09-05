@@ -16,17 +16,14 @@ object basicFeatures extends SpecificationWithSamples {
       object mySpec extends Specification
       mySpec.description must_== "mySpec"
     }
-    "reference zero or more systems under test (sut)" in { 
-      emptySpec.suts must beEmpty
-      oneEx(that.isOk).suts.size mustBe 1
-      twoSuts(that.isOk, that.isOk).suts.size mustBe 2
+    "reference zero or more systems under test (sus)" in { 
+      emptySpec.systems must beEmpty
+      oneEx(that.isOk).systems.size mustBe 1
+      twoSystems(that.isOk, that.isOk).systems.size mustBe 2
     }
-    "have zero or more examples, sorted by sut" in {
-      twoSuts(that.isOk, that.isOk).pretty must_== """twoSuts
-                                                     |  This system under test should 
-                                                     |    have example 1 ok
-                                                     |  This other system under test should 
-                                                     |    have example 1 ok""".stripMargin
+    "have zero or more examples, sorted by sus" in {
+      twoSystems(that.isOk, that.isKo).systems.first.status must_== "success"
+      twoSystems(that.isOk, that.isKo).systems.last.status must_== "failure"
     }
    "have no failures if it contains no assertion" in { 
      oneEx(that.isOk).failures must beEmpty
@@ -41,8 +38,8 @@ object basicFeatures extends SpecificationWithSamples {
      errorSpec.errors must beLike {case Seq(x: Throwable) => x.getMessage must_== "new Error"} 
    } 
    "provide the number of assertions" in { 
-     val spec = twoSuts(that.isOk, List(that.isOk, that.isOk))
-     spec.suts.map {_.assertionsNb} must_== List(1, 2)
+     val spec = twoSystems(that.isOk, List(that.isOk, that.isOk))
+     spec.systems.map {_.assertionsNb} must_== List(1, 2)
      spec.assertionsNb mustBe 3
    } 
    "provide a 'fail' method adding a new failure to the current example" in {
@@ -61,14 +58,14 @@ object basicFeatures extends SpecificationWithSamples {
                                         msg must_== "skipped with the skip method"} 
      skipSpec.assertionsNb mustBe 0
    } 
-   "provide a 'skip' method skipping the sut if positioned before all examples" in {
+   "provide a 'skip' method skipping the sus if positioned before all examples" in {
      object skipAll extends Specification {
        "a system" should {
          skip("be skipped")
          "for all its examples" in { 1 mustBe 1 }
        }
      }
-     skipAll.suts must exist { s: Sut => s.skippedSut != None } 
+     skipAll.systems must exist { s: Sus => s.skippedSus != None } 
      skipAll.assertionsNb mustBe 0
    } 
    "not execute its examples unless asked for their status" in {
@@ -101,9 +98,9 @@ object advancedFeatures extends SpecificationWithSamples {
       spec.name = "This is a great spec"
       spec.name must_== "This is a great spec"
     }
-    "use 'can' instead of 'should' to describe the sut functionalities" in {
+    "use 'can' instead of 'should' to describe the sus functionalities" in {
       val spec = oneEx(that.isOk) 
-      spec.suts.first.verb must_== "can"
+      spec.systems.first.verb must_== "can"
     }
     "be composed of other specifications. The composite specification has subSpecifications.\n" + 
     "Use the isSpecifiedBy method to do so [alias areSpecifiedBy]."  in {
@@ -132,7 +129,7 @@ object advancedFeatures extends SpecificationWithSamples {
         "A system under test" should { "share examples with another spec" in sharedExamples }
       }
       compositeSpec.description must_== "compositeSpec"
-      compositeSpec.suts.head.examples must beLike {
+      compositeSpec.systems.head.examples must beLike {
         case Seq(ex: Example) => 
           ex.subExamples must beLike { case Seq(subEx) => true }
       }
@@ -181,7 +178,7 @@ trait SpecificationWithSamples extends Specification {
   object compositeSpec extends TestSpec {
     "This composite spec" should {
       "take its examples from another spec" in {
-        oneEx(that.isOk).suts.flatMap{_.examples}
+        oneEx(that.isOk).systems.flatMap{_.examples}
       }
     }
   }
@@ -198,7 +195,7 @@ trait SpecificationWithSamples extends Specification {
       "have example 2.2 ok" in { assertions(behaviours2).last.apply }
     }
   }
-  case class twoSuts(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
+  case class twoSystems(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
     "This system under test" should {
       "have example 1 ok" in {
         assertions(behaviours1) foreach {_.apply}

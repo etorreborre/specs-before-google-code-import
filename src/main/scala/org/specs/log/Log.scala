@@ -20,16 +20,16 @@ trait Log extends Output {
   var level = Warning
 
   /** prints the message if the log level is Debug */
-  def debug(msg: String) = if (level == 0) println(msg)
+  def debug(msg: =>String) = if (level == 0) println("[DEBUG] " + msg)
   
   /** prints the message if the log level is <= Info */
-  def info(msg: String) = if (level <= Info ) println(msg)
+  def info(msg: =>String) = if (level <= Info ) println("[INFO] " + msg)
 
   /** prints the message if the log level is <= Warning */
-  def warning(msg: String) = if (level <= Warning ) println(msg)
+  def warning(msg: =>String) = if (level <= Warning ) println("[WARNING] " + msg)
 
   /** prints the message if the log level is <= Error */
-  def error(msg: String) = if (level <= Error ) println(msg)
+  def error(msg: =>String) = if (level <= Error ) println("[ERROR] " + msg)
 }
 
  /** Implementation of the <code>Log</code> trait using the <code>Console</code> */

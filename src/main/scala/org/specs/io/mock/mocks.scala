@@ -17,6 +17,9 @@ trait MockFileSystem extends FileSystem {
   /** this map associates some file paths with file contents */
   var files = new HashMap[String, String]
 
+  /** this list registers created directories*/
+  var createdDirs = List[String]()
+
   /** this map associates some file paths with children paths */
   var children = new HashMap[String, ListBuffer[String]]
 
@@ -49,7 +52,6 @@ trait MockFileSystem extends FileSystem {
     }
     children.get(parent).get += child
   }
-
   /** sets a file as readable */
   def setReadable(path: String) = if (!canRead(path)) (readableFiles ::= path)
   /** sets a file as writable */
@@ -81,11 +83,16 @@ trait MockFileSystem extends FileSystem {
   /** creates a file with the specified path but an empty content */
   override def createFile(path: String) = {files += (path -> ""); true}
 
+  /** create a new directory */
+  override def mkdirs(path: String) = { createdDirs = path :: createdDirs; true }
+  /** create a new directory */
+  override def createDir(path: String) = mkdirs(path)
+
   /** @returns a mock FileWriter for a specific path */
   override def getWriter(path: String) = MockFileWriter(path)
 
   case class MockFileWriter(path: String) extends MockWriter {
-    override def write(m: String): Unit = files(path) = files(path) + m
+    override def write(m: String): Unit = files(path) = files.getOrElse(path, "") + m
   }
   /** removes all specified files */
   def reset: this.type = {

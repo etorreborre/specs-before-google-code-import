@@ -31,6 +31,9 @@ object anyMatchersUnit extends MatchersSpecification {
     "display a failure message if comparing different values" in {
       assertion(1 must be(2)) must failWith("'1' is not the same as '2'")
     }
+    "display a precise failure message if there is an alias" in {
+      assertion(1 aka "the number" must be(2)) must failWith("the number '1' is not the same as '2'")
+    }
   }
   "An '==' matcher" should {
     "be ok if comparing 2 objects which are equals with ==" in {
@@ -83,6 +86,10 @@ object anyMatchersUnit extends MatchersSpecification {
       val a: String = "not null"
       assertion(a must beNull) must failWith("'not null' is not null")
     }
+    "display a precise failure message if there is a description of the value" in {
+      val a: String = "not null"
+      assertion(a aka "the value" must beNull) must failWith("the value 'not null' is not null")
+    }
   }
   "A 'notBeNull' matcher" should {
     "be ok if comparing with a non-null object" in {
@@ -93,6 +100,10 @@ object anyMatchersUnit extends MatchersSpecification {
       val a: String = null
       assertion(a must notBeNull) must failWith("the value is null")
     }
+    "display a precise failure message if there is a description of the value" in {
+      val a: String = null
+      assertion(a aka "this value" must notBeNull) must failWith("this value is null")
+    }
   }
   "A 'beTrue' matcher" should {
     "be ok if comparing with a true object" in {
@@ -101,6 +112,9 @@ object anyMatchersUnit extends MatchersSpecification {
     "display a failure message if the value is not true" in {
       assertion(false must beTrue) must failWith("the value is false")
     }
+    "display a precise failure message if the value has a description" in {
+      assertion(false aka "this value" must beTrue) must failWith("this value is false")
+    }
   }
   "A 'beFalse' matcher" should {
     "be ok if comparing with a false object" in {
@@ -108,6 +122,9 @@ object anyMatchersUnit extends MatchersSpecification {
     }
     "display a failure message if the value is not true" in {
       assertion(true must beFalse) must failWith("the value is true")
+    }
+    "display a precise failure message if the value has a description" in {
+      assertion(true aka "this value" must beFalse) must failWith("this value is true")
     }
   }
   "A throwA + exception matcher" should {
@@ -126,6 +143,10 @@ object anyMatchersUnit extends MatchersSpecification {
     "throw a Failure exception with the other exception message, if the value throws another exception" in {
       throwA(new Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
     }
+    "display a precise failure message if the block has a description" in {
+      lazy val block = { throw new Exception  }
+      { theBlock(block) aka "this block" must throwA(new Error("Error")) } must throwThis(new FailureException("java.lang.Error: Error should have been thrown from this block. Got: java.lang.Exception"))
+   }
   }
   case class SimpleException(s: String) extends Exception(s)
   "A throwThis + exception matcher" should {
@@ -169,6 +190,13 @@ object anyMatchersUnit extends MatchersSpecification {
     }
     "not evaluate the expressions twice: beFalse" in {
       (beFalse: Matcher[Boolean]) must evalOnce(exp(boolValue))
+    }
+  }
+  "a matcher" should {
+    "use the description if passed one" in {
+      val m: Matcher[Boolean] = beTrue
+      m.setDescription(Some("this expression"))
+      m.apply(true) must_== (true, "this expression is true", "this expression is false")
     }
   }
 }

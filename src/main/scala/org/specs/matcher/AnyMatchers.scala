@@ -21,7 +21,7 @@ trait AnyMatchers {
   def be(a: =>Any) = new Matcher[Any](){
     def apply(v: =>Any) = {
       val (x, y) = (a, v) 
-      (x.asInstanceOf[AnyRef] eq y.asInstanceOf[AnyRef], q(y) + " is the same as " + q(x), q(y) + " is not the same as " + q(x))} 
+      (x.asInstanceOf[AnyRef] eq y.asInstanceOf[AnyRef], d(y) + " is the same as " + q(x), d(y) + " is not the same as " + q(x))} 
   } 
   def notBe(a: =>Any) = be(a).not
 
@@ -31,7 +31,7 @@ trait AnyMatchers {
   def beEqual[T](a: =>T) = new Matcher[T](){
     def apply(v: =>T) = {
       val (x, y) = (a, v) 
-      (x == y, q(y) + " is equal to " + q(x), q(y) + " is not equal to " + q(x))
+      (x == y, d(y) + " is equal to " + q(x), d(y) + " is not equal to " + q(x))
     } 
   } 
 
@@ -43,15 +43,15 @@ trait AnyMatchers {
   /**
    * Matches if (a == b)
    */   
-  def is_==(a: =>Any)(implicit d: Detailed) = new Matcher[Any](){ 
+  def is_==(a: =>Any)(implicit details: Detailed) = new Matcher[Any](){ 
     def apply(v: =>Any) = {
       val (x, y) = (a, v)
       import org.specs.Products._
-      val failureMessage = d match {
-        case full: fullDetails => EditMatrix(q(y), q(x)).showDistance(full.separators).toList.mkString(" is not equal to ")
-        case no: noDetails => q(y) + " is not equal to " + q(x)
+      val failureMessage = details match {
+        case full: fullDetails => EditMatrix(d(y), q(x)).showDistance(full.separators).toList.mkString(" is not equal to ")
+        case no: noDetails => d(y) + " is not equal to " + q(x)
       }
-      ((x == y), q(y) + " is equal to " + q(x), failureMessage)
+      ((x == y), d(y) + " is equal to " + q(x), failureMessage)
     }
   }
 
@@ -79,7 +79,7 @@ trait AnyMatchers {
    * Matches if b is null
    */   
   def beNull[T] = new Matcher[T](){
-    def apply(v: =>T) = { val b = v; (b == null, "the value is null", q(b) + " is not null") } 
+    def apply(v: =>T) = { val b = v; (b == null, description.getOrElse("the value") + " is null", d(b) + " is not null") } 
   }  
 
   /**
@@ -89,7 +89,8 @@ trait AnyMatchers {
     def apply(v: =>T) = {
       val x = a; 
       val y = v; 
-      (x == null && y == null || x != null && y != null, "both values are null", if (x == null) q(y) + " is not null" else q(x) + " is not null")
+      (x == null && y == null || x != null && y != null, "both values are null", 
+       if (x == null) d(y) + " is not null" else q(x) + " is not null" + description.map(" but " + _ + " is null").getOrElse(""))
     } 
   }  
 
@@ -102,14 +103,14 @@ trait AnyMatchers {
    * Matches if b is true
    */   
   def beTrue = new Matcher[Boolean](){
-    def apply(v: =>Boolean) = { val b = v; (b == true, "the value is true", "the value is false") } 
+    def apply(v: =>Boolean) = { val b = v; (b == true, description.getOrElse("the value") + " is true", description.getOrElse("the value") + " is false") } 
   }  
 
   /**
    * Matches if b is false
    */   
   def beFalse[Boolean] = new Matcher[Boolean](){
-    def apply(v: =>Boolean) = { val b = v; (b == false, "the value is false", "the value is true") } 
+    def apply(v: =>Boolean) = { val b = v; (b == false, description.getOrElse("the value") + " is false", description.getOrElse("the value") + " is true") } 
   }  
   
   /**
@@ -118,7 +119,7 @@ trait AnyMatchers {
   def beIn[T <: AnyRef](iterable: =>Iterable[T]) = new Matcher[T](){
     def apply(v: => T) = {
       val (x, y) = (iterable, v) 
-      (x.exists(_ == y), q(y) + " is in " + q(x), q(y) + " is not in " + q(x))
+      (x.exists(_ == y), d(y) + " is in " + q(x), d(y) + " is not in " + q(x))
     }
   }
 
@@ -133,7 +134,7 @@ trait AnyMatchers {
   def beEmpty[S <: Any {def isEmpty: Boolean}] = new Matcher[S](){
     def apply(v: => S) = {
       val iterable = v
-      (iterable.isEmpty, iterable + " is empty", iterable + " is not empty")
+      (iterable.isEmpty, dUnquoted(iterable) + " is empty", dUnquoted(iterable) + " is not empty")
     }
   }
 
@@ -156,7 +157,8 @@ trait AnyMatchers {
    * Matches if the function f returns true
    */   
   def verify[T](f: T => Boolean): Matcher[T] = new Matcher[T](){
-     def apply(v: => T) = {val x = v; (f(x), x + " verifies the property", x + " doesn't verify the expected property")}
+     def apply(v: => T) = {val x = v; (f(x), description.getOrElse(x) + " verifies the property", 
+                                             description.getOrElse(x) + " doesn't verify the expected property")}
   }
   
   /**
@@ -168,18 +170,21 @@ trait AnyMatchers {
   def throwException[E <: Throwable](exception: =>E) = new ExceptionMatcher(exception)
     class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
      def apply(value: => Any) = { 
-       (isThrown(value, exception, (e => exception.getClass.isAssignableFrom(e.getClass))).isDefined, exception + " was thrown", exception + " should have been thrown")
+       (isThrown(value, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description).isDefined, 
+        okMessage(exception, description), koMessage(exception, description))
      }
      def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
        def apply(v: => Any) = {
-         val thrown = isThrown(v, exception, (e => exception.getClass.isAssignableFrom(e.getClass)))
+         val thrown = isThrown(v, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description)
          if (!thrown.isDefined)
-           (false, exception + " was thrown", exception + " should have been thrown")
+           (false, okMessage(exception, description), koMessage(exception, description))
          else 
            beLike(f)(thrown.get)
        }
      }
    }  
+  private def okMessage(exception: Throwable, desc: Option[String]) = exception + " was thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  private def koMessage(exception: Throwable, desc: Option[String]) = exception + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
   /**
    * Alias for throwException
    */   
@@ -195,7 +200,9 @@ trait AnyMatchers {
    */   
   def throwThis[E <: Throwable](exception: =>E) = new Matcher[Any](){
     def apply(value: => Any) = { 
-        (isThrown(value, exception, (e => e == exception)).isDefined, exception + " was thrown", exception + " should have been thrown")
+        (isThrown(value, exception, (e => e == exception), description).isDefined, 
+         okMessage(exception, description), 
+         koMessage(exception, description))
     }
   }
   
@@ -206,7 +213,7 @@ trait AnyMatchers {
     def apply(v: =>Any) = {
       val x: Any = v
       val xClass = x.asInstanceOf[java.lang.Object].getClass
-      (xClass == c, q(x) + " has class" + q(c.getName), q(x) + " doesn't have class " + q(c.getName) + " but " + q(xClass.getName))
+      (xClass == c, d(x) + " has class" + q(c.getName), d(x) + " doesn't have class " + q(c.getName) + " but " + q(xClass.getName))
     } 
   } 
 
@@ -221,7 +228,7 @@ trait AnyMatchers {
   def beAssignableFrom[T](c: Class[T]) = new Matcher[Class[_]](){
     def apply(v: =>Class[_]) = {
       val x: Class[_] = v
-      (x.isAssignableFrom(c), q(x.getName) + " is assignable from " + q(c.getName), q(x.getName) + " is not assignable from " + q(c.getName))
+      (x.isAssignableFrom(c), d(x.getName) + " is assignable from " + q(c.getName), d(x.getName) + " is not assignable from " + q(c.getName))
     } 
   } 
 
@@ -237,7 +244,7 @@ trait AnyMatchers {
     def apply(v: =>Any) = {
       val x: Any = v
       val xClass = x.asInstanceOf[java.lang.Object].getClass
-      (c.isAssignableFrom(xClass), q(x) + " has super class" + q(c.getName), q(x) + " doesn't have super class " + q(c.getName))
+      (c.isAssignableFrom(xClass), d(x) + " has super class" + q(c.getName), d(x) + " doesn't have super class " + q(c.getName))
     } 
   } 
 
@@ -250,13 +257,13 @@ trait AnyMatchers {
    * @returns an Option with the expected exception if it satisfies function <code>f</code>
    * <br>rethrows the exception otherwise
    */   
-  private def isThrown[E <: Throwable](value: => Any, expected: E, f: (Throwable => Boolean)) = { 
+  private def isThrown[E <: Throwable](value: => Any, expected: E, f: (Throwable => Boolean), desc: Option[String]) = { 
     getException(value) match {
       case None => None
       case Some(e)  => if (f(e))
                          Some(e)
                        else
-                         throwFailure(e, expected + " should have been thrown. Got: " + e)
+                         throwFailure(e, koMessage(expected, desc) + ". Got: " + e)
     }
   }
   /** evaluates a value and return any exception that is thrown */
@@ -391,7 +398,7 @@ trait AnyMatchers {
       val setToTest = t
       if (s.size != setToTest.size)
         (false, "the sets contain the same number of elements", 
-                 q(setToTest) + " contains " + setToTest.size + " elements while " + q(s) + " contains " + s.size + " elements")
+                 d(setToTest) + " contains " + setToTest.size + " elements while " + q(s) + " contains " + s.size + " elements")
       else {
         val results = setToTest.map {(element: T) => 
           s.find { (otherElement:S) => f(otherElement).apply(element).success } match {

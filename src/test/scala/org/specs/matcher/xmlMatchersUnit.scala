@@ -12,9 +12,11 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "fail if 2 nodes are not equal, even ignoring spaces" in {
       assertion(<a><b/></a> must equalIgnoreSpace(<a> <c/></a>)) must failWith("<a><b></b></a> is not equal to <a> <c></c></a>")
+      assertion(<a><b/></a> aka "the node" must equalIgnoreSpace(<a> <c/></a>)) must failWith("the node <a><b></b></a> is not equal to <a> <c></c></a>")
     }
     "fail if 2 nodes are a Text and an Atom with different datat" in {
       assertion(new Atom("hello").toSeq must ==/(new Text("world").toSeq)) must failWith("hello is not equal to world")
+      assertion(new Atom("hello").toSeq aka "the seq" must ==/(new Text("world").toSeq)) must failWith("the seq hello is not equal to world")
     }
   }
   "A \\ matcher" should {
@@ -26,9 +28,11 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "not match a node a with the label 'a'" in {
       assertion(<a></a> must \("a")) must failWith("<a></a> doesn't contain subnode a")
+      assertion(<a></a> aka "the node" must \("a")) must failWith("the node <a></a> doesn't contain subnode a")
     }
     "not match a node c nested deep inside a node a with the label 'c'" in {
       assertion(<a><b><c></c></b></a> must \("c")) must failWith("<a><b><c></c></b></a> doesn't contain subnode c")
+      assertion(<a><b><c></c></b></a> aka "the node" must \("c")) must failWith("the node <a><b><c></c></b></a> doesn't contain subnode c")
     }
     "match a node b contained inside a node a given its label and its attribute name" in {
       <a><b name="value"></b></a> must \("b", ("name"))
@@ -38,6 +42,7 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "not match a node b contained inside a node a given its label and a missing attribute name" in {
       assertion(<a><b name2="value"></b></a> must \("b", "name")) must failWith("<a><b name2=\"value\"></b></a> doesn't contain subnode b with attributes: name")
+      assertion(<a><b name2="value"></b></a> aka "the node" must \("b", "name")) must failWith("the node <a><b name2=\"value\"></b></a> doesn't contain subnode b with attributes: name")
     }
     "match a node contained in another given its label and its attributes and values" in {
       <a><b name="value"></b></a> must \("b", Map("name"->"value"))
@@ -45,6 +50,7 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     "not match a node contained in another given its label and a wrong attribute or value" in {
       assertion(<a><b name="value"></b></a> must \("b", Map("name1"->"value"))) must failWith("<a><b name=\"value\"></b></a> doesn't contain subnode b with attributes: name1=\"value\"")
       assertion(<a><b name="value"></b></a> must \("b", Map("name"->"value1"))) must failWith("<a><b name=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value1\"")
+      assertion(<a><b name="value"></b></a> aka "the node" must \("b", Map("name"->"value1"))) must failWith("the node <a><b name=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value1\"")
     }
     "not match a node contained in another given its label and a inexisting attributes" in {
       assertion(<a><b name="value"></b></a> must \("b", Map("name"->"value", "name2"->"value2"))) must failWith("<a><b name=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value\" name2=\"value2\"")
@@ -75,6 +81,7 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
     "not match a node whose label doesn't exist" in {
       assertion(<a><b><c></c></b></a> must \\("d")) must failWith("<a><b><c></c></b></a> doesn't contain node d")
+      assertion(<a><b><c></c></b></a> aka "the node" must \\("d")) must failWith("the node <a><b><c></c></b></a> doesn't contain node d")
     }
     "match a node given its label even if it has an attribute" in {
       <a><b name="value"></b></a> must \\("b")
