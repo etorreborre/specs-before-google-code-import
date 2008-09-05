@@ -104,7 +104,7 @@ trait Html extends File {
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
 	<td>{statusIcon(sus)}</td>
-    <td>{anchorRef(if (sus.header.trim.isEmpty) spec.name else sus.header)}</td>
+    <td>{anchorRef(susName(sus, spec))}</td>
   </tr>
  
   /** 
@@ -137,12 +137,16 @@ trait Html extends File {
   
   /** create a table for a system. */
   def susTable(sus: Sus, spec: Specification): NodeSeq = {
-    anchorName(if (sus.header.trim.isEmpty) spec.name else sus.header) ++ 
+    anchorName(susName(sus, spec)) ++ 
     susHeader(sus) ++ 
     literateDesc(sus) ++ 
     examplesTable(sus)
   }  
 
+  /** return the sus header if it is not empty, otherwise return the spec name. */
+  def susName(sus: Sus, spec: Specification) = if (sus.header.trim.isEmpty) spec.name else sus.header 
+
+  /** return the sus header if not empty or an Empty Node. */
   def susHeader(sus: Sus) = {
     if (!sus.header.trim.isEmpty) 
       <h3>{sus.header}{upArrow}</h3>.toSeq

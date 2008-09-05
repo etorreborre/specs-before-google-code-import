@@ -76,6 +76,20 @@ object htmlRunnerUnit extends Specification with DataTables {
       hRunner.message(ok, true) must_== scala.xml.NodeSeq.Empty
     }
   }
+  "the susName method" should {
+    "return the sus header if not empty" in {
+      object spec extends Specification
+      val sus = new Sus("sus", spec)
+      sus.verb = "should"
+      hRunner.susName(sus, spec) must_== "sus should"
+    }
+    "return the spec name if the sus header is empty" in {
+      object spec extends Specification("spec")
+      val sus = new Sus("", spec)
+      hRunner.susName(sus, spec) must_== "spec"
+
+    }
+  }
 }
 object hRunner extends HtmlRunner
 class htmlRunnerUnitTest extends JUnit4(htmlRunnerUnit)
