@@ -104,7 +104,7 @@ trait Html extends File {
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
 	<td>{statusIcon(sus)}</td>
-    <td>{anchorRef(if (sus.header.trim.size == 0) spec.name else sus.header)}</td>
+    <td>{anchorRef(if (sus.header.trim.isEmpty) spec.name else sus.header)}</td>
   </tr>
  
   /** 
@@ -129,15 +129,15 @@ trait Html extends File {
 
   /** create a table for one specification. */
   def specificationTable(spec: Specification) = {
-    <h2>{spec.description}</h2> ++ subspecsTables(spec.subSpecifications) ++ susTables(spec.systems)
+    <h2>{spec.description}</h2> ++ subspecsTables(spec.subSpecifications) ++ susTables(spec)
   }
 
   /** create tables for systems. */
-  def susTables(systems: List[Sus]): NodeSeq = reduce[Sus](systems, susTable(_))
+  def susTables(spec: Specification): NodeSeq = reduce[Sus](spec.systems, susTable(_, spec))
   
   /** create a table for a system. */
-  def susTable(sus: Sus): NodeSeq = {
-    anchorName(sus.header) ++ 
+  def susTable(sus: Sus, spec: Specification): NodeSeq = {
+    anchorName(if (sus.header.trim.isEmpty) spec.name else sus.header) ++ 
     susHeader(sus) ++ 
     literateDesc(sus) ++ 
     examplesTable(sus)
