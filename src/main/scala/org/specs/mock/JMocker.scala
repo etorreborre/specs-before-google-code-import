@@ -292,7 +292,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     }
 
     def willReturnEach(values: T*) = {
-      will(new ActionSequence((values map { x: T => returnValue(x) }).toArray))
+      will(new ActionSequence((values map { x: T => returnValue(x) }).toArray:_*))
     }
 
    /** 
@@ -536,11 +536,11 @@ trait JMockActions {
   def throwEx[T <: Throwable](t: T) = new ThrowAction(t)
     
   /** action executing several other actions */
-  def doAll(actions: Action*) = new DoAllAction(actions.toArray)
+  def doAll(actions: Action*) = new DoAllAction(actions.toArray:_*)
     
   /** @returns a sequence of actions where the first action is executed after the first call, the second action
    * after the second call, and so on */
-  def onConsecutiveCalls(actions: Action*) = new ActionSequence(actions.toArray)
+  def onConsecutiveCalls(actions: Action*) = new ActionSequence(actions.toArray:_*)
 }
 
 /** 

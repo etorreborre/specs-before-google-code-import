@@ -1,7 +1,7 @@
 package org.specs.specification
 
-import org.specs.util._
 import org.specs.util.ExtendedString._
+import org.specs.util._
 import scala.xml._
 import org.specs.matcher._
 import scala.collection.mutable._
@@ -25,7 +25,10 @@ import org.specs.ExtendedThrowable._
  * <p>
  * When assertions have been evaluated inside an example they register their failures and errors for later reporting 
  */
-case class Example(var description: String, cycle: org.specs.specification.ExampleLifeCycle) extends Tagged {
+case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.specification.ExampleLifeCycle) extends Tagged with HasResults {
+
+  def description = exampleDescription.toString
+  def this(desc: String, cycle: org.specs.specification.ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   /** function containing the test to be run */
   private[this] var toRun: () => Any = () => ()
@@ -143,7 +146,7 @@ case class Example(var description: String, cycle: org.specs.specification.Examp
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} + 
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
   /** @return the example description */
-  override def toString = description
+  override def toString = description.toString
   
   /** reset in order to be able to run the example again */
   def resetForExecution: this.type = {
@@ -154,4 +157,8 @@ case class Example(var description: String, cycle: org.specs.specification.Examp
     subExs.foreach(_.resetForExecution)
     this
   }
+}
+case class ExampleDescription(desc: String) {
+  override def toString = desc
+  def format: String = desc.toString
 }

@@ -1,4 +1,4 @@
-package org.specs.specification
+package org.specs.specification 
 import org.specs._
 
 object exampleSpec extends Specification {

@@ -5,6 +5,7 @@ import org.specs.util.DataTables
 import org.specs.util._
 import org.specs.Sugar._
 import org.specs.matcher._
+import org.specs.runner._
 /**
  * This trait is experimental. It is supposed to help writing some literate specifications
  * using the xml capabilities of Scala.
@@ -73,13 +74,25 @@ class LiterateSpecification extends Specification with AssertFactory with DataTa
       sus.verb = ""
       format(e)
     }
+    /** associates every <ex> tag to an anonymous example */
     private def format(e: => Elem) = {
       val content = e
       val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
       val exNodes = content.\("ex")
-      exNodes.theSeq.toList.zip(anonymous.toList).foreach( pair => pair._2.description = pair._1.first.text)
-      sus.literateDescription = Some(content.text)
+      exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
+        val (node, example) = pair
+        example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text) 
+        List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
+      }
+      sus.literateDescription = Some(content)
     }
+    private def addTag(node: Node, example: Example, tagName: String) = {
+      node.attribute(tagName) match {
+        case None => ()
+        case Some(a) => a.toString.split(",").foreach(t => example.addTag(t.trim))
+      }
+   }
+ 
     /** specifies the system with a literate description and embedded assertions */
     def is(e: => Elem)= {
       sus.verb = "specifies"
@@ -87,7 +100,12 @@ class LiterateSpecification extends Specification with AssertFactory with DataTa
     }
   }
   
+  /** embeddeds a test into a new example and silence the result */
   def check(test: =>Any) = (forExample in test).shh
+
+  /** return a String containing the output messages from the console with a given padding such as a newline for instance */
   def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
+
+  /** return a String containing the output messages from the console */
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
-} 
+}

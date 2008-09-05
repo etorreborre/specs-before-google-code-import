@@ -17,6 +17,11 @@ object ExtendedString {
     def removeAll(remove: String) = s.replaceAll(toReplace(remove), "")
     private def toReplace(c: String) = c.map { letter => if ("()[]{}+-\\^$|?.*".contains(letter)) ("\\" + letter) else letter }.mkString("")
     
+    /**
+     * Remove everything from the first occurrence of a given substring.
+     */
+    def removeFrom(sub: String) = if (s.indexOf(sub) >= 0) s.substring(0, s.indexOf(sub)) else s
+    
     /** 
      * @param pattern regexp pattern with groups (defined using parenthesis) specifying what to search in the string s
      * @return a list with every group found

@@ -64,7 +64,7 @@ h4 {
 h5 {
   padding: 4px 4px 4px 6px;
   color: #36a;
-  font-size: normal;
+  font-size: medium;
 }
 p {
   line-height: 1.3em;
@@ -116,7 +116,11 @@ table.nested td.failureMessage {
   color: #900;
 }
 table td.navTitle {
+<<<<<<< HEAD:src/main/resources/css/maven-theme.css
   border: 0px #666666 
+=======
+  border: 0px #666666;
+>>>>>>> develop:src/main/resources/css/maven-theme.css
   background-color: #fff;
   color: #36a;
   text-align: center;
@@ -154,4 +158,15 @@ dt {
 .infomark {
   background-image: url(../images/icon_info_sml.gif);
 }
-
+ex.success {
+  background-color: #CCFFCC;
+}
+ex.failure {
+  background-color: #FFFF99;
+}
+ex.error {
+  background-color: #FF9999;
+}
+ex.skipped {
+  background-color: #DDDDDD;
+}

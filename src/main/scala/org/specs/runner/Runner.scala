@@ -5,13 +5,6 @@ import _root_.org.junit.runner._
 import org.specs.specification._
 
 /**
- * The SpecsHolder trait can be inherited by runners to get access to the specifications to report 
- */  
-trait SpecsHolder {
-  val specs: Seq[Specification]
-}
-
-/**
  * The Runner class is an abstract class referencing one or several specifications to run. It should be extended
  * with at least one runner trait which will use the <code>specifications</code>.
  * Usage:<code>
@@ -29,107 +22,21 @@ trait SpecsHolder {
  * 
  * It is annotated with a JUnit annotation because JUnit requires that annotation should be placed on the class which will be executed. 
  * In the example above, Runner(mySpec) is the only class; JUnit, Console and ScalaTest are all traits.
- */  
+ */
 @RunWith(classOf[JUnitSuiteRunner])
-abstract class Runner(var specifications: Specification*) extends SpecsHolder {
-  /** alternate constructor with a list of specifications */  
-  val specs: Seq[Specification] = specifications
+class Runner(val specifications: Seq[Specification], val reporters: Seq[Reporter]) extends Reporter {
 
-  /** alternate constructor with a list of specifications */  
-  def this(specifications: List[Specification]) = this(specifications:_*)
-}
-
-/**
- * This trait can be mixed in with a Runner class to output the result of a specification to the console 
- * Usage:<code>
- * class mySpecRunner extends Runner(mySpec) with Console
- * <code> 
- */  
-trait Console extends ConsoleReporter with SpecsHolder {
-  /**
-   * optional arguments to the main method if called from the code directly
-   */
-  var args: Array[String] = Array()
-  
-  /** 
-   * Report the specifications. 
-   * 
-   * Set the command-line arguments for the stacktrace display (-ns) or the included/excluded tags.
-   */
-  def reportSpecs = {
-    if (args.exists(List("-ns", "--nostacktrace").contains(_))) setNoStacktrace
-
-    def printWarning = println("warning: accept/reject tags omitted")
-    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(args(i + 1).split(","):_*)
-    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(args(i + 1).split(","):_*)
-    def setAcceptedTags(arguments: List[String], f: (Specification, Int) => Specification) = {
-      args.findIndexOf(arg => arguments.contains(arg)) match {
-        case -1 => ()
-        case i if (i < args.length - 1) => this.specs.foreach(f(_, i))
-        case _ => printWarning
-      }
-    } 
-    setAcceptedTags(List("-acc", "--accept"), acceptSpecTags(_, _))
-    setAcceptedTags(List("-rej", "--reject"), rejectSpecTags(_, _))
-    
-    report(specs) 
-  }
-  def main(arguments: Array[java.lang.String]) = {
-    args = args ++ arguments
-    reportSpecs
-    if (specs.exists(_.isFailing)) System.exit(1) else System.exit(0)
-  }
-}
-
-/**
- * This class implements the <code>Console</code> trait and can be initialized with specifications directly<br>
- * Usage: <code>object mySpecRunner extends ConsoleRunner(mySpec1, mySpec2)</code>
- */  
-class ConsoleRunner(val specifications: Specification*) extends Console {
-  val specs = specifications 
-  def ConsoleRunner(specs: List[Specification]) = new ConsoleRunner(specs :_*)
-}
-
-/**
- * This class can be used to search for specifications on a given path 
- * and execute them.<br>
- * Usage: <code>object myFileRunner extends SpecsFileRunner(path, pattern)</code><br>
- * Where <code>path</code> is a path to a directory containing scala files (it can be a glob: i.e. "dir/**/*spec.scala")
- * and <code>pattern</code> is a regular expression which is supposed to match an object name extending a Specification
- * class named ".*Spec.*"
- */  
-class SpecsFileRunner(path: String, pattern: String) extends Console with SpecsFinder {
-  val specs = new scala.collection.mutable.ListBuffer[Specification]
-  
-  /** 
-   * overrides the <code>reportSpecs</code> method in the <code>Console</code> trait.<p>
-   * The list of specifications to report is build from specification names found on the path
-   * indicated by the <code>path</code> parameter
-   */
-  override def reportSpecs = {
-    specificationNames(path, pattern) foreach {className => 
-      createSpecification(className) match {
-        case Some(s) => specs.prepend(s)
-        case None => println("Could not load " + className)
-      }
+  def this(s: Specification*) = this(s, List(new ConsoleRunner))
+  def this(reporter: Reporter, s: Specification*) = this(s, List(reporter))
+  /** alternate constructor with a specs holder (possibly a SpecsFinder object). */  
+  def this(specsHolder: SpecsHolder, reps: Seq[Reporter]) = this(specsHolder.specs, reps)
+  def this(specsHolder: SpecsHolder) = this(specsHolder.specs, List(new ConsoleRunner))
+  val specs = specifications
+  override def report(specs: Seq[Specification]) = {
+    super.report(specs)
+    reporters foreach { reporter =>
+      reporter.report(specs)
     }
-    // this specification is added for better reporting
-    object totalSpecification extends Specification {
-      new java.io.File(path).getAbsolutePath isSpecifiedBy(specs: _*)
-    }
-    super.report(List(totalSpecification))
-  } 
-  /**
-   * @return a <code>Specification</code> object from a className if that class is a <code>Specification</code> class.<br>
-   * Tries to load the class name and cast it to a specification
-   * @return None in case of an exception. 
-   */
-  def createSpecification(className: String): Option[Specification] = {
-    try {
-     return Some(getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[Specification])
-    } catch {
-      case e => ()
-    }
-    return None
+    this
   }
 }

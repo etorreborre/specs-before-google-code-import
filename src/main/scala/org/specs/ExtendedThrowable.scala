@@ -1,5 +1,5 @@
 package org.specs
-
+import org.specs.util.ExtendedString._
 /**
  * This object allows to add some utility methods to </code>Throwable</code> objects.
  */
@@ -7,12 +7,20 @@ object ExtendedThrowable {
   implicit def toExtendedThrowable(t: Throwable) = new ExtendedThrowable(t)
   
   /**
- 	 * See the ExtendedThrowable object description
- 	 */
+   * See the ExtendedThrowable object description
+ */
   class ExtendedThrowable(t: Throwable) {
+    private def fileName = t.getStackTrace()(0).getFileName
+    private def className = t.getStackTrace()(0).getClassName.removeFrom("$")
+    private def lineNumber = t.getStackTrace()(0).getLineNumber
     /** @return the file name and the line number where the Throwable was created */
-    def location: String = (t.getStackTrace()(0).getFileName + ":" + t.getStackTrace()(0).getLineNumber)
-    
+    def location: String = fileName + ":" + lineNumber
+    /** @return the class name and the line number where the Throwable was created */
+    def classLocation: String = className + ":" + lineNumber
+    /** @return the class name, file Name and the line number where the Throwable was created */
+    def fullLocation: String = className + " (" + location + ")"
+    def stackToString = t.getStackTrace.foldLeft(""){_ + _.toString + "\n"}
+    def stackToJs = t.getStackTrace.foldLeft("\r"){_ + "\r" + _.toString}
     /**
      * throws an exception removing the traces of the object wanting to throw this exception
      * @param origin object which has be called to throw the <code>Exception</code> 

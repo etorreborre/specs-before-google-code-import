@@ -24,7 +24,7 @@ import org.specs.ExtendedThrowable._
  */
 abstract class Specification extends Matchers with AssertFactory with SpecificationStructure
                with DetailedFailures
-               with Contexts with SuccessValues { outer =>
+               with Contexts with SuccessValues with HasResults { outer =>
 
   /** nested reporter so that a specification is executable on the console */
   private val reporter = new ConsoleRunner(this)
@@ -115,11 +115,33 @@ abstract class Specification extends Matchers with AssertFactory with Specificat
     systems.foreach(_.resetForExecution)
     this
   }
-  type HasResults = {
-    def failures: Seq[FailureException]
-    def errors: Seq[Throwable]
-    def skipped: Seq[SkippedException]
+  
+  def ::(s: Specification) = List(s, this)
+
+}
+
+/** 
+ * This trait is useful to get a common interface for Specifications, Sus and Examples.
+ */
+trait HasResults {
+  def failures: Seq[FailureException]
+  def errors: Seq[Throwable]
+  def skipped: Seq[SkippedException]
+  def status = { 
+    if (!errors.isEmpty)
+      "error"
+    else if (!failures.isEmpty)
+      "failure"
+    else if (!skipped.isEmpty)
+      "skipped"
+    else
+      "success"
   }
+  def hasFailureAndErrors = !failureAndErrors.isEmpty
+  def failureAndErrors = (failures ++ errors).toList
+  def issues = (failures ++ errors ++ skipped).toList
+  def issueMessages = issues.foldLeft("")(_ + _.getMessage)
+  def hasIssues = !issues.isEmpty
 }
   
 

@@ -11,7 +11,7 @@ import org.specs.specification._
 import org.specs.ExtendedThrowable._
 
 /**
- * The <code>Sus</code> class represents a system under test<br>
+ * The <code>Sus</code> class represents a system under specification<br>
  * It has:<ul>
  * <li>a description declaring what kind of system it is
  * <li>an <code>ExampleLifeCycle</code> which defines behaviour before/after example and test</ul>
@@ -20,7 +20,8 @@ import org.specs.ExtendedThrowable._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class Sus(description: String, var cycle: org.specs.specification.ExampleLifeCycle) extends ExampleLifeCycle with Tagged {
+case class Sus(description: String, var cycle: org.specs.specification.ExampleLifeCycle) extends ExampleLifeCycle 
+                                      with Tagged with HasResults {
   /** default verb used to define the behaviour of the sus */
   var verb = ""
 
@@ -28,11 +29,8 @@ case class Sus(description: String, var cycle: org.specs.specification.ExampleLi
    * instead of using several examples, a whole text with embedded assertions can be used to
    * specify the Sus
    */
-  var literateDescription: Option[String] = None
+  var literateDescription: Option[Elem] = None
 
-  /** return true if the literal description is a wiki. */
-  def isWiki = literateDescription.exists(_.startsWith("<wiki"))
-  
   /** examples describing the sus behaviour */
   var examples = new Queue[Example]
 

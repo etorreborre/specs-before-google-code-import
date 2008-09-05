@@ -12,7 +12,7 @@ trait IterableMatchers {
    * Matches if (iterable.exists(_ == a)
    */   
   def contain[T](a: T) = new Matcher[Iterable[Any]](){ 
-    def apply(v: => Iterable[Any]) = {val iterable = v; (iterable.exists(_ == a), q(iterable) + " contains " + q(a), q(iterable) + " doesn't contain " + q(a))} 
+    def apply(v: => Iterable[Any]) = {val iterable = v; (iterable.exists(_ == a), d(iterable) + " contains " + q(a), d(iterable) + " doesn't contain " + q(a))} 
   }
 
   /**
@@ -24,7 +24,7 @@ trait IterableMatchers {
    * Matches if there is one element in the iterable verifying the <code>function</code> parameter: <code>(iterable.exists(function(_))</code>
    */   
   def exist[T](function: T => Boolean) = new Matcher[Iterable[T]](){ 
-    def apply(v: => Iterable[T]) = {val iterable = v; (iterable.exists{function(_)}, "at least one element verifies the property in " + q(iterable), "no element verifies the property in " + q(iterable))} 
+    def apply(v: => Iterable[T]) = {val iterable = v; (iterable.exists{function(_)}, "at least one element verifies the property in " + d(iterable), "no element verifies the property in " + d(iterable))} 
   }
 
   /**
@@ -36,7 +36,7 @@ trait IterableMatchers {
    * Matches if there is one element in the iterable[String] matching the <code>pattern</code> parameter: <code> iterable.exists(matches(pattern) _)</code>
    */   
   def existMatch(pattern: String) = new Matcher[Iterable[String]](){
-    def apply(v: => Iterable[String]) = {val iterable = v; (iterable.exists( matches(pattern) _), "at least one element matches " + q(pattern) + " in " + q(iterable), "no element matches " + q(pattern) + " in " + q(iterable))}
+    def apply(v: => Iterable[String]) = {val iterable = v; (iterable.exists( matches(pattern) _), "at least one element matches " + q(pattern) + " in " + d(iterable), "no element matches " + q(pattern) + " in " + d(iterable))}
   }
 
   /**
@@ -56,8 +56,8 @@ trait IterableMatchers {
   def haveSameElementsAs[T](l: Iterable[T]) = new Matcher[Iterable[T]](){
     def apply(iterable: => Iterable[T]) = (
         l.sameElementsAs(iterable),
-        q(l.toDeepString) + " has the same elements as " + q(iterable.toDeepString), 
-        q(l.toDeepString) + " doesn't have the same elements as " + q(iterable.toDeepString))
+        d(l.toDeepString) + " has the same elements as " + q(iterable.toDeepString), 
+        d(l.toDeepString) + " doesn't have the same elements as " + q(iterable.toDeepString))
   }
 
   /**
@@ -74,6 +74,6 @@ trait IterableMatchers {
    * Matches if the size is n
    */   
   def haveSize(n: Int) = new Matcher[Collection[Any]](){
-    def apply(v: => Collection[Any]) = {val collection = v; (collection.size == n, q(collection) + " has size " + n, q(collection) + " doesn't have size " + n)}
+    def apply(v: => Collection[Any]) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
   }
 }

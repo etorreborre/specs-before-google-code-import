@@ -6,7 +6,7 @@ import scala.collection.mutable.Queue
 import org.specs.io.mock.MockOutput
 import org.specs.runner._
 
-class specsRunnerTest extends JUnit3(specsRunnerSpec)
+class specsRunnerTest extends JUnit4(specsRunnerSpec)
 object specsRunnerSpec extends Specification with TestRunner {
   "A specs file runner" should { runner.messages.clear.before
     
@@ -27,8 +27,10 @@ trait MockSpecsFinder extends SpecsFinder {
   override def specificationNames(filesPath: String, pattern: String) = classNames
 }
 trait TestRunner {
-  object runner extends SpecsFileRunner("", ".*") with MockSpecsFinder with MockOutput
+  class SpecsRunner extends SpecsFileRunner("", ".*") with MockSpecsFinder with MockOutput
+  var runner: SpecsRunner = new SpecsRunner
   def runTheFileWithClassName(classNames: String*) = {
+    runner = new SpecsRunner
     runner.classNames = classNames.toList 
     runner.reportSpecs
   }

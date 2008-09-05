@@ -22,11 +22,8 @@ object basicFeatures extends SpecificationWithSamples {
       twoSystems(that.isOk, that.isOk).systems.size mustBe 2
     }
     "have zero or more examples, sorted by sus" in {
-      twoSystems(that.isOk, that.isOk).pretty must_== """twoSystems
-                                                     |  This system under test should 
-                                                     |    have example 1 ok
-                                                     |  This other system under test should 
-                                                     |    have example 1 ok""".stripMargin
+      twoSystems(that.isOk, that.isKo).systems.first.status must_== "success"
+      twoSystems(that.isOk, that.isKo).systems.last.status must_== "failure"
     }
    "have no failures if it contains no assertion" in { 
      oneEx(that.isOk).failures must beEmpty

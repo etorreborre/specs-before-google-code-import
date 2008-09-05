@@ -12,7 +12,7 @@ trait NumericMatchers {
    * Matches if x < n
    */   
   def beLessThan[S <% Double](n: S) = new Matcher[S](){ 
-    def apply(v: => S) = {val x = v; (x < n, f(x) + " is less than " + f(n), f(x) + " is not less than " + f(n))}
+    def apply(v: => S) = {val x = v; (x < n, dUnquoted(f(x)) + " is less than " + f(n), dUnquoted(f(x)) + " is not less than " + f(n))}
   }
 
   /**
@@ -26,8 +26,8 @@ trait NumericMatchers {
   def beLessThanOrEqualTo[S <% Double](n: S) = new Matcher[S](){ 
     def apply(v: => S) = {
       val x = v
-      (x <= n, if (x < n) f(x) + " is less than " + f(n) else f(x) + " is equal to " + f(n), 
-               f(x) + " is greater than " + f(n))
+      (x <= n, if (x < n) dUnquoted(f(x)) + " is less than " + f(n) else dUnquoted(f(x)) + " is equal to " + f(n), 
+               dUnquoted(f(x)) + " is greater than " + f(n))
     }
   }
 
@@ -60,6 +60,8 @@ trait NumericMatchers {
    * Matches if x = n +/- delta
    */   
   def beCloseTo[S <% Double](n: S, delta: S) = new Matcher[S](){ 
-    def apply(v: => S) = {val x = v; ((n - delta <= x) && (x <= n + delta), f(x) + " is close to " + f(n) + " +/- " + delta, f(x) + " is not close to " + f(n) + " +/- " + delta)}
+    def apply(v: => S) = {val x = v; ((n - delta <= x) && (x <= n + delta), 
+                                      dUnquoted(f(x)) + " is close to " + f(n) + " +/- " + delta, 
+                                      dUnquoted(f(x)) + " is not close to " + f(n) + " +/- " + delta)}
   }
 }

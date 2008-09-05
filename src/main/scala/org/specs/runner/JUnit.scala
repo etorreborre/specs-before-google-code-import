@@ -68,7 +68,7 @@ trait JUnitSuite extends Test {
 /**
  * Extension of a JUnitSuite initializing the suite with one or more specifications
  */
-trait JUnit extends JUnitSuite with SpecsHolder {
+trait JUnit extends JUnitSuite with Reporter {
   def initialize = { 
     if (specs.size > 1)
       setName(this.getClass.getName.replaceAll("\\$", ""))

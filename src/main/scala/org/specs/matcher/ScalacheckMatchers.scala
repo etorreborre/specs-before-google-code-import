@@ -1,7 +1,8 @@
 package org.specs.matcher
 import org.scalacheck.{StdRand, Gen, Prop, Arg, Test}
 import org.scalacheck.Prop._
-import org.scalacheck.Test.{Stats, Params, Proved, Passed, Failed, Exhausted, GenException, PropException, Result}
+import org.scalacheck.Test.{Status, Params, Proved, Passed, Failed, Exhausted, GenException, PropException, Result}
+import org.scalacheck.Pretty._
 import org.scalacheck.ConsoleReporter._
 import scala.collection.immutable.HashMap
 import org.specs.io.ConsoleOutput
@@ -90,12 +91,12 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      }
      
      // check the property
-     val statistics = check(params, prop, printResult) 
+     val results = check(params, prop, printResult) 
      
      // display the final result if verbose = true
      if (verbose) {
-       val s = prettyTestStats(statistics)
-       printf("\r%s %s%s\n", if (statistics.result.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
+       val s = prettyTestRes.pretty(results)
+       printf("\r%s %s%s\n", if (results.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
      }
 
      // depending on the result, return the appropriate success status and messages
@@ -104,17 +105,17 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
      def afterNShrinks(args: List[Arg]) = args.map(arg => if (arg.shrinks >= 1) arg.shrinks.toString else "").mkString(", ")
      def counterExample(args: List[Arg]) = args.map(_.arg).mkString(", ")
-     statistics match {
-       case Stats(Proved(as), succeeded, discarded) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
-       case Stats(Passed, succeeded, discarded) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
-       case s@Stats(GenException(e), n, _) => (false, noCounterExample(n), prettyTestStats(s)) 
-       case s@Stats(Exhausted, n, _)     => (false, noCounterExample(n), prettyTestStats(s)) 
-       case Stats(Failed(args), n, _) => 
+     results match {
+       case Result(Proved(as), succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
+       case Result(Passed, succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
+       case r@Result(GenException(e), n, _, _) => (false, noCounterExample(n), prettyTestRes.pretty(r)) 
+       case r@Result(Exhausted, n, _, _)     => (false, noCounterExample(n), prettyTestRes.pretty(r)) 
+       case Result(Failed(args, _), n, _, _) => 
          (false, noCounterExample(n), "A counter-example is '"+counterExample(args)+"' (" + afterNTries(n) + afterNShrinks(args) + ")") 
-       case Stats(PropException(args, FailureException(ex)), n, _) => 
+       case Result(PropException(args, FailureException(ex), _), n, _, _) => 
          (false, noCounterExample(n), "A counter-example is '"+counterExample(args)+"': " + ex + " ("+afterNTries(n)+")") 
-       case s@Stats(PropException(m, ex), n, _) => 
-         (false, noCounterExample(n), prettyTestStats(s)) 
+       case r@Result(PropException(m, ex, _), n, _, _) => 
+         (false, noCounterExample(n), prettyTestRes.pretty(r)) 
      }
    }
   

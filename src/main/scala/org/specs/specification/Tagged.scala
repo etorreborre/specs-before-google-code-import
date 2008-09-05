@@ -27,6 +27,9 @@ trait Tagged {
   /** list of tags which are rejected for this element */
   val rejected: Queue[Tag] = new Queue[Tag]
 
+  /** transforms a string to a Tag object */
+  implicit def stringToTag(s: String) = Tag(s) 
+
   /** Add one or several tags to this element */
   def tag(t: String*): this.type = addTags(t:_*)
 
@@ -98,9 +101,6 @@ trait Tagged {
     !accepted.isEmpty && tags.exists(t => accepted.exists(a => t matches a))) && 
     !tags.exists(t => rejected.exists(a => t.matches(a)))
   }
-
-  /** transforms a string to a Tag object */
-  implicit def stringToTag(s: String) = Tag(s) 
 
   /** @return a description of the Tagged element showing the owned tags, the accepted and rejected tags */
   def tagSpec = "tags: " + tags.mkString(", ") + "  accepted: " + accepted.mkString(", ") + "  rejected: " + rejected.mkString(", ")

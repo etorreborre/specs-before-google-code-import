@@ -19,19 +19,19 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
       alwaysTrueProp must pass
     }
     "be ko with a false property" in {
-      assertion(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d tr(y|ies)\\)")
+      assertion(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d+ tr(y|ies)\\)")
     }
     "be ko if a property is false for a generated value" in {
-      assertion(alwaysTrue must pass(isFalse)) must failWithMatch("A counter-example is 'true' \\(after \\d tr(y|ies)\\)")
+      assertion(alwaysTrue must pass(isFalse)) must failWithMatch("A counter-example is 'true' \\(after \\d+ tr(y|ies)\\)")
     }
     "be ko if a assertion is false for a generated value. The failure message should be the assert ko message" in {
       assertion(random must pass(identityAssert)) must failWithMatch("A counter-example is 'false': 'false' is not the same as 'true' \\(after \\d tr(y|ies)\\)")
     }
     "be ko if checking the values generation yields an exception" in {
-      assertion(exceptionValues must pass(isTrue)) must failWith("Exception \"java.lang.Exception: e\" raised on argument generation.")
+      assertion(exceptionValues must pass(isTrue)) must failWithMatch("Exception raised on argument generation")
     }
     "be ko if checking the property yields an exception during its evaluation" in {
-      assertion(alwaysTrue must pass(exceptionProperty)) must failWith("Exception \"java.lang.Exception: e\" raised on property evaluation:\n> ARG_0 = \"true\"")
+      assertion(alwaysTrue must pass(exceptionProperty)) must failWithMatch("Exception raised on property evaluation")
     }
     "be ko if all values have been exhausted before the min number of ok tests is reached" in {
       assertion(Gen.fail[Boolean] must pass(isTrue)(set(maxDiscarded->10))) must failWith("Gave up after only 0 passed tests. 10 tests were discarded.")

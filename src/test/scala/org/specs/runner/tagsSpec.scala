@@ -31,7 +31,7 @@ object tagsSpec extends LiterateSpecification with Fixtures {
       "example 1" in { 1 must_== 1 }
       "example 2" in { 2 must_== 2 } tag("only this")
     } 
-    mySpec accept ("only this")  """ }{onlyTaggedExamples}
+    mySpec accepts ("only this")  """ }{onlyTaggedExamples}
   
   This will output: 
  { specOutput }
@@ -54,7 +54,7 @@ trait Fixtures extends LiterateSpecification {
        1 must_== 1
      } tag("only this")
    }
-   mySpec accept ("only this")
+   mySpec acceptTag ("only this")
    def onlyTaggedExamples = check {
      val acceptedExamples = mySpec.systems.flatMap(_.examples).filter(_.isAccepted) 
      acceptedExamples.size must_== 1
@@ -71,8 +71,8 @@ trait Fixtures extends LiterateSpecification {
    }
    import org.specs.io.mock.MockOutput
    def specOutput = {
-     val runner = new ConsoleRunner() with MockOutput
-     runner.reportSpec(mySpec)
+     val runner = new ConsoleRunner(mySpec) with MockOutput
+     runner.reportSpecs
      consoleOutput("\n", runner.messages)
    }
 }

@@ -16,6 +16,8 @@ object allSpecs extends Specification {
         allUtilSpec,
         matchersSpec, 
         specificationSpec, 
+        org.specs.specification.literateSpec, 
+        org.specs.runner.descriptionFormatterSpec,
         exampleSpec,
         sugarSpec, 
         consoleReporterSpec,  

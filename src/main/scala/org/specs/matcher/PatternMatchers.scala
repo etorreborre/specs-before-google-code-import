@@ -26,8 +26,8 @@ trait PatternMatchers {
        try {
         if (value == null)  false  else  Some(value).map(pattern).get 
       } catch { case e: scala.MatchError => false }, 
-      q(value) + " matches the given pattern", 
-      q(value) + " doesn't match the expected pattern")
+      d(value) + " matches the given pattern", 
+      d(value) + " doesn't match the expected pattern")
      }
   }
   
@@ -43,8 +43,8 @@ trait PatternMatchers {
         case n if (n == none) => true
         case _ => false 
       }, 
-      q(value) + " is None", 
-      q(value) + " is not None")
+      d(value) + " is None", 
+      d(value) + " is not None")
     }
   }
   
@@ -55,7 +55,8 @@ trait PatternMatchers {
     def apply(v: =>Option[T]) = {
       val x = a; 
       val y = v; 
-      (x == None && y == None || x != None && y != None, "both values are None", if (x == None) q(y) + " is not None" else q(x) + " is not None")
+      (x == None && y == None || x != None && y != None, "both values are None", 
+       if (x == None) d(y) + " is not None" else d(x) + " is not None")
     } 
   }  
 
@@ -71,8 +72,8 @@ trait PatternMatchers {
           case Some(x) => true 
           case _ => false
         },
-        q(value) + " is Some(x)", 
-        q(value) + " is not Some(x)")
+        d(value) + " is Some(x)", 
+        d(value) + " is not Some(x)")
      }
    }
 
@@ -103,8 +104,8 @@ trait PatternMatchers {
                           case Some(x) => g(x) 
                           case _ => false
                         },
-                        "there is a Some(x) verifying the given property", 
-                        "there is no Some(x) verifying the given property")
+                        description.getOrElse("there") + " is a Some(x) verifying the given property", 
+                        description.getOrElse("there") + " is no Some(x) verifying the given property")
     }
   }
 }

@@ -92,4 +92,5 @@ object taggedSpec extends Specification {
     def apply(v: => Tag) = (v.matches(other), v + " matches " + other, v + " doesn't match " + other)
   }
 }
-class taggedSpecTest extends org.specs.runner.JUnit4(taggedSpec)
+import org.specs.runner._
+class taggedSpecTest extends Runner(taggedSpec) with JUnit

@@ -9,9 +9,20 @@ trait StringMatchers {
   /**
    * Matches if (a.equalsIgnoreCase(b))
    */   
+  def be_==/[T <: String](a: T) = equalIgnoreCase(a)  
+  /**
+   * Matches if (a.equalsIgnoreCase(b))
+   */   
   def equalIgnoreCase[T <: String](a: T) = new Matcher[T](){ 
-    def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), q(b) + " is equal ignoring case to " + q(a), q(b) + " is not equal ignoring case to " + q(a))} 
+    def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 
+                                      d(b) + " is equal ignoring case to " + q(a), 
+                                      d(b) + " is not equal ignoring case to " + q(a))} 
   }
+
+  /**
+   * Matches if (a.notEqualIgnoreCase(b))
+   */   
+  def be_!=/[T <: String](a: T) = notEqualIgnoreCase(a)  
 
   /**
    * Matches if !(a.equalsIgnoreCase(b))
@@ -22,7 +33,9 @@ trait StringMatchers {
    * Matches if (a.trim == b.trim)
    */   
   def equalIgnoreSpace[T <: String](a: T) = new Matcher[T](){ 
-    def apply(v: => T) = {val b = v; (a != null && b != null && a.trim == b.trim, q(b) + " is equal ignoring space to " + q(a), q(b) + " is not equal ignoring space to " + q(a))} 
+    def apply(v: => T) = {val b = v; (a != null && b != null && a.trim == b.trim, 
+                                      d(b) + " is equal ignoring space to " + q(a), 
+                                      d(b) + " is not equal ignoring space to " + q(a))} 
   }
 
   /**
@@ -34,7 +47,9 @@ trait StringMatchers {
    * Matches if (b.indexOf(a) >= 0)
    */   
   def include[T <: String](a: String) = new Matcher[T](){ 
-    def apply(v: => T) = {val b = v; (a != null && b != null && b.indexOf(a) >= 0, q(b) + " includes " + q(a), q(b) + " doesn't include " + q(a))} 
+    def apply(v: => T) = {val b = v; (a != null && b != null && b.indexOf(a) >= 0, 
+                                      d(b) + " includes " + q(a), 
+                                      d(b) + " doesn't include " + q(a))} 
   }
 
   /**
@@ -46,7 +61,9 @@ trait StringMatchers {
    * Matches if b matches the regular expression a
    */   
   def beMatching[T <: String](a: T) = new Matcher[T](){
-    def apply(v: => T) = {val b = v; (matches(a)(b), q(b) + " matches " + q(a), q(b) + " doesn't match " + q(a))}
+    def apply(v: => T) = {val b = v; (matches(a)(b), 
+                                      d(b) + " matches " + q(a), 
+                                      d(b) + " doesn't match " + q(a))}
   }
 
   /**
@@ -58,7 +75,9 @@ trait StringMatchers {
    * Matches if b.startsWith(a)
    */   
   def startWith[T <: String](a: T) = new Matcher[T](){ 
-     def apply(v: => T) = {val b = v; (b!= null && a!= null && b.startsWith(a), q(b) + " starts with " + q(a), q(b) + " doesn't start with " + q(a))} 
+     def apply(v: => T) = {val b = v; (b!= null && a!= null && b.startsWith(a), 
+                                       d(b) + " starts with " + q(a), 
+                                       d(b) + " doesn't start with " + q(a))} 
   }
   /**
    * Matches if !b.startsWith(a)
@@ -69,7 +88,9 @@ trait StringMatchers {
    * Matches if b.endsWith(a)
    */   
   def endWith[T <: String](a: T) = new Matcher[T](){ 
-     def apply(v: => T) = {val b = v; (a != null && b != null && b.endsWith(a), q(b) + " ends with " + q(a), q(b) + " doesn't end with " + q(a))} 
+     def apply(v: => T) = {val b = v; (a != null && b != null && b.endsWith(a), 
+                                       d(b) + " ends with " + q(a), 
+                                       d(b) + " doesn't end with " + q(a))} 
   }
 
   /**
@@ -93,7 +114,9 @@ trait StringMatchers {
     }
     def withGroup(group: String) = new FindMatcherWithGroups(a, group)
     def withGroups(groups: String*) = new FindMatcherWithGroups(a, groups:_*)
-    def apply(v: => T) = {val b = v; (a != null && b != null && found(b), q(a) + " is found in " + q(b), q(a) + " isn't found in " + q(b))} 
+    def apply(v: => T) = {val b = v; (a != null && b != null && found(b), 
+                                      q(a) + " is found in " + d(b), 
+                                      q(a) + " isn't found in " + d(b))} 
   }
 
   /**
@@ -119,8 +142,8 @@ trait StringMatchers {
       }
       val groupsToFind = if (groups == null) Nil else groups.toList
       (a != null && b != null && groupsFound == groupsToFind, 
-       q(a) + " is found in " + q(b) + withGroups + q(groupsToFind.mkString(", ")), 
-       q(a) + " isn't found in " + q(b) + withGroups + q(groupsToFind.mkString(", ")) + foundText 
+       q(a) + " is found in " + d(b) + withGroups + q(groupsToFind.mkString(", ")), 
+       q(a) + " isn't found in " + d(b) + withGroups + q(groupsToFind.mkString(", ")) + foundText 
        )
     } 
   }

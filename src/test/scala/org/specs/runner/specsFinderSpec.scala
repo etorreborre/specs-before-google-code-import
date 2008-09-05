@@ -3,8 +3,7 @@ import org.specs.io.mock.MockFileSystem
 import org.specs.io.ConsoleOutput
 import org.specs.runner._
 
-class specsFinderTest extends JUnit3(specsFinderSpec)
-object specsFinderSpecRunner extends ConsoleRunner(specsFinderSpec)
+class specsFinderTest extends JUnit4(specsFinderSpec)
 object specsFinderSpec extends Specification with Init {
   
   "A specs finder" should { 
@@ -52,7 +51,7 @@ object specsFinderSpec extends Specification with Init {
       finder.specificationNames("dir1", ".*") must_== List("org.specs.trueSpec$", "org.specs.trueSpec$")
     }
   }
-  object finder extends MockFileSystem with SpecsFinder with ConsoleOutput
+  object finder extends MockFileSystem with SpecificationsFinder with ConsoleOutput
 }
 trait Init {
   val packageDeclaration = "package org.specs"

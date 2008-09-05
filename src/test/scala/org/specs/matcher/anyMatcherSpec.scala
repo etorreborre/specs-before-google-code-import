@@ -2,8 +2,7 @@ package org.specs.matcher
 import org.specs.runner._
 import org.specs.specification._
 
-class anyMatcherSpecTest extends JUnit3(anyMatcherSpec)
-object anyMatcherRunner extends ConsoleRunner(anyMatcherSpec)
+class anyMatcherSpecTest extends JUnit4(anyMatcherSpec)
 object anyMatcherSpec extends MatchersSpecification {
   "A matcher" can {
     "be created as a case class" in {
@@ -53,6 +52,28 @@ object anyMatcherSpec extends MatchersSpecification {
     }
     "provide a toSeq method which can be composed with a function" in {
       List(3, 1, 2) must ((beEqual(_:Int)) ^^ ((x: String) => x.size)).toSeq(List("abc", "a", "ab"))
+    }
+    "be equal with is_== even if using an alias for the object" in {
+       "this object" aka "this" must_== "this object"
+    }
+    "use the alias declaration for a string being tested with is_==" in {
+       val s = "that" aka "that string" 
+       s must_== "that"
+
+       "this" aka "this string" must_== "this"
+       "this" aka "this string" must beMatching("t")
+       assertion("hello" aka "the word" must_== "that") must failWith("the word 'hello' is not equal to 'that'")
+    }
+    "use the alias declaration for the object being tested with is_==" in {
+       assertion(1 aka "this" must_== 2) must failWith("this '1' is not equal to '2'")
+    }
+    "use the alias declaration for a list being tested with is_==" in {
+       List(1, 2) aka "the list" must haveSize(2)
+       assertion(List(1, 2) aka "the list" must_== List(1, 4)) must failWith("the list 'List(1, 2)' is not equal to 'List(1, 4)'")
+    }
+    "use the alias declaration for a list of strings being tested with is_==" in {
+       List("1", "2") aka "the list" must containMatch("\\d")
+       assertion(List("2") aka "the list" must_== List("1")) must failWith("the list 'List(2)' is not equal to 'List(1)'")
     }
   }
 

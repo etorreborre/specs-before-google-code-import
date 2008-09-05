@@ -51,12 +51,16 @@ object objectMatchersSpec extends MatchersSpecification {
       nullString must beAlsoNull(nullString)
       1 must beAlsoNull(1)
       assertion(nullString must beAlsoNull("not null")) must failWith("'not null' is not null")
+      assertion(nullString aka "the string" must beAlsoNull("not null")) must failWith("'not null' is not null but the string is null")
+
       assertion("not null" must beAlsoNull(nullString)) must failWith("'not null' is not null")
+      assertion("not null" aka "the string" must beAlsoNull(nullString)) must failWith("the string 'not null' is not null")
     }
     "provide a haveClass matcher checking if any.getClass == c" in {
       val a: Any = 1
       a must haveClass(classOf[java.lang.Integer])
       assertion(a must haveClass(classOf[String])) must failWith("'1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
+      assertion(a aka "the object" must haveClass(classOf[String])) must failWith("the object '1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
     }
     "provide a haveClass matcher checking if any.getClass == c - with String" in {
       val a: Any = "string"
@@ -67,11 +71,13 @@ object objectMatchersSpec extends MatchersSpecification {
       val a: Any = new java.io.FileOutputStream(new java.io.FileDescriptor) { override def toString = "FileOutputStream"}
       a must haveSuperClass(classOf[java.io.OutputStream])
       assertion(a must haveSuperClass(classOf[java.lang.String])) must failWith("'FileOutputStream' doesn't have super class 'java.lang.String'")
+      assertion(a aka "the object" must haveSuperClass(classOf[java.lang.String])) must failWith("the object 'FileOutputStream' doesn't have super class 'java.lang.String'")
     }
     "provide a beAssignableFrom matcher checking if any.getClass isAssignableFrom c" in {
       val a: Object = new java.io.FileOutputStream(new java.io.FileDescriptor)
       classOf[java.io.OutputStream] must beAssignableFrom(a.getClass)
       assertion(classOf[java.io.OutputStream] must beAssignableFrom(classOf[String])) must failWith("'java.io.OutputStream' is not assignable from 'java.lang.String'")
+      assertion(classOf[java.io.OutputStream] aka "the class" must beAssignableFrom(classOf[String])) must failWith("the class 'java.io.OutputStream' is not assignable from 'java.lang.String'")
     }
   }   
 }

@@ -130,9 +130,12 @@ object beforeAfterSpec extends Specification {
 }
 class beforeAfterTest extends JUnit4(beforeAfterSpec) 
 
-trait beforeAfterTestSpec extends Specification with ConsoleReporter with MockOutput {
+trait beforeAfterTestSpec extends Specification with Console with MockOutput {
+  def error(msg: String) = scala.Predef.error(msg)
   def execute = { systems = Nil; executeSpec }
   def executeSpec
+  val specs = List(this)
+  override def main(args: Array[String]) = super[Console].main(args)
 }
 
 object doBeforeExample extends beforeAfterTestSpec {
@@ -142,7 +145,7 @@ object doBeforeExample extends beforeAfterTestSpec {
       "have example 1 ok" in { true }
       "have example 2 ok" in { true }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object doBeforeExampleFailing extends beforeAfterTestSpec {
@@ -151,7 +154,7 @@ object doBeforeExampleFailing extends beforeAfterTestSpec {
     "A specification" should { doBefore { error("before error") }
       "have example 1 ok" in {  }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object beforeEx extends beforeAfterTestSpec {
@@ -162,7 +165,7 @@ object beforeEx extends beforeAfterTestSpec {
       "have example 1 ok" in { true }
       "have example 2 ok" in { true }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object beforeExampleFailing extends beforeAfterTestSpec {
@@ -172,7 +175,7 @@ object beforeExampleFailing extends beforeAfterTestSpec {
       usingBefore { () => error("before error") }
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object doAfterExample extends beforeAfterTestSpec {
@@ -182,7 +185,7 @@ object doAfterExample extends beforeAfterTestSpec {
       "have example 1 ok" in { true }
       "have example 2 ok" in { true }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object doAfterExampleFailing extends beforeAfterTestSpec {
@@ -191,7 +194,7 @@ object doAfterExampleFailing extends beforeAfterTestSpec {
     "A specification" should { doAfter { println("after");error("after error") }
       "have example 1 ok" in {  }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object afterEx extends beforeAfterTestSpec {
@@ -202,7 +205,7 @@ object afterEx extends beforeAfterTestSpec {
       "have example 1 ok" in { true }
       "have example 2 ok" in { true }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object afterExampleFailing extends beforeAfterTestSpec {
@@ -212,7 +215,7 @@ object afterExampleFailing extends beforeAfterTestSpec {
       usingAfter { () => error("after error") }
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }   
 }
 object specWithBeforeContext extends beforeAfterTestSpec {
@@ -222,7 +225,7 @@ object specWithBeforeContext extends beforeAfterTestSpec {
     "A specification" ->- context1 should {
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }
 }
 object specWithAfterContext extends beforeAfterTestSpec {
@@ -232,7 +235,7 @@ object specWithAfterContext extends beforeAfterTestSpec {
     "A specification" ->- context1 should {
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }
 }
 object specWithContext extends beforeAfterTestSpec {
@@ -243,7 +246,7 @@ object specWithContext extends beforeAfterTestSpec {
     "A specification" ->- context1 should {
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }
 }
 object specWithRepeatedContext extends beforeAfterTestSpec {
@@ -253,7 +256,7 @@ object specWithRepeatedContext extends beforeAfterTestSpec {
     "A specification" ->- context1 should {
       "have example 1 ok" in { }
     }
-    reportSpec(this)
+    reportSpecs
   }
 }
 object specWithUntil extends beforeAfterTestSpec {
@@ -263,7 +266,50 @@ object specWithUntil extends beforeAfterTestSpec {
       until(counter == 10)
       "have example 1 ok" in { counter += 1 }
     }
-    reportSpec(this)
+    reportSpecs
+  }
+}
+object specWithDoBeforeAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    "A specification" should {
+      doFirst { println("msg doBeforeAll") }
+      "have example 1 ok" in { println("msg example 1") }
+      "have example 2 ok" in { println("msg example 2") }
+    }
+    reportSpecs
+  }
+}
+object specWithDoAfterAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    "A specification" should {
+      doLast { println("msg doAfterAll") }
+      "have example 1 ok" in { println("msg example 1") }
+      "have example 2 ok" in { println("msg example 2") }
+    }
+    reportSpecs
+  }
+}
+object specWithAll extends beforeAfterTestSpec {
+  override def executeSpec = {
+    doBeforeSpec { println("msg doBeforeAllSpec") }
+    "A specification" should {
+      doFirst 	{ println("msg doBeforeAllSus1") }
+      doBefore 		{ println("msg doBeforeSus1") }
+      doLast 	{ println("msg doAfterAllSus1") }
+      doAfter 		{ println("msg doAfterSus1") }
+      "have example 1.1 ok" in { println("msg example 1.1") }
+      "have example 1.2 ok" in { println("msg example 1.2") }
+    }
+    "A specification" should {
+      println("msg doBeforeAllSus2").doFirst
+      println("msg doBeforeSus2").before
+      "have example 2.1 ok" in { println("msg example 2.1") }
+      "have example 2.2 ok" in { println("msg example 2.2") }
+      println("msg doAfterSus2").after
+      println("msg doAfterAllSus2").doLast
+    }
+    println("msg doAfterAllSpec").afterSpec
+    reportSpecs
   }
 }
 object specWithDoBeforeAll extends beforeAfterTestSpec {
