@@ -14,11 +14,10 @@ trait ExampleLifeCycle {
   
   protected[this] var example: Option[Example] = None
   def until = true 
-  def beforeExample(ex: Example) = {} 
+  def beforeExample(ex: Example) = { example = Some(ex) } 
   def beforeTest(ex: Example)= {}
   def afterTest(ex: Example) = {}
   def executeTest(ex: Example, t: =>Any): Any = { 
-    example = Some(ex); 
     t 
   }
   def afterExample(ex: Example) = { 

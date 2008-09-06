@@ -114,7 +114,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
   implicit def forExample(desc: String): Example = {
-    val newExample = new Example(desc, currentSus)
+    val newExample = new Example(desc, currentLifeCycle)
     exampleContainer.addExample(newExample) 
     newExample
   }
@@ -140,8 +140,14 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListe
       case None => currentSus 
     }
   }
-  
-    /** the beforeAllSystems function will be invoked before all systems */
+  protected[this] def currentLifeCycle: ExampleLifeCycle = {
+    example match {
+      case Some(e) => e.cycle
+      case None => currentSus 
+    }
+  }
+
+  /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
   
   /** the afterAllSystems function will be invoked after all systems */

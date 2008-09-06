@@ -1,4 +1,4 @@
-package org.specs.specification 
+package org.specs.specification
 
 import org.specs._
 
@@ -21,11 +21,17 @@ object exampleSpec extends Specification {
       ex.hasBeenExecuted must beTrue
     }
   }
+  "A subexample must have the same lifecycle as its parent example" in {
+    ex.failures 
+    ex.subexample.cycle mustBe ex.testExample.cycle
+  }
 }
 object ex extends Specification {
   var hasBeenExecuted = false
+  var subexample: Example = null
   val testExample = new Example("ex", this) in {
     hasBeenExecuted = true
+    subexample = "subexample" in {}
   }
   override def failures = testExample.failures.toList
   def resetExample = { hasBeenExecuted = false; testExample.resetForExecution }
