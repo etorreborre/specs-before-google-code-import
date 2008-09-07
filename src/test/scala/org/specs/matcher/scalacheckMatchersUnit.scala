@@ -79,17 +79,17 @@ trait ScalacheckMock extends Mocker {
     override def println(s: Any) = record
     override def printf(format: String, args: Any*) = record
   } 
-  val matcher = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock  
-  val matcherWithFailure = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
+  val matcher = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleAssertionListener  
+  val matcherWithFailure = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleAssertionListener {
     override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithPropertyException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
+  val matcherWithPropertyException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleAssertionListener {
     override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithGenerationException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
+  val matcherWithGenerationException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleAssertionListener {
     override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithExhaustedGeneration = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock {
+  val matcherWithExhaustedGeneration = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleAssertionListener {
     override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
 }

@@ -15,7 +15,7 @@ import org.specs.specification._
  * assess properties multiple times with generated data.
  * @see the <a href="http://code.google.com/p/scalacheck/">Scalacheck project</a>
  */
-trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues {
+trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues with AssertionListener {
   
   /**
    * This implicit value is useful to transform the SuccessValue returned by matchers to properties
@@ -91,7 +91,8 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      }
      
      // check the property
-     val results = check(params, prop, printResult) 
+     def propToCheck = if (!shouldCountAssertions) prop else (prop && property((t: Boolean) => true.isAssertion)) 
+     val results = check(params, propToCheck, printResult) 
      
      // display the final result if verbose = true
      if (verbose) {
@@ -136,10 +137,13 @@ trait ScalacheckParameters {
    * The naming is a bit different, in order to keep short names for frequent use cases<ul>
    *  <code><li>minTestsOk == minSuccessfulTests
    *  <li>maxDiscarded == maxDiscardedTests
-   *  <li>minSize and maxSize keep their name <code><ul>
+   *  <li>minSize and maxSize keep their name <code><ul> 
    */
   val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
-
+  private var countAssertions = false
+  def assertProperties = { countAssertions = true; this }
+  def dontAssertProperties = { countAssertions = false; this }
+  def shouldCountAssertions = countAssertions
   /**
    * Default values for Scalacheck parameters
 	 */

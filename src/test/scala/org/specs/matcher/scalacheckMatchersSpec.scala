@@ -42,13 +42,21 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
   }
   "A ScalaCheck property" should {
     "add new assertions during evaluation if isAssertion is on" in {
-      object spec extends Specification {
-        property((a:Int) => true.isAssertion) must pass
-      }
-      spec.assertionsNb must be_>=(50)
+      spec.assertionsNb must be_==(101)
+    }
+    "add new assertions during evaluation if assertProperties is on" in {
+      specWithAssertProperties.assertionsNb must be_==(101)
     }
   }
 }
+object spec extends Specification with Scalacheck {
+  property((a:Int) => isAssertion(a == a)) must pass
+}
+object specWithAssertProperties extends Specification with Scalacheck {
+  assertProperties
+  property((a:Int) => a == a) must pass
+}
+
 trait ScalacheckExamples extends Specification with Scalacheck {
   val identityProp = property((a:Boolean) => a)
   val alwaysTrueProp = property((a:Int) => true)
