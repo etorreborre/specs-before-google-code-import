@@ -91,18 +91,6 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
   }
   
   /** 
-   * Adds an isAssertion method to any mock expectation to better count the number of assertions
-   */
-  implicit def anyToAssertionCounter(a: =>Any) = new AssertionCounter(a)
-  /** 
-   * Adds an isAssertion method to any mock expectation to better count the number of assertions
-   */
-  class AssertionCounter(a: =>Any) {
-    /** adds an assertion to the AssertionListener trait */
-    def isAssertion = { addAssertion; a }
-  }
-
-  /** 
    * Adds call constraint method to integers to express the exactly, atLeast, atMost
    */
   implicit def intToCallConstraint(i: Int) = new IntCallConstraint(i)

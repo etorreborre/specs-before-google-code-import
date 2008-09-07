@@ -10,6 +10,17 @@ trait AssertionListener {
  * Trait adding the new assertion to an example, creating one if necessary. 
  */
 trait ExampleAssertionListener extends AssertionListener {
+  /** 
+   * Adds an isAssertion method to any mock expectation to better count the number of assertions
+   */
+  implicit def anyToAssertionCounter[T](a: =>T) = new AssertionCounter(a)
+  /** 
+   * Adds an isAssertion method to any block of code to better count the number of assertions
+   */
+  class AssertionCounter[T](a: =>T) {
+    /** adds an assertion to the AssertionListener trait */
+    def isAssertion = { addAssertion; a }
+  }
 
   def addAssertion: Example = addAssertion(None)
   

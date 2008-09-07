@@ -40,6 +40,14 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
       assertion(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
     } 
   }
+  "A ScalaCheck property" should {
+    "add new assertions during evaluation if isAssertion is on" in {
+      object spec extends Specification {
+        property((a:Int) => true.isAssertion) must pass
+      }
+      spec.assertionsNb must be_>=(50)
+    }
+  }
 }
 trait ScalacheckExamples extends Specification with Scalacheck {
   val identityProp = property((a:Boolean) => a)
