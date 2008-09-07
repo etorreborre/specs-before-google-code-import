@@ -47,6 +47,9 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
     "add new assertions during evaluation if assertProperties is on" in {
       specWithAssertProperties.assertionsNb must be_==(101)
     }
+    "count a new assertion for each time the property is evaluated + one for the pass assertion" in {
+      specWithFailure.assertionsNb must be_==(11)
+    }
   }
 }
 object spec extends Specification with Scalacheck {
@@ -55,6 +58,10 @@ object spec extends Specification with Scalacheck {
 object specWithAssertProperties extends Specification with Scalacheck {
   assertProperties
   property((a:Int) => a == a) must pass
+}
+object specWithFailure extends Specification with Scalacheck {  assertProperties
+  var counter = 0
+  property((a:Int) => {counter +=1; counter < 10}) must pass
 }
 
 trait ScalacheckExamples extends Specification with Scalacheck {
