@@ -142,8 +142,8 @@ trait ScalacheckParameters {
   val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
   
   /** This variable is used to track if we need to add an assertion each time a property is evaluated */
-  private var countAssertions = false
-  /** declare that an assertion should be added each time a property is evaluated */
+  private var countAssertions = true
+  /** declare that an assertion should be added each time a property is evaluated (default) */
   def assertProperties = { countAssertions = true; this }
   /** declare that no assertion should be added each time a property is evaluated */
   def dontAssertProperties = { countAssertions = false; this }

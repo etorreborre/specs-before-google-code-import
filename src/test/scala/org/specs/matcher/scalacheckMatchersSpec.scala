@@ -44,8 +44,11 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
     "add new assertions during evaluation if isAssertion is on" in {
       spec.assertionsNb must be_==(101)
     }
-    "add new assertions during evaluation if assertProperties is on" in {
+    "add new assertions during evaluation if assertProperties is on (default)" in {
       specWithAssertProperties.assertionsNb must be_==(101)
+    }
+    "not add new assertions during evaluation if dontAssertProperties is on (default)" in {
+      specWithDontAssertProperties.assertionsNb must be_==(1)
     }
     "count a new assertion for each time the property is evaluated + one for the pass assertion" in {
       specWithFailure.assertionsNb must be_==(11)
@@ -53,10 +56,14 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
   }
 }
 object spec extends Specification with Scalacheck {
+  dontAssertProperties
   property((a:Int) => isAssertion(a == a)) must pass
 }
 object specWithAssertProperties extends Specification with Scalacheck {
-  assertProperties
+  property((a:Int) => a == a) must pass
+}
+object specWithDontAssertProperties extends Specification with Scalacheck {
+  dontAssertProperties
   property((a:Int) => a == a) must pass
 }
 object specWithFailure extends Specification with Scalacheck {  assertProperties
