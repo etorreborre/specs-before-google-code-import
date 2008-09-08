@@ -56,14 +56,14 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
   }
 }
 object spec extends Specification with Scalacheck {
-  dontAssertProperties
+  dontAssertProperties()
   property((a:Int) => isAssertion(a == a)) must pass
 }
 object specWithAssertProperties extends Specification with Scalacheck {
   property((a:Int) => a == a) must pass
 }
 object specWithDontAssertProperties extends Specification with Scalacheck {
-  dontAssertProperties
+  dontAssertProperties()
   property((a:Int) => a == a) must pass
 }
 object specWithFailure extends Specification with Scalacheck {  assertProperties
