@@ -189,18 +189,18 @@ trait AnyMatchers {
   /**
    *  
    */   
-  def throwA[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Unit = throwAnException[E]
+  def throwA[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Matcher[Any] = throwAnException[E]
   /**
    * Alias for throwException
    * @deprecated use throwA[RuntimeException] instead
    */   
-  def throwA[E <: Throwable](e: =>E): Unit = throwException[E](e)
+  def throwA[E <: Throwable](e: =>E): Matcher[Any] = throwException[E](e)
 
   /**
    * Alias for throwException
    */   
-  def throwAn[E <: Throwable](e: =>E): Unit = throwException[E](e)
-  def throwAn[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Unit = throwAnException[E]
+  def throwAn[E <: Throwable](e: =>E): Matcher[Any] = throwException[E](e)
+  def throwAn[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Matcher[Any] = throwAnException[E]
 
   /**
    * Matches if the thrown exception is == to e
