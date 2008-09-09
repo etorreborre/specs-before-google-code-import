@@ -66,27 +66,22 @@ object jmockGoodSpec extends Mocked {
       expect { 1.of(list).get(anyInt) }
       list.get(0)
     } 
-    "provide an any[classOf[Type]] matcher which can match any parameter of a given type with vargs" in {
+    "provide an any[Type] matcher which can match any parameter of a given type with varargs" in {
       case class Param(name: String)
       trait ToMock { def method(p: Param*) = () }
-      val mocked = mock(classOf[ToMock])
+      val mocked: ToMock = mock[ToMock]
       expect { 1.of(mocked).method(any(classOf[Param])) }
       mocked.method(Param("hello"))
     } 
-    "provide an a(classOf[X]) matcher which can be used to specify that an instance of class X will be used as a parameter" in {
-      val listString: List[String] = mock(classOf[List[String]], "list of strings")
-      expect { 1.of(listString).mkString(a(classOf[String])) }
-      listString.mkString(",")
-    } 
-    "provide an a[T] matcher which can be used to specify that any instance of type X will match - alias an[T]" in {
-      val listString: List[String] = mock(classOf[List[String]], "list of strings")
+    "provide an a[T] matcher which can be used to specify that any instance of type T will match - alias an[T]" in {
+      val listString: List[String] = mock[List[String]]
       expect { 0.atLeastOf(listString).mkString(a[String]) }
       listString.mkString(",")
       listString.mkString("+")
     } 
-    "provide an aNull(classOf[X]) matcher which can be used to specify that a null value of class X will be used as a parameter" in {
-      val listString: List[String] = mock(classOf[List[String]], "list of strings")
-      expect { 1.of(listString).mkString(aNull(classOf[String])) }
+    "provide an aNull[X] matcher which can be used to specify that a null value of class X will be used as a parameter" in {
+      val listString: List[String] = mock[List[String]]("list of strings")
+      expect { 1.of(listString).mkString(aNull[String]) }
       listString.mkString(null)
     } 
     "provide an equal matcher which can be used to specify that a specific value will be used as a parameter" in {
@@ -95,7 +90,7 @@ object jmockGoodSpec extends Mocked {
     } 
     "provide an equal matcher which can be used to specify that a specific value will be used as a parameter - with 2 paramters" in {
       trait ParamMock { def method(p1: Int, p2: Int) = () }
-      val mocked = mock(classOf[ParamMock])
+      val mocked: ParamMock = mock[ParamMock]
       expect { 1.of(mocked).method(equal(0), equal(1)) }
       mocked.method(0, 1)
     } 
@@ -128,12 +123,12 @@ object jmockGoodSpec extends Mocked {
       case class Module(name: String)
       case class Project(module: Module, name: String)
       case class Workspace(project: Project)
-      val workspace = mock(classOf[Workspace])
+      val workspace: Workspace = mock[Workspace]
  
       expect { 
-        1.atLeastOf(workspace).project.willReturn(classOf[Project]) {p: Project => 
+        1.atLeastOf(workspace).project.willReturn[Project] {p: Project => 
            1.atLeastOf(p).name willReturn "hi"
-           1.atLeastOf(p).module.willReturn(classOf[Module]){m: Module => 1.of(m).name willReturn "module"}
+           1.atLeastOf(p).module.willReturn[Module]{ (m: Module) => 1.of(m).name willReturn "module"}
         }
       }
       workspace.project.name must_== "hi"
@@ -142,12 +137,12 @@ object jmockGoodSpec extends Mocked {
     "provide a willReturn method returning iterables and accepting a block to return another mock and specify it too" in {
       case class Project(name: String)
       case class Workspace(projects: List[Project])
-      val workspace = mock(classOf[Workspace]) 
+      val workspace: Workspace = mock[Workspace] 
       expect { 
         one(workspace).projects willReturnIterable(
-          as(classOf[Project], "p1"){p: Project => 
+          as[Project]("p1"){p: Project => 
             one(p).name willReturn "p1" },
-          as(classOf[Project], "p2"){p: Project => 
+          as[Project]("p2"){p: Project => 
             one(p).name willReturn "p2" }
         )
       }
@@ -156,11 +151,11 @@ object jmockGoodSpec extends Mocked {
     "provide a willReturn method returning iterables and accepting a block to return another mock and specify it too - 2" in {
       case class Project(name: String)
       case class Workspace(projects: List[Project])
-      val workspace = mock(classOf[Workspace]) 
+      val workspace: Workspace = mock[Workspace] 
       expect { 
-        one(workspace).projects willReturnIterable(classOf[Project], 
-           {p: Project => one(p).name willReturn "p1" },
-           {p: Project => one(p).name willReturn "p2" })
+        one(workspace).projects.willReturnIterable(
+          {p: Project => one(p).name willReturn "p1" }, 
+          {p: Project => one(p).name willReturn "p2" })
       }
       workspace.projects.map(_.name) must_== List("p1", "p2")
     } 
@@ -352,7 +347,7 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
   var scalaList: List[String] = Nil
   def createMocks = {
     scalaList = mock(classOf[List[String]], "scalaList")
-    list = mock(classOf[java.util.List[Object]])
+    list = mock[java.util.List[Object]]
   }
   override def beforeTest(ex: Example) = createMocks
 }
