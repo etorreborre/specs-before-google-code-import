@@ -167,10 +167,11 @@ trait AnyMatchers {
    * <br>Usage: <code>value must throwA(new ExceptionType)</code>
    * <br>Advanced usage: <code>value must throwA(new ExceptionType).like {case ExceptionType(m) => m.startsWith("bad")}</code>
    */   
-  def throwException[E <: Throwable](exception: =>E) = new ExceptionMatcher(exception)
-    class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
+  def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception.getClass.asInstanceOf[Class[E]])
+  def throwAnException[E <: Throwable](implicit m: scala.reflect.Manifest[E]): ExceptionMatcher[E] = new ExceptionMatcher[E](m.erasure.asInstanceOf[Class[E]])
+    class ExceptionMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
      def apply(value: => Any) = { 
-       (isThrown(value, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description).isDefined, 
+       (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined, 
         okMessage(exception, description), koMessage(exception, description))
      }
      def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
@@ -183,17 +184,23 @@ trait AnyMatchers {
        }
      }
    }  
-  private def okMessage(exception: Throwable, desc: Option[String]) = exception + " was thrown" + desc.map(" from " + _.toString).getOrElse("") 
-  private def koMessage(exception: Throwable, desc: Option[String]) = exception + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  private def okMessage(exception: Any, desc: Option[String]) = exception + " was thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  private def koMessage(exception: Any, desc: Option[String]) = exception + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  /**
+   *  
+   */   
+  def throwA[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Unit = throwAnException[E]
   /**
    * Alias for throwException
+   * @deprecated use throwA[RuntimeException] instead
    */   
-  def throwA[E <: Throwable](e: =>E) = throwException[E](e)
+  def throwA[E <: Throwable](e: =>E): Unit = throwException[E](e)
 
   /**
    * Alias for throwException
    */   
-  def throwAn[E <: Throwable](e: =>E) = throwException[E](e)
+  def throwAn[E <: Throwable](e: =>E): Unit = throwException[E](e)
+  def throwAn[E <: Throwable](implicit m: scala.reflect.Manifest[E]): Unit = throwAnException[E]
 
   /**
    * Matches if the thrown exception is == to e
@@ -206,6 +213,26 @@ trait AnyMatchers {
     }
   }
   
+  /**
+   * @returns an Option with the expected exception if it satisfies function <code>f</code>
+   * <br>rethrows the exception otherwise
+   */   
+  private def isThrown[E](value: => Any, expected: E, f: (Throwable => Boolean), desc: Option[String]) = { 
+    getException(value) match {
+      case None => None
+      case Some(e)  => if (f(e))
+                         Some(e)
+                       else
+                         throwFailure(e, koMessage(expected, desc) + ". Got: " + e)
+    }
+  }
+  /** evaluates a value and return any exception that is thrown */
+  private def getException[E <: Throwable](value: => Any): Option[Throwable] = {
+    try { value } 
+    catch { case e => { return Some(e)} }
+    return None
+  }
+
   /**
    * Matches if v.getClass == c
    */   
@@ -252,26 +279,6 @@ trait AnyMatchers {
    * Matches if c.isAssignableFrom(v)
    */   
   def notHaveSuperClass[T](c: Class[T]) = haveSuperClass(c).not
-
-  /**
-   * @returns an Option with the expected exception if it satisfies function <code>f</code>
-   * <br>rethrows the exception otherwise
-   */   
-  private def isThrown[E <: Throwable](value: => Any, expected: E, f: (Throwable => Boolean), desc: Option[String]) = { 
-    getException(value) match {
-      case None => None
-      case Some(e)  => if (f(e))
-                         Some(e)
-                       else
-                         throwFailure(e, koMessage(expected, desc) + ". Got: " + e)
-    }
-  }
-  /** evaluates a value and return any exception that is thrown */
-  private def getException[E <: Throwable](value: => Any): Option[Throwable] = {
-    try { value } 
-    catch { case e => { return Some(e)} }
-    return None
-  }
 
   /**
    * Creates a FailureException corresponding to a thrown exception.

@@ -46,6 +46,11 @@ object objectMatchersSpec extends MatchersSpecification {
 
       assertion({throw new NullPointerException;()} must throwA(new Error)) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
     } 
+    "provide a throwAn[T] matcher expecting an exception" in {
+      {throw new Error("user error");()} must throwAn[Error]
+      
+      {throw new RuntimeException("e");()} must throwA[RuntimeException]
+    } 
     "provide a beAlsoNull matcher which will check if 2 objects are null at the same time" in {
       val nullString: String = null 
       nullString must beAlsoNull(nullString)
