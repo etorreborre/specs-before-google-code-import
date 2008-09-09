@@ -17,7 +17,6 @@ trait Matchers extends AnyMatchers with
                        MapMatchers with
                        NumericMatchers with
                        PatternMatchers with 
-                       MockMatchers with 
                        XmlMatchers with 
                        FileMatchers with 
                        MatcherResult
