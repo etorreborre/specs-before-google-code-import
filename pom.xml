@@ -36,6 +36,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   framework</description>
   <url>http://code.google.com/p/specs/</url>
   <inceptionYear>2007</inceptionYear>
+  
   <licenses>
     <license>
       <name>MIT License</name>

@@ -172,7 +172,7 @@ trait AnyMatchers {
     class ExceptionMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
      def apply(value: => Any) = { 
        (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined, 
-        okMessage(exception, description), koMessage(exception, description))
+        okMessage(exception.getName, description), koMessage(exception.getName, description))
      }
      def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
        def apply(v: => Any) = {
@@ -184,8 +184,16 @@ trait AnyMatchers {
        }
      }
    }  
-  private def okMessage(exception: Any, desc: Option[String]) = exception + " was thrown" + desc.map(" from " + _.toString).getOrElse("") 
-  private def koMessage(exception: Any, desc: Option[String]) = exception + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  private def name(exception: Any) = {
+    exception match {
+      case e: Class[_] => e.toString.replaceFirst("class ", "")
+      case other => other.toString
+    }
+  } 
+  private def okMessage(exception: Any, desc: Option[String]) = {
+    name(exception) + " was thrown" + desc.map(" from " + _.toString).getOrElse("")
+  } 
+  private def koMessage(exception: Any, desc: Option[String]) = name(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
   /**
    *  
    */   
