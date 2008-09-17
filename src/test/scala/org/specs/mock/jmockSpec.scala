@@ -108,7 +108,7 @@ object jmockGoodSpec extends Mocked {
     } 
     "provide a willThrow method to specify the exception which must be thrown" in {
       expect { 1.of(list).get(will(beEqual(0))) willThrow new java.lang.Exception("ouch") }
-      list.get(0) must throwA(new Exception)
+      list.get(0) must throwAn[Exception]
     } 
     "provide a willReturn method to specify the a returned iterator" in {
       val expected = List[String]("hey")
@@ -327,7 +327,7 @@ trait BadMocked extends Mocked {
   }
   override def afterTest(ex: Example) = {
     if (checkAfterTest)
-      { context.assertIsSatisfied } must throwA(new org.jmock.api.ExpectationError("unexpected", null))
+      { context.assertIsSatisfied } must throwA[org.jmock.api.ExpectationError]
     else
       checkAfterTest = true
   }

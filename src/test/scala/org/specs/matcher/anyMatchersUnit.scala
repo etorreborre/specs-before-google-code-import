@@ -129,24 +129,33 @@ object anyMatchersUnit extends MatchersSpecification {
   }
   "A throwA + exception matcher" should {
     "be ok if a value throws the expected exception type" in {
-      throwA(new Error)(throw new Error("test")) must beLike { case (true, _, _) => ok } 
+      throwThis(new Error("test"))(throw new Error("test")) must beLike { case (true, _, _) => ok } 
     }
     "be ko if the value doesn't throw any exception" in {
-      throwA(new Exception)(1) must beLike { case (false, _, message) => ok } 
+      throwThis(new Exception)(1) must beLike { case (false, _, message) => ok } 
     }
     "specify the expected exception in the failure message" in {
-      throwA(new Exception)(1)._3 must include((new Exception).getClass.getName) 
+      throwThis(new Exception)(1)._3 must include((new Exception).getClass.getName) 
     }
     "throw a Failure exception if the value throws another exception" in {
-      throwA(new Error)(throw new Exception) must throwA(new FailureException("")) 
+      val matcher: ExceptionClassMatcher[Error] = throwAn[Error]
+      matcher(throw new Exception) must throwA[FailureException] 
     }
     "throw a Failure exception with the other exception message, if the value throws another exception" in {
-      throwA(new Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
+      throwThis(new Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
     }
     "display a precise failure message if the block has a description" in {
       lazy val block = { throw new Exception  }
-      { theBlock(block) aka "this block" must throwA(new Error("Error")) } must throwThis(new FailureException("java.lang.Error: Error should have been thrown from this block. Got: java.lang.Exception"))
-   }
+      { theBlock(block) aka "this block" must throwThis(new Error("Error")) } must throwThis(new FailureException("java.lang.Error: Error should have been thrown from this block. Got: java.lang.Exception"))
+    }
+  }
+  "the message function" should {
+    "return the message of the exception if the parameter is an exception" in {
+      message(new java.lang.Error("buzz")) must_== "java.lang.Error: buzz"
+    }
+    "return the name of the exception class if the parameter is an exception class" in {
+      message(classOf[Error]) must_== "java.lang.Error"
+    }
   }
   case class SimpleException(s: String) extends Exception(s)
   "A throwThis + exception matcher" should {
@@ -156,7 +165,7 @@ object anyMatchersUnit extends MatchersSpecification {
   }
   "A throwA + exception matcher" can {
     "specify a like clause to add pattern matching" in {
-      throwA(SimpleException("Message")).like {case SimpleException(x) => !x.isEmpty}(
+      throwThis(SimpleException("Message")).like {case SimpleException(x) => !x.isEmpty}(
           throw new SimpleException("Message")) must beLike {case (true, _, _) => ok} 
     }
   }

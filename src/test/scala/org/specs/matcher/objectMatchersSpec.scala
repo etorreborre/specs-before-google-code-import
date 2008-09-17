@@ -39,12 +39,12 @@ object objectMatchersSpec extends MatchersSpecification {
       assertion(List("1") verifies { _.isEmpty }) must failWith("List(1) doesn't verify the expected property")
     }
     "provide a 'mustThrow' matcher expecting a block to send an exception of a given type" in {
-      {throw new Error("user error");()} must throwA(new Error)
+      {throw new Error("user error");()} must throwAn[Error]
 
       class MyError(msg: String) extends Error(msg) {}
-      {throw new MyError("subclass of error");()} must throwA(new Error) 
+      {throw new MyError("subclass of error");()} must throwAn[Error]
 
-      assertion({throw new NullPointerException;()} must throwA(new Error)) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
+      assertion({throw new NullPointerException;()} must throwAn[Error]) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
     } 
     "provide a throwAn[T] matcher expecting an exception" in {
       {throw new Error("user error");()} must throwAn[Error]

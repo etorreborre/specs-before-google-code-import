@@ -6,10 +6,10 @@ class stackTest extends JUnit4(stackSpecification)
 object stackSpecification extends StackSpec {
   "An empty stack" ->-(empty) should { 
     "throw an exception when sent #top" in {
-      stack.top must throwA(new NoSuchElementException)
+      stack.top must throwA[NoSuchElementException]
     }
     "throw an exception when sent #pop" in {
-      stack.pop must throwA(new NoSuchElementException)
+      stack.pop must throwA[NoSuchElementException]
     }
   }
   "A non-empty stack below full capacity" ->-(nonEmpty) should {
@@ -42,7 +42,7 @@ object stackSpecification extends StackSpec {
   "A full stack" ->-(full) should { 
     behave like "A non-empty stack below full capacity" 
     "throw an exception when sent #push" in {
-      stack.push(11) must throwA(new Error)
+      stack.push(11) must throwAn[Error]
     }
   }
 }

@@ -8,6 +8,7 @@ import org.specs.util.EditDistance._
 import org.specs.collection.ExtendedIterable._
 import scala.collection.immutable.{Set => Removed}
 import scala.collection.Set
+import scala.reflect.Manifest
 
 object AnyMatchers extends AnyMatchers
 /**
@@ -167,12 +168,18 @@ trait AnyMatchers {
    * <br>Usage: <code>value must throwA(new ExceptionType)</code>
    * <br>Advanced usage: <code>value must throwA(new ExceptionType).like {case ExceptionType(m) => m.startsWith("bad")}</code>
    */   
-  def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception.getClass.asInstanceOf[Class[E]])
-  def throwAnException[E <: Throwable](implicit m: scala.reflect.Manifest[E]): ExceptionMatcher[E] = new ExceptionMatcher[E](m.erasure.asInstanceOf[Class[E]])
-    class ExceptionMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
+  def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception)
+  def throwAnException[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = new ExceptionClassMatcher[E](m.erasure.asInstanceOf[Class[E]])
+  class ExceptionClassMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
      def apply(value: => Any) = { 
        (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined, 
-        okMessage(exception.getName, description), koMessage(exception.getName, description))
+        okMessage(exception, description), koMessage(exception, description))
+     }
+  }  
+  class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
+     def apply(value: => Any) = { 
+       (isThrown(value, exception, (e => exception.getClass == e.getClass && exception.getMessage == e.getMessage), description).isDefined, 
+        okMessage(exception, description), koMessage(exception, description))
      }
      def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
        def apply(v: => Any) = {
@@ -184,42 +191,28 @@ trait AnyMatchers {
        }
      }
    }  
-  private def name(exception: Any) = {
+  def message(exception: Any) = {
     exception match {
       case e: Class[_] => e.toString.replaceFirst("class ", "")
-      case other => other.toString
+      case ex: Throwable => ex.getClass.getName + ": " + ex.getMessage
+      case other => other.toString 
     }
   } 
   private def okMessage(exception: Any, desc: Option[String]) = {
-    name(exception) + " was thrown" + desc.map(" from " + _.toString).getOrElse("")
+    message(exception) + " was thrown" + desc.map(" from " + _.toString).getOrElse("")
   } 
-  private def koMessage(exception: Any, desc: Option[String]) = name(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  private def koMessage(exception: Any, desc: Option[String]) = message(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
   /**
-   *  
+   * return a matcher which will be ok if an exception of that type is thrown
    */   
-  def throwA[E <: Throwable](implicit m: scala.reflect.Manifest[E]): ExceptionMatcher[E] = throwAnException[E]
-  /**
-   * Alias for throwException
-   * @deprecated use throwA[RuntimeException] instead
-   */   
-  def throwA[E <: Throwable](e: =>E): ExceptionMatcher[E] = throwException[E](e)
+  def throwA[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
+
+  def throwAn[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
 
   /**
    * Alias for throwException
    */   
-  def throwAn[E <: Throwable](e: =>E): ExceptionMatcher[E] = throwException[E](e)
-  def throwAn[E <: Throwable](implicit m: scala.reflect.Manifest[E]): ExceptionMatcher[E] = throwAnException[E]
-
-  /**
-   * Matches if the thrown exception is == to e
-   */   
-  def throwThis[E <: Throwable](exception: =>E) = new Matcher[Any](){
-    def apply(value: => Any) = { 
-        (isThrown(value, exception, (e => e == exception), description).isDefined, 
-         okMessage(exception, description), 
-         koMessage(exception, description))
-    }
-  }
+  def throwThis[E <: Throwable](exception: =>E): ExceptionMatcher[E] = throwException(exception)
   
   /**
    * @returns an Option with the expected exception if it satisfies function <code>f</code>

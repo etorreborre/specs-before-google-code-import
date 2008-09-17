@@ -15,6 +15,7 @@ import org.specs.util.Property
 import org.specs.ExtendedThrowable._
 import org.jmock.internal.matcher.MethodNameMatcher
 import org.specs.collection.JavaCollectionsConversion._
+import scala.reflect.Manifest
 
 /** 
  * This object can be used to import and rename some functions in case of a conflict with some other trait.
@@ -42,7 +43,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    * Classes can be mocked too, but the ClassImposterizer trait has to be added to the extensions
    * @returns the mocked object
    */
-  def mock[T](implicit m : scala.reflect.Manifest[T]): T = context.mock(m.erasure).asInstanceOf[T]
+  def mock[T](implicit m : Manifest[T]): T = context.mock(m.erasure).asInstanceOf[T]
 
   /** 
    * mocks a class and give the resulting mock a name. jMock expects mocks of the same class to have different names
@@ -54,7 +55,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    * mocks a class and give the resulting mock a name. jMock expects mocks of the same class to have different names
    * @returns the mocked object
    */
-  def mock[T](name: String)(implicit m : scala.reflect.Manifest[T]): T = context.mock(m.erasure, name).asInstanceOf[T]
+  def mock[T](name: String)(implicit m : Manifest[T]): T = context.mock(m.erasure, name).asInstanceOf[T]
 
   /** 
    * mocks a class and add expectations. Usage <code>willReturn(as(classOf[MyInterface]){m: MyInterface => one(m).method })<code>
@@ -69,7 +70,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    * mocks a class and add expectations. Usage <code>willReturn(as[MyInterface]{m: MyInterface => one(m).method })<code>
    * @returns the mocked object and the evaluation of the block of expectations
    */
-  def as[T](expects: Function1[T, Any])(implicit m : scala.reflect.Manifest[T]): (T, Function1[T, Any]) = {
+  def as[T](expects: Function1[T, Any])(implicit m : Manifest[T]): (T, Function1[T, Any]) = {
     (mock[T], expects) 
   }
 
@@ -87,7 +88,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    * mocks a class and add expectations, specifying the mock with a name
    * @returns the mocked object and the evaluation of the block of expectations
    */
-  def as[T](name: String)(expects: Function1[T, Any])(implicit m : scala.reflect.Manifest[T]): (T, Function1[T, Any]) = {
+  def as[T](name: String)(expects: Function1[T, Any])(implicit m : Manifest[T]): (T, Function1[T, Any]) = {
     (mock[T](name), expects) 
   }
   /** 
@@ -120,7 +121,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
            {p: Project => one(p).name willReturn "p2" })<code>
    * @returns the mocked object and the evaluation of the block of expectations
    */
-  def as[T](expects: Function1[T, Any]*)(implicit m : scala.reflect.Manifest[T]) = {
+  def as[T](expects: Function1[T, Any]*)(implicit m : Manifest[T]) = {
     expects.toList.zipWithIndex map { x =>
       val (block, i) = x
       (mock[T](m.erasure.getName + "_" + i), block)
@@ -246,7 +247,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    */
   def any[T](t: java.lang.Class[T]): T = expectations.`with`(anything[T])
   /** shortcut for expectations.`with`(new IsAnything[T]) */
-  def any[T](implicit m: scala.reflect.Manifest[T]): T = expectations.`with`(anything[T])
+  def any[T](implicit m: Manifest[T]): T = expectations.`with`(anything[T])
 
   /** 
    * shortcut for expectations.`with`(new IsInstanceOf[T])
@@ -254,7 +255,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    */
   def a[T](t: java.lang.Class[T]): T = {expectations.`with`(new IsInstanceOf(t)); null.asInstanceOf[T]}
   /** shortcut for expectations.`with`(new IsInstanceOf[T]) */
-  def a[T](implicit m: scala.reflect.Manifest[T]): T = {expectations.`with`(new IsInstanceOf(m.erasure)); null.asInstanceOf[T]}
+  def a[T](implicit m: Manifest[T]): T = {expectations.`with`(new IsInstanceOf(m.erasure)); null.asInstanceOf[T]}
 
   /** 
    * shortcut for expectations.`with`(new IsInstanceOf[T]) 
@@ -262,7 +263,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    */
   def an[T](t: java.lang.Class[T]): T = a(t)
   /** shortcut for expectations.`with`(new IsInstanceOf[T]) */
-  def an[T](implicit m: scala.reflect.Manifest[T]): T = {expectations.`with`(new IsInstanceOf(m.erasure)); null.asInstanceOf[T]}
+  def an[T](implicit m: Manifest[T]): T = {expectations.`with`(new IsInstanceOf(m.erasure)); null.asInstanceOf[T]}
 
   private def trueMatcher[T] = new org.hamcrest.TypeSafeMatcher[T]() {
     def matchesSafely(a: T) = true
@@ -287,10 +288,10 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
   def aNonNull[T](t: java.lang.Class[T]) = {expectations.`with`(new IsNot(new IsNull[T])); null.asInstanceOf[T]}
 
   /** shortcut for expectations.`with`(new IsNull[T]) */
-  def aNull[T](implicit m: scala.reflect.Manifest[T]): T  = {expectations.`with`(new IsNull[T]); null.asInstanceOf[T]}
+  def aNull[T](implicit m: Manifest[T]): T  = {expectations.`with`(new IsNull[T]); null.asInstanceOf[T]}
 
   /** shortcut for expectations.`with`(new IsNot(IsNull[T])) */
-  def aNonNull[T](implicit m: scala.reflect.Manifest[T]): T  = {expectations.`with`(new IsNot(new IsNull[T])); null.asInstanceOf[T]}
+  def aNonNull[T](implicit m: Manifest[T]): T  = {expectations.`with`(new IsNot(new IsNull[T])); null.asInstanceOf[T]}
 
   /** shortcut for expectations.`with`(new IsEqual[T](value)) */
   def equal[T](value: T)  = { expectations.`with`(new IsEqual[T](value)); value }
@@ -359,7 +360,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     }
     
     /** sets an action which will return a mock of type Class[T] and being specified by a function triggering expectations */
-    def willReturn[T](f: Function1[T, Any])(implicit m: scala.reflect.Manifest[T]): Unit = {
+    def willReturn[T](f: Function1[T, Any])(implicit m: Manifest[T]): Unit = {
       val mocked: T = mock[T]
       expectations.will(new ReturnValueAction(mocked))
       f(mocked)
@@ -408,7 +409,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
             {p: Project => one(p).name willReturn "p1" },
             {p: Project => one(p).name willReturn "p2" })<code>
     */
-    def willReturnIterable[S, T <: Iterable[S]](results: Function1[S, Any]*)(implicit m: scala.reflect.Manifest[S]): Unit = {
+    def willReturnIterable[S, T <: Iterable[S]](results: Function1[S, Any]*)(implicit m: Manifest[S]): Unit = {
       willReturn(results.toList.zipWithIndex map { x =>
         val (block, i) = x
         (mock[S](m.erasure.getName + "_" + i).asInstanceOf[S], block)
@@ -439,7 +440,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     def willThrow[X <: Throwable](t: X) = expectations.will(new ThrowAction(t))
 
     /** sets an exception to be thrown by the mock */
-    def willThrow[X <: Throwable](implicit m: scala.reflect.Manifest[X]) = expectations.will(new ThrowAction(m.erasure.newInstance.asInstanceOf[X]))
+    def willThrow[X <: Throwable](implicit m: Manifest[X]) = expectations.will(new ThrowAction(m.erasure.newInstance.asInstanceOf[X]))
 
     /** set up a JMock action to be executed */
     def will(action: Action) = expectations.will(action)
