@@ -237,9 +237,10 @@ trait AnyMatchers {
   /**
    * Matches if v.getClass == c
    */   
-  def haveClass[T](c: Class[T]) = new Matcher[Any](){
+  def haveClass[T](implicit m: Manifest[T]) = new Matcher[Any](){
     def apply(v: =>Any) = {
       val x: Any = v
+      val c = m.erasure
       val xClass = x.asInstanceOf[java.lang.Object].getClass
       (xClass == c, d(x) + " has class" + q(c.getName), d(x) + " doesn't have class " + q(c.getName) + " but " + q(xClass.getName))
     } 
@@ -248,14 +249,15 @@ trait AnyMatchers {
   /**
    * Matches if v.getClass != c
    */   
-  def notHaveClass[T](c: Class[T]) = haveClass(c).not
+  def notHaveClass[T](implicit m: Manifest[T]) = haveClass(m).not
 
   /**
    * Matches if v.isAssignableFrom(c)
    */   
-  def beAssignableFrom[T](c: Class[T]) = new Matcher[Class[_]](){
+  def beAssignableFrom[T](implicit m: Manifest[T]) = new Matcher[Class[_]](){
     def apply(v: =>Class[_]) = {
       val x: Class[_] = v
+      val c = m.erasure
       (x.isAssignableFrom(c), d(x.getName) + " is assignable from " + q(c.getName), d(x.getName) + " is not assignable from " + q(c.getName))
     } 
   } 
@@ -263,14 +265,15 @@ trait AnyMatchers {
   /**
    * Matches if v.isAssignableFrom(c)
    */   
-  def notBeAssignableFrom[T](c: Class[T]) = beAssignableFrom(c).not
+  def notBeAssignableFrom[T](implicit m: Manifest[T]) = beAssignableFrom(m).not
 
   /**
    * Matches if c.isAssignableFrom(v)
    */   
-  def haveSuperClass[T](c: Class[T]) = new Matcher[Any](){
+  def haveSuperClass[T](implicit m: Manifest[T]) = new Matcher[Any](){
     def apply(v: =>Any) = {
       val x: Any = v
+      val c = m.erasure
       val xClass = x.asInstanceOf[java.lang.Object].getClass
       (c.isAssignableFrom(xClass), d(x) + " has super class" + q(c.getName), d(x) + " doesn't have super class " + q(c.getName))
     } 
@@ -279,7 +282,7 @@ trait AnyMatchers {
   /**
    * Matches if c.isAssignableFrom(v)
    */   
-  def notHaveSuperClass[T](c: Class[T]) = haveSuperClass(c).not
+  def notHaveSuperClass[T](implicit m: Manifest[T]) = haveSuperClass(m).not
 
   /**
    * Creates a FailureException corresponding to a thrown exception.

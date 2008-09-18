@@ -80,7 +80,7 @@ object jmockGoodSpec extends Mocked {
       listString.mkString("+")
     } 
     "provide an aNull[X] matcher which can be used to specify that a null value of class X will be used as a parameter" in {
-      val listString: List[String] = mock[List[String]]("list of strings")
+      val listString: List[String] = mockAs[List[String]]("list of strings")
       expect { 1.of(listString).mkString(aNull[String]) }
       listString.mkString(null)
     } 
@@ -201,7 +201,7 @@ object jmockGoodSpec extends Mocked {
       mockSpec.assertionsNb must_== 2
     }
     "provide a one-liner expression for expectations" in {
-      expect(classOf[ToMock]) { one(_).isEmpty } in { _.isEmpty }
+      expect[ToMock] { one(_).isEmpty } in { _.isEmpty }
     }
     "provide a one-liner expression for expectations, adding an 'expects' method on Classes returning a mock" in {
       classOf[ToMock].expects(one(_).isEmpty willReturn false) in { _.isEmpty must beFalse}
@@ -346,7 +346,7 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
   var list: java.util.List[Object] = _
   var scalaList: List[String] = Nil
   def createMocks = {
-    scalaList = mock(classOf[List[String]], "scalaList")
+    scalaList = mockAs[List[String]]("scalaList")
     list = mock[java.util.List[Object]]
   }
   override def beforeTest(ex: Example) = createMocks
