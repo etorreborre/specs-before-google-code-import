@@ -40,6 +40,9 @@ object extendedNodeUnit extends Specification {
       <a> 
       </a> ==/ <a></a> mustBe true
     }
+    "return true for unordered sequences of notdes <a><b/><c/></a> ==/ <a><c/><b/></a>" in {
+      <a><b/><c/></a> ==/ <a><c/><b/></a> must beTrue 
+    }
     "return false for <a>1</a> ==/ <a></a>" in {
       <a>1</a> ==/ <a></a> mustBe false
     }

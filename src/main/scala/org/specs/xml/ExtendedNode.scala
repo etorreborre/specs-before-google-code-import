@@ -57,8 +57,8 @@ object NodeFunctions {
                                   n1.prefix == n2.prefix && 
                                   n1.attributes == n2.attributes && 
                                   n1.label == n2.label && 
-                                  n1.child.filter(!isSpaceNode(_)).isSimilar(n2.child.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
-      case (n1: NodeSeq, n2: NodeSeq) => n1.filter(!isSpaceNode(_)).isSimilar(n2.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
+                                  n1.child.filter(!isSpaceNode(_)).sameElementsAs(n2.child.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
+      case (n1: NodeSeq, n2: NodeSeq) => n1.filter(!isSpaceNode(_)).sameElementsAs(n2.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
     }
   } 
 }

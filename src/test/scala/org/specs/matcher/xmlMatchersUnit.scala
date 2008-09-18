@@ -14,9 +14,12 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
       assertion(<a><b/></a> must equalIgnoreSpace(<a> <c/></a>)) must failWith("<a><b></b></a> is not equal to <a> <c></c></a>")
       assertion(<a><b/></a> aka "the node" must equalIgnoreSpace(<a> <c/></a>)) must failWith("the node <a><b></b></a> is not equal to <a> <c></c></a>")
     }
-    "fail if 2 nodes are a Text and an Atom with different datat" in {
+    "fail if 2 nodes are a Text and an Atom with different data" in {
       assertion(new Atom("hello").toSeq must ==/(new Text("world").toSeq)) must failWith("hello is not equal to world")
       assertion(new Atom("hello").toSeq aka "the seq" must ==/(new Text("world").toSeq)) must failWith("the seq hello is not equal to world")
+    }
+    "not fail if nodes are not in the same order" in {
+      <a><b/><c/></a> must ==/(<a> <c/><b/></a>)  
     }
   }
   "A \\ matcher" should {

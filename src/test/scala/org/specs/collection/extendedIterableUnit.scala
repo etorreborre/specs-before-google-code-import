@@ -9,12 +9,10 @@ import org.specs.Scalacheck
 
 class extendedIterableUnitTest extends Runner(extendedIterableUnit) with JUnit
 object extendedIterableUnit extends Specification with Sugar with Scalacheck {
-  "A toDeepString function" should {
-    "print the inside of an iterable, even if it is a Stream" in {
-      Stream.cons(1, Stream.cons(2, Nil.toStream)).toDeepString must_== "[1, 2]"
-    }
-  }
   "A sameElementsAs function" should {
+    "return true when comparing xml nodes in a different order" in {
+      <a><b/><c/></a>.child must haveSameElementsAs(<a><c/><b/></a>.child)
+    }
     "match deeply nested lists with the same elements but in a different order" in {
       List(1, List(2, 3, List(4)), 5) must haveSameElementsAs(List(5, List(List(4), 2, 3), 1))
     }
@@ -40,4 +38,10 @@ object extendedIterableUnit extends Specification with Sugar with Scalacheck {
       }
     }
   }
+  "A toDeepString function" should {
+    "print the inside of an iterable, even if it is a Stream" in {
+      Stream.cons(1, Stream.cons(2, Nil.toStream)).toDeepString must_== "[1, 2]"
+    }
+  }
+
 }

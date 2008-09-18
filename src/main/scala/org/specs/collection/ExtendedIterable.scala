@@ -32,9 +32,12 @@ object ExtendedIterable {
      * @return the representation of the elements of the iterable using the method toString recursively
      */
     def toDeepString: String = {
-      "[" + xs.toList.map { x =>
-        if (x.isInstanceOf[anyIterable]) x.asInstanceOf[anyIterable].toDeepString else x.toString
-      }.mkString(", ") + "]" 
+      if (!xs.isEmpty && xs == xs.elements.next)
+        xs.toString
+      else
+          "[" + xs.toList.map { x =>
+            if (x.isInstanceOf[anyIterable]) x.asInstanceOf[anyIterable].toDeepString else x.toString
+          }.mkString(", ") + "]" 
     }
     
     /**
@@ -59,11 +62,11 @@ object ExtendedIterable {
      * @return true if the 2 iterables contain the same elements (according to a comparision function f) recursively, in any order 
      */
     def sameElementsAs(that: Iterable[A], f: (A, A) => Boolean): Boolean = {
+      def isNotItsOwnIterable(a: Iterable[_]) = a.isEmpty || a.elements.next != a
 	  def matchTwo(x: A, y: A): Boolean = {
 		(x, y) match {
-		  case (a: Iterable[_], b:Iterable[_]) => x.asInstanceOf[Iterable[A]].sameElementsAs(y.asInstanceOf[Iterable[A]], f)
-		  case (a: A, b: A) => f(a, b)
-		  case _ => false
+		  case (a: Iterable[_], b:Iterable[_]) if (isNotItsOwnIterable(a)) => x.asInstanceOf[Iterable[A]].sameElementsAs(y.asInstanceOf[Iterable[A]], f)
+		  case _ => f(x, y)
 		}
 	  }
       val ita = xs.elements.toList
