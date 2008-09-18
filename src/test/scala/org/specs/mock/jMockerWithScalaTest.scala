@@ -9,7 +9,7 @@ import org.scalatest.Suite
  */
 class jMockerWithScalaTestSuite extends Suite {
   def testMockExpectations {
-    val list: java.util.List[Object] = mock(classOf[java.util.List[Object]])
+    val list: java.util.List[Object] = mock[java.util.List[Object]]
     expecting { one(list).size }
     list.size
     checkContext

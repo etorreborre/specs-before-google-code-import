@@ -8,6 +8,7 @@ import org.specs.util.EditDistance._
 import org.specs.collection.ExtendedIterable._
 import scala.collection.immutable.{Set => Removed}
 import scala.collection.Set
+import scala.reflect.Manifest
 
 object AnyMatchers extends AnyMatchers
 /**
@@ -167,10 +168,17 @@ trait AnyMatchers {
    * <br>Usage: <code>value must throwA(new ExceptionType)</code>
    * <br>Advanced usage: <code>value must throwA(new ExceptionType).like {case ExceptionType(m) => m.startsWith("bad")}</code>
    */   
-  def throwException[E <: Throwable](exception: =>E) = new ExceptionMatcher(exception)
-    class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
+  def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception)
+  def throwAnException[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = new ExceptionClassMatcher[E](m.erasure.asInstanceOf[Class[E]])
+  class ExceptionClassMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
      def apply(value: => Any) = { 
-       (isThrown(value, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description).isDefined, 
+       (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined, 
+        okMessage(exception, description), koMessage(exception, description))
+     }
+  }  
+  class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
+     def apply(value: => Any) = { 
+       (isThrown(value, exception, (e => exception.getClass == e.getClass && exception.getMessage == e.getMessage), description).isDefined, 
         okMessage(exception, description), koMessage(exception, description))
      }
      def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
@@ -183,81 +191,34 @@ trait AnyMatchers {
        }
      }
    }  
-  private def okMessage(exception: Throwable, desc: Option[String]) = exception + " was thrown" + desc.map(" from " + _.toString).getOrElse("") 
-  private def koMessage(exception: Throwable, desc: Option[String]) = exception + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
-  /**
-   * Alias for throwException
-   */   
-  def throwA[E <: Throwable](e: =>E) = throwException[E](e)
-
-  /**
-   * Alias for throwException
-   */   
-  def throwAn[E <: Throwable](e: =>E) = throwException[E](e)
-
-  /**
-   * Matches if the thrown exception is == to e
-   */   
-  def throwThis[E <: Throwable](exception: =>E) = new Matcher[Any](){
-    def apply(value: => Any) = { 
-        (isThrown(value, exception, (e => e == exception), description).isDefined, 
-         okMessage(exception, description), 
-         koMessage(exception, description))
+  def message(exception: Any) = {
+    exception match {
+      case e: Class[_] => e.toString.replaceFirst("class ", "")
+      case ex: Throwable => ex.getClass.getName + ": " + ex.getMessage
+      case other => other.toString 
     }
-  }
+  } 
+  private def okMessage(exception: Any, desc: Option[String]) = {
+    message(exception) + " was thrown" + desc.map(" from " + _.toString).getOrElse("")
+  } 
+  private def koMessage(exception: Any, desc: Option[String]) = message(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  /**
+   * return a matcher which will be ok if an exception of that type is thrown
+   */   
+  def throwA[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
+
+  def throwAn[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
+
+  /**
+   * Alias for throwException
+   */   
+  def throwThis[E <: Throwable](exception: =>E): ExceptionMatcher[E] = throwException(exception)
   
-  /**
-   * Matches if v.getClass == c
-   */   
-  def haveClass[T](c: Class[T]) = new Matcher[Any](){
-    def apply(v: =>Any) = {
-      val x: Any = v
-      val xClass = x.asInstanceOf[java.lang.Object].getClass
-      (xClass == c, d(x) + " has class" + q(c.getName), d(x) + " doesn't have class " + q(c.getName) + " but " + q(xClass.getName))
-    } 
-  } 
-
-  /**
-   * Matches if v.getClass != c
-   */   
-  def notHaveClass[T](c: Class[T]) = haveClass(c).not
-
-  /**
-   * Matches if v.isAssignableFrom(c)
-   */   
-  def beAssignableFrom[T](c: Class[T]) = new Matcher[Class[_]](){
-    def apply(v: =>Class[_]) = {
-      val x: Class[_] = v
-      (x.isAssignableFrom(c), d(x.getName) + " is assignable from " + q(c.getName), d(x.getName) + " is not assignable from " + q(c.getName))
-    } 
-  } 
-
-  /**
-   * Matches if v.isAssignableFrom(c)
-   */   
-  def notBeAssignableFrom[T](c: Class[T]) = beAssignableFrom(c).not
-
-  /**
-   * Matches if c.isAssignableFrom(v)
-   */   
-  def haveSuperClass[T](c: Class[T]) = new Matcher[Any](){
-    def apply(v: =>Any) = {
-      val x: Any = v
-      val xClass = x.asInstanceOf[java.lang.Object].getClass
-      (c.isAssignableFrom(xClass), d(x) + " has super class" + q(c.getName), d(x) + " doesn't have super class " + q(c.getName))
-    } 
-  } 
-
-  /**
-   * Matches if c.isAssignableFrom(v)
-   */   
-  def notHaveSuperClass[T](c: Class[T]) = haveSuperClass(c).not
-
   /**
    * @returns an Option with the expected exception if it satisfies function <code>f</code>
    * <br>rethrows the exception otherwise
    */   
-  private def isThrown[E <: Throwable](value: => Any, expected: E, f: (Throwable => Boolean), desc: Option[String]) = { 
+  private def isThrown[E](value: => Any, expected: E, f: (Throwable => Boolean), desc: Option[String]) = { 
     getException(value) match {
       case None => None
       case Some(e)  => if (f(e))
@@ -272,6 +233,56 @@ trait AnyMatchers {
     catch { case e => { return Some(e)} }
     return None
   }
+
+  /**
+   * Matches if v.getClass == c
+   */   
+  def haveClass[T](implicit m: Manifest[T]) = new Matcher[Any](){
+    def apply(v: =>Any) = {
+      val x: Any = v
+      val c = m.erasure
+      val xClass = x.asInstanceOf[java.lang.Object].getClass
+      (xClass == c, d(x) + " has class" + q(c.getName), d(x) + " doesn't have class " + q(c.getName) + " but " + q(xClass.getName))
+    } 
+  } 
+
+  /**
+   * Matches if v.getClass != c
+   */   
+  def notHaveClass[T](implicit m: Manifest[T]) = haveClass(m).not
+
+  /**
+   * Matches if v.isAssignableFrom(c)
+   */   
+  def beAssignableFrom[T](implicit m: Manifest[T]) = new Matcher[Class[_]](){
+    def apply(v: =>Class[_]) = {
+      val x: Class[_] = v
+      val c = m.erasure
+      (x.isAssignableFrom(c), d(x.getName) + " is assignable from " + q(c.getName), d(x.getName) + " is not assignable from " + q(c.getName))
+    } 
+  } 
+
+  /**
+   * Matches if v.isAssignableFrom(c)
+   */   
+  def notBeAssignableFrom[T](implicit m: Manifest[T]) = beAssignableFrom(m).not
+
+  /**
+   * Matches if c.isAssignableFrom(v)
+   */   
+  def haveSuperClass[T](implicit m: Manifest[T]) = new Matcher[Any](){
+    def apply(v: =>Any) = {
+      val x: Any = v
+      val c = m.erasure
+      val xClass = x.asInstanceOf[java.lang.Object].getClass
+      (c.isAssignableFrom(xClass), d(x) + " has super class" + q(c.getName), d(x) + " doesn't have super class " + q(c.getName))
+    } 
+  } 
+
+  /**
+   * Matches if c.isAssignableFrom(v)
+   */   
+  def notHaveSuperClass[T](implicit m: Manifest[T]) = haveSuperClass(m).not
 
   /**
    * Creates a FailureException corresponding to a thrown exception.

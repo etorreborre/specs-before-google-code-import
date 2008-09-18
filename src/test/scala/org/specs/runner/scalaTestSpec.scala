@@ -32,23 +32,23 @@ object scalaTestSpec extends Specification with ScalaTestMocks {
   "A ScalaTest runner"->-(c) should {
     "report failures and errors as test failed, skipped as ignored and the rest as success" in {
        expect {
-        2.of(reporter).testFailed(a(classOf[Report]))
-        1.of(reporter).testIgnored(a(classOf[Report]))
-        1.of(reporter).testSucceeded(a(classOf[Report]))
+        2.of(reporter).testFailed(a[Report])
+        1.of(reporter).testIgnored(a[Report])
+        1.of(reporter).testSucceeded(a[Report])
         allowOtherMethods
       }
       sampleSuite.execute(None, reporter, stopper, Set(), Set(), Map(), None)
     } 
     "use the tags defined on the examples when executing included groups only" in {
       expect {
-        1.of(reporter).testSucceeded(a(classOf[Report]))
+        1.of(reporter).testSucceeded(a[Report])
         allowOtherMethods
       }
       suiteWithGroups.execute(None, reporter, stopper, Set("unit"), Set(), Map(), None)
     }
     "use the tags defined on the examples, and not executing excluded groups" in {
       expect {
-        2.of(reporter).testSucceeded(a(classOf[Report]))
+        2.of(reporter).testSucceeded(a[Report])
         allowOtherMethods
       }
       suiteWithGroups.execute(None, reporter, stopper, Set(), Set("functional"), Map(), None)
@@ -77,11 +77,11 @@ object scalaTestSpec extends Specification with ScalaTestMocks {
   }
 }
 trait ScalaTestMocks extends JMocker with Contexts {
-   var reporter = mock(classOf[org.scalatest.Reporter])
-   var stopper = mock(classOf[org.scalatest.Stopper])
+   var reporter = mock[org.scalatest.Reporter]
+   var stopper = mock[org.scalatest.Stopper]
    val c = beforeContext {
-     reporter = mock(classOf[org.scalatest.Reporter])
-     stopper = mock(classOf[org.scalatest.Stopper])
+     reporter = mock[org.scalatest.Reporter]
+     stopper = mock[org.scalatest.Stopper]
    }
    def allowOtherMethods = {
      allowingMatch(reporter, ".*Starting")

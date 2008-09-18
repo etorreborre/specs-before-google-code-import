@@ -24,7 +24,7 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock 
     }
     "provide a 'display' case class which is resilient to a value with a null key" in {
       val s: Symbol = null
-      display(s -> 10) must throwA(new RuntimeException)
+      display(s -> 10) must throwA[RuntimeException]
     }
     "provide a 'set' case class which can take parameters overriding the default values" in {
       set(minTestsOk->10)(minTestsOk) mustBe 10

@@ -39,12 +39,17 @@ object objectMatchersSpec extends MatchersSpecification {
       assertion(List("1") verifies { _.isEmpty }) must failWith("List(1) doesn't verify the expected property")
     }
     "provide a 'mustThrow' matcher expecting a block to send an exception of a given type" in {
-      {throw new Error("user error");()} must throwA(new Error)
+      {throw new Error("user error");()} must throwAn[Error]
 
       class MyError(msg: String) extends Error(msg) {}
-      {throw new MyError("subclass of error");()} must throwA(new Error) 
+      {throw new MyError("subclass of error");()} must throwAn[Error]
 
-      assertion({throw new NullPointerException;()} must throwA(new Error)) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
+      assertion({throw new NullPointerException;()} must throwAn[Error]) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
+    } 
+    "provide a throwAn[T] matcher expecting an exception" in {
+      {throw new Error("user error");()} must throwAn[Error]
+      
+      {throw new RuntimeException("e");()} must throwA[RuntimeException]
     } 
     "provide a beAlsoNull matcher which will check if 2 objects are null at the same time" in {
       val nullString: String = null 
@@ -58,26 +63,26 @@ object objectMatchersSpec extends MatchersSpecification {
     }
     "provide a haveClass matcher checking if any.getClass == c" in {
       val a: Any = 1
-      a must haveClass(classOf[java.lang.Integer])
-      assertion(a must haveClass(classOf[String])) must failWith("'1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
-      assertion(a aka "the object" must haveClass(classOf[String])) must failWith("the object '1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
+      a must haveClass[java.lang.Integer]
+      assertion(a must haveClass[String]) must failWith("'1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
+      assertion(a aka "the object" must haveClass[String]) must failWith("the object '1' doesn't have class 'java.lang.String' but 'java.lang.Integer'")
     }
     "provide a haveClass matcher checking if any.getClass == c - with String" in {
       val a: Any = "string"
-      a must haveClass(classOf[String])
-      assertion(a must haveClass(classOf[java.lang.Integer])) must failWith("'string' doesn't have class 'java.lang.Integer' but 'java.lang.String'")
+      a must haveClass[String]
+      assertion(a must haveClass[java.lang.Integer]) must failWith("'string' doesn't have class 'java.lang.Integer' but 'java.lang.String'")
     }
     "provide a haveSuperClass matcher checking if c isAssignableFrom any.getClass" in {
       val a: Any = new java.io.FileOutputStream(new java.io.FileDescriptor) { override def toString = "FileOutputStream"}
-      a must haveSuperClass(classOf[java.io.OutputStream])
-      assertion(a must haveSuperClass(classOf[java.lang.String])) must failWith("'FileOutputStream' doesn't have super class 'java.lang.String'")
-      assertion(a aka "the object" must haveSuperClass(classOf[java.lang.String])) must failWith("the object 'FileOutputStream' doesn't have super class 'java.lang.String'")
+      a must haveSuperClass[java.io.OutputStream]
+      assertion(a must haveSuperClass[java.lang.String]) must failWith("'FileOutputStream' doesn't have super class 'java.lang.String'")
+      assertion(a aka "the object" must haveSuperClass[java.lang.String]) must failWith("the object 'FileOutputStream' doesn't have super class 'java.lang.String'")
     }
     "provide a beAssignableFrom matcher checking if any.getClass isAssignableFrom c" in {
       val a: Object = new java.io.FileOutputStream(new java.io.FileDescriptor)
-      classOf[java.io.OutputStream] must beAssignableFrom(a.getClass)
-      assertion(classOf[java.io.OutputStream] must beAssignableFrom(classOf[String])) must failWith("'java.io.OutputStream' is not assignable from 'java.lang.String'")
-      assertion(classOf[java.io.OutputStream] aka "the class" must beAssignableFrom(classOf[String])) must failWith("the class 'java.io.OutputStream' is not assignable from 'java.lang.String'")
+      classOf[java.io.OutputStream] must beAssignableFrom[java.io.FileOutputStream]
+      assertion(classOf[java.io.OutputStream] must beAssignableFrom[String]) must failWith("'java.io.OutputStream' is not assignable from 'java.lang.String'")
+      assertion(classOf[java.io.OutputStream] aka "the class" must beAssignableFrom[String]) must failWith("the class 'java.io.OutputStream' is not assignable from 'java.lang.String'")
     }
   }   
 }
