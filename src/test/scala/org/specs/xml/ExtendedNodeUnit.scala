@@ -10,7 +10,7 @@ object extendedNodeUnit extends Specification {
   "An isSpaceNode function" should {
     "return false for a node with a simple label" in {
       <a/>.isSpaceNode mustBe false  
-    
+    }
     "return true for a node containing space" in {
       <a> </a>.child.last.isSpaceNode mustBe true  
     }
