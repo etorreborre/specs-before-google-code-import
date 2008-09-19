@@ -81,15 +81,28 @@ trait XmlMatchers {
   /**
    * Matches if <code>node</code> is equal to the tested node without testing empty text
    */   
-  def equalIgnoreSpace(node: Iterable[Node]): Matcher[Iterable[Node]] = new Matcher[Iterable[Node]] { 
-    def apply(n: =>Iterable[Node]) = {
-    (isEqualIgnoreSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
-  }
+  def equalIgnoreSpace(node: Iterable[Node]) = new EqualIgnoreSpaceMatcher(node)
 
   /**
    * Alias for equalIgnoreSpace
    */   
-  def ==/(node: Iterable[Node]): Matcher[Iterable[Node]] = equalIgnoreSpace(node)
+  def ==/(node: Iterable[Node]): EqualIgnoreSpaceMatcher = equalIgnoreSpace(node)
+
+  /**
+   * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
+   */   
+  class EqualIgnoreSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+    def apply(n: =>Iterable[Node]) = {
+     (isEqualIgnoreSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+    def ordered = new EqualIgnoreSpaceMatcherOrdered(node)
+  }
+  /**
+   * Matcher for equalIgnoreSpace comparison, considering the node order
+   */   
+  class EqualIgnoreSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+    def apply(n: =>Iterable[Node]) = {
+     (isEqualIgnoreSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+  }
 }
 
 /**

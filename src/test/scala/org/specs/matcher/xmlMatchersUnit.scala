@@ -21,6 +21,9 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     "not fail if nodes are not in the same order" in {
       <a><b/><c/></a> must ==/(<a> <c/><b/></a>)  
     }
+    "provide a way to specify that the comparison should be ordered" in {
+      <a><b/><c/></a> must ==/(<a> <c/><b/></a>).ordered  
+    }
   }
   "A \\ matcher" should {
     "match a node <b/> contained in the node a with the label 'b'" in {

@@ -8,6 +8,7 @@ import org.specs._
 import org.specs.io._
 import org.specs.collection._
 import org.specs.util._
+import org.specs.xml._
 
 object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
@@ -36,6 +37,8 @@ object allSpecs extends Specification {
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
       extendedThrowableUnit,
+      extendedNodeUnit,
+      collectionUnit,
       fileSystemUnit, 
       collectionUnit,  
       allUtilUnit, 

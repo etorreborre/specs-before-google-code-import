@@ -9,6 +9,7 @@ import scala.xml._
 class ExtendedNodeSeq(ns: NodeSeq) {
     def ==/(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpace(ns, n)
     def isEqualIgnoreSpace(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpace(ns, n)
+    def isEqualIgnoreSpaceOrdered(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpaceOrdered(ns, n)
 }
 
 /**
@@ -46,7 +47,19 @@ object NodeFunctions {
   /**
    * @returns true if the Node represents some empty text (containing spaces or newlines)
    */
+  def isEqualIgnoreSpaceOrdered(node: NodeSeq, n: NodeSeq): Boolean = {
+    def sameOrder(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.isSimilar(nodes2, isEqualIgnoreSpace _)
+    isEqualIgnoreSpace(node, n, sameOrder(_, _))
+  }
+  /**
+   * Generic version of This version don't check if the nodes are in the same order
+   * @returns true if the Node represents some empty text (containing spaces or newlines)
+   */
   def isEqualIgnoreSpace(node: NodeSeq, n: NodeSeq): Boolean = {
+    def sameAs(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.sameElementsAs(nodes2.toSeq, isEqualIgnoreSpace _)
+    isEqualIgnoreSpace(node, n, sameAs(_, _))
+  }
+  def isEqualIgnoreSpace(node: NodeSeq, n: NodeSeq, iterableComparison: Function2[NodeSeq, NodeSeq, Boolean]): Boolean = {
     (node, n) match {
       case (null, other) => other == null
       case (other, null) => other == null
@@ -57,8 +70,8 @@ object NodeFunctions {
                                   n1.prefix == n2.prefix && 
                                   n1.attributes == n2.attributes && 
                                   n1.label == n2.label && 
-                                  n1.child.filter(!isSpaceNode(_)).sameElementsAs(n2.child.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
-      case (n1: NodeSeq, n2: NodeSeq) => n1.filter(!isSpaceNode(_)).sameElementsAs(n2.filter(!isSpaceNode(_)), isEqualIgnoreSpace _)
+                                  iterableComparison(n1.child.filter(!isSpaceNode(_)), n2.child.filter(!isSpaceNode(_)))
+      case (n1: NodeSeq, n2: NodeSeq) => iterableComparison(n1.filter(!isSpaceNode(_)), n2.filter(!isSpaceNode(_)))
     }
   } 
 }
