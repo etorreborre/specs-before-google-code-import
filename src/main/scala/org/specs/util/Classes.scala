@@ -11,3 +11,6 @@ object Classes {
     return None
   }
 }
+trait Classes {
+  def isExecutedFrom(name: String) = new Exception().getStackTrace().exists {_.toString contains name}
+}

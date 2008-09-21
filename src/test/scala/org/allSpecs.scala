@@ -26,7 +26,7 @@ object allSpecs extends Specification {
         specsFinderSpec,
         specsRunnerSpec,
         stackSpecification,
-        junit3TestSuiteSpec,
+        junitTestSuiteSpec,
         xmlRunnerSpec,
         htmlRunnerSpec,
         scalaTestSpec,

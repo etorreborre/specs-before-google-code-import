@@ -1,8 +1,10 @@
 package org.specs.runner
-import org.specs._
+import org.specs.specification._
 
 object teamCityRunnerSpec extends Specification {
-
+  "it" should {
+    "not be implemented yet" in { }
+  }
 }
 
 object SampleSpec extends Specification {
@@ -12,3 +14,4 @@ object SampleSpec extends Specification {
   "skipped test" in { skip("dont do this") }
 }
 object testTeamCityRunner extends TeamCityRunner(SampleSpec)
+class teamCityRunnerTest extends JUnit4(teamCityRunnerSpec) 

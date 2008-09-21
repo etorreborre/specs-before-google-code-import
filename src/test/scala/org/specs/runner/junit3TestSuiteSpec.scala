@@ -7,10 +7,10 @@ import org.specs.Sugar._
 import _root_.junit.framework._
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
-
-class JUnit3TestRunner extends Runner(junit3TestSuiteSpec) with JUnit with ScalaTest
-object junit3TestSuiteSpec extends Specification {
-  "A junit 3 test suite for a composite specification" should {
+import org.specs.specification._
+  
+object junitTestSuiteSpec extends Specification {
+  "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
       object S1 extends Specification 
       object S2 extends Specification 
@@ -34,7 +34,10 @@ object junit3TestSuiteSpec extends Specification {
         "sus1" should { "ex1" in {}; "ex2" in {}}
       }
       makeRunners(S1) foreach { r =>
-        r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).map(_.asInstanceOf[TestCase].getName) must_== List("ex1", "ex2")
+        val test1 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).first
+        val test2 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).last
+        test1.toString must include("ex1")
+        test2.toString must include("ex2")
       }
     }
     "report a failure with a stacktrace pointing to the assertion causing it in the executed specification" in {
@@ -68,11 +71,30 @@ object junit3TestSuiteSpec extends Specification {
   }
   def suite(behaviours: that.Value*) = new JUnit3(new SimpleSpec(behaviours.toList))
   def makeRunners(spec: Specification) = {
-    object R1 extends JUnit3(spec)
+    object R1 extends JUnit4(spec)
     object R2 extends Runner(spec) with JUnit
     List(R1, R2)
   }
+  "An example test suite" should {
+    "append the description of the sus to the example description if the runner is Maven" in {
+      val suite = new ExamplesTestSuite("it should", List(new Example("be ok", this.systems.first)), None) {
+        override lazy val isExecutedFromMaven = true
+      }
+      suite.tests.first.toString aka "the example description" must include("it should be ok")
+    }
+  }
+  "A test description" should {
+    "append the hashcode of the test to its descriptino if not run from Maven" in {
+      val description = new TestDescription() {
+        override lazy val isExecutedFromMaven = false
+      }
+      import _root_.junit.framework._
+      case class aTest extends TestCase("name")
+      description.asDescription(aTest()).toString must beMatching(".*\\(.*\\)")
+    }
+  }
 }
+class JUnit4RunnerTest extends Runner(junitTestSuiteSpec) with JUnit
 
 class SimpleSpec(behaviours: List[(that.Value)]) extends TestSpec {
   "A specification" should {

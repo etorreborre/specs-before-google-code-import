@@ -3,6 +3,7 @@ import org.specs.specification._
 import _root_.junit.framework._
 import _root_.org.junit.runner._
 import org.specs.collection.JavaCollectionsConversion._
+import org.specs.util.Classes
 
 /**
  * The strategy for running Specifications with JUnit is as follow:<p>
@@ -103,18 +104,24 @@ class JUnit4(val specifications : Specification*) extends JUnit {
  * A <code>ExamplesTestSuite</code> is a JUnitSuite reporting the results of 
  * a System under test (sus) as a list of examples, represented by ExampleTestCase objects. If an example has subExamples, they are reported with a separate <code>ExamplesTestSuite</code>
  */
-class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite {
+class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Classes {
 
+  /** return true if the current test is executed with Maven */
+  lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /**
    * create one TestCase per example and a new ExamplesTestSuite for the sub-examples
    */
   def initialize = {
     setName(description)
     examples foreach { example =>
+      // if the test is run with Maven the sus description is added to the example description for a better 
+      // description in the console
+      val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
+      
       if (example.subExamples.isEmpty)
-        addTest(new ExampleTestCase(example))
+        addTest(new ExampleTestCase(example, exampleDescription))
       else
-        addTest(new ExamplesTestSuite(example.description, example.subExamples, skipped))
+        addTest(new ExamplesTestSuite(description, example.subExamples, skipped))
     }
   }
 
@@ -135,7 +142,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
  * It overrides the run method from <code>junit.framework.TestCase</code>
  * to add errors and failures to a <code>junit.framework.TestResult</code> object
  */
-class ExampleTestCase(example: Example) extends TestCase(example.description.replaceAll("\n", " ")) { 
+class ExampleTestCase(example: Example, description: String) extends TestCase(description.replaceAll("\n", " ")) { 
   override def run(result: TestResult) = {
       result.startTest(this)
       example.failures foreach {failure: FailureException => result.addFailure(this, new SpecAssertionFailedError(failure))}

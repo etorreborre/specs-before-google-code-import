@@ -6,6 +6,8 @@ import org.junit.runner.Description._
 import org.junit.runner.manipulation._
 import org.junit.runner.notification._
 import org.specs.specification.FailureException
+import org.specs.util.Classes
+
 /**
  * The JUnitSuiteRunner provides a JUnit4 annotation to run <code>JUnitSuite</code> test suites created from specifications
  * <code>klass</code> is a JUnitSuite which implements the junit.framework.Test interface
@@ -48,9 +50,13 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
 }
 
 /**
- * Common methods to create descriptions from a test or a test suite
+ * Common methods to create descriptions from a test or a test suite.
+ * If the test is executed from Maven, its description can be simplified and not include
+ * the test hashcode.
  */
-trait TestDescription {
+trait TestDescription extends Classes {
+  /** return true if the current test is executed with Maven */
+  lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
@@ -69,8 +75,9 @@ trait TestDescription {
       else
          test.toString
     }
-    def hashcode(test: Test) = test.hashCode.toString
-    createSuiteDescription(getName(test) +"("+hashcode(test)+")", null)
+    def testcode(test: Test) = if (!isExecutedFromMaven) "("+test.hashCode.toString +")" else ""
+
+    createSuiteDescription(getName(test) + testcode(test), null)
   }
 
   /**
