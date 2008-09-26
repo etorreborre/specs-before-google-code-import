@@ -11,7 +11,7 @@ object specsMatchersSpec extends MatchersSpecification {
         def testKoMatcher = "s" must beMatching("hello")
       }
       specsMatchersIntegration.testOkMatcher
-      assertion(specsMatchersIntegration.testKoMatcher) must failWith("'s' doesn't match 'hello'")
+      expectation(specsMatchersIntegration.testKoMatcher) must failWith("'s' doesn't match 'hello'")
     }
   }
 }

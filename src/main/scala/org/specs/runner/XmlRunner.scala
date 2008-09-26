@@ -100,7 +100,7 @@ trait Xml extends File {
    * @returns the specification results translated as to xml (including subspecifications)
    */
   def asXml(s: Specification): Elem = {
-    <spec name={s.name} description={s.description} assertions={s.assertionsNb.toString} failures={s.failures.size.toString} errors={s.errors.size.toString}>
+    <spec name={s.name} description={s.description} expectations={s.expectationsNb.toString} failures={s.failures.size.toString} errors={s.errors.size.toString}>
       {s.subSpecifications map (asXml(_))}
       {s.systems map (asXml(_))}
     </spec>
@@ -110,7 +110,7 @@ trait Xml extends File {
    * @returns the sus results translated as to xml 
    */
   def asXml(sus: Sus): Elem = 
-    <sus description={sus.description} assertions={sus.assertionsNb.toString} failures={sus.failures.size.toString} errors={sus.errors.size.toString}>
+    <sus description={sus.description} expectations={sus.expectationsNb.toString} failures={sus.failures.size.toString} errors={sus.errors.size.toString}>
       {sus.examples map (asXml(_))}
     </sus>
 
@@ -118,7 +118,7 @@ trait Xml extends File {
    * @returns the example results translated as to xml (including sub-examples) 
    */
   def asXml(e: Example): Elem = 
-    <example description={e.description} assertions={e.assertionsNb.toString} failures={e.failures.size.toString} errors={e.errors.size.toString}>
+    <example description={e.description} expectations={e.expectationsNb.toString} failures={e.failures.size.toString} errors={e.errors.size.toString}>
      { e.failures map (asXml(_)) }
      { e.skipped map (asXml(_)) }
      { e.errors map (asXml(_)) }

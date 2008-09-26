@@ -17,13 +17,13 @@ import org.specs.ExtendedThrowable._
  * <li>a description explaining what is being done
  * <li>an <code>ExampleLifeCycle</code> which defines behaviour before/after example and test</ul>
  * <p>
- * Usage: <code>"this is an example" in { // code containing assertions }</code> or<br>
- * <code>"this is an example" >> { // code containing assertions }</code><br>
+ * Usage: <code>"this is an example" in { // code containing expectations }</code> or<br>
+ * <code>"this is an example" >> { // code containing expectations }</code><br>
  * ">>" can be used instead of "in" if that word makes no sense in the specification
  * <p>
  * An example can also contain subexamples which are executed will evaluating the <code>in</code> method.
  * <p>
- * When assertions have been evaluated inside an example they register their failures and errors for later reporting 
+ * When expectations have been evaluated inside an example they register their failures and errors for later reporting 
  */
 case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.specification.ExampleLifeCycle) extends Tagged with HasResults {
 
@@ -46,13 +46,13 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
   var thisErrors = new Queue[Throwable]
 
   /** number of <code>Assert</code> objects which refer to that Example */
-  private[this] var assertionsNumber = 0
+  private[this] var expectationsNumber = 0
 
-  /** @return the number of assertions, executing the example if necessary */
-  def assertionsNb = { execute; assertionsNumber }
+  /** @return the number of expectations, executing the example if necessary */
+  def expectationsNb = { execute; expectationsNumber }
 
-  /** increment the number of assertions in this example */
-  def addAssertion = { assertionsNumber += 1; this }
+  /** increment the number of expectations in this example */
+  def addExpectation = { expectationsNumber += 1; this }
 
   /** sub-examples created inside the <code>in</code> method */
   private[this] var subExs = new Queue[Example]
@@ -68,9 +68,9 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
 
   /**
    * creates a new Example object and store as a function the test to be executed. This <code>test</code>
-   * is a value which may contain assertions. Upon execution, errors and failures will be attached to the current example
+   * is a value which may contain expectations. Upon execution, errors and failures will be attached to the current example
    * by calling the <code>addFailure</code> and <code>addError</code> methods
-   * Execution will be triggered when requesting status information on that example: failures, errors, assertions number, subexamples
+   * Execution will be triggered when requesting status information on that example: failures, errors, expectations number, subexamples
    * @return a new <code>Example</code>
    */
   def in(test: => Any): Example = {
@@ -83,7 +83,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
           failed = true
         }
       }
-      // execute the <code>test</code> parameter. If it contains assertions they will be automatically executed
+      // execute the <code>test</code> parameter. If it contains expectations they will be automatically executed
       try {
         if (!failed) {
           cycle.beforeTest(this)
@@ -91,8 +91,8 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
           cycle.afterTest(this)
         }
       } catch { 
-        // failed assertions will launch a FailureException
-        // skipped assertions will launch a SkippedException
+        // failed expectations will launch a FailureException
+        // skipped expectations will launch a SkippedException
         case f: FailureException => addFailure(f)
         case s: SkippedException => addSkipped(s)
         case t: Throwable => addError(t)

@@ -25,7 +25,7 @@ object anyMatcherSpec extends MatchersSpecification {
       3 must not(divide(100))
     }
     "be skipped" in {
-      assertion( 1 must be_==(2).orSkipExample ) must throwThis(SkippedException("skipped because '1' is not equal to '2'"))
+      expectation( 1 must be_==(2).orSkipExample ) must throwThis(SkippedException("skipped because '1' is not equal to '2'"))
     }
     "match lazy values" in {
       val lazyVal = () => 1
@@ -42,12 +42,12 @@ object anyMatcherSpec extends MatchersSpecification {
     }
     "transformed to a matcher matching a sequence of objects using the toSeq method" in {
       List("a", "b", "c") must (beEqual(_:String)).toSeq(List("a", "b", "c"))
-      assertion { List("a", "c", "b") must (beEqual(_:String)).toSeq(List("a", "b", "c")) } must 
+      expectation(List("a", "c", "b") must (beEqual(_:String)).toSeq(List("a", "b", "c"))) must 
         failWith("'c' is not equal to 'b'; 'b' is not equal to 'c'") 
     }
     "transformed to a matcher matching a set of objects using the toSet method" in {
       Set("a", "b", "c") must (beEqual(_:String)).toSet(Set("b", "a", "c"))
-      assertion { Set("a", "b", "c") must (beEqual(_:String)).toSet(Set("b", "a", "d")) } must 
+      expectation(Set("a", "b", "c") must (beEqual(_:String)).toSet(Set("b", "a", "d"))) must 
         failWith("no match for element 'c'") 
     }
     "provide a toSeq method which can be composed with a function" in {
@@ -62,18 +62,18 @@ object anyMatcherSpec extends MatchersSpecification {
 
        "this" aka "this string" must_== "this"
        "this" aka "this string" must beMatching("t")
-       assertion("hello" aka "the word" must_== "that") must failWith("the word 'hello' is not equal to 'that'")
+       expectation("hello" aka "the word" must_== "that") must failWith("the word 'hello' is not equal to 'that'")
     }
     "use the alias declaration for the object being tested with is_==" in {
-       assertion(1 aka "this" must_== 2) must failWith("this '1' is not equal to '2'")
+       expectation(1 aka "this" must_== 2) must failWith("this '1' is not equal to '2'")
     }
     "use the alias declaration for a list being tested with is_==" in {
        List(1, 2) aka "the list" must haveSize(2)
-       assertion(List(1, 2) aka "the list" must_== List(1, 4)) must failWith("the list 'List(1, 2)' is not equal to 'List(1, 4)'")
+       expectation(List(1, 2) aka "the list" must_== List(1, 4)) must failWith("the list 'List(1, 2)' is not equal to 'List(1, 4)'")
     }
     "use the alias declaration for a list of strings being tested with is_==" in {
        List("1", "2") aka "the list" must containMatch("\\d")
-       assertion(List("2") aka "the list" must_== List("1")) must failWith("the list 'List(2)' is not equal to 'List(1)'")
+       expectation(List("2") aka "the list" must_== List("1")) must failWith("the list 'List(2)' is not equal to 'List(1)'")
     }
   }
 

@@ -31,7 +31,7 @@ trait Matchers extends AnyMatchers with
  */
 abstract class AbstractMatcher[T] {
   def apply(a: => T): (Boolean, String, String)
-  /** precise description of the asserted object. */
+  /** precise description of the expectable object. */
   protected var desc: Option[String] = None
   def description = desc
   def setDescription(d: Option[String]): this.type = { desc = d; this }
@@ -48,7 +48,7 @@ abstract class AbstractMatcher[T] {
 }
 
 /**
- * <p>This class is the base class for asserting if a given value, of type T, is matching an expected value</p>
+ * <p>This class is the base class for checking if a given value, of type T, is matching an expected value</p>
  * <p>The <code>matcher</code> parameter is a function which takes a value and return a Boolean saying if the match is ok and
  * 2 messages: 1 if the match is ok, and another one if the match is ko. Those messages should usually specify which was the 
  * expected value and which was the actual one</p>

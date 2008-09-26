@@ -15,14 +15,14 @@ import org.specs.ExtendedThrowable._
  * In the context of a specification, you can:<ul>
  * <li>declare nested specifications
  * <li>define systems under test
- * <li>specify examples and assertions</ul>
+ * <li>specify examples and expectations</ul>
  * Usage: <code>object mySpec extends Specification</code>
  * <p>
  * A specification is "executed" when it is constructed, then the failures and errors can 
  * be collected with the corresponding methods
  *
  */
-abstract class Specification extends Matchers with AssertFactory with SpecificationStructure
+abstract class Specification extends Matchers with ExpectableFactory with SpecificationStructure
                with DetailedFailures
                with Contexts with SuccessValues with HasResults { outer =>
 
@@ -79,8 +79,8 @@ abstract class Specification extends Matchers with AssertFactory with Specificat
   /** @return all the examples */
   def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: systems.flatMap(_.examples)
 
-  /** @return the total number of assertions for each sus */
-  def assertionsNb: Int = subSpecifications.foldLeft(0)(_ + _.assertionsNb) + systems.foldLeft(0)(_ + _.assertionsNb)
+  /** @return the total number of expectations for each sus */
+  def expectationsNb: Int = subSpecifications.foldLeft(0)(_ + _.expectationsNb) + systems.foldLeft(0)(_ + _.expectationsNb)
 
   /** @return a description of this specification with all its systems (used for the ConsoleReporter) */
   def pretty = description + systems.foldLeft("")(_ + _.pretty(addSpace("\n")))
@@ -148,7 +148,7 @@ trait HasResults {
 /**
  * This trait can be reused in any test based framework to access Matchers functionalities
  */
-trait SpecsMatchers extends Matchers with AssertFactory with DefaultExampleAssertionListener with DetailedFailures
+trait SpecsMatchers extends Matchers with ExpectableFactory with DefaultExampleExpectationsListener with DetailedFailures
 
 
 /** utility object to indent a string with 2 spaces */

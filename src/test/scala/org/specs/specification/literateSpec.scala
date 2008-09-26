@@ -16,7 +16,7 @@ h3. Examples
   
 h4. Named examples
   
-<ex>An assertion can be included in a literate specification as part of an example</ex>, like this:
+<ex>An expectation can be included in a literate specification as part of an example</ex>, like this:
  @"1 must be 1"@ @{"in {1 must_== 1}"}@ {exampleOk}
  
 h4. Anonymous examples

@@ -22,13 +22,13 @@ import scala.reflect.Manifest
  * For example the trait Suite in ScalaTest uses an expect method too
  */
 object JMocker extends JMocker {
-  def addAssertion = null
+  def addExpectation = null
 }
 
 /** 
  * The JMocker trait is used to give access to the mocking functionalities of the JMock library 
  */
-trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockActions with AssertionListener { outer =>
+trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockActions with ExpectationsListener { outer =>
 
   /**
    * the mock method is used to create a mock object
@@ -448,7 +448,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     def mock: T = { expect { f(mocked) }; mocked }
   }
   private def isExpecting[T](m: =>T)(f: T => Any)(f2: T => Any): Any = {
-    val lastExample: Example = addAssertion
+    val lastExample: Example = addExpectation
     var result: Any = null
     expect { f(m) }
     lastExample.in { result = f2(m) }.failures

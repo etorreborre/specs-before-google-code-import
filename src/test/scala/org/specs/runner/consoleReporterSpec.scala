@@ -18,7 +18,7 @@ object consoleReporterSpec extends Specification with MockOutput {
     "report the specification examples: '-have example 1 ok'" in { 
       specWithOneExample(that.isOk) must containMatch("have example 1 ok")
     }
-    "display '0 failure' if there is no assertion" in { 
+    "display '0 failure' if there is no expectation" in { 
       specWithOneExample(that.isOk) must existMatch("0 failure")
     } 
     "display '1 failure' if one example isKo" in { 
@@ -41,9 +41,9 @@ object consoleReporterSpec extends Specification with MockOutput {
       specWithTwoExamples(that.isKo) must existMatch("2 examples")
       specWithTwoExamples(that.isKo) must existMatch("2 failures")
     } 
-    "report the number of assertions: '2 assertions'" in { 
-      specWithOneExample(that.isOk) must existMatch("1 assertion")
-      specWithTwoExamples(that.isKo) must existMatch("2 assertions")
+    "report the number of expectations: '2 expectations'" in { 
+      specWithOneExample(that.isOk) must existMatch("1 expectation")
+      specWithTwoExamples(that.isKo) must existMatch("2 expectations")
     } 
     "display the failure message next to the corresponding example" in { 
       specWithTwoExamples(that.isKo, that.isOk) verifies(messages =>
@@ -63,7 +63,7 @@ object consoleReporterSpec extends Specification with MockOutput {
       specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustExistMatch "o " 
     }
     "report the literal description of a sus if it is set"  in {
-      new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded assertions"
+      new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded expectations"
     }
     "report the reason for a skipped example" in {
       specWithOneExample(that.isSkipped) mustExistMatch "irrelevant" 
@@ -131,8 +131,8 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput
 
-  def specWithOneExample(assertions: (that.Value)*) = new SpecWithOneExample(assertions.toList).run
-  def specWithTwoExamples(assertions: (that.Value)*) = new SpecWithTwoExamples(assertions.toList).run
+  def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
+  def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
 abstract class TestSpec extends LiterateSpecification with Console with MockOutput {
@@ -145,7 +145,7 @@ abstract class TestSpec extends LiterateSpecification with Console with MockOutp
   val failure2 = () => "ok" mustBe "second failure"
   val failMethod = () => fail("failure with the fail method")
   val exception= () => throw new Exception("new Error")
-  def assertions(behaviours: List[that.Value]) = behaviours map { 
+  def expectations(behaviours: List[that.Value]) = behaviours map { 
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped
                                     case that.isSkippedBecauseOfAFaultyMatcher => isSkippedBecauseOfAFaultyMatcher
@@ -159,7 +159,7 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
   def run = {
     "A specification" should {
        "have example 1 ok" in {
-        assertions(behaviours) foreach {_.apply}
+        expectations(behaviours) foreach {_.apply}
       }
     }
     reportSpecs
@@ -170,8 +170,8 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
 class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
   def run = {
     "A specification" should {
-      "have example 2.1 ok" in { assertions(behaviours).head.apply}
-      "have example 2.2 ok" in { assertions(behaviours).last.apply }
+      "have example 2.1 ok" in { expectations(behaviours).head.apply}
+      "have example 2.2 ok" in { expectations(behaviours).last.apply }
     }
     reportSpecs
     messages
@@ -197,7 +197,7 @@ class SpecWithTwoSystems extends TestSpec {
 class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpec {
   def run = {
     "The specification" is <p> 
-      Some text with {"embedded assertions" in {assertions(behaviours) foreach {_.apply}}}
+      Some text with {"embedded expectations" in {expectations(behaviours) foreach {_.apply}}}
     </p>
     reportSpecs
     messages

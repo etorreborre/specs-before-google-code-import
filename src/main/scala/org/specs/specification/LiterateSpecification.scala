@@ -15,7 +15,7 @@ import org.specs.runner._
  * <li>xmlRunnerSpec
  * </ul>
  */
-class LiterateSpecification extends Specification with AssertFactory with DataTables {
+class LiterateSpecification extends Specification with ExpectableFactory with DataTables {
   setSequential
   def this(n: String) = { this(); name = n; description = n; this }
   
@@ -93,7 +93,7 @@ class LiterateSpecification extends Specification with AssertFactory with DataTa
       }
    }
  
-    /** specifies the system with a literate description and embedded assertions */
+    /** specifies the system with a literate description and embedded expectations */
     def is(e: => Elem)= {
       sus.verb = "specifies"
       format(e)

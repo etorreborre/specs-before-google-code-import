@@ -19,54 +19,54 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
       alwaysTrueProp must pass
     }
     "be ko with a false property" in {
-      assertion(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d+ tr(y|ies)\\)")
+      expectation(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d+ tr(y|ies)\\)")
     }
     "be ko if a property is false for a generated value" in {
-      assertion(alwaysTrue must pass(isFalse)) must failWithMatch("A counter-example is 'true' \\(after \\d+ tr(y|ies)\\)")
+      expectation(alwaysTrue must pass(isFalse)) must failWithMatch("A counter-example is 'true' \\(after \\d+ tr(y|ies)\\)")
     }
-    "be ko if a assertion is false for a generated value. The failure message should be the assert ko message" in {
-      assertion(random must pass(identityAssert)) must failWithMatch("A counter-example is 'false': 'false' is not the same as 'true' \\(after \\d tr(y|ies)\\)")
+    "be ko if a expectation is false for a generated value. The failure message should be the assert ko message" in {
+      expectation(random must pass(identityAssert)) must failWithMatch("A counter-example is 'false': 'false' is not the same as 'true' \\(after \\d tr(y|ies)\\)")
     }
     "be ko if checking the values generation yields an exception" in {
-      assertion(exceptionValues must pass(isTrue)) must failWithMatch("Exception raised on argument generation")
+      expectation(exceptionValues must pass(isTrue)) must failWithMatch("Exception raised on argument generation")
     }
     "be ko if checking the property yields an exception during its evaluation" in {
-      assertion(alwaysTrue must pass(exceptionProperty)) must failWithMatch("Exception raised on property evaluation")
+      expectation(alwaysTrue must pass(exceptionProperty)) must failWithMatch("Exception raised on property evaluation")
     }
     "be ko if all values have been exhausted before the min number of ok tests is reached" in {
-      assertion(Gen.fail[Boolean] must pass(isTrue)(set(maxDiscarded->10))) must failWith("Gave up after only 0 passed tests. 10 tests were discarded.")
+      expectation(Gen.fail[Boolean] must pass(isTrue)(set(maxDiscarded->10))) must failWith("Gave up after only 0 passed tests. 10 tests were discarded.")
     }
     "accept properties based on scalacheck commands" in  {
-      assertion(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
+      expectation(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
     } 
   }
   "A ScalaCheck property" should {
-    "add new assertions during evaluation if isAssertion is on" in {
-      spec.assertionsNb must be_==(101)
+    "add new expectations during evaluation if isExpectation is on" in {
+      spec.expectationsNb must be_==(101)
     }
-    "add new assertions during evaluation if assertProperties is on (default)" in {
-      specWithAssertProperties.assertionsNb must be_==(101)
+    "add new expectations during evaluation if expectProperties is on (default)" in {
+      specWithExpectProperties.expectationsNb must be_==(101)
     }
-    "not add new assertions during evaluation if dontAssertProperties is on (default)" in {
-      specWithDontAssertProperties.assertionsNb must be_==(1)
+    "not add new expectations during evaluation if dontExpectProperties is on (default)" in {
+      specWithDontExpectProperties.expectationsNb must be_==(1)
     }
-    "count a new assertion for each time the property is evaluated + one for the pass assertion" in {
-      specWithFailure.assertionsNb must be_==(11)
+    "count a new expectation for each time the property is evaluated + one for the pass expectation" in {
+      specWithFailure.expectationsNb must be_==(11)
     }
   }
 }
 object spec extends Specification with Scalacheck {
-  dontAssertProperties()
-  property((a:Int) => isAssertion(a == a)) must pass
+  dontExpectProperties()
+  property((a:Int) => isExpectation(a == a)) must pass
 }
-object specWithAssertProperties extends Specification with Scalacheck {
+object specWithExpectProperties extends Specification with Scalacheck {
   property((a:Int) => a == a) must pass
 }
-object specWithDontAssertProperties extends Specification with Scalacheck {
-  dontAssertProperties()
+object specWithDontExpectProperties extends Specification with Scalacheck {
+  dontExpectProperties()
   property((a:Int) => a == a) must pass
 }
-object specWithFailure extends Specification with Scalacheck {  assertProperties
+object specWithFailure extends Specification with Scalacheck {  expectProperties
   var counter = 0
   property((a:Int) => {counter +=1; counter < 10}) must pass
 }

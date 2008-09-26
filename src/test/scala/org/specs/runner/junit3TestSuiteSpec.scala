@@ -40,7 +40,7 @@ object junitTestSuiteSpec extends Specification {
         test2.toString must include("ex2")
       }
     }
-    "report a failure with a stacktrace pointing to the assertion causing it in the executed specification" in {
+    "report a failure with a stacktrace pointing to the expectation causing it in the executed specification" in {
       val result = new TestResult
       suite(that.isKo).run(result)
       result.failures verifies(_.hasMoreElements)
@@ -99,7 +99,7 @@ class JUnit4RunnerTest extends Runner(junitTestSuiteSpec) with JUnit
 class SimpleSpec(behaviours: List[(that.Value)]) extends TestSpec {
   "A specification" should {
     "have example 1 ok" in {
-      assertions(behaviours) foreach {_.apply}
+      expectations(behaviours) foreach {_.apply}
     }
   }   
 }

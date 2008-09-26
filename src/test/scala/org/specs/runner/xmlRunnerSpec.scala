@@ -27,27 +27,27 @@ object xmlRunnerSpec extends RunnerFixture { "The specification for the XML runn
 <p/>  Running an XML runner on a specification should create an xml structure:  
 <ul>
 <li> {"containing an element for the specification:\n" +
-  <spec name="sp1" description="sp1" assertions="3" failures="1" errors="1"></spec>.as(xml) in checkXml }</li>
+  <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"></spec>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the system under test:\n" +
-  <sus description="the sus" assertions="3" failures="1" errors="1"></sus>.as(xml) in checkXml }</li>
+  <sus description="the sus" expectations="3" failures="1" errors="1"></sus>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the ok example test:\n" +
-  <example description="have one ok example" assertions="0" failures="0" errors="0"></example>.as(xml) in checkXml }</li>
+  <example description="have one ok example" expectations="0" failures="0" errors="0"></example>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the ko example test containing the failure:\n" +
-  <example assertions="1" failures="1" description="have one ko example" errors="0">
+  <example expectations="1" failures="1" description="have one ko example" errors="0">
           <failure location="xmlRunnerFixture.scala:49">'1' is not the same as '2'</failure>
     </example>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the ko example test containing the exception:\n" +
-  <example description="have an example with an error" assertions="1" failures="0" errors="1">
+  <example description="have an example with an error" expectations="1" failures="0" errors="1">
       <error location="xmlRunnerFixture.scala:50">error message</error>
     </example>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the example containing a sub-example:\n" +
-  <example assertions="0" failures="0" description="have one sub-example" errors="0">
-          <example assertions="1" failures="0" description="a sub-example" errors="0"></example>
+  <example expectations="0" failures="0" description="have one sub-example" errors="0">
+          <example expectations="1" failures="0" description="a sub-example" errors="0"></example>
     </example>.as(xml) in checkXml }</li>
 </ul>
 <p/>
@@ -55,9 +55,9 @@ object xmlRunnerSpec extends RunnerFixture { "The specification for the XML runn
   it must then create a specification element containing the sub-specifications <ul>
  
 <li><ex>with one node for the first sub-specification</ex>
-     { <spec name="compositeSpec" description="compositeSpec" assertions="6" failures="2" errors="2"/> as xml}{checkXml}
+     { <spec name="compositeSpec" description="compositeSpec" expectations="6" failures="2" errors="2"/> as xml}{checkXml}
 <li><ex>with another node for the other sub-specification</ex></li>
-     { <spec name="sp1" description="sp1" assertions="3" failures="1" errors="1"/> as xml}{checkXml} </li>                                                                                                  
+     { <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"/> as xml}{checkXml} </li>                                                                                                  
 </ul>
 
 <p/>  3. Console reporting

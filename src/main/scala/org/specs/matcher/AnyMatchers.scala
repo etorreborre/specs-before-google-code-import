@@ -293,7 +293,7 @@ trait AnyMatchers {
    */
   def throwFailure(e: =>Throwable, failureMessage: =>String) = {
     val failure = FailureException(failureMessage) 
-    failure.setStackTrace((e.getStackTrace.toList.dropWhile {x: StackTraceElement => x.toString.matches("AnyMatchers") || x.toString.matches("Assert")}).toArray)
+    failure.setStackTrace((e.getStackTrace.toList.dropWhile {x: StackTraceElement => x.toString.matches("AnyMatchers") || x.toString.matches("Expect")}).toArray)
     throw failure
   }
   

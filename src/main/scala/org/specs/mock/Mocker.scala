@@ -72,7 +72,7 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers {
   }
   
   /** 
-   * convenience method to add an assertion to check method parameters during calls<br>
+   * convenience method to add an expectation to check method parameters during calls<br>
    * Usage: <pre>def createMock(f: Movie => Unit) = new MovieRater { 
    *  override def register(m: Movie) =  record(f(m)) 
    * }</pre>
@@ -113,8 +113,8 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers {
    */
   override def afterTest(ex: Example) = {
     if (protocol.isSpecified) {
-      ex.addAssertion
-      (new Assert(protocol)) must beMet
+      ex.addExpectation
+      (new Expectation(protocol)) must beMet
     } 
     super.afterTest(ex)
   }

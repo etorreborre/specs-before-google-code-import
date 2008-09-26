@@ -56,7 +56,7 @@ trait OutputReporter extends Reporter with Output {
   class AddableTuple(t1: Tuple5[Int, Int, Int, Int, Int]) {  def +(t2: Tuple5[Int, Int, Int, Int, Int]) = (t1._1 + t2._1, t1._2 + t2._2, t1._3 + t2._3, t1._4 + t2._4, t1._5 + t2._5) }
   
   /**
-   * @return the number of examples, assertions, failures and errors for a specification
+   * @return the number of examples, expectations, failures and errors for a specification
    * by collecting those numbers on sub-specifications and systems
    */
   def stats(spec: Specification): (Int, Int, Int, Int, Int) = {
@@ -65,7 +65,7 @@ trait OutputReporter extends Reporter with Output {
   }
   
   /**
-   * @return the number of examples, assertions, failures and errors for a sus
+   * @return the number of examples, expectations, failures and errors for a sus
    * by collecting those numbers on examples
    */
   def stats(sus: Sus): (Int, Int, Int, Int, Int)  = {
@@ -73,11 +73,11 @@ trait OutputReporter extends Reporter with Output {
   }
 
   /**
-   * @return the number of examples, assertions, failures and errors for an example
+   * @return the number of examples, expectations, failures and errors for an example
    * by collecting those numbers on this example and on sub-examples
    */
   def stats(example: Example): (Int, Int, Int, Int, Int) = {
-    (if (example.subExamples.isEmpty) 1 else 0, example.assertionsNb, example.failures.size, example.errors.size, example.skipped.size) +
+    (if (example.subExamples.isEmpty) 1 else 0, example.expectationsNb, example.failures.size, example.errors.size, example.skipped.size) +
     example.subExamples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
   }
 
@@ -119,13 +119,13 @@ trait OutputReporter extends Reporter with Output {
    * prints the statistics for a specification
    */
   def printStats(stat: (Int, Int, Int, Int, Int), padding: String) = {
-    val (examplesNb, assertionsNb,  failuresNb, errorsNb, skippedNb) = stat
+    val (examplesNb, expectationsNb,  failuresNb, errorsNb, skippedNb) = stat
     def plural[T](nb: Int) = if (nb > 1) "s" else ""
     println(padding + "Finished in " + timer.stop)
     println(padding + 
             examplesNb + " example" + plural(examplesNb) +
             (if (skippedNb > 0) " (" + skippedNb + " skipped)" else "") + ", " +
-            assertionsNb + " assertion" + plural(assertionsNb) + ", " +
+            expectationsNb + " expectation" + plural(expectationsNb) + ", " +
             failuresNb + " failure" + plural(failuresNb) + ", " +
             errorsNb + " error" + plural(errorsNb)
             )
