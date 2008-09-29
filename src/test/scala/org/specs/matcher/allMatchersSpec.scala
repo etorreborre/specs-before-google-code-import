@@ -19,14 +19,14 @@ class MatchersSpecification extends Specification {
   def clearExample = { reported = new Example("", new Sus("", this)) }
   def failWith(message: String) = is_==(message)
   def failWithMatch(pattern: String) = beMatching(pattern)
-  def assertion(value: => Any): String = {
+  def expectation(value: => Any): String = {
     try {
       value
     } catch {
       case FailureException(message) => return message
       case t: Throwable => throw t
     }
-    return "this assertion has not failed"
+    return "this expectation has not failed"
   }
   // an expression which knows how much time is had been evaluated
   case class exp[T](var a: T) { var evaluationsNb: Int= 0; def evaluate = {evaluationsNb += 1; a} }

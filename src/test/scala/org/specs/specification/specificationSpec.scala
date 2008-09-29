@@ -25,7 +25,7 @@ object basicFeatures extends SpecificationWithSamples {
       twoSystems(that.isOk, that.isKo).systems.first.status must_== "success"
       twoSystems(that.isOk, that.isKo).systems.last.status must_== "failure"
     }
-   "have no failures if it contains no assertion" in { 
+   "have no failures if it contains no expectation" in { 
      oneEx(that.isOk).failures must beEmpty
    } 
    "have one failure if one example fails" in { 
@@ -37,10 +37,10 @@ object basicFeatures extends SpecificationWithSamples {
    "raise one error if one example throws an exception" in { 
      errorSpec.errors must beLike {case Seq(x: Throwable) => x.getMessage must_== "new Error"} 
    } 
-   "provide the number of assertions" in { 
+   "provide the number of expectations" in { 
      val spec = twoSystems(that.isOk, List(that.isOk, that.isOk))
-     spec.systems.map {_.assertionsNb} must_== List(1, 2)
-     spec.assertionsNb mustBe 3
+     spec.systems.map {_.expectationsNb} must_== List(1, 2)
+     spec.expectationsNb mustBe 3
    } 
    "provide a 'fail' method adding a new failure to the current example" in {
      object failMethodSpec extends oneEx(List(that.isOk, that.isKoWithTheFailMethod))
@@ -56,7 +56,7 @@ object basicFeatures extends SpecificationWithSamples {
      object skipSpec extends oneEx(List(that.isSkipped, that.isOk))
      skipSpec.skipped must beLike {case Seq(SkippedException(msg)) => 
                                         msg must_== "skipped with the skip method"} 
-     skipSpec.assertionsNb mustBe 0
+     skipSpec.expectationsNb mustBe 0
    } 
    "provide a 'skip' method skipping the sus if positioned before all examples" in {
      object skipAll extends Specification {
@@ -66,7 +66,7 @@ object basicFeatures extends SpecificationWithSamples {
        }
      }
      skipAll.systems must exist { s: Sus => s.skippedSus != None } 
-     skipAll.assertionsNb mustBe 0
+     skipAll.expectationsNb mustBe 0
    } 
    "not execute its examples unless asked for their status" in {
      var executed = false
@@ -157,7 +157,7 @@ trait SpecificationWithSamples extends Specification {
     val failMethodWithNoArgument = () => fail
     val skipMethod = () => skip("skipped with the skip method")
     val exception = () => error("new Error")
-    def assertions(behaviours: List[that.Value]) = behaviours map { case that.isOk => success
+    def expectations(behaviours: List[that.Value]) = behaviours map { case that.isOk => success
                                       case that.isKo => failure1
                                       case that.isKoTwice => () => { failure1(); failure2() }
                                       case that.isSkipped => skipMethod
@@ -185,25 +185,25 @@ trait SpecificationWithSamples extends Specification {
   case class oneEx(behaviours: List[(that.Value)]) extends TestSpec {
     "This system under test" can {
       "have example 1 ok" in {
-        assertions(behaviours).foreach { _.apply }
+        expectations(behaviours).foreach { _.apply }
       }
     }
   }
   case class SpecWithTwoEx(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
     "This system under test" should {
-      "have example 2.1 ok" in { assertions(behaviours1).head.apply }
-      "have example 2.2 ok" in { assertions(behaviours2).last.apply }
+      "have example 2.1 ok" in { expectations(behaviours1).head.apply }
+      "have example 2.2 ok" in { expectations(behaviours2).last.apply }
     }
   }
   case class twoSystems(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
     "This system under test" should {
       "have example 1 ok" in {
-        assertions(behaviours1) foreach {_.apply}
+        expectations(behaviours1) foreach {_.apply}
       }
     }
     "This other system under test" should {
       "have example 1 ok" in {
-        assertions(behaviours2) foreach {_.apply}
+        expectations(behaviours2) foreach {_.apply}
       }
     }
   }

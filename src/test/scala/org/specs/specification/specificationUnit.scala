@@ -27,7 +27,7 @@ object specificationUnit extends Specification with Scalacheck {
       }
     }
   }
-  "A specification with one assertion only" should {
+  "A specification with one expectation only" should {
     object nudeSpec extends Specification { "name" mustEqual "name" }
     "create a default sus" in {
       nudeSpec.systems.size mustBe 1
@@ -38,8 +38,8 @@ object specificationUnit extends Specification with Scalacheck {
     "create a default example named 'example 1'" in {
       nudeSpec.systems.head.examples.first.description must_== "example 1"
     }
-    "count 1 assertion" in {
-      nudeSpec.assertionsNb mustBe 1
+    "count 1 expectation" in {
+      nudeSpec.expectationsNb mustBe 1
     }
   }
   "the location of a failure" should {
@@ -59,7 +59,7 @@ object specificationUnit extends Specification with Scalacheck {
       spec.failures(0).location must_== "specificationUnit.scala:57"
     }
   }
-  "A specification with 2 assertions only" should {
+  "A specification with 2 expectations only" should {
     object twoNamedExamples extends Specification {
       val n = "name" aka "the string"
       n mustEqual "name"

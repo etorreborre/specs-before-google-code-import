@@ -8,7 +8,7 @@ import org.specs.matcher._
 trait SpecificationGenerator { self: Specification =>
   object spec extends Specification("generated spec")
   
-  def genAssertion = for(value <- choose(0, 4)) yield { () => 
+  def genExpectation = for(value <- choose(0, 4)) yield { () => 
     value match {
       case 0 | 1 => spec.theValue(value) must_== 1 
       case 2     => spec.skip("this is a skipped example")
@@ -16,7 +16,7 @@ trait SpecificationGenerator { self: Specification =>
     } 
   }
 
-  def genExample(sus: Sus) = for (a <- genAssertion) yield {
+  def genExample(sus: Sus) = for (a <- genExpectation) yield {
     val newExample = new Example("generated example", sus)
     sus.addExample(newExample) 
     newExample.in { a() }

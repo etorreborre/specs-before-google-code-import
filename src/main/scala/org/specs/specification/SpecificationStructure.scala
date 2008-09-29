@@ -23,7 +23,7 @@ import org.specs.SpecUtils._
  * <code>specify("my system under test").should {}</code>
  * <p>
  * Sub-examples can be created by declaring them inside the current example:<pre>
- * def otherExample = "this is a shared example" in { "this assertion" must notBeEmpty }       
+ * def otherExample = "this is a shared example" in { "this expectation" must notBeEmpty }       
  *       
  * "behave like other examples" in {
  *  otherExample      
@@ -35,7 +35,7 @@ import org.specs.SpecUtils._
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait SpecificationStructure extends ExampleLifeCycle with ExampleAssertionListener with Tagged {
+trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsListener with Tagged {
 
   /** description of the specification */ 
   var description = createDescription(getClass.getName)

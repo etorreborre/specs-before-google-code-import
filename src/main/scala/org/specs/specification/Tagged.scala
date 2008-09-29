@@ -13,7 +13,7 @@ import scala.collection.mutable.Queue
  * 
  * Any Tagged object can be tagged using the "tag" method, accepting any number of strings:<pre>
  * "this example is tagged" in {
- *   // assert something
+ *   // expect something
  * } tag("unit", "sample")
  * </pre>
  */

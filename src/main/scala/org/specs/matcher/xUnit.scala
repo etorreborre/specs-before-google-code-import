@@ -1,9 +1,9 @@
 package org.specs.matcher
-
+import org.specs.specification._
 /**
  * This trait provides methods to help the transition for xUnit users
  */
-trait xUnit { self: Specification => 
+trait xUnit { self: Specification =>
   def assertTrue(v: => Boolean) = v must beTrue
   def assertFalse(v: => Boolean) = v must beFalse
   def assertEquals[T](a: =>T, b: =>T) = a must beEqual(b)

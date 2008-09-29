@@ -31,7 +31,7 @@ object mockParameters extends MatchersSpecification with MovieGuardMock {
         mock.okForAge(20, Movie(18)); 
       }
       // don't send negative numbers to the rater!
-      assertion(checkedGuard.canWatch(Watcher(-10), Movie(18))) must failWith("-10 is less than 0")
+      expectation(checkedGuard.canWatch(Watcher(-10), Movie(18))) must failWith("-10 is less than 0")
       checkedGuard.canWatch(Watcher(10), Movie(18)) mustBe true
     }
     "provide expectations for the passed parameters def mockedMethod = record(f)" in {
@@ -40,7 +40,7 @@ object mockParameters extends MatchersSpecification with MovieGuardMock {
         mock.register(Movie(18)); 
       }
       // don't register negative movies numbers to the rater!
-      assertion(checkedGuard.guard(Movie(-18))) must failWith("-18 is less than 0")
+      expectation(checkedGuard.guard(Movie(-18))) must failWith("-18 is less than 0")
       checkedGuard.guard(Movie(18)) // must not fail
     }
   }

@@ -15,7 +15,7 @@ import org.specs.specification._
  * assess properties multiple times with generated data.
  * @see the <a href="http://code.google.com/p/scalacheck/">Scalacheck project</a>
  */
-trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues with AssertionListener {
+trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues with ExpectationsListener {
   
   /**
    * This implicit value is useful to transform the SuccessValue returned by matchers to properties
@@ -91,7 +91,7 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      }
      
      // check the property
-     def propToCheck = if (!shouldCountAssertions) prop else (prop && property((t: Boolean) => true.isAssertion)) 
+     def propToCheck = if (!shouldCountExpectations) prop else (prop && property((t: Boolean) => true.isExpectation)) 
      val results = check(params, propToCheck, printResult) 
      
      // display the final result if verbose = true
@@ -141,13 +141,13 @@ trait ScalacheckParameters {
    */
   val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
   
-  /** This variable is used to track if we need to add an assertion each time a property is evaluated */
-  private var countAssertions = true
-  /** declare that an assertion should be added each time a property is evaluated (default) */
-  def assertProperties() = { countAssertions = true; this }
-  /** declare that no assertion should be added each time a property is evaluated */
-  def dontAssertProperties() = { countAssertions = false; this }
-  def shouldCountAssertions = countAssertions
+  /** This variable is used to track if we need to add an expectation each time a property is evaluated */
+  private var countExpectations = true
+  /** declare that an expectation should be added each time a property is evaluated (default) */
+  def expectProperties() = { countExpectations = true; this }
+  /** declare that no expectation should be added each time a property is evaluated */
+  def dontExpectProperties() = { countExpectations = false; this }
+  def shouldCountExpectations = countExpectations
   /**
    * Default values for Scalacheck parameters
 	 */

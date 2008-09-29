@@ -13,26 +13,26 @@ object anyMatchersUnit extends MatchersSpecification {
       name must be(name)
     }
     "display a failure message if comparing different objects" in {
-      assertion("name" must be("name2")) must failWith("'name' is not the same as 'name2'")
+      expectation("name" must be("name2")) must failWith("'name' is not the same as 'name2'")
     }
     "be resilient to a null value" in {
       val s: String = null
-      assertion("name" must be(s)) must failWith("'name' is not the same as 'null'")
+      expectation("name" must be(s)) must failWith("'name' is not the same as 'null'")
     }
     "display a failure message if comparing different objects even if they are ==" in {
       case class MyObject(value: Int)
       val (o1, o2) = (MyObject(1), MyObject(1))
-      assertion(o1 must be(o2)) must failWith("'MyObject(1)' is not the same as 'MyObject(1)'")
+      expectation(o1 must be(o2)) must failWith("'MyObject(1)' is not the same as 'MyObject(1)'")
     }
     "be ok if comparing the same value" in {
       val number = 1
       number must be(number)
     }
     "display a failure message if comparing different values" in {
-      assertion(1 must be(2)) must failWith("'1' is not the same as '2'")
+      expectation(1 must be(2)) must failWith("'1' is not the same as '2'")
     }
     "display a precise failure message if there is an alias" in {
-      assertion(1 aka "the number" must be(2)) must failWith("the number '1' is not the same as '2'")
+      expectation(1 aka "the number" must be(2)) must failWith("the number '1' is not the same as '2'")
     }
   }
   "An '==' matcher" should {
@@ -48,11 +48,11 @@ object anyMatchersUnit extends MatchersSpecification {
       List("a") must be_==(List("a"))
     }
     "display a failure message if comparing different objects" in {
-      assertion("name" must be_==("name2")) must failWith("'name' is not equal to 'name2'")
+      expectation("name" must be_==("name2")) must failWith("'name' is not equal to 'name2'")
     }
     "be resilient to a null value" in {
       val s: String = null
-      assertion("name" must be_==(s)) must failWith("'name' is not equal to 'null'")
+      expectation("name" must be_==(s)) must failWith("'name' is not equal to 'null'")
     }
   }
   "An 'beEqual' matcher" should {
@@ -70,11 +70,11 @@ object anyMatchersUnit extends MatchersSpecification {
       l must beEqual(l)
     }
     "display a failure message if comparing different objects" in {
-      assertion("name" must beEqual("name2")) must failWith("'name' is not equal to 'name2'")
+      expectation("name" must beEqual("name2")) must failWith("'name' is not equal to 'name2'")
     }
     "be resilient to a null value" in {
       val s: String = null
-      assertion("name" must beEqual(s)) must failWith("'name' is not equal to 'null'")
+      expectation("name" must beEqual(s)) must failWith("'name' is not equal to 'null'")
     }
   }
   "A 'beNull' matcher" should {
@@ -84,11 +84,11 @@ object anyMatchersUnit extends MatchersSpecification {
     }
     "display a failure message if the value is not null" in {
       val a: String = "not null"
-      assertion(a must beNull) must failWith("'not null' is not null")
+      expectation(a must beNull) must failWith("'not null' is not null")
     }
     "display a precise failure message if there is a description of the value" in {
       val a: String = "not null"
-      assertion(a aka "the value" must beNull) must failWith("the value 'not null' is not null")
+      expectation(a aka "the value" must beNull) must failWith("the value 'not null' is not null")
     }
   }
   "A 'notBeNull' matcher" should {
@@ -98,11 +98,11 @@ object anyMatchersUnit extends MatchersSpecification {
     }
     "display a failure message if the value is null" in {
       val a: String = null
-      assertion(a must notBeNull) must failWith("the value is null")
+      expectation(a must notBeNull) must failWith("the value is null")
     }
     "display a precise failure message if there is a description of the value" in {
       val a: String = null
-      assertion(a aka "this value" must notBeNull) must failWith("this value is null")
+      expectation(a aka "this value" must notBeNull) must failWith("this value is null")
     }
   }
   "A 'beTrue' matcher" should {
@@ -110,10 +110,10 @@ object anyMatchersUnit extends MatchersSpecification {
       true must beTrue
     }
     "display a failure message if the value is not true" in {
-      assertion(false must beTrue) must failWith("the value is false")
+      expectation(false must beTrue) must failWith("the value is false")
     }
     "display a precise failure message if the value has a description" in {
-      assertion(false aka "this value" must beTrue) must failWith("this value is false")
+      expectation(false aka "this value" must beTrue) must failWith("this value is false")
     }
   }
   "A 'beFalse' matcher" should {
@@ -121,10 +121,10 @@ object anyMatchersUnit extends MatchersSpecification {
       false must beFalse
     }
     "display a failure message if the value is not true" in {
-      assertion(true must beFalse) must failWith("the value is true")
+      expectation(true must beFalse) must failWith("the value is true")
     }
     "display a precise failure message if the value has a description" in {
-      assertion(true aka "this value" must beFalse) must failWith("this value is true")
+      expectation(true aka "this value" must beFalse) must failWith("this value is true")
     }
   }
   "A throwA + exception matcher" should {

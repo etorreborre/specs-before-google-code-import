@@ -26,7 +26,7 @@ case class Sus(description: String, var cycle: org.specs.specification.ExampleLi
   var verb = ""
 
   /** 
-   * instead of using several examples, a whole text with embedded assertions can be used to
+   * instead of using several examples, a whole text with embedded expectations can be used to
    * specify the Sus
    */
   var literateDescription: Option[Elem] = None
@@ -92,8 +92,8 @@ case class Sus(description: String, var cycle: org.specs.specification.ExampleLi
   /** @return all the examples with no errors, failures or skip messages */
   def successes = examples.filter { e => e.errors.isEmpty && e.failures.isEmpty && e.skipped.isEmpty }
 
-  /** @return the total number of assertions for this sus */
-  def assertionsNb = examples.foldLeft(0)(_ + _.assertionsNb)
+  /** @return the total number of expectations for this sus */
+  def expectationsNb = examples.foldLeft(0)(_ + _.expectationsNb)
 
   /** @return a description of this sus with all its examples (used for the ConsoleReporter) */
   def pretty(tab: String) = tab + description + " " + verb + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
