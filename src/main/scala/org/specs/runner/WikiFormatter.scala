@@ -12,8 +12,8 @@ class WikiFormatter extends LiterateDescriptionFormatter {
         "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
         "onmouseout=\"hideToolTip();\""
       }
-      def toReplace = "==<ex class=\"" + example.status + "\" " + onmouse(example) + ">== " +
-                      exampleDesc(example.description) + " ==</ex>=="
+      def toReplace = " ==<ex class=\"" + example.status + "\" " + onmouse(example) + ">" +
+                      exampleDesc(example.description) + "</ex>=="
       result = result.replace(example.description.toString, toReplace)
     }
     result
