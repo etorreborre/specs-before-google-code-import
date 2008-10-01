@@ -1,17 +1,25 @@
 package org.specs.runner
-import org.specs.specification._
 
-object teamCityRunnerSpec extends Specification {
-  "it" should {
-    "not be implemented yet" in { }
-  }
-}
+object teamCityRunnerSpec extends teamCityRunnerRules("TeamCity Runner") { "TeamCity Runner Specification" ->> <wiki>
+ 
+h3. Introduction
 
-object SampleSpec extends Specification {
-  "good test" in { true must beTrue }
-  "failed test" in { 1 must_== 2 }
-  "error test" in { throw new Exception("hello") }
-  "skipped test" in { skip("dont do this") }
+The TeamCity runner is a Specification runner designed to create TeamCity formatted messages to the standard output when running specifications.
+
+A specification for the TeamCity output messages can be found "here":http://www.jetbrains.net/confluence/display/TCD3/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-testReporting.
+
+h3. Notifying specifications and sus as Test suites
+   
+When executed, <ex>the TeamCity runner should notify the start of a specification</ex> with:
+
+@##teamcity[testSuiteStarted name=`specification name']@{specificationStart}
+                      
+<ex>The end of the specification should also be reported</ex>:
+
+@##teamcity[testSuiteFinished name=`specification name']@{specificationEnd}
+                                   
+  </wiki>
 }
-object testTeamCityRunner extends TeamCityRunner(SampleSpec)
-class teamCityRunnerTest extends JUnit4(teamCityRunnerSpec) 
+class teamCityRunnerTest extends HtmlRunner(teamCityRunnerSpec, "target") with JUnit 
+
+
