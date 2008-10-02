@@ -1,5 +1,6 @@
 package org.specs.collection
 import org.specs.collection.ExtendedList._
+import scala.collection.mutable.ListBuffer
 
 /**
  * The ExtendedIterable object offers utility methods applicable to iterables like:<ul>
@@ -52,7 +53,15 @@ object ExtendedIterable {
       }
       !ita.hasNext && !itb.hasNext && res
     }
-    
+    /**
+     * @return true if the second iterable elements are contained in the first, in order 
+     */
+    def containsInOrder[A](l: Iterable[A]) = {
+        val indexes: List[Int] = l.foldLeft(new ListBuffer[Int]()) { (ind, x) => ind.append(xs.toSeq.findIndexOf(x == _)); ind }.toList
+        println(indexes)
+        (!indexes.contains(-1) && indexes.sort(_ <= _) == indexes)
+    } 
+
     /**
      * @return true if the 2 iterables contain the same elements recursively, in any order 
      */

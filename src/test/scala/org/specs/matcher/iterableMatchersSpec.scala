@@ -33,6 +33,12 @@ object iterableMatchersSpec extends MatchersSpecification {
     "provide a 'must containAll' matcher on iterables accepting detailed differences" in {
       expectation(List("one", "two") must containAll(List("one", "three"))(new fullDetails("[]"))) must failWith("'one\nt[wo]' doesn't contain all of 'one\nt[hree]'")
     }
+    "provide a 'must containInOrder' matcher on iterables checking if one sequence is included inside another" in {
+     
+      containInOrder(List("one", "two"))
+      List("one", "two", "three") must containInOrder(List("one", "two"))
+      expectation(List("one", "two") must containInOrder(List("two", "one"))) must failWith("'List(one, two)' doesn't contain all of 'List(two, one)' in order")
+    }
     "provide a 'must beIn' matcher on iterables: 'one' must beIn(List('one', 'two'))" in {
       "one" must beIn(List("one", "two"))
       expectation("three" must beIn(List("one", "two"))) must failWith("'three' is not in 'List(one, two)'")

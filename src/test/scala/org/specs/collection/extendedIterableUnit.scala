@@ -43,5 +43,11 @@ object extendedIterableUnit extends Specification with Sugar with Scalacheck {
       Stream.cons(1, Stream.cons(2, Nil.toStream)).toDeepString must_== "[1, 2]"
     }
   }
+  "A containsInOrder function" should {
+    "check that one iterable is contained inside another one, in order" in {
+      List(1, 2, 3).containsInOrder(1, 3) must beTrue
+      List(1, 2, 3).containsInOrder(2, 1) must beFalse
+    }
+  }
 
 }

@@ -43,6 +43,21 @@ trait IterableMatchers {
   def notContainAll[T](l: Iterable[T])(implicit details: Detailed) = containAll(l)(details).not
 
   /**
+   * Matches if all the elements of l are included in the actual iterable in that order
+   */   
+  def containInOrder[T](l: Iterable[T])(implicit details: Detailed) = new Matcher[Iterable[Any]](){ 
+    def apply(v: => Iterable[Any]) = {
+      val iterable = v; 
+      import org.specs.Products._
+      val failureMessage = details match {
+        case full: fullDetails => EditMatrix(d(iterable.mkString("\n")), q(l.mkString("\n"))).showDistance(full.separators).toList.mkString("", " doesn't contain all of ", " in order")
+        case no: noDetails => d(iterable) + " doesn't contain all of " + q(l) + " in order"
+      }
+      (iterable.containsInOrder(l), d(iterable) + " contains all of " + q(l) + " in order", failureMessage)
+    } 
+  }
+  
+  /**
    * Matches if there is one element in the iterable verifying the <code>function</code> parameter: <code>(iterable.exists(function(_))</code>
    */   
   def exist[T](function: T => Boolean) = new Matcher[Iterable[T]](){ 
