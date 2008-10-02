@@ -32,7 +32,7 @@ trait Html extends File {
   }
  
   /** define the html content for this specification execution. */
-  def specOutput(spec: Specification): String = new PrettyPrinter(200, 2).format(asHtml(spec)) 
+  def specOutput(spec: Specification): String = asHtml(spec).toString 
   
   /** 
    * Create the html content for this specification execution.

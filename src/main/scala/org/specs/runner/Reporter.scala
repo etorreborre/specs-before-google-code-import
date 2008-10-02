@@ -101,4 +101,3 @@ trait Reporter extends SpecsHolder with ConsoleLog {
   
   def ::(r: Reporter) = List(r, this)
 }
-

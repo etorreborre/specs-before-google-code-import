@@ -12,6 +12,9 @@ object wikiFormatterSpec extends Specification {
       example.exampleDescription = new WikiExampleDescription("a description")
       new WikiFormatter().formatDesc(example) must_== <t>a description</t>
     }
+    "format single quotes as single quotes inside brackets when using html escape convention ==" in {
+      new WikiFormatter().format(<wiki>==['a description']==</wiki>, Nil) must \\(<p>['a description']</p>)
+    }
   }
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"

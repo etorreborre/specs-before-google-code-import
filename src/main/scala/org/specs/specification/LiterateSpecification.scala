@@ -42,10 +42,10 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
    */
   implicit def anyToAs[T](a: T) = new AsProperty(a)
   class AsProperty[T](a: T) { 
-    def as(p: Property[T]) = {p() = a; p.toString }
-    def apply(p: Property[T]) = {p() = a; p.toString }
-    def apply(f: T => Any)= {f(a); a.toString }
-    def as(f: T => Any)= {f(a); a.toString }
+    def as(p: Property[T]) = {p() = a; a }
+    def apply(p: Property[T]) = {p() = a; a}
+    def apply(f: T => Any)= {f(a); a }
+    def as(f: T => Any)= {f(a); a }
   }
   
   /**
@@ -99,7 +99,6 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       format(e)
     }
   }
-  
   /** embeddeds a test into a new example and silence the result */
   def check(test: =>Any) = (forExample in test).shh
 
@@ -108,4 +107,24 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 
   /** return a String containing the output messages from the console */
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
+}
+/**
+ * This trait provides functions which can be used to ease the use of wiki markup
+ */
+trait Wiki {
+  implicit def toWikiString(a: Any) = new WikiString(a.toString) 
+  class WikiString(s: String) {
+    def >@ = wikiCode(s)
+  }
+  /** 
+   * This function can be used to format code in a wiki description.
+   * Using this function avoid issues like quotes insides brackets ['something']
+   * being displayed as question marks.
+   */
+  def wikiCode(stringToFormat: String) = "==<code><ul style=\"list-style: none; padding: 0; margin: 0;\">" + stringToFormat.replaceAll("\n", "<li/>") + "</ul></code>=="
+  /** 
+   * Alias for wikiCode
+   */
+  def >@(stringToFormat: String) = wikiCode(stringToFormat)
+
 }
