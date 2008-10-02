@@ -8,7 +8,7 @@ class teamCityRunnerRules(name: String) extends LiterateSpecification(name) with
   val message: Property[String] = new Property[String]("") 
   val messages: Property[List[String]] = new Property[List[String]](Nil) 
   def messageMustBeCreated = runSpec.messages must contain(message())
-  def messagesMustBeCreated = runSpec.messages must containAll(messages()) 
+  def messagesMustBeCreated = runSpec.messages must containInOrder(messages()) 
                                 
   def runSpec = (new TeamCityRunner(testingSpec) with MockOutput).reportSpecs
 }
