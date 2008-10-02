@@ -1,6 +1,7 @@
 package org.specs.matcher
 import org.specs.runner._
 import org.specs._
+import org.specs.specification.fullDetails
 
 class iterableTest extends JUnit4(iterableMatchersSpec) 
 object iterableMatchersSpec extends MatchersSpecification {
@@ -24,6 +25,13 @@ object iterableMatchersSpec extends MatchersSpecification {
       List("one", "two") must notContain("three")
       expectation(List("one", "two") mustNotContain "one") must failWith("'List(one, two)' contains 'one'")
       expectation(List("one", "two") aka "the list" must notContain("one")) must failWith("the list 'List(one, two)' contains 'one'")
+    }
+    "provide a 'must containAll' matcher on iterables: List(1, 2, 3) must containAll(List(1, 2))" in {
+      List("one", "two", "three") must containAll(List("one", "two"))
+      expectation(List("one", "two") must containAll(List("one", "three"))) must failWith("'List(one, two)' doesn't contain all of 'List(one, three)'")
+    }
+    "provide a 'must containAll' matcher on iterables accepting detailed differences" in {
+      expectation(List("one", "two") must containAll(List("one", "three"))(new fullDetails("[]"))) must failWith("'one\nt[wo]' doesn't contain all of 'one\nt[hree]'")
     }
     "provide a 'must beIn' matcher on iterables: 'one' must beIn(List('one', 'two'))" in {
       "one" must beIn(List("one", "two"))

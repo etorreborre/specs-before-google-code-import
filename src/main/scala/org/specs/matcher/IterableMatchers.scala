@@ -3,6 +3,8 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.collection.ExtendedIterable._
 import org.specs.matcher.AnyMatchers._
 import org.specs.specification._
+import org.specs.util.EditDistance._
+
 /**
  * The <code>IterableMatchers</code> trait provides matchers which are applicable to Iterable objects
  */
@@ -19,6 +21,26 @@ trait IterableMatchers {
    * Matches if not(iterable.exists(_ == a)
    */   
   def notContain[T](a: T) = contain(a).not 
+
+  /**
+   * Matches if all the elements of l are included in the actual iterable
+   */   
+  def containAll[T](l: Iterable[T])(implicit details: Detailed) = new Matcher[Iterable[Any]](){ 
+    def apply(v: => Iterable[Any]) = {
+      val iterable = v; 
+      import org.specs.Products._
+      val failureMessage = details match {
+        case full: fullDetails => EditMatrix(d(iterable.mkString("\n")), q(l.mkString("\n"))).showDistance(full.separators).toList.mkString(" doesn't contain all of ")
+        case no: noDetails => d(iterable) + " doesn't contain all of " + q(l)
+      }
+      (l.forall(x => iterable.exists(_ == x)), d(iterable) + " contains all of " + q(l), failureMessage)
+    } 
+  }
+
+  /**
+   * Alias for containAll.not
+   */   
+  def notContainAll[T](l: Iterable[T])(implicit details: Detailed) = containAll(l)(details).not
 
   /**
    * Matches if there is one element in the iterable verifying the <code>function</code> parameter: <code>(iterable.exists(function(_))</code>
