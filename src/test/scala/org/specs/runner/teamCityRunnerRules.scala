@@ -1,17 +1,19 @@
 package org.specs.runner
 import org.specs.specification._
 import org.specs.io.mock._
+import org.specs.util.Property
 
-class teamCityRunnerRules(name: String) extends LiterateSpecification(name) {
-  def specificationStart = runSpec.messages must contain("##teamcity[testSuiteStarted name='specification name']")
-  def specificationEnd = runSpec.messages must contain("##teamcity[testSuiteFinished name='specification name']")
+class teamCityRunnerRules(name: String) extends LiterateSpecification(name) with Wiki {
+  detailedDiffs
+  val message: Property[String] = new Property[String]("") 
+  val messages: Property[List[String]] = new Property[List[String]](Nil) 
+  def messageMustBeCreated = runSpec.messages must contain(message())
+  def messagesMustBeCreated = runSpec.messages must containAll(messages()) 
+                                
   def runSpec = (new TeamCityRunner(testingSpec) with MockOutput).reportSpecs
 }
 object testingSpec extends Specification("specification name") {
-  "this is the sus 1" should {
+  "sus1 description" should {
       "good test" in { true must beTrue }
-      "failed test" in { 1 must_== 2 }
-      "error test" in { throw new Exception("hello") }
-      "skipped test" in { skip("dont do this") }
   }
 }

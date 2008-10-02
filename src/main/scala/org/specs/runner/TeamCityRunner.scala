@@ -67,12 +67,18 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
     super.reportSus(sus, padding)
     testSuiteFinished(sus.description)
   }
+  override def printSus(sus: Sus, padding: String) = {
+    testSuiteStarted(sus.description)
+    super.printSus(sus, padding)
+    testSuiteFinished(sus.description)
+  }
 
   override def reportExample(example: Example, padding: String) = {
+    super.reportExample(example, padding)
+
     val testName = currentSpec.value.name + "." + example.description
     testStarted(testName)
     
-    super.reportExample(example, padding)
     val m = example.failureAndErrors.map(throwableToMessage _).mkString("; ")
     example.failureAndErrors.firstOption.map(e => testFailed(testName, "message" -> m))
     example.skipped.map(s => testIgnored(testName, "message" -> throwableToMessage(s)))
