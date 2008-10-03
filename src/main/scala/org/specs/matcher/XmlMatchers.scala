@@ -80,28 +80,33 @@ trait XmlMatchers {
   
   /**
    * Matches if <code>node</code> is equal to the tested node without testing empty text
+   * @deprecated use beEqualToIgnoringSpace instead
    */   
-  def equalIgnoreSpace(node: Iterable[Node]) = new EqualIgnoreSpaceMatcher(node)
+  def equalIgnoreSpace(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
+  /**
+   * Matches if <code>node</code> is equal to the tested node without testing empty text
+   */   
+  def beEqualToIgnoringSpace(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
 
   /**
    * Alias for equalIgnoreSpace
    */   
-  def ==/(node: Iterable[Node]): EqualIgnoreSpaceMatcher = equalIgnoreSpace(node)
+  def ==/(node: Iterable[Node]): EqualIgnoringSpaceMatcher = equalIgnoreSpace(node)
 
   /**
    * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
    */   
-  class EqualIgnoreSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+  class EqualIgnoringSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
     def apply(n: =>Iterable[Node]) = {
-     (isEqualIgnoreSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
-    def ordered = new EqualIgnoreSpaceMatcherOrdered(node)
+     (isEqualIgnoringSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+    def ordered = new EqualIgnoringSpaceMatcherOrdered(node)
   }
   /**
    * Matcher for equalIgnoreSpace comparison, considering the node order
    */   
-  class EqualIgnoreSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+  class EqualIgnoringSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
     def apply(n: =>Iterable[Node]) = {
-     (isEqualIgnoreSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+     (isEqualIgnoringSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
   }
 }
 
@@ -256,7 +261,7 @@ class PathFunction(val node: Node, val attributes: List[String], val attributeVa
       if (node.child.isEmpty) 
         true 
       else 
-        isEqualIgnoreSpace(fromSeq(n.child), fromSeq(node.child))
+        isEqualIgnoringSpace(fromSeq(n.child), fromSeq(node.child))
     }
 
     attributesMatch(found.attributes) && childrenMatch(found) 

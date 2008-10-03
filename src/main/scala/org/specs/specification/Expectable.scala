@@ -157,11 +157,11 @@ class StringExpectable[A <: String](value: => A) extends Expectable[A] {
   /** alias for <code>must(not(beMatching(a)))</code> */
   def mustNotMatch(a: String) = applyMatcher(not(beMatching(a)), value)
   
-  /** alias for <code>must(equalIgnoreCase(a))</code> */
-  def must_==/(a: String) = applyMatcher(equalIgnoreCase(a), value)
+  /** alias for <code>must(beEqualToIgnoringCase(a))</code> */
+  def must_==/(a: String) = applyMatcher(beEqualToIgnoringCase(a), value)
 
-  /** alias for <code>must(notEqualIgnoreCase(a))</code> */
-  def must_!=/(a: String) = applyMatcher(notEqualIgnoreCase(a), value)
+  /** alias for <code>must(notBeEqualToIgnoringCase(a))</code> */
+  def must_!=/(a: String) = applyMatcher(notBeEqualToIgnoringCase(a), value)
 }
 /** Specialized expectable class with iterable matchers aliases */
 class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[Iterable[I]] {

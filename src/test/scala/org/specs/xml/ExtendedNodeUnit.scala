@@ -20,7 +20,7 @@ object extendedNodeUnit extends Specification {
     }
   }
   
-  "An isEqualIgnoreSpace function" should {
+  "An isEqualIgnoringSpace function" should {
     "return true for <a> ==/ <a>" in {
       <a/> ==/ <a/> mustBe true
     }
@@ -47,18 +47,18 @@ object extendedNodeUnit extends Specification {
       <a>1</a> ==/ <a></a> mustBe false
     }
     "return true for Text(1) ==/ Text( 1 )" in {
-      Text("1").isEqualIgnoreSpace(Text(" 1 ")) must beTrue
+      Text("1").isEqualIgnoringSpace(Text(" 1 ")) must beTrue
     }
     "return false for Text(1) ==/ Text(2)" in {
-      Text("1").isEqualIgnoreSpace(Text("2")) must beFalse
+      Text("1").isEqualIgnoringSpace(Text("2")) must beFalse
     }
   }
-  "An isEqualIgnoreSpaceOrdered function" should {
+  "An isEqualIgnoringSpaceOrdered function" should {
     "return true for <a><b/><c/></a> ==/ <a><b/><c/></a>" in {
-      <a><b/><c/></a>.isEqualIgnoreSpaceOrdered(<a><b/><c/></a>) must beTrue
+      <a><b/><c/></a>.isEqualIgnoringSpaceOrdered(<a><b/><c/></a>) must beTrue
     }
     "return false for <a><b/><c/></a> ==/ <a><c/><d/></a>" in {
-      <a><b/><c/></a>.isEqualIgnoreSpaceOrdered(<a><c/><b/></a>) must beFalse
+      <a><b/><c/></a>.isEqualIgnoringSpaceOrdered(<a><c/><b/></a>) must beFalse
     }
   }
 }

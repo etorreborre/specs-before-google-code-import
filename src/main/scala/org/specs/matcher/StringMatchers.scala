@@ -9,15 +9,20 @@ trait StringMatchers {
   /**
    * Matches if (a.equalsIgnoreCase(b))
    */   
-  def be_==/[T <: String](a: T) = equalIgnoreCase(a)  
-  /**
-   * Matches if (a.equalsIgnoreCase(b))
-   */   
-  def equalIgnoreCase[T <: String](a: T) = new Matcher[T](){ 
+  def beEqualToIgnoringCase[T <: String](a: T) = new Matcher[T](){ 
     def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 
                                       d(b) + " is equal ignoring case to " + q(a), 
                                       d(b) + " is not equal ignoring case to " + q(a))} 
   }
+  /**
+   * Matches if (a.equalsIgnoreCase(b))
+   */   
+  def be_==/[T <: String](a: T) = beEqualToIgnoringCase(a)  
+  /**
+   * Matches if (a.equalsIgnoreCase(b))
+   * @deprecated use beEqualToIgnoringCase instead
+   */   
+  def equalIgnoreCase[T <: String](a: T) = beEqualToIgnoringCase(a)
 
   /**
    * Matches if (a.notEqualIgnoreCase(b))
@@ -26,22 +31,37 @@ trait StringMatchers {
 
   /**
    * Matches if !(a.equalsIgnoreCase(b))
+   * @deprecated use notBeEqualToIgnoringCase instead
    */   
-  def notEqualIgnoreCase[T <: String](a: T) = equalIgnoreCase(a).not 
+  def notEqualIgnoreCase[T <: String](a: T) = beEqualToIgnoringCase(a).not 
+  /**
+   * Matches if !(a.equalsIgnoreCase(b))
+   */   
+  def notBeEqualToIgnoringCase[T <: String](a: T) = beEqualToIgnoringCase(a).not 
 
   /**
    * Matches if (a.trim == b.trim)
    */   
-  def equalIgnoreSpace[T <: String](a: T) = new Matcher[T](){ 
+  def beEqualToIgnoringSpace[T <: String](a: T) = new Matcher[T](){ 
     def apply(v: => T) = {val b = v; (a != null && b != null && a.trim == b.trim, 
                                       d(b) + " is equal ignoring space to " + q(a), 
                                       d(b) + " is not equal ignoring space to " + q(a))} 
   }
 
   /**
+   * Matches if (a.trim == b.trim)
+   * @deprecated use beEqualToIgnoringSpace instead
+   */   
+  def equalIgnoreSpace[T <: String](a: T) = beEqualToIgnoringSpace(a)
+  /**
+   * Matches if !(a.equalsIgnoreSpace(b))
+   * @deprecated use notBeEqualToIgnoringSpace instead
+   */   
+  def notEqualIgnoreSpace[T <: String](a: T) = beEqualToIgnoringSpace(a).not 
+  /**
    * Matches if !(a.equalsIgnoreSpace(b))
    */   
-  def notEqualIgnoreSpace[T <: String](a: T) = equalIgnoreSpace(a).not 
+  def notBeEqualToIgnoringSpace[T <: String](a: T) = beEqualToIgnoringSpace(a).not 
 
   /**
    * Matches if (b.indexOf(a) >= 0)

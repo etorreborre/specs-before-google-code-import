@@ -7,9 +7,9 @@ import scala.xml._
  * This class adds more methods to the NodeSeq class
  */
 class ExtendedNodeSeq(ns: NodeSeq) {
-    def ==/(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpace(ns, n)
-    def isEqualIgnoreSpace(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpace(ns, n)
-    def isEqualIgnoreSpaceOrdered(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoreSpaceOrdered(ns, n)
+    def ==/(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoringSpace(ns, n)
+    def isEqualIgnoringSpace(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoringSpace(ns, n)
+    def isEqualIgnoringSpaceOrdered(n: NodeSeq): Boolean = NodeFunctions.isEqualIgnoringSpaceOrdered(ns, n)
 }
 
 /**
@@ -40,26 +40,26 @@ object NodeFunctions {
   def isSpaceNode(n1: Node): Boolean = n1.label.equals("#PCDATA") && n1.text.matches("\\s*")
 
   /**
-   * Alias for isEqualIgnoreSpace
+   * Alias for isEqualIgnoringSpace
    */
-  def ==/(node: NodeSeq, n: NodeSeq): Boolean = isEqualIgnoreSpace(node, n)
+  def ==/(node: NodeSeq, n: NodeSeq): Boolean = isEqualIgnoringSpace(node, n)
 
   /**
    * @returns true if the Node represents some empty text (containing spaces or newlines)
    */
-  def isEqualIgnoreSpaceOrdered(node: NodeSeq, n: NodeSeq): Boolean = {
-    def sameOrder(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.isSimilar(nodes2, isEqualIgnoreSpace _)
-    isEqualIgnoreSpace(node, n, sameOrder(_, _))
+  def isEqualIgnoringSpaceOrdered(node: NodeSeq, n: NodeSeq): Boolean = {
+    def sameOrder(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.isSimilar(nodes2, isEqualIgnoringSpace _)
+    isEqualIgnoringSpace(node, n, sameOrder(_, _))
   }
   /**
    * Generic version of This version don't check if the nodes are in the same order
    * @returns true if the Node represents some empty text (containing spaces or newlines)
    */
-  def isEqualIgnoreSpace(node: NodeSeq, n: NodeSeq): Boolean = {
-    def sameAs(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.sameElementsAs(nodes2.toSeq, isEqualIgnoreSpace _)
-    isEqualIgnoreSpace(node, n, sameAs(_, _))
+  def isEqualIgnoringSpace(node: NodeSeq, n: NodeSeq): Boolean = {
+    def sameAs(nodes1: NodeSeq, nodes2: NodeSeq) = nodes1.sameElementsAs(nodes2.toSeq, isEqualIgnoringSpace _)
+    isEqualIgnoringSpace(node, n, sameAs(_, _))
   }
-  def isEqualIgnoreSpace(node: NodeSeq, n: NodeSeq, iterableComparison: Function2[NodeSeq, NodeSeq, Boolean]): Boolean = {
+  def isEqualIgnoringSpace(node: NodeSeq, n: NodeSeq, iterableComparison: Function2[NodeSeq, NodeSeq, Boolean]): Boolean = {
     (node, n) match {
       case (null, other) => other == null
       case (other, null) => other == null
