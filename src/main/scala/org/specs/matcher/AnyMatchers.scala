@@ -28,8 +28,13 @@ trait AnyMatchers {
 
   /**
    * Matches if (a == b)
+   * @deprecated use beEqualTo instead
    */   
-  def beEqual[T](a: =>T) = new Matcher[T](){
+  def beEqual[T](a: =>T) = beEqualTo(a)
+  /**
+   * Matches if (a == b)
+   */   
+  def beEqualTo[T](a: =>T) = new Matcher[T](){
     def apply(v: =>T) = {
       val (x, y) = (a, v) 
       (x == y, d(y) + " is equal to " + q(x), d(y) + " is not equal to " + q(x))
@@ -38,8 +43,14 @@ trait AnyMatchers {
 
   /**
    * Matches if (a != b)
+   * @deprecated use beDifferentFrom instead
    */   
-  def beDifferent[T](a: =>T) = beEqual[T](a).not
+  def beDifferent[T](a: =>T) = beDifferentFrom(a)
+
+  /**
+   * Matches if (a != b)
+   */   
+  def beDifferentFrom[T](a: =>T) = beEqualTo[T](a).not
 
   /**
    * Matches if (a == b)
@@ -306,7 +317,7 @@ trait AnyMatchers {
 
   /**
    * The <code>ToMatcher</code> class allows to combine functions returning matchers, or a function returning a matcher and a matcher.<p>
-   * For example:<code>((beEqual(_:Int)) or (be_>(_:Int)))(3) </code> 
+   * For example:<code>((beEqualTo(_:Int)) or (be_>(_:Int)))(3) </code> 
    */
   class ToMatcher[S, T](f: S => Matcher[T]) {
     /**
@@ -388,7 +399,7 @@ trait AnyMatchers {
 
   /**
    * The <code>SeqMatcher</code> class is a matcher matching a sequence of objects with a matcher returned by a function.<p>
-   * Usage:<code>List(1, 2, 3) must ((beEqual(_:Int)).toSeq)(List(1, 2, 3)) </code> 
+   * Usage:<code>List(1, 2, 3) must ((beEqualTo(_:Int)).toSeq)(List(1, 2, 3)) </code> 
    */
   class SeqMatcher[S, T](s: Seq[S], f: S => Matcher[T]) extends Matcher[Seq[T]] {
     def apply(t: => Seq[T]) = {
@@ -402,7 +413,7 @@ trait AnyMatchers {
 
   /**
    * The <code>SetMatcher</code> class is a matcher matching a set of objects with a matcher returned by a function.<p>
-   * Usage:<code>List(1, 2, 3) must ((beEqual(_:Int)).toSet)(List(2, 1, 3)) </code> 
+   * Usage:<code>List(1, 2, 3) must ((beEqualTo(_:Int)).toSet)(List(2, 1, 3)) </code> 
    */
   class SetMatcher[S, T](s: Set[S], f: S => Matcher[T]) extends Matcher[Set[T]] {
     def apply(t: => Set[T]) = {

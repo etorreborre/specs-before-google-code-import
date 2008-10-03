@@ -93,8 +93,13 @@ trait PathMatchers extends FileSystem {
   } 
   /**
    * Matches if 2 paths are the same regardless of their separators
+   * @deprecated use beEqualToIgnoringSep instead
    */   
-  def beEqualIgnoringSep[T <: String](other: String) = new Matcher[T](){ 
+  def beEqualIgnoringSep[T <: String](other: String) = beEqualToIgnoringSep(other)
+  /**
+   * Matches if 2 paths are the same regardless of their separators
+   */   
+  def beEqualToIgnoringSep[T <: String](other: String) = new Matcher[T](){ 
     def apply(v: => T) = {val path = v; (isEqualIgnoringSep(path, other) , d(path) + " is equal ignoring separators to " + q(other), d(path) + " is not equal ignoring separators to " + q(other))} 
   }
   /** @return true if the 2 paths are equal, ignoring separators */

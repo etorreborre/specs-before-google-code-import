@@ -6,9 +6,9 @@ import org.specs.io.mock._
 class FileMatchersTest extends Runner(FileMatchersSpec) with JUnit
 object FileMatchersSpec extends MatchersSpecification with TestFileSystem  {
   "The Path matchers" should { doBefore { setFileSystem } 
-    "provide an beEqualIgnoringSep matcher checking if two paths are the same regardless of their separators" in {
-      "c:\\temp\\hello" must beEqualIgnoringSep("c:/temp/hello")
-      expectation("c:\\temp\\hello" must beEqualIgnoringSep("c:/temp2/hello")) must failWith("'c:\\temp\\hello' is not equal ignoring separators to 'c:/temp2/hello'")
+    "provide an beEqualToIgnoringSep matcher checking if two paths are the same regardless of their separators" in {
+      "c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp/hello")
+      expectation("c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp2/hello")) must failWith("'c:\\temp\\hello' is not equal ignoring separators to 'c:/temp2/hello'")
     }
     "provide an existPath / beAnExistingPath matcher to check if a file exists" in {
       existingPath must existPath

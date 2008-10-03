@@ -99,15 +99,15 @@ object jmockGoodSpec extends Mocked {
       list.get(0)
     } 
     "provide a will method, using a specs matcher, to specify that a specific value will be used as a parameter" in {
-      expect { 1.of(list).get(will(beEqual(0))) }
+      expect { 1.of(list).get(will(beEqualTo(0))) }
       list.get(0)
     } 
     "provide a willReturn method to specify the value which must be returned" in {
-      expect { 1.of(list).get(will(beEqual(0))) willReturn "new" }
+      expect { 1.of(list).get(will(beEqualTo(0))) willReturn "new" }
       list.get(0) must_== "new"
     } 
     "provide a willThrow method to specify the exception which must be thrown" in {
-      expect { 1.of(list).get(will(beEqual(0))) willThrow new java.lang.Exception("ouch") }
+      expect { 1.of(list).get(will(beEqualTo(0))) willThrow new java.lang.Exception("ouch") }
       list.get(0) must throwAn[Exception]
     } 
     "provide a willReturn method to specify the a returned iterator" in {

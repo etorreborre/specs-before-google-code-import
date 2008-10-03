@@ -55,26 +55,26 @@ object anyMatchersUnit extends MatchersSpecification {
       expectation("name" must be_==(s)) must failWith("'name' is not equal to 'null'")
     }
   }
-  "An 'beEqual' matcher" should {
+  "An 'beEqualTo' matcher" should {
     "be ok if comparing 2 objects which are equals with ==" in {
       case class MyObject(value: Int)
       val (o1, o2) = (MyObject(1), MyObject(1))
-      o1 must beEqual(o2)
+      o1 must beEqualTo(o2)
     }
     "be ok when comparing a list of ints" in {
       val l: Iterable[Int] = List(1)
-      l must beEqual(l)
+      l must beEqualTo(l)
     }
     "be ok when comparing a list of strings" in {
       val l: Iterable[String] = List("a")
-      l must beEqual(l)
+      l must beEqualTo(l)
     }
     "display a failure message if comparing different objects" in {
-      expectation("name" must beEqual("name2")) must failWith("'name' is not equal to 'name2'")
+      expectation("name" must beEqualTo("name2")) must failWith("'name' is not equal to 'name2'")
     }
     "be resilient to a null value" in {
       val s: String = null
-      expectation("name" must beEqual(s)) must failWith("'name' is not equal to 'null'")
+      expectation("name" must beEqualTo(s)) must failWith("'name' is not equal to 'null'")
     }
   }
   "A 'beNull' matcher" should {
