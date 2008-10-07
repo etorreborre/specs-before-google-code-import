@@ -9,7 +9,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-
+import scala.reflect.Manifest
 /**
  * The <code>Sus</code> class represents a system under specification<br>
  * It has:<ul>
@@ -20,8 +20,42 @@ import org.specs.ExtendedThrowable._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class Sus(description: String, var cycle: org.specs.specification.ExampleLifeCycle) extends ExampleLifeCycle 
+case class SusWithContext[C <: Context](val context: C, desc: String, var cyc: ExampleLifeCycle)(implicit m: Manifest[C]) extends Sus(desc, cyc) {
+  override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
+    val newContext = m.erasure.newInstance.asInstanceOf[C]
+    newContext.before(context.beforeActions())
+    newContext.after(context.afterActions())
+    val ex = new ExampleWithContext[C](newContext, ExampleDescription(desc), lifeCycle)
+    addExample(ex)
+    ex
+  }
+  override def beforeExample(ex: Example) = {
+    super.beforeExample(ex)
+    ex.asInstanceOf[ExampleWithContext[C]].context.beforeActions()
+  }
+  override def executeTest(ex: Example, t: =>Any) = {
+    val c = ex.asInstanceOf[ExampleWithContext[C]].context
+    val test = t
+    test match {
+      case function: Function1[C, Any] => {
+        function(c)
+        super.executeTest(ex, function(c))
+      }
+      case _ => { 
+        test
+        super.executeTest(ex, test)
+      }
+    }
+  }
+  override def afterExample(ex: Example) = {
+    super.afterExample(ex)
+    ex.asInstanceOf[ExampleWithContext[C]].context.afterActions()
+  }
+
+} 
+case class Sus(description: String, var cycle: ExampleLifeCycle) extends ExampleLifeCycle 
                                       with Tagged with HasResults {
+
   /** default verb used to define the behaviour of the sus */
   var verb = ""
 
@@ -36,7 +70,11 @@ case class Sus(description: String, var cycle: org.specs.specification.ExampleLi
 
   /** add an example to the list of examples. */
   def addExample(e: Example) = examples += e
-  
+  def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
+    val ex = new Example(ExampleDescription(desc), lifeCycle)
+    addExample(ex)
+    ex
+  }
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None
 

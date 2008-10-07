@@ -244,13 +244,13 @@ object jmockGoodSpec extends Mocked {
       }
     }
   }
-  val withMockInContext = new Context() {
+  class MockInContext extends Context {
     var mock: ToMock = _
     before(mock = classOf[ToMock].expectsOne(_.isEmpty).mock)
   }
-  "The JMocker trait" ->-(withMockInContext) should {
-    "allow mocks to be declared in the sus context" in {
-      withMockInContext.mock.isEmpty
+  when[MockInContext]("The JMocker trait")  should {
+    "allow mocks to be declared in the sus context" in { context: MockInContext =>
+      context.mock.isEmpty
     }
   }
 }

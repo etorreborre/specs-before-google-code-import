@@ -9,7 +9,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-
+import scala.reflect.Manifest
 /**
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
  * each system under test being specified.
@@ -91,17 +91,23 @@ trait Contexts extends SpecificationStructure { outer =>
    * </code>
    * In that case before/after actions defined in the context will be set on the defined sus.
    */
-  case class ToContext(s: String) {
-    def ->-(context: Context): Sus = {
+  case class ToContext(desc: String) {
+    def ->-[C <: Context](context: C)(implicit m: Manifest[C]): Sus = {
       if (context == null) throw new NullPointerException("the context is null")
-      val sus = specify(s)
+      val sus = specifySut(context, desc)(m)
+      sus
+    } 
+    def when[C <: Context](implicit m: Manifest[C]): Sus = outer.when(desc)(m)
+  }
+  def when[C <: Context](desc: String)(implicit m : Manifest[C]) = specifySut(m.erasure.newInstance().asInstanceOf[C], desc)(m)
+  
+  private def specifySut[C <: Context](context: C, desc: String)(implicit m : Manifest[C]): Sus = {
+      if (context == null) throw new NullPointerException("the context is null")
+      val sus = specify(context, desc)(m)
       doFirst(context.first())
-      doBefore(context.beforeActions())
-      doAfter(context.afterActions())
       doLast(context.last())
       until(context.predicate())
       sus
-    } 
   }
 
   /** Factory method to create a context with beforeAll only actions */

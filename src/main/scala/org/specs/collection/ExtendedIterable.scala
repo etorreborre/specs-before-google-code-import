@@ -58,7 +58,6 @@ object ExtendedIterable {
      */
     def containsInOrder[A](l: Iterable[A]) = {
         val indexes: List[Int] = l.foldLeft(new ListBuffer[Int]()) { (ind, x) => ind.append(xs.toSeq.findIndexOf(x == _)); ind }.toList
-        println(indexes)
         (!indexes.contains(-1) && indexes.sort(_ <= _) == indexes)
     } 
 

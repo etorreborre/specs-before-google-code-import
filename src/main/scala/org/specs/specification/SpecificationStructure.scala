@@ -1,6 +1,7 @@
 package org.specs.specification
 import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
+import scala.reflect.Manifest
 
 /** 
  * This trait provides a structure to a specification.<br>
@@ -92,12 +93,13 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specify(desc: String): Sus = { 
-    systems = systems:::List(new Sus(desc, this))
+  implicit def specify[C <: Context](context: C, desc: String)(implicit m: Manifest[C]) : Sus = { 
+    systems = systems:::List(new SusWithContext(context, desc, this)(m))
     if (this.isSequential)
       systems.last.setSequential
     systems.last
   }
+  implicit def specify(desc: String): Sus = specify(new Context, desc)
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */ 
   protected[this] def currentSus = if (!systems.isEmpty) systems.last else specify("specifies")
@@ -113,10 +115,8 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * Alternatively, it could be created with:
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
-  implicit def forExample(desc: String): Example = {
-    val newExample = new Example(desc, currentLifeCycle)
-    exampleContainer.addExample(newExample) 
-    newExample
+  implicit def forExample(desc: String) = {
+    exampleContainer.createExample(desc, currentLifeCycle) 
   }
   
   /**
@@ -134,7 +134,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined 
    */ 
-  protected[this] def exampleContainer: Any {def addExample(e: Example)} = {
+  protected[this] def exampleContainer: Any {def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example} = {
     example match {
       case Some(e) => e
       case None => currentSus 

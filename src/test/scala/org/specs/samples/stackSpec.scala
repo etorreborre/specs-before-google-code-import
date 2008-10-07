@@ -24,6 +24,7 @@ object stackSpecification extends StackSpec {
       stack.top mustBe lastItemAdded
     }
     "remove the top item when sent #pop" in {
+      println(stack)
       stack.pop mustBe lastItemAdded
       if (!stack.isEmpty)
         stack.top mustNotBe lastItemAdded
@@ -49,7 +50,7 @@ object stackSpecification extends StackSpec {
 class StackSpec extends Specification {
   val stack = new LimitedStack[Int](10)
   var lastItemAdded = 0
-  def createStack(itemsNb: Int) = { stack.clear; for (i <- 1 to itemsNb) stack += i; lastItemAdded = stack.top } 
+  def createStack(itemsNb: Int) = {stack.clear; for (i <- 1 to itemsNb) stack += i; lastItemAdded = stack.top } 
   val empty = beforeContext(stack.clear)
   val full = beforeContext(createStack(stack.capacity))
   val nonEmpty = beforeContext(createStack(3))

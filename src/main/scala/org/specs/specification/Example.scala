@@ -10,7 +10,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-
+import scala.reflect.Manifest
 /**
  * The <code>Example</code> class specifies one example of a system behaviour<br>
  * It has:<ul>
@@ -25,10 +25,18 @@ import org.specs.ExtendedThrowable._
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting 
  */
-case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.specification.ExampleLifeCycle) extends Tagged with HasResults {
+case class ExampleWithContext[C <: Context](val context: C, var exampleDesc: ExampleDescription, cyc: ExampleLifeCycle) extends Example(exampleDesc, cyc) {
+  override def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
+    val ex = new ExampleWithContext(context, ExampleDescription(desc), lifeCycle)
+    addExample(ex)
+    ex
+  }
+
+} 
+case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends Tagged with HasResults {
+  def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   def description = exampleDescription.toString
-  def this(desc: String, cycle: org.specs.specification.ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   /** function containing the test to be run */
   private[this] var toRun: () => Any = () => ()
@@ -59,13 +67,18 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
 
   /** add a new sub-example to this example */
   def addExample(e: Example) = subExs += e
+  def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
+    val ex = new Example(ExampleDescription(desc), lifeCycle)
+    addExample(ex)
+    ex
+  }
 
   /** @return the subexamples, executing the example if necessary */
   def subExamples = {execute; subExs}
   
   /** alias for the <code>in</code> method */
-  def >>(test: => Any) = in(test)
-
+  def >>[T](test: => T) = in(test)
+  def doTest[T](test: => T) = cycle.executeTest(this, test)
   /**
    * creates a new Example object and store as a function the test to be executed. This <code>test</code>
    * is a value which may contain expectations. Upon execution, errors and failures will be attached to the current example
@@ -73,7 +86,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: org.specs.
    * Execution will be triggered when requesting status information on that example: failures, errors, expectations number, subexamples
    * @return a new <code>Example</code>
    */
-  def in(test: => Any): Example = {
+  def in[T](test: => T): Example = {
     val execution = () => {
       var failed = false
       // try the "before" methods. If there is an exception, add an error and return the current example
