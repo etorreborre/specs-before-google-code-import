@@ -3,7 +3,7 @@ import org.specs.specification._
 import org.specs.io.mock._
 import org.specs.util.Property
 
-class teamCityRunnerRules(name: String) extends LiterateSpecification(name) with Wiki {
+class teamCityRunnerRules extends LiterateSpecification("Team city runner") with Wiki {
   detailedDiffs
   val message: Property[String] = new Property[String]("") 
   val messages: Property[List[String]] = new Property[List[String]](Nil) 

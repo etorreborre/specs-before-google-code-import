@@ -1,6 +1,6 @@
 package org.specs.runner
 
-object teamCityRunnerSpec extends teamCityRunnerRules("TeamCity Runner") { "TeamCity Runner Specification" ->> <wiki>
+object teamCityRunnerSpec extends teamCityRunnerRules { "TeamCity Runner Specification" ->> <wiki>
  
 h3. Introduction
 
