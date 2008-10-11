@@ -93,13 +93,19 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specify[C <: Context](context: C, desc: String)(implicit m: Manifest[C]) : Sus = { 
-    systems = systems:::List(new SusWithContext(context, desc, this)(m))
+  implicit def specify[S](context: SystemContext[S], desc: String) : Sus = { 
+    addSus(new SusWithContext(context, desc, this))
+  }
+  implicit def specify(desc: String): Sus = {
+    addSus(new Sus(desc, this))
+  }
+  private def addSus(sus: Sus): Sus = {
+    systems = systems:::List(sus)
     if (this.isSequential)
       systems.last.setSequential
     systems.last
+
   }
-  implicit def specify(desc: String): Sus = specify(new Context, desc)
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */ 
   protected[this] def currentSus = if (!systems.isEmpty) systems.last else specify("specifies")

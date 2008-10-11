@@ -20,36 +20,30 @@ import scala.reflect.Manifest
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class SusWithContext[C <: Context](val context: C, desc: String, var cyc: ExampleLifeCycle)(implicit m: Manifest[C]) extends Sus(desc, cyc) {
+case class SusWithContext[S](val context: SystemContext[S], desc: String, var cyc: ExampleLifeCycle) extends Sus(desc, cyc) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
-    val newContext = m.erasure.newInstance.asInstanceOf[C]
-    newContext.before(context.beforeActions())
-    newContext.after(context.afterActions())
-    val ex = new ExampleWithContext[C](newContext, ExampleDescription(desc), lifeCycle)
+    val newContext = context.newInstance
+    val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), lifeCycle)
     addExample(ex)
     ex
   }
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)
-    ex.asInstanceOf[ExampleWithContext[C]].context.beforeActions()
+    val c = ex.asInstanceOf[ExampleWithContext[S]].context
+    c.init
+    c.before(c.system)
   }
   override def executeTest(ex: Example, t: =>Any) = {
-    val c = ex.asInstanceOf[ExampleWithContext[C]].context
     val test = t
     test match {
-      case function: Function1[C, Any] => {
-        function(c)
-        super.executeTest(ex, function(c))
-      }
-      case _ => { 
-        test
-        super.executeTest(ex, test)
-      }
+      case function: Function1[S, Any] => function(ex.asInstanceOf[ExampleWithContext[S]].context.system)
+      case _ => test
     }
   }
   override def afterExample(ex: Example) = {
     super.afterExample(ex)
-    ex.asInstanceOf[ExampleWithContext[C]].context.afterActions()
+    val c = ex.asInstanceOf[ExampleWithContext[S]].context
+    c.after(c.system)
   }
 
 } 

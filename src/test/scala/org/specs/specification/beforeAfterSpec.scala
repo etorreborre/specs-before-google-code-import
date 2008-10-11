@@ -106,11 +106,11 @@ object beforeAfterSpec extends Specification {
     "use a context to setup the before actions of a system under test" in {
       specWithBeforeContext.execute
       specWithBeforeContext.beforeIsCalled must beTrue
-    }
+    } 
     "use a context to setup the after actions of a system under test" in {
       specWithAfterContext.execute
       specWithAfterContext.afterIsCalled must beTrue
-    }
+    } 
     "use a context to setup the before and after actions of a system under test" in {
       specWithContext.execute
       specWithContext.beforeIsCalled must beTrue

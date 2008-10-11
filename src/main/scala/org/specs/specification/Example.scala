@@ -25,7 +25,7 @@ import scala.reflect.Manifest
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting 
  */
-case class ExampleWithContext[C <: Context](val context: C, var exampleDesc: ExampleDescription, cyc: ExampleLifeCycle) extends Example(exampleDesc, cyc) {
+case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc: ExampleDescription, cyc: ExampleLifeCycle) extends Example(exampleDesc, cyc) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
     val ex = new ExampleWithContext(context, ExampleDescription(desc), lifeCycle)
     addExample(ex)
