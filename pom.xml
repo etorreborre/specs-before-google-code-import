@@ -120,7 +120,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.scalacheck</groupId>
       <artifactId>scalacheck</artifactId>
-      <version>1.4-scSNAPSHOT</version>
+      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>

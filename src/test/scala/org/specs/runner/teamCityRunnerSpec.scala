@@ -37,6 +37,8 @@ When executed, <ex>the TeamCity runner should notify the start of a specificatio
 
   </wiki>
 }
-class teamCityRunnerTest extends HtmlRunner(teamCityRunnerSpec, "target") with JUnit with Console with Reporter
+class teamCityRunnerTest extends JUnit4(teamCityRunnerSpec) with Html {
+  override def outputDir = "target"
+}
 
 
