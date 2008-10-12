@@ -48,18 +48,19 @@ object stackSpecification extends StackSpec {
 class stackTest extends JUnit4(stackSpecification)
 
 class StackSpec extends Specification {
-  case class SampleStack(itemsNb: Int) extends LimitedStack[Int](itemsNb) {
+  case class SampleStack(stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
+    def this(capacity: Int) = this(capacity, 0)
     var lastItemAdded = 0
-    for (i <- 1 to itemsNb) this += i
-    lastItemAdded = this.top
+    for (i <- 1 to itemsNb) { this += i; lastItemAdded = i } 
   }
-  case class StackContext(itemsNb: Int) extends SystemContext[SampleStack] {
-    def newSystem = SampleStack(itemsNb)
+  case class StackContext(capacity: Int, itemsNb: Int) extends SystemContext[SampleStack] {
+    def this(capacity: Int) = this(capacity, 0)
+    def newSystem = SampleStack(capacity, itemsNb)
   }
-  val empty = StackContext(0)
-  val full = StackContext(10)
-  val nonEmpty = StackContext(3)
-  val belowCapacity = StackContext(3)
+  val empty = new StackContext(10)
+  val full = StackContext(10, 10)
+  val nonEmpty = StackContext(10, 1)
+  val belowCapacity = StackContext(10, 3)
 }
 
 class LimitedStack[T](val capacity: Int) extends scala.collection.mutable.Stack[T] {
