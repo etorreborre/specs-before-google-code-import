@@ -66,7 +66,8 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   def notImplemented = forExample in { skip ("not implemented yet")}
   implicit def toSus(e: => Elem) = new Object { def isSus = toLiterateSus("") ->> e }
   
-  implicit def toLiterateSus(string: String) = new LiterateSus(specify(string))
+  implicit def toLiterateSusWithDesc(string: String) = new LiterateSus(specify(string))
+  implicit def toLiterateSus(sus: Sus) = new LiterateSus(sus)
   
   /** This class acts as an extension of a Sus to provide a literate description of a sus as an xml specification */
   class LiterateSus(sus: Sus) {
@@ -107,6 +108,8 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 
   /** return a String containing the output messages from the console */
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
+
+  def includeSus(susName: String) = "include " + susName + " not implemented yet"
 }
 /**
  * This trait provides functions which can be used to ease the use of wiki markup
@@ -127,4 +130,5 @@ trait Wiki {
    */
   def >@(stringToFormat: String) = wikiCode(stringToFormat)
 
+  def linkTo(susName: String) = "link to " + susName + " not implemented yet"
 }

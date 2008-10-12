@@ -19,13 +19,13 @@ class WikiFormatter extends LiterateDescriptionFormatter {
     result
   }
   def exampleDesc(desc: String) = {
-	val parsed = new TextileParser().parseToHtml(desc)
+	val parsed = parseToHtml(desc)
 	val p1 = parsed.substring(parsed.indexOf("<p>") + 3, parsed.size)
 	p1.substring(0, p1.indexOf("</p>"))
   }
-
+  private def parseToHtml(s: String) = new TextileParser().parseToHtml(s).replace("&#8217;", "'")
   def format(desc: Elem, examples: Iterable[Example]) = {
-    val parsed = new TextileParser().parseToHtml(setStatus(desc.child.text, examples))
+    val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
       XML.loadString(parsed) 
     } catch {

@@ -131,6 +131,11 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   def forExample: Example = forExample("example " + (currentSus.examples.size + 1))
   
   /**
+   * Create an anonymous example with a function on a System, 
+   * giving it a number depending on the existing created examples/
+   */
+  def forExample[S](function: S => Any): Example = forExample in function
+  /**
    * Return the example being currently executed if any
    */
   def lastExample: Option[Example] = example

@@ -96,6 +96,7 @@ trait Contexts extends SpecificationStructure { outer =>
       if (context == null) throw new NullPointerException("the context is null")
       specifySut(context, desc)
     } 
+    def definedAs[S](context: SystemContext[S]): Sus = specifySutWithContext(context, desc)
     def isAn[S](context: SystemContext[S]): Sus = specifySutWithContext(context, desc)
     def isA[S](context: SystemContext[S]): Sus = specifySutWithContext(context, desc)
     def whenIn[S](context: SystemContext[S]): Sus = specifySutWithContext(context, desc)

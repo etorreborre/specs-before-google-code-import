@@ -142,6 +142,7 @@ trait HasResults {
   def issues = (failures ++ errors ++ skipped).toList
   def issueMessages = issues.foldLeft("")(_ + _.getMessage)
   def hasIssues = !issues.isEmpty
+  def isOk = issues.isEmpty
 }
   
 

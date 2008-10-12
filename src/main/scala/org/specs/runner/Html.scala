@@ -160,7 +160,7 @@ trait Html extends File {
         <table class="bodyTable">
            {exampleRows(sus.examples, sus.isFullSuccess)}
          </table>}
-      case Some(_) => {
+      case Some(_) if !sus.examples.isEmpty => {
         <h3><img src="images/collapsed.gif" onclick={"toggleImage(this); showHideTable('sus:" + System.identityHashCode(sus) + "')"}/>Examples summary</h3>
 	    <div id={"sus:" + System.identityHashCode(sus)} style="display:none">
           <table class="bodyTable">
@@ -168,6 +168,7 @@ trait Html extends File {
           </table>
         </div>
       }
+      case _ => NodeSeq.Empty
     }
   }
   def literateDesc(sus: Sus): NodeSeq = sus.literateDescription match {
