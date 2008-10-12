@@ -6,6 +6,7 @@ import org.specs.io.mock._
 class fileWriterTest extends JUnit3(fileWriterSpec)
 object fileWriterSpec extends Specification {
   "A FileWriter" should {
+    doAfter { new java.io.File("filePath").delete }
     "write inside a file" in {
       fw.write("filePath"){ file => 
         file.write("hello world")
