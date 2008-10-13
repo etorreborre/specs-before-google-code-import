@@ -46,21 +46,21 @@ h4. Examples
 
 h4. Parameters
 
-<ex>Examples can either be passed the system under specification or the system and its context</ex> {
+<ex>Examples can either be given the system under specification or the system and its context</ex> {
 """use the system as a parameter in { s: System =>
   ...
 }
 use the system and its as parameters in { (s: System, c: Context) =>
   ...
 }
-""". >@}{parametersOk}
+""" >@}{ parametersOk }
 </wiki>
 
-  def parametersOk = exampleOk(2)
+  def parametersOk = exampleOk(2).shh
   def exampleOk(i: Int) = forExample { (s: Specification) => 
     s.examples.map(_.failures) // execute all examples
     def exampleIsOk(e: Example) = e.isOk aka e.description.toString must beTrue
-    exampleIsOk(s.examples(i)) 
+    exampleIsOk(s.examples(i))
   }
 }
 trait ContextDefinitions {

@@ -26,7 +26,7 @@ class WikiFormatter extends LiterateDescriptionFormatter {
   }
   private def parseToHtml(s: String) = new TextileParser().parseToHtml(s).
     replace("&#8217;", "'").
-    replaceGroups("(<code>(.+)</code>)", (s: String) => s.replace("<br/>", "\n"))
+    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "\n"))
   
   def format(desc: Elem): Node = format(desc, Nil)
   def format(desc: Elem, examples: Iterable[Example]): Node = {

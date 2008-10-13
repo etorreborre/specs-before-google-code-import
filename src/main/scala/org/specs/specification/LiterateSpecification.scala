@@ -27,13 +27,13 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   implicit def anyToShh(a: Any) = new Silenced
   
   class Silenced {
-    def shh = ""
+    def shh = () 
     
     /** the pipe bar must be interpreted visually as a stop and the < sign as a pike. */
     def <| = shh
   }
   /** This silence function allows to silence calls with this style: shh { a call } */
-  def shh(a: =>Any) = { a; "" }
+  def shh(a: =>Any) = { a; () }
 
   /**
    * This method is used setup a property value, in order to avoid repeting a string. For example: <pre>
