@@ -1,7 +1,7 @@
 package org.specs.specification
 import org.specs._
 
-object contextSpec extends LiterateSpecification with ContextDefinitions with Wiki { 
+object contextSpec extends LiterateSpecification("Contexts specification") with ContextDefinitions with Wiki { 
 
 "Contexts" ->> <wiki>
 
