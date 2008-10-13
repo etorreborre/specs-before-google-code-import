@@ -31,6 +31,21 @@ case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc:
     addExample(ex)
     ex
   }
+  override def before = {
+    context.init
+    context.before(context.system)
+  }
+  override def after = {
+    context.after(context.system)
+  }
+  override def execute(t: => Any) = {
+    val test = t
+    test match {
+      case function: Function1[S, Any] => function(context.system)
+      case function: Function2[S, Context, Any] => function(context.system, context)
+      case _ => t
+    }
+  }
 
 } 
 case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends Tagged with HasResults {
@@ -129,6 +144,10 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     this
   }
   
+  def before = {}
+  def after = {}
+  def execute(t: => Any) = t
+
   /** execute the example, setting a flag to make sure that it is only executed once */
   private[this] def execute = {
     if (!executed){

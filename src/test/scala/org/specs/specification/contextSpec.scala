@@ -36,18 +36,33 @@ h4. Examples
 
 "System contexts".definedAs(systemContexts) ->> <wiki>
 
-System contexts are defined by subclassing the @SystemContext@ class and by defining the @newInstance@ method which will provide a fresh instance of the system, in a specific context.
+System contexts are defined by subclassing the @SystemContext@ class and by defining the @newISystem@ method which will provide a fresh instance of the system, in a specific context.
 The construction of the system and its initialization can be separated by doing the initialization of the system in the @newInstance@ method while overriding the @before@ method to set up specific variables on the system. This helps in defining a hierarchy of contexts differing only by their @before@ methods.
 
 h4. Examples
 
 <ex>A sus with a system context should pass a system instance to the examples</ex>{ exampleOk(0) }
 <ex>Each example should get a fresh copy of the system in its specific context</ex>{ exampleOk(1) }
+
+h4. Parameters
+
+<ex>Examples can either be passed the system under specification or the system and its context</ex>
+{"""
+    "use the system as a parameter" in { s: System =>
+       ...
+    }
+    "use the system and its as parameters" in { (s: System, c: Context) =>
+       ...
+    }
+""" >@}
+{parametersOk} 
+
 </wiki>
 
-  def exampleIsOk(e: Example) = e.isOk aka e.description.toString must beTrue
+  def parametersOk = exampleOk(2)
   def exampleOk(i: Int) = forExample { (s: Specification) => 
-    s.examples.map(_.failures)
+    s.examples.map(_.failures) // execute all examples
+    def exampleIsOk(e: Example) = e.isOk aka e.description.toString must beTrue
     exampleIsOk(s.examples(i)) 
   }
 }
@@ -68,10 +83,15 @@ trait ContextDefinitions {
     case class System { 
       var counter = 0
     }
-    def initializedWithASystem = new SystemContext[System] {
+    class SampleSystemContext extends SystemContext[System] {
+      var count = 0
       def newSystem = new System()
-      override def before(s: System) = s.counter = s.counter + 1
+      override def before(s: System) = {
+        s.counter = s.counter + 1
+        count = 0
+      }
     }
+    def initializedWithASystem = new SampleSystemContext 
     "the system has be passed to the example and initialized" in { system: System =>
       system1 = system
       system.counter must_== 1
@@ -79,6 +99,11 @@ trait ContextDefinitions {
     "the passed system was a fresh copy" in { system: System =>
       system1 mustNotEq system
       system.counter must_== 1
+    }
+    "the system and its context can be passed" in { (system: System, context: SampleSystemContext) =>
+      system must haveClass[System]
+      context must haveClass[SystemContext[System]]
+      context.count must_== 0
     }
   }
   def systemContexts = new SystemContext[SpecificationWithSystemContext] {

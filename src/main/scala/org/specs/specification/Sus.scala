@@ -29,21 +29,14 @@ case class SusWithContext[S](val context: SystemContext[S], desc: String, var cy
   }
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)
-    val c = ex.asInstanceOf[ExampleWithContext[S]].context
-    c.init
-    c.before(c.system)
+    ex.before
   }
   override def executeTest(ex: Example, t: =>Any) = {
-    val test = t
-    test match {
-      case function: Function1[S, Any] => function(ex.asInstanceOf[ExampleWithContext[S]].context.system)
-      case _ => test
-    }
+    ex.execute(t)
   }
   override def afterExample(ex: Example) = {
+    ex.after
     super.afterExample(ex)
-    val c = ex.asInstanceOf[ExampleWithContext[S]].context
-    c.after(c.system)
   }
 
 } 
