@@ -100,8 +100,25 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       format(e)
     }
   }
+  
+  /**
+   * Create an anonymous example with a function on a System, 
+   * giving it a number depending on the existing created examples/
+   */
+  def eg[S](function: S => Any): Unit = (forExample in function).shh
+  /** 
+   * embeddeds a test into a new example and silence the result
+   * @deprecated
+   */
+  def check[S](function: S => Any): Unit = eg(function)
+
   /** embeddeds a test into a new example and silence the result */
-  def check(test: =>Any) = (forExample in test).shh
+  def eg(test: =>Any): Unit = (forExample in test).shh
+  /** 
+   * embeddeds a test into a new example and silence the result
+   * @deprecated
+   */
+  def check(test: =>Any): Unit = eg(test)
 
   /** return a String containing the output messages from the console with a given padding such as a newline for instance */
   def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }

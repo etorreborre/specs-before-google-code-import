@@ -41,12 +41,12 @@ The construction of the system and its initialization can be separated by doing 
 
 h4. Examples
 
-<ex>A sus with a system context should pass a system instance to the examples</ex>{ exampleOk(0) }
-<ex>Each example should get a fresh copy of the system in its specific context</ex>{ exampleOk(1) }
+<ex>A sus with a system context should pass a system instance to the examples.</ex>{ exampleOk(0) }
+<ex>Each example should get a fresh copy of the system in its specific context.</ex>{ exampleOk(1) }
 
 h4. Parameters
 
-<ex>Examples can either be given the system under specification or the system and its context</ex> {
+<ex>Examples can either be given the system under specification or the system and its context</ex>: {
 """use the system as a parameter in { s: System =>
   ...
 }
@@ -56,8 +56,8 @@ use the system and its as parameters in { (s: System, c: Context) =>
 """ >@}{ parametersOk }
 </wiki>
 
-  def parametersOk = exampleOk(2).shh
-  def exampleOk(i: Int) = forExample { (s: Specification) => 
+  def parametersOk = exampleOk(2)
+  def exampleOk(i: Int) = eg { (s: Specification) => 
     s.examples.map(_.failures) // execute all examples
     def exampleIsOk(e: Example) = e.isOk aka e.description.toString must beTrue
     exampleIsOk(s.examples(i))
