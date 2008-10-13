@@ -46,17 +46,14 @@ h4. Examples
 
 h4. Parameters
 
-<ex>Examples can either be passed the system under specification or the system and its context</ex>
-{"""
-    "use the system as a parameter" in { s: System =>
-       ...
-    }
-    "use the system and its as parameters" in { (s: System, c: Context) =>
-       ...
-    }
-""" >@}
-{parametersOk} 
-
+<ex>Examples can either be passed the system under specification or the system and its context</ex> {
+"""use the system as a parameter in { s: System =>
+  ...
+}
+use the system and its as parameters in { (s: System, c: Context) =>
+  ...
+}
+""". >@}{parametersOk}
 </wiki>
 
   def parametersOk = exampleOk(2)
@@ -111,6 +108,4 @@ trait ContextDefinitions {
   }
 }
 import org.specs.runner._
-class contextSpecTest extends JUnit4(contextSpec) with Html {
-  override def outputDir = normalize("target")
-}
+object contextSpecTest extends HtmlRunner(contextSpec, "target")

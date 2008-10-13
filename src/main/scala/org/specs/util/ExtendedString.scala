@@ -37,6 +37,9 @@ object ExtendedString {
       }
       groupsFound.toList
     }
+    def replaceGroups(pattern: String, function: String => Any): String = {
+      groups(pattern).foldLeft(s) { (res: String, g: String) => s.replace(g, function(g).toString) }
+    }
     
     /** 
      * This is a shortcut for groups("(" + group + ")")

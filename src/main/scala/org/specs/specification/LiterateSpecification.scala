@@ -124,7 +124,8 @@ trait Wiki {
    * Using this function avoid issues like quotes insides brackets ['something']
    * being displayed as question marks.
    */
-  def wikiCode(stringToFormat: String) = "==<code><ul style=\"list-style: none; padding: 0; margin: 0;\">" + stringToFormat.replaceAll("\n", "<li/>") + "</ul></code>=="
+//  def wikiCode(stringToFormat: String) = "<pre><code><ul style=\"list-style: none; padding: 0; margin: 0;\">" + stringToFormat.replaceAll("\n", "<li/>") + "</ul></code></pre>"
+  def wikiCode(stringToFormat: String) = "<pre><code>"+stringToFormat+"</code></pre>"
   /** 
    * Alias for wikiCode
    */

@@ -1,11 +1,16 @@
 package org.specs.runner
 import org.specs._
 import org.specs.specification._
+import scala.xml._
+import org.specs.Sugar._
 
 object wikiFormatterSpec extends Specification {
   "A wiki formatter" should {
+    def formatString(s: String): String = new WikiFormatter().format(s) 
+    def formatElem(e: Elem): Node = new WikiFormatter().format(e)
+    
     "return a string as it is if isn't some html text" in {
-      new WikiFormatter().exampleDesc("a description") must_== "a description"
+      formatString("a description") must_== "a description"
     }
     "format the description of example as some xml text" in {
       val example = new Example("", null)
@@ -13,10 +18,16 @@ object wikiFormatterSpec extends Specification {
       new WikiFormatter().formatDesc(example) must_== <t>a description</t>
     }
     "format single quotes as single quotes inside brackets when using html escape convention ==" in {
-      new WikiFormatter().format(<wiki>==['a description']==</wiki>, Nil) must \\(<p>['a description']</p>)
+      formatElem(<wiki>==['a description']==</wiki>) must \\(<p>['a description']</p>)
     }
     "format single quotes as single quotes" in {
-      new WikiFormatter().exampleDesc("don't") must include("don't")
+      formatString("don't") must include("don't")
+    }
+    "not add br tags when formatting code" in {
+      formatString("""<pre><code>
+        use the system as a parameter in { s: System =>
+          ...
+        }</code></pre>""") must (notInclude("br") and include("pre"))
     }
   }
   "A wiki formatter setStatus function" should {

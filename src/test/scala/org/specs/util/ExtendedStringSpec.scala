@@ -49,6 +49,14 @@ object ExtendedStringSpec extends Specification {
       "hello".groups("l") must beEmpty
     }
   }
+  "the replaceGroups function" should {
+    "leave the string as it is if nothing is found" in {
+      "hello".replaceGroups("(z)", (s: String) => s.size) must_== "hello"
+    }
+    "replace every found group with the application of a function" in {
+      "hello".replaceGroups("(l)", (s: String) => s.size) must_== "he11o"
+    }
+  }
   "the findAll function" should {
     "return Nil if the pattern is null" in {
       "hello".findAll(null) must beEmpty

@@ -2,6 +2,7 @@ package org.specs.runner
 import org.specs.specification._
 import scala.xml._
 import net.java.textilej.parser._
+import org.specs.util.ExtendedString._
 
 class WikiFormatter extends LiterateDescriptionFormatter {
   def setStatus(desc: String, examples: Iterable[Example]) = {
@@ -13,18 +14,22 @@ class WikiFormatter extends LiterateDescriptionFormatter {
         "onmouseout=\"hideToolTip();\""
       }
       def toReplace = "==<ex class=\"" + example.status + "\" " + onmouse(example) + ">" +
-                      exampleDesc(example.description) + "</ex>=="
+                      format(example.description) + "</ex>=="
       result = result.replace(example.description.toString, toReplace)
     }
     result
   }
-  def exampleDesc(desc: String) = {
+  def format(desc: String): String = {
 	val parsed = parseToHtml(desc)
 	val p1 = parsed.substring(parsed.indexOf("<p>") + 3, parsed.size)
-	p1.substring(0, p1.indexOf("</p>"))
+ 	p1.substring(0, p1.indexOf("</p>"))
   }
-  private def parseToHtml(s: String) = new TextileParser().parseToHtml(s).replace("&#8217;", "'")
-  def format(desc: Elem, examples: Iterable[Example]) = {
+  private def parseToHtml(s: String) = new TextileParser().parseToHtml(s).
+    replace("&#8217;", "'").
+    replaceGroups("(<code>(.+)</code>)", (s: String) => s.replace("<br/>", "\n"))
+  
+  def format(desc: Elem): Node = format(desc, Nil)
+  def format(desc: Elem, examples: Iterable[Example]): Node = {
     val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
       XML.loadString(parsed) 
@@ -33,7 +38,7 @@ class WikiFormatter extends LiterateDescriptionFormatter {
     }
   }
   override def formatDesc(ex: Example) = {
-    val text =  XML.loadString("<t>" + this.exampleDesc(ex.exampleDescription.toString) + "</t>")
+    val text =  XML.loadString("<t>" + format(ex.exampleDescription.toString) + "</t>")
     text
   }
 }
