@@ -89,7 +89,7 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
    * Convenience method: adds a new failure to the latest example<br>
    * Usage: <code>fail("this code should fail anyway")</code>
    */
-  def fail(m: String) = FailureException(m).rethrowFrom(this)
+  def fail(m: String) = FailureException(m).hideCallerAndThrow(this)
 
   /** 
    * Convenience method: adds a new failure to the latest example. The failure message is "failure"<br>
@@ -101,7 +101,7 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
    * Convenience method: adds a new skippedException to the latest example<br>
    * Usage: <code>skip("this example should be skipped")</code>
    */
-  def skip(m: String) = SkippedException(m).rethrowFrom(this)
+  def skip(m: String) = SkippedException(m).hideCallerAndThrow(this)
   
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty

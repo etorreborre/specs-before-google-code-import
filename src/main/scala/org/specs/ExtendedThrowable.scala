@@ -30,65 +30,36 @@ object ExtendedThrowable {
     /** 
      * remove all traces of this exception until the last line matching <code>name</code> is found.
      */
-    def removeTracesAsFarAsNameMatches(name: String): Throwable = removeTracesAsFarAsNameMatches(t, name)
+    def removeTracesAsFarAsNameMatches(name: String): Throwable = {
+      t.setStackTrace(t.getStackTrace.toList.drop(1).reverse.takeWhile { x: StackTraceElement => 
+                             !x.toString.matches(".*" + name + ".*") }
+                      .reverse.toArray)
+      t
+    }
     /** 
      * remove all traces of this exception until a line doesn't match <code>name</code>.
      */
-    def removeTracesWhileNameMatches(name: String): Throwable = removeTracesWhileNameMatches(t, name)
+    def removeTracesWhileNameMatches(name: String): Throwable = {
+      t.setStackTrace((t.getStackTrace.toList.drop(1).dropWhile { x: StackTraceElement => 
+                             x.toString.matches(".*" + name + ".*") 
+                          }).toArray)
+      t
+    }
     /**
-     * throws an exception removing all the stack trace elements matching the name of a the class of 
-     * the origin object.
-     * @param origin object used to define the elements to remove 
+     * throws an exception removing all the stack trace elements matching the name of the caller.
+     * @param caller object used to define the elements to remove 
      */
-    def rethrowFrom(origin: Object) = {
-      throw removeTracesWhileNameMatches(getClassName(origin))
+    def hideCallerAndThrow(caller: Object) = {
+      throw removeTracesWhileNameMatches(getClassName(caller))
+    }
+    def throwWithStackTraceOf(t: Throwable) = {
+      t.setStackTrace(t.getStackTrace)
+      throw t
     }
     
-    /**
-     * throws an exception removing the stack trace elements to the last one matching a name.
-     * @param name name used to match the stack trace elements 
-     */
-    def rethrowAfter(name: String) = {
-      throw removeTracesAsFarAsNameMatches(name)
-    }
-    /**
-     * throws an other exception copying the stack trace elements of this exception as far as the last occurrence of name.
-     * @param name name used to match the stack trace elements 
-     */
-    def rethrowBy(name: String, other: Throwable) = {
-      throw other.removeTracesAsFarAsNameMatches(t, name)
-    }
     /**
      * return the class name of an object without $
      */
     private def getClassName(o: Object) = o.getClass.getName.split("\\.").last.replace("$", "")
-    /**
-     * throws this exception as another type of exception, removing the lines where the class name of <code>origin</code> occurs. 
-     */
-    def rethrowFrom(origin: Object, other: Throwable) = {
-      throw removeTracesWhileNameMatches(other, getClassName(origin))
-    }
-
-    /** 
-     * sets the stacktrace of <code>other</code> with the stacktrace of <code>t</code> removing the first line (the original location)
-     * and then all lines matching <code>name</code>
-     */
-    def removeTracesWhileNameMatches(other: Throwable, name: String): Throwable = {
-      other.setStackTrace((t.getStackTrace.toList.drop(1).dropWhile { x: StackTraceElement => 
-                             x.toString.matches(".*" + name + ".*") 
-                          }).toArray) 
-      other
-    }
-
-    /** 
-     * sets the stacktrace of <code>other</code> with the stacktrace of <code>t</code> removing the first line (the original location)
-     * and then all lines until the last line matching <code>name</code> is found.
-     */
-    def removeTracesAsFarAsNameMatches(other: Throwable, name: String) = {
-      other.setStackTrace((t.getStackTrace.toList.drop(1).reverse.takeWhile { x: StackTraceElement => 
-                             !x.toString.matches(".*" + name + ".*") 
-                          }).reverse.toArray)
-      other
-    }
   }
 }
