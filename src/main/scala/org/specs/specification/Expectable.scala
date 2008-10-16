@@ -57,7 +57,7 @@ trait Expectable[T] {
       matcher.setDescription(description)
       val (result, _, koMessage) = matcher.apply(value) 
       result match {
-        case false => failureTemplate.throwWithStackTraceOf(new FailureException(koMessage).removeTracesAsFarAsNameMatches("must"))
+        case false => new FailureException(koMessage).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("must"))
         case _     => SuccessValue(successValueToString)
       }
     }

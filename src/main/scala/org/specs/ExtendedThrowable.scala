@@ -52,8 +52,8 @@ object ExtendedThrowable {
     def hideCallerAndThrow(caller: Object) = {
       throw removeTracesWhileNameMatches(getClassName(caller))
     }
-    def throwWithStackTraceOf(t: Throwable) = {
-      t.setStackTrace(t.getStackTrace)
+    def throwWithStackTraceOf(other: Throwable) = {
+      t.setStackTrace(other.getStackTrace)
       throw t
     }
     

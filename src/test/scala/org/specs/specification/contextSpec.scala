@@ -108,4 +108,6 @@ trait ContextDefinitions {
   }
 }
 import org.specs.runner._
-object contextSpecTest extends HtmlRunner(contextSpec, "target")
+class contextSpecTest extends JUnit4(contextSpec) with Html {
+  override def outputDir = "target"
+}
