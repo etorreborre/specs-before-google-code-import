@@ -45,7 +45,9 @@ object extendedThrowableUnit extends Specification with ExceptionSamples {
     "a throwWithStackTraceOf method to throw the exception with another exception stacktrace" in {
       try { e.throwWithStackTraceOf(e2) }
       catch {
-        case ex => ex.getStackTrace.toList.first.toString aka 
+        case ex =>
+               ex.getMessage must_== "failure" 
+               ex.getStackTrace.toList.first.toString aka 
                "the first element of the thrown exception" must_== "org.specs.Specification.apply(Specification.scala:5)"
       }
     }
@@ -59,18 +61,18 @@ trait ExceptionSamples extends Contexts {
     e = createException 
     e2 = createException2 
   }
-  def createException = exception(("org.specs.extendedThrowableUnit$", "apply", "extendedThrowableUnit.scala", 12),
+  def createException = exception("failure", ("org.specs.extendedThrowableUnit$", "apply", "extendedThrowableUnit.scala", 12),
                     ("org.specs.extendedThrowableUnit$", "apply", "extendedThrowableUnit.scala", 13),
                     ("org.specs.specification", "method0", "Specification.scala", 23),
                     ("org.specs.extendedThrowableUnit", "test", "extendedThrowableUnit.scala", 15),
                     ("org.specs.specification", "method1", "Specification.scala", 24)
                     )
-  def createException2 = exception(("org.specs.Specification", "apply", "Specification.scala", 5),
+  def createException2 = exception("failure2", ("org.specs.Specification", "apply", "Specification.scala", 5),
                     ("org.specs.Specification", "apply", "Specification.scala", 10),
                     ("org.specs.specification.Expectable", "method0", "Expectable.scala", 18)
                     )
-  def exception(trace: (String, String, String, Int)*) = {
-    val e = new Exception
+  def exception(name: String, trace: (String, String, String, Int)*) = {
+    val e = new Exception(name)
     e.setStackTrace(trace.map { t => 
       var (className, method, file, line) = t
       new java.lang.StackTraceElement(className, method, file, line)}.toArray)
