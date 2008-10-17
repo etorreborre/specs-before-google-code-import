@@ -52,7 +52,7 @@ object extendedThrowableUnit extends Specification with ExceptionSamples {
       }
     }
   }
-  def provide(e: =>Example) = { currentSus.verb += " provide"; e }
+  def provide = addToSusVerb("provide")
 }
 trait ExceptionSamples extends Contexts {
   var e: Exception = _

@@ -117,7 +117,7 @@ object jmockGoodSpec extends Mocked {
     }
     "provide a willReturn method to specify a returned iterable" in {
       expect { 1.of(scalaList).take(anyInt) willReturn List("hey") }
-      scalaList.take(1) must existMatch("hey")
+      scalaList.take(1) must containMatch("hey")
     }
     "provide a willReturn method accepting a block to return another mock and specify it too" in {
       case class Module(name: String)

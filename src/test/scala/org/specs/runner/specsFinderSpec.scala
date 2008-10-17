@@ -23,7 +23,7 @@ object specsFinderSpec extends Specification with Init {
     }
     "find the name of a specification in a specification file" in {
        finder.addFile(packageDeclaration + specificationContent)
-       finder.specificationNames("path", ".*") mustExistMatch "trueSpec"
+       finder.specificationNames("path", ".*") mustContainMatch "trueSpec"
     }
     "create the name of a specification with its package name" in {
       finder.addFile(packageDeclaration + specificationContent)

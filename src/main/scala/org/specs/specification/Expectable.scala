@@ -183,17 +183,29 @@ class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[I
 class IterableStringExpectable(value: =>Iterable[String]) extends Expectable[Iterable[String]] {
   def createClone = new IterableStringExpectable(value)
 
-  /** alias for <code>must(existMatch(pattern))</code> */
-  def mustHaveMatch(pattern: String) = applyMatcher(existMatch(pattern), value)
+  /** alias for <code>must(containMatch(pattern))</code> */
+  def mustContainMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
 
-  /** alias for <code>must(notExistMatch(pattern))</code> */
-  def mustNotHaveMatch(pattern: String) = applyMatcher(notExistMatch(pattern), value)
+  /** alias for <code>must(notContainMatch(pattern))</code> */
+  def mustNotContainMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
 
-  /** alias for <code>must(existMatch(pattern))</code> */
-  def mustExistMatch(pattern: String) = applyMatcher(existMatch(pattern), value)
+  /** alias for <code>must(containMatch(pattern))</code> */
+  def mustHaveMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
 
-  /** alias for <code>must(notExistMatch(pattern))</code> */
-  def mustNotExistMatch(pattern: String) = applyMatcher(notExistMatch(pattern), value)
+  /** alias for <code>must(notContainMatch(pattern))</code> */
+  def mustNotHaveMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
+
+  /** 
+   * alias for <code>must(containMatch(pattern))</code>
+   * @deprecated: use mustContainMatch or mustHaveMatch instead 
+   */
+  def mustExistMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
+
+  /** 
+   * alias for <code>must(notContainMatch(pattern))</code> 
+   * @deprecated: use mustNotContainMatch or mustNotHaveMatch instead 
+   */
+  def mustNotExistMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
 }
 /**
  * By default the result value of an expectable expression doesn't output anything when 

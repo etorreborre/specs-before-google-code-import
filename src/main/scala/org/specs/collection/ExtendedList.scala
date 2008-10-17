@@ -74,7 +74,7 @@ object ExtendedList {
      */
     def toMap[D](defaultValue: D): scala.collection.immutable.Map[T, D] = {
       var newMap: scala.collection.immutable.Map[T, D] = new HashMap[T, D]
-      l.foreach {t:T => newMap = newMap.update(t, defaultValue)}  
+      l.foreach { t:T => newMap = newMap.update(t, defaultValue)}  
       newMap
     }
 

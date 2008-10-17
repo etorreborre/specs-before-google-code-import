@@ -58,6 +58,23 @@ trait MapMatchers {
   def notHavePair[S, T](p: (S, T)) = havePair(p).not 
   
   /**
+   * Matches if map contains all the specified pairs
+   */   
+  def havePairs[S, T](pairs: (S, T)*) = new Matcher[Iterable[(S, T)]](){
+     def apply(m: => Iterable[(S, T)]) = {
+       val map = m
+       (pairs.forall(pair => map.exists { case e => e == pair }), 
+        dUnquoted(map) + " has the pairs " + q(pairs), 
+        dUnquoted(map) + " doesn't have the pairs " + q(pairs))}
+  }
+   
+
+  /**
+   * Matches if map doesn't contain the specified pairs
+   */   
+  def notHavePairs[S, T](pairs: (S, T)*) = havePairs(pairs:_*).not 
+
+  /**
    * Matches if the partial function is defined at those values
    */   
   def beDefinedAt[A](values: A*) = new Matcher[PartialFunction[A, Any]](){

@@ -13,8 +13,8 @@ object beforeAfterSpec extends Specification {
     } 
     "not execute its test if the doBefore method fails" in { 
       doBeforeExampleFailing.execute
-      doBeforeExampleFailing.messages must existMatch("1 error")
-      doBeforeExampleFailing.messages must notExistMatch("tested")
+      doBeforeExampleFailing.messages must containMatch("1 error")
+      doBeforeExampleFailing.messages must notContainMatch("tested")
     }
     "be executed even if the doBefore clause is not declared inside a sus" in { 
       object badSpec extends Specification {
@@ -29,8 +29,8 @@ object beforeAfterSpec extends Specification {
     } 
     "deprecated - not execute its test if the usingBefore method fails" in { 
       beforeExampleFailing.execute
-      beforeExampleFailing.messages must existMatch("1 error")
-      beforeExampleFailing.messages must notExistMatch("tested")
+      beforeExampleFailing.messages must containMatch("1 error")
+      beforeExampleFailing.messages must notContainMatch("tested")
     } 
   }
   "A specification with after clauses" should {
@@ -41,8 +41,8 @@ object beforeAfterSpec extends Specification {
     } 
     "not execute its test if the doAfter method fails" in { 
       doAfterExampleFailing.execute
-      doAfterExampleFailing.messages must existMatch("1 error")
-      doAfterExampleFailing.messages must notExistMatch("tested")
+      doAfterExampleFailing.messages must containMatch("1 error")
+      doAfterExampleFailing.messages must notContainMatch("tested")
     }
     "work even if the doAfter clause is not declared inside a sus" in { 
       object badSpec extends Specification {
@@ -57,26 +57,26 @@ object beforeAfterSpec extends Specification {
     } 
     "deprecated - not execute its test if the usingAfter method fails" in { 
       afterExampleFailing.execute
-      afterExampleFailing.messages must existMatch("1 error")
-      afterExampleFailing.messages must notExistMatch("tested")
+      afterExampleFailing.messages must containMatch("1 error")
+      afterExampleFailing.messages must notContainMatch("tested")
     } 
   }
   "A system under test" can {
     "specify a doBeforeAll method to setup the context before any example is executed" in {
       specWithDoBeforeAll.execute
-      specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must existMatch("doBeforeAll")
+      specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must containMatch("doBeforeAll")
       specWithDoBeforeAll.messages.filter(_.startsWith("msg")).drop(1) must (
-        existMatch("example 1") and 
-        existMatch("example 2") and
-        notExistMatch("doBeforeAll"))
+        containMatch("example 1") and 
+        containMatch("example 2") and
+        notContainMatch("doBeforeAll"))
     }
     "specify a doAfterAll method to setup the context after examples are executed" in {
       specWithDoAfterAll.execute
-      specWithDoAfterAll.messages.filter(_.startsWith("msg")) must existMatch("doAfterAll")
+      specWithDoAfterAll.messages.filter(_.startsWith("msg")) must containMatch("doAfterAll")
       specWithDoAfterAll.messages.filter(_.startsWith("msg")).drop(2) must (
-        notExistMatch("example 1") and 
-        notExistMatch("example 2") and
-        existMatch("doAfterAll"))
+        notContainMatch("example 1") and 
+        notContainMatch("example 2") and
+        containMatch("doAfterAll"))
     }
     "specify a before/after clauses before and after: specification, systems, examples" in {
       specWithAll.execute

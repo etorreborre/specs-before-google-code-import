@@ -37,7 +37,7 @@ object ExtendedThrowable {
       t
     }
     /** 
-     * remove all traces of this exception until a line doesn't match <code>name</code>.
+     * remove all traces of this exception until there's a line not matching <code>name</code>.
      */
     def removeTracesWhileNameMatches(name: String): Throwable = {
       t.setStackTrace((t.getStackTrace.toList.drop(1).dropWhile { x: StackTraceElement => 
@@ -46,19 +46,23 @@ object ExtendedThrowable {
       t
     }
     /**
-     * throws an exception removing all the stack trace elements matching the name of the caller.
+     * throw an exception removing all the stack trace elements matching the class name of the caller.
      * @param caller object used to define the elements to remove 
      */
     def hideCallerAndThrow(caller: Object) = {
       throw removeTracesWhileNameMatches(getClassName(caller))
     }
+    /**
+     * throw an exception using the stacktrace of another one.
+     * @param other other exception whose stacktrace should be used 
+     */
     def throwWithStackTraceOf(other: Throwable) = {
       t.setStackTrace(other.getStackTrace)
       throw t
     }
     
     /**
-     * return the class name of an object without $
+     * return the class name of an object without $.
      */
     private def getClassName(o: Object) = o.getClass.getName.split("\\.").last.replace("$", "")
   }

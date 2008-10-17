@@ -58,17 +58,17 @@ object iterableMatchersSpec extends MatchersSpecification {
       List("one", "two") must notExist {m: String => m.contains("z")}
       expectation(List("one", "two") aka "the list" must notExist {m: String => m.contains("n")}) must failWith("at least one element verifies the property in the list 'List(one, two)'")
     }
-    "provide a 'must existMatch' matcher on iterables: checking if it contains a string including a regexp: " +
-    "List('one', 'two') must existMatch('[n-o]') [alias: mustExistMatch]" in {
-      List("one", "two") must existMatch("[n-o]")
-      expectation(List("one", "two") mustExistMatch("[a-c]")) must failWith("no element matches '[a-c]' in 'List(one, two)'")
-      expectation(List("one", "two") aka "the list" must existMatch("[a-c]")) must failWith("no element matches '[a-c]' in the list 'List(one, two)'")
+    "provide a 'must containMatch' matcher on iterables: checking if it contains a string including a regexp: " +
+    "List('one', 'two') must containMatch('[n-o]') [alias: mustContainMatch]" in {
+      List("one", "two") must containMatch("[n-o]")
+      expectation(List("one", "two") mustContainMatch("[a-c]")) must failWith("no element matches '[a-c]' in 'List(one, two)'")
+      expectation(List("one", "two") aka "the list" must containMatch("[a-c]")) must failWith("no element matches '[a-c]' in the list 'List(one, two)'")
     }
-    "provide a 'must notExistMatch' matcher checking if it doesn't contain a string including a regexp: " +
-    "List('one', 'two') must existMatch('[a-c]') [alias: mustNotExistMatch]" in {
-      List("one", "two") must notExistMatch("[a-c]")
-      expectation(List("one", "two") mustNotExistMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in 'List(one, two)'")
-      expectation(List("one", "two") aka "the list" must notExistMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in the list 'List(one, two)'")
+    "provide a 'must notContainMatch' matcher checking if it doesn't contain a string including a regexp: " +
+    "List('one', 'two') must containMatch('[a-c]') [alias: mustNotContainMatch]" in {
+      List("one", "two") must notContainMatch("[a-c]")
+      expectation(List("one", "two") mustNotContainMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in 'List(one, two)'")
+      expectation(List("one", "two") aka "the list" must notContainMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in the list 'List(one, two)'")
     }
     "provide a 'haveSize' matcher checking the size of a collection" in {
       List("one", "two") must haveSize(2)

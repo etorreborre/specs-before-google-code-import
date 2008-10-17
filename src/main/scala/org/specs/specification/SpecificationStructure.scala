@@ -140,6 +140,16 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    */
   def lastExample: Option[Example] = example
   
+  /**
+   * add a textual complement to the sus verb.
+   * For example, it is possible to declare:
+   * <code>"the system" should provide {...}</code>
+   * if the following function is declared:
+   * <code>def provide = addToSusVerb("provide")</code>
+   */
+  def addToSusVerb(complement: String) = new Function1[Example, Example] { 
+    def apply(e: Example) = { currentSus.verb += " " + complement; e } 
+  }
   /** 
    * utility method to track the last example list being currently defined.<br>
    * It is either the list of examples associated with the current sus, or

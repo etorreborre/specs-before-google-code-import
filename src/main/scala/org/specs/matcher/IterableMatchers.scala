@@ -70,19 +70,26 @@ trait IterableMatchers {
   def notExist[T](function: T => Boolean) = exist(function).not 
 
   /**
-   * Matches if there is one element in the iterable[String] matching the <code>pattern</code> parameter: <code> iterable.exists(matches(pattern) _)</code>
+   * Alias for existMatch
+   * @deprecated: use containMatch instead
    */   
-  def existMatch(pattern: String) = new Matcher[Iterable[String]](){
-    def apply(v: => Iterable[String]) = {val iterable = v; (iterable.exists( matches(pattern) _), "at least one element matches " + q(pattern) + " in " + d(iterable), "no element matches " + q(pattern) + " in " + d(iterable))}
-  }
+  def existMatch(pattern: String) = containMatch(pattern)
 
   /**
-   * Alias for existMatch
+   * Matches if there is one element in the iterable[String] matching the <code>pattern</code> parameter: <code> iterable.exists(matches(pattern) _)</code>
    */   
-  def containMatch(pattern: String) = existMatch(pattern) 
+  def containMatch(pattern: String) = new Matcher[Iterable[String]](){
+    def apply(v: => Iterable[String]) = {val iterable = v; (iterable.exists( matches(pattern) _), "at least one element matches " + q(pattern) + " in " + d(iterable), "no element matches " + q(pattern) + " in " + d(iterable))}
+  } 
 
   /**
    * Matches if not(existMatch(a))
+   */   
+  def notContainMatch(pattern: String) = containMatch(pattern).not 
+
+  /**
+   * Alias for notExistMatch
+   * @deprecated: use notContainMatch instead
    */   
   def notExistMatch(pattern: String) = existMatch(pattern).not
 

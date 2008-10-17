@@ -19,31 +19,31 @@ object consoleReporterSpec extends Specification with MockOutput {
       specWithOneExample(that.isOk) must containMatch("have example 1 ok")
     }
     "display '0 failure' if there is no expectation" in { 
-      specWithOneExample(that.isOk) must existMatch("0 failure")
+      specWithOneExample(that.isOk) must containMatch("0 failure")
     } 
     "display '1 failure' if one example isKo" in { 
-      specWithOneExample(that.isKo) must existMatch("1 failure") 
+      specWithOneExample(that.isKo) must containMatch("1 failure") 
     } 
     "indicate the line and class where the failure occurred" in { 
-      specWithOneExample(that.isKo) must existMatch("(consoleReporterSpec.scala:\\d)") 
+      specWithOneExample(that.isKo) must containMatch("(consoleReporterSpec.scala:\\d)") 
     } 
     "display the first failure of an example having several ones" in { 
-      specWithOneExample(that.isKo, that.isKo) must existMatch("first failure") 
-      specWithOneExample(that.isKo, that.isKo) must notExistMatch("second failure")
+      specWithOneExample(that.isKo, that.isKo) must containMatch("first failure") 
+      specWithOneExample(that.isKo, that.isKo) must notContainMatch("second failure")
     } 
     "display '1 error' if one example throws an exception" in {
-      specWithOneExample(that.throwsAnException) must existMatch("1 error") 
+      specWithOneExample(that.throwsAnException) must containMatch("1 error") 
     } 
     "display '1 skipped' if one example is skipped" in { 
-      specWithOneExample(that.isSkipped) must existMatch("1 skipped") 
+      specWithOneExample(that.isSkipped) must containMatch("1 skipped") 
     } 
     "report a pluralized message if there are several examples failing" in { 
-      specWithTwoExamples(that.isKo) must existMatch("2 examples")
-      specWithTwoExamples(that.isKo) must existMatch("2 failures")
+      specWithTwoExamples(that.isKo) must containMatch("2 examples")
+      specWithTwoExamples(that.isKo) must containMatch("2 failures")
     } 
     "report the number of expectations: '2 expectations'" in { 
-      specWithOneExample(that.isOk) must existMatch("1 expectation")
-      specWithTwoExamples(that.isKo) must existMatch("2 expectations")
+      specWithOneExample(that.isOk) must containMatch("1 expectation")
+      specWithTwoExamples(that.isKo) must containMatch("2 expectations")
     } 
     "display the failure message next to the corresponding example" in { 
       specWithTwoExamples(that.isKo, that.isOk) verifies(messages =>
@@ -51,25 +51,25 @@ object consoleReporterSpec extends Specification with MockOutput {
             messages.findIndexOf(matches("example 2.1 ok")) + 1)
     } 
     "report the elapsed time" in { 
-      specWithOneExample(that.isOk) mustExistMatch "Finished in"
+      specWithOneExample(that.isOk) mustContainMatch "Finished in"
     }
     "report failures created with the 'fail' method" in {
-      specWithOneExample(that.isKoWithTheFailMethod) mustExistMatch "1 failure" 
+      specWithOneExample(that.isKoWithTheFailMethod) mustContainMatch "1 failure" 
     }
     "report skipped examples created with the 'skip' method with a small circle" in {
-      specWithOneExample(that.isSkipped) mustExistMatch "o " 
+      specWithOneExample(that.isSkipped) mustContainMatch "o " 
     }
     "report skipped examples created with the 'orSkipExample' on a faulty matcher with a small circle" in {
-      specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustExistMatch "o " 
+      specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustContainMatch "o " 
     }
     "report the literal description of a sus if it is set"  in {
-      new SpecWithLiterateDescription(that.isOk).run mustExistMatch "Some text with embedded expectations"
+      new SpecWithLiterateDescription(that.isOk).run mustContainMatch "Some text with embedded expectations"
     }
     "report the reason for a skipped example" in {
-      specWithOneExample(that.isSkipped) mustExistMatch "irrelevant" 
+      specWithOneExample(that.isSkipped) mustContainMatch "irrelevant" 
     }
     "indicate the line and class where the skipping occurred" in { 
-      specWithOneExample(that.isSkipped) must existMatch("(consoleReporterSpec.scala:\\d)") 
+      specWithOneExample(that.isSkipped) must containMatch("(consoleReporterSpec.scala:\\d)") 
     } 
     "report the time for each system and add times for the total" in {
       specWithTwoSystems.messages

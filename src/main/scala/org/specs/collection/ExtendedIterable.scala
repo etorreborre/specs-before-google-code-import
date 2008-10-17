@@ -30,7 +30,7 @@ object ExtendedIterable {
     type anyIterable = Iterable[T] forSome {type T} 
     
     /**
-     * @return the representation of the elements of the iterable using the method toString recursively
+     * @return the representation of the elements of the iterable using the toString method recursively
      */
     def toDeepString: String = {
       if (!xs.isEmpty && xs == xs.elements.next)
@@ -42,7 +42,7 @@ object ExtendedIterable {
     }
     
     /**
-     * @return true if the 2 iterables contain the same elements according to a function f 
+     * @return true if the 2 iterables contain the same elements, in the same order, according to a function f 
      */
     def isSimilar[B >: A](that: Iterable[B], f: Function2[A, B, Boolean]): Boolean = {
       val ita = xs.elements

@@ -30,8 +30,8 @@ object iterableMatchersUnit extends MatchersSpecification {
   }
   "Iterable matchers" should {
      val nil: Iterable[String] = Nil
-    "not evaluate the expressions twice: existMatch" in {
-      existMatch("") must evalOnce(exp(nil))
+    "not evaluate the expressions twice: containMatch" in {
+      containMatch("") must evalOnce(exp(nil))
     }
     "not evaluate the expressions twice: beEmpty" in {
       beEmpty[Iterable[String]] must evalOnce(exp(nil))

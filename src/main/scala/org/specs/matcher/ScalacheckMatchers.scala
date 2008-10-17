@@ -102,24 +102,30 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
 
      // depending on the result, return the appropriate success status and messages
      // the failure message indicates a counter-example to the property
-     def afterNTries(n: Int) = "after " + (if (n <= 1) n + " try" else n + " tries")
+     def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
      def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
-     def afterNShrinks(args: List[Arg]) = args.map(arg => if (arg.shrinks >= 1) arg.shrinks.toString else "").mkString(", ")
-     def counterExample(args: List[Arg]) = args.map(_.arg).mkString(", ")
+     def afterNShrinks(args: List[Arg]) = args.map(arg => if (arg.shrinks >= 1) arg.shrinks.toString else "").filter(_.isEmpty).mkString(", ")
+     def counterExample(args: List[Arg]) = {
+       if (args.size == 1) 
+         args.map(_.arg.toString).mkString("'", "", "'")
+       else if (args.exists(_.arg.toString.isEmpty)) 
+         args.map(_.arg).mkString("['", "', '", "']") 
+       else 
+           args.map(_.arg).mkString("[", ", ", "]")
+     } 
      results match {
        case Result(Proved(as), succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
        case Result(Passed, succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
        case r@Result(GenException(e), n, _, _) => (false, noCounterExample(n), prettyTestRes.pretty(r)) 
        case r@Result(Exhausted, n, _, _)     => (false, noCounterExample(n), prettyTestRes.pretty(r)) 
        case Result(Failed(args, _), n, _, _) => 
-         (false, noCounterExample(n), "A counter-example is '"+counterExample(args)+"' (" + afterNTries(n) + afterNShrinks(args) + ")") 
+         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+" (" + afterNTries(n) + afterNShrinks(args) + ")") 
        case Result(PropException(args, FailureException(ex), _), n, _, _) => 
-         (false, noCounterExample(n), "A counter-example is '"+counterExample(args)+"': " + ex + " ("+afterNTries(n)+")") 
+         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+": " + ex + " ("+afterNTries(n)+")") 
        case r@Result(PropException(m, ex, _), n, _, _) => 
          (false, noCounterExample(n), prettyTestRes.pretty(r)) 
      }
    }
-  
 }
 /**
  * This trait is used to facilitate testing by mocking Scalacheck functionalities
