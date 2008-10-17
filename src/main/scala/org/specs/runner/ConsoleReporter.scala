@@ -163,7 +163,7 @@ trait OutputReporter extends Reporter with Output {
       if (f.getMessage != null)
         println(padding + "  " + f.getMessage.replaceAll("\n", "\n" + padding + "  ") + parens(f)) 
       else
-        println(padding + "  exception message is null" + parens(f)) 
+        println(padding + "  the exception message is null" + parens(f)) 
     }
     if (stacktrace && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
   }

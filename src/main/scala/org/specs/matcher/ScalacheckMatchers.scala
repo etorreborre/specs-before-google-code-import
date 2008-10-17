@@ -107,7 +107,7 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      def afterNShrinks(args: List[Arg]) = args.map(arg => if (arg.shrinks >= 1) arg.shrinks.toString else "").filter(_.isEmpty).mkString(", ")
      def counterExample(args: List[Arg]) = {
        if (args.size == 1) 
-         args.map(_.arg.toString).mkString("'", "", "'")
+         args.map(a => if (a.arg == null) "null" else a.arg.toString).mkString("'", "", "'")
        else if (args.exists(_.arg.toString.isEmpty)) 
          args.map(_.arg).mkString("['", "', '", "']") 
        else 
@@ -157,7 +157,7 @@ trait ScalacheckParameters {
   /**
    * Default values for Scalacheck parameters
 	 */
-  def defaultValues = Map(minTestsOk->100, maxDiscarded->500, minSize->0, maxSize->100) 
+  def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100) 
 
   /**
    * This object is used to set parameters but nothing will be printed to the console<br>

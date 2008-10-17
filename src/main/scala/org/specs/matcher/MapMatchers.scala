@@ -64,8 +64,8 @@ trait MapMatchers {
      def apply(m: => Iterable[(S, T)]) = {
        val map = m
        (pairs.forall(pair => map.exists { case e => e == pair }), 
-        dUnquoted(map) + " has the pairs " + q(pairs), 
-        dUnquoted(map) + " doesn't have the pairs " + q(pairs))}
+        dUnquoted(map) + " has the pairs " + q(pairs.mkString(", ")), 
+        dUnquoted(map) + " doesn't have the pairs " + q(pairs.mkString(", ")))}
   }
    
 

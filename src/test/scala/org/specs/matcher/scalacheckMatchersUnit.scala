@@ -1,6 +1,5 @@
 package org.specs.matcher
 import org.specs._
-import org.specs.runner._
 import org.specs.Sugar._
 import org.scalacheck._
 import org.scalacheck.util._
@@ -9,7 +8,6 @@ import org.specs.io._
 import org.specs.specification._
 import scala.collection.immutable
 
-class scalacheckMatchersUnitTest extends JUnit4(scalacheckMatchersUnit)
 object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock with Scalacheck {
   "The ScalacheckParameters object" should {
     "provide a 'display' value which is verbose" in {
@@ -93,3 +91,5 @@ trait ScalacheckMock extends Mocker {
     override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
 }
+import org.specs.runner._
+class scalacheckMatchersUnitTest extends JUnit4(scalacheckMatchersUnit)
