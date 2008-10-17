@@ -10,6 +10,9 @@ import scala.collection.immutable.{Set => Removed}
 import scala.collection.Set
 import scala.reflect.Manifest
 
+/**
+ * The <code>AnyMatchers</code> object allow the import of matchers from the AnyMatchers trait.
+ */
 object AnyMatchers extends AnyMatchers
 /**
  * The <code>AnyMatchers</code> trait provides matchers which are applicable to any scala reference or value
@@ -24,6 +27,9 @@ trait AnyMatchers {
       val (x, y) = (a, v) 
       (x.asInstanceOf[AnyRef] eq y.asInstanceOf[AnyRef], d(y) + " is the same as " + q(x), d(y) + " is not the same as " + q(x))} 
   } 
+  /**
+   * Matches if !(a eq b)
+   */   
   def notBe(a: =>Any) = be(a).not
 
   /**
@@ -31,6 +37,7 @@ trait AnyMatchers {
    * @deprecated use beEqualTo instead
    */   
   def beEqual[T](a: =>T) = beEqualTo(a)
+  
   /**
    * Matches if (a == b)
    */   
@@ -95,9 +102,13 @@ trait AnyMatchers {
   }  
 
   /**
+   * @deprecated use beAsNullAs
+   */   
+  def beAlsoNull[T](a: =>T) = beAsNullAs(a)
+  /**
    * Matches if a is null when v is null and a is not null when v is not null
    */   
-  def beAlsoNull[T](a: =>T) = new Matcher[T](){
+  def beAsNullAs[T](a: =>T) = new Matcher[T](){
     def apply(v: =>T) = {
       val x = a; 
       val y = v; 

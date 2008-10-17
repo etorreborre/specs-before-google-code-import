@@ -41,7 +41,7 @@ trait ObjectGraphMatchers extends ObjectGraph with Matchers {
   }
   case class matchBar(bar: Bar) extends Matcher[Bar] {
     def apply(other: => Bar) = {
-      ((beAlsoNull(_:Bar)) or 
+      ((beAsNullAs(_:Bar)) or 
       ((beEqualTo(_:Long)) ^^^ ((b: Bar) => b.id)))(bar)(other)
     }
   }

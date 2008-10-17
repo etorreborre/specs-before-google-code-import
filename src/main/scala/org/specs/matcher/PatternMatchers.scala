@@ -49,9 +49,13 @@ trait PatternMatchers {
   }
   
   /**
+   * @deprecated use beAsNoneAs
+   */   
+  def beAlsoNone[T](a: =>Option[T]) = beAsNoneAs(a)
+  /**
    * Matches if a is None when v is None and a is not None when v is not None
    */   
-  def beAlsoNone[T](a: =>Option[T]) = new Matcher[Option[T]](){
+  def beAsNoneAs[T](a: =>Option[T]) = new Matcher[Option[T]](){
     def apply(v: =>Option[T]) = {
       val x = a; 
       val y = v; 

@@ -26,14 +26,14 @@ object patternMatchersSpec extends MatchersSpecification {
       expectation(List(2).find {_ == 2} aka "searching 2 in a list:" must beNone[Int]) must 
                                           failWith("searching 2 in a list: 'Some(2)' is not None")
     }
-    "provide a beAlsoNone matcher matching if 2 options are None at the same time" in {
+    "provide a beAsNoneAs matcher matching if 2 options are None at the same time" in {
       val noneString: Option[String] = None
-      noneString must beAlsoNone(noneString)
-      Some(2) must beAlsoNone(Some(1))
-      expectation(noneString must beAlsoNone(Some("thing"))) must failWith("'Some(thing)' is not None")
-      expectation(noneString aka "string presence" must beAlsoNone(Some("thing"))) must failWith("string presence 'Some(thing)' is not None")
+      noneString must beAsNoneAs(noneString)
+      Some(2) must beAsNoneAs(Some(1))
+      expectation(noneString must beAsNoneAs(Some("thing"))) must failWith("'Some(thing)' is not None")
+      expectation(noneString aka "string presence" must beAsNoneAs(Some("thing"))) must failWith("string presence 'Some(thing)' is not None")
 
-      expectation(Some("thing") must beAlsoNone(noneString)) must failWith("'Some(thing)' is not None")
+      expectation(Some("thing") must beAsNoneAs(noneString)) must failWith("'Some(thing)' is not None")
     }
     "provide a beSome matcher for options: List(2).find {_ == 2} must beSome[Int] [alias: beSomething when type is not important]" in {
       List(2).find {_ == 2} must beSome[Int]
