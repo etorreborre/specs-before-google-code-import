@@ -64,6 +64,22 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock 
       matcherWithExhaustedGeneration.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
   }
+  "The afterNtries function" should {
+    "return tries for 0" in { afterNTries(0) must_== "after 0 tries" }
+    "return try for 1" in { afterNTries(1) must_== "after 1 try" }
+    "return tries for > 1 tries" in { afterNTries(3) must_== "after 3 tries" }
+  }
+  "The afterNShrinks function" should {
+    "return nothing if there is no shrink" in {
+      afterNShrinks(List(Arg("A", "s", 0, "s"))) must_== ""
+    }
+    "return the original argument and the shrinked one if there is at least a shrink" in {
+      afterNShrinks(List(Arg("A", "s", 2, "srt"))) must_== " - shrinked ('srt' -> 's')"
+    }
+    "return an equal sign if one of the arguments is not shrinked" in {
+      afterNShrinks(List(Arg("A", "s", 2, "srt"), Arg("B", "srt", 0, "srt"))) must_== " - shrinked ('srt' -> 's', = )"
+    }
+  }
 }
 trait ScalaCheckMock extends Mocker {
   trait ScalaCheckFunctionsMock extends ScalaCheckFunctions {

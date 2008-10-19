@@ -52,6 +52,11 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamp
       specWithFailure.expectationsNb must be_==(11)
     }
   }
+  "Functions" can {
+    "be checked directly, without creating an example, using the verifies operator" in {
+      "startsWith" verifies { (a: String, b: String) => (a+b).startsWith(a) }
+    }
+  }
 }
 object spec extends Specification with ScalaCheck {
   dontExpectProperties()

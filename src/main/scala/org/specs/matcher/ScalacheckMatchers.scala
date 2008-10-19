@@ -107,30 +107,6 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
        printf("\r%s %s%s\n", if (results.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
      }
 
-     // depending on the result, return the appropriate success status and messages
-     // the failure message indicates a counter-example to the property
-     def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
-     def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
-     def afterNShrinks(args: List[Arg]) = {
-       if (args.forall(_.shrinks == 0))
-         ""
-       else
-         args.map { arg => 
-           if (arg.origArg != arg.arg)
-             q(arg.origArg) +" -> " + q(arg.arg) 
-           else 
-             " = "
-        }.mkString(" - shrinked (", ",", ")") 
-     } 
-     
-     def counterExample(args: List[Arg]) = {
-       if (args.size == 1) 
-         args.map(a => if (a.arg == null) "null" else a.arg.toString).mkString("'", "", "'")
-       else if (args.exists(_.arg.toString.isEmpty)) 
-         args.map(_.arg).mkString("['", "', '", "']") 
-       else 
-         args.map(_.arg).mkString("[", ", ", "]")
-     } 
      results match {
        case Result(Proved(as), succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
        case Result(Passed, succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
@@ -144,6 +120,31 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
          (false, noCounterExample(n), prettyTestRes.pretty(r)) 
      }
    }
+   // depending on the result, return the appropriate success status and messages
+   // the failure message indicates a counter-example to the property
+   protected [matcher] def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
+   protected [matcher] def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
+   protected [matcher] def afterNShrinks(args: List[Arg]) = {
+     if (args.forall(_.shrinks == 0))
+       ""
+     else
+       args.map { arg => 
+         if (arg.origArg != arg.arg)
+           q(arg.origArg) +" -> " + q(arg.arg) 
+         else 
+           " = "
+      }.mkString(" - shrinked (", ",", ")") 
+   } 
+     
+   protected [matcher] def counterExample(args: List[Arg]) = {
+     if (args.size == 1) 
+       args.map(a => if (a.arg == null) "null" else a.arg.toString).mkString("'", "", "'")
+     else if (args.exists(_.arg.toString.isEmpty)) 
+       args.map(_.arg).mkString("['", "', '", "']") 
+     else 
+       args.map(_.arg).mkString("[", ", ", "]")
+   } 
+
 }
 /**
  * This trait is used to facilitate testing by mocking ScalaCheck functionalities
