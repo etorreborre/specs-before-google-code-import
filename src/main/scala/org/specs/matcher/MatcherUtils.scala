@@ -17,7 +17,7 @@ object MatcherUtils {
   /**
    * @return true if a string s can be parsed to an integer
    */
-  def isInteger(s: String): Boolean = {try {s.toInt} catch {case _ => return false}; true}
+  def isInteger(s: String): Boolean = { try {s.toInt} catch { case _ => return false }; true }
 
   /**
    * @return an object.toString() between quotes (used in messages creation)

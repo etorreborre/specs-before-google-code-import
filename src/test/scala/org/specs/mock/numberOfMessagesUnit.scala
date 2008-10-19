@@ -4,10 +4,10 @@ import org.specs.Sugar._
 import org.specs.mock._
 import scalacheck.Gen._
 import org.specs.collection.ExtendedList._
-import org.specs.Scalacheck
+import org.specs.ScalaCheck
 
 class numberOfMessagesTest extends JUnit3(numberOfMessagesUnit)
-object numberOfMessagesUnit extends Specification with TestData with Scalacheck {
+object numberOfMessagesUnit extends Specification with TestData with ScalaCheck {
   "A protocol type 'numberOfMessages'" should { usingBefore {() => clearCalls }
     "exactly 2: consume all if exp=m and rec=m, m" in {
       new inAnyOrder(exactlyN(2)).consume((e), List(r, rprime)) must verify { t:Result => val (exp, rec) = t

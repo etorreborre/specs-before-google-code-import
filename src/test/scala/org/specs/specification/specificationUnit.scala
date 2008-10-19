@@ -10,7 +10,7 @@ import scala.collection.mutable._
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
-object specificationUnit extends Specification with Scalacheck {
+object specificationUnit extends Specification with ScalaCheck {
 
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {

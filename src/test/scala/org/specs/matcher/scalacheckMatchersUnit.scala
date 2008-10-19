@@ -8,12 +8,12 @@ import org.specs.io._
 import org.specs.specification._
 import scala.collection.immutable
 
-object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock with Scalacheck {
-  "The ScalacheckParameters object" should {
+object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock with ScalaCheck {
+  "The ScalaCheckParameters object" should {
     "provide a 'display' value which is verbose" in {
        display.verbose mustBe true
     }
-    "provide a 'display' value which has default values for Scalacheck parameters" in {
+    "provide a 'display' value which has default values for ScalaCheck parameters" in {
       defaultValues foreach {display(_) mustNotBe null}
     }
     "provide a 'display' case class which can take parameters overriding the default values" in {
@@ -38,35 +38,35 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalacheckMock 
       matcher.checkFunction(Gen.value(true))(x => true)(set(minTestsOk->1))
     }
   }
-  "The checkScalacheckProperty method" should {
+  "The checkScalaCheckProperty method" should {
     "call the printf function of Output to print the results if verbose=true" in {
       expect { matcher.printf(any[String], any[String]) }
-      matcher.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, true)
+      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, true)
     }
     "call the check function of scalacheck to check the property" in {
       expect { matcher.check(Test.defaultParams, Prop.proved, (s, d) => ()) }
-      matcher.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)
+      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)
     }
     "return a true status if the check function return a succeeded result" in {
       expect { matcher.check(any[Test.Params], any[Prop], (s, d) => ()) }
-      matcher.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)._1 mustBe true
+      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)._1 mustBe true
     }
     "return a false status if the check function return a failure" in {
-      matcherWithFailure.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithFailure.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return a property exception" in {
-      matcherWithPropertyException.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithPropertyException.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return an generation exception" in {
-      matcherWithGenerationException.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithGenerationException.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return an exhausted status" in {
-      matcherWithExhaustedGeneration.checkScalacheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithExhaustedGeneration.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
   }
 }
-trait ScalacheckMock extends Mocker {
-  trait ScalacheckFunctionsMock extends ScalacheckFunctions {
+trait ScalaCheckMock extends Mocker {
+  trait ScalaCheckFunctionsMock extends ScalaCheckFunctions {
     def result = Test.Result(Test.Passed, 1, 2, FreqMap.empty[immutable.Set[Any]])
     override def check(params: Test.Params, prop: Prop, printResult: (Int, Int) => Unit) = { 
       recordAndReturn(result)
@@ -77,17 +77,17 @@ trait ScalacheckMock extends Mocker {
     override def println(s: Any) = record
     override def printf(format: String, args: Any*) = record
   } 
-  val matcher = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleExpectationsListener  
-  val matcherWithFailure = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleExpectationsListener {
+  val matcher = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener  
+  val matcherWithFailure = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithPropertyException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleExpectationsListener {
+  val matcherWithPropertyException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithGenerationException = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleExpectationsListener {
+  val matcherWithGenerationException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
-  val matcherWithExhaustedGeneration = new ScalacheckMatchers with ConsoleOutputMock with ScalacheckFunctionsMock with DefaultExampleExpectationsListener {
+  val matcherWithExhaustedGeneration = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
 }

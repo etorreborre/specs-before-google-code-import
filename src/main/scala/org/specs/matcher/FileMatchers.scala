@@ -7,7 +7,6 @@ import org.specs.io.{FileSystem, ConsoleOutput}
  * The <code>PathMatchers</code> trait provides matchers which are applicable to strings representing paths
  */
 trait PathMatchers extends FileSystem {
-  
   /**
    * Matches if new File(path).exists
    */   
@@ -104,7 +103,6 @@ trait PathMatchers extends FileSystem {
   }
   /** @return true if the 2 paths are equal, ignoring separators */
   def isEqualIgnoringSep[T <: String](path: T, other: String) = path != null && other != null&& getCanonicalPath(path).replaceAll("\\\\", "/") == getCanonicalPath(other).replaceAll("\\\\", "/") 
-  
 }
 /**
  * The <code>FileMatchers</code> trait provides matchers which are applicable to files
@@ -113,60 +111,75 @@ trait FileMatchers extends PathMatchers {
   /**
    * Matches if file.exists
    */   
-  def exist[T <: File] = (existPath[String]) ^^ ((f: T) => f.getPath)
+  def exist[T <: { def getPath(): String }] = (existPath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.canRead
    */   
-  def beReadable[T <: File] = (beAReadablePath[String]) ^^ ((f: T) => f.getPath)
+  def beReadable[T <: { def getPath(): String }] = (beAReadablePath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.canWrite
    */   
-  def beWritable[T <: File] = (beAWritablePath[String]) ^^ ((f: T) => f.getPath)
+  def beWritable[T <: { def getPath(): String }] = (beAWritablePath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.isAbsolute
    */   
-  def beAbsolute[T <: File] = (beAnAbsolutePath[String]) ^^ ((f: T) => f.getPath)
+  def beAbsolute[T <: { def getPath(): String }] = (beAnAbsolutePath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.isHidden
    */   
-  def beHidden[T <: File] = (beAHiddenPath[String]) ^^ ((f: T) => f.getPath)
+  def beHidden[T <: { def getPath(): String }] = (beAHiddenPath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.isFile
    */   
-  def beFile[T <: File] = (beAFilePath[String]) ^^ ((f: T) => f.getPath)
+  def beFile[T <: { def getPath(): String }] = (beAFilePath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.isDirectory
    */   
-  def beDirectory[T <: File] = (beADirectoryPath[String]) ^^ ((f: T) => f.getPath)
+  def beDirectory[T <: { def getPath(): String }] = (beADirectoryPath[String]) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.getName == name
    */   
-  def haveName[T <: File](name: String) = (havePathName(name)) ^^ ((f: T) => f.getPath)
+  def haveName[T <: { def getPath(): String }](name: String) = (havePathName(name)) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.getAbsolutePath == path
    */   
-  def haveAbsolutePath[T <: File](path: String) = (haveAsAbsolutePath(path)) ^^ ((f: T) => f.getPath)
+  def haveAbsolutePath[T <: { def getPath(): String }](path: String) = (haveAsAbsolutePath(path)) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.getCanonicalPath == path
    */   
-  def haveCanonicalPath[T <: File](path: String) = (haveAsCanonicalPath(path)) ^^ ((f: T) => f.getPath)
+  def haveCanonicalPath[T <: { def getPath(): String }](path: String) = (haveAsCanonicalPath(path)) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.getParent == path
    */   
-  def haveParent[T <: File](path: String) = (haveParentPath(path)) ^^ ((f: T) => f.getPath)
+  def haveParent[T <: { def getPath(): String }](path: String) = (haveParentPath(path)) ^^ ((_:T).getPath)
 
   /**
    * Matches if file.list == list
    */   
-  def haveList[T <: File](list: String) = (listPaths(list)) ^^ ((f: T) => f.getPath)
+  def haveList[T <: { def getPath(): String }](list: String) = (listPaths(list)) ^^ ((_:T).getPath)
+  
+  /** 
+   * transforms a string as a Path object to allow matches like:
+   * "c:/projects".path must exist
+   */
+  implicit def asPath(p: String) = Path(p)
+
+  /** 
+   * This case class is used to provide the getPath() method,
+   * so that all FileMatchers can be used on Strings.
+   */
+  case class Path(p: String) {
+    def path = this
+    def getPath(): String = p
+  }
 }

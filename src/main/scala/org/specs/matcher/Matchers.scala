@@ -5,6 +5,9 @@ import org.specs.specification._
 import org.specs.collection.ExtendedIterable._
 import org.specs.matcher.MatcherUtils._
 
+/**
+ * <p>The <code>Matchers</code> object allows to import the functions from the <code>Matchers</code> trait. 
+ */
 object Matchers extends Matchers
 /**
  * <p>The <code>Matchers</code> trait provides all existing Matchers to the 
@@ -22,28 +25,55 @@ trait Matchers extends AnyMatchers with
                        MatcherResult
                        
 /**
- * <p>The <code>AbstractMatcher</code> class is used by the <code>Spec.must</code> method.
- * This class should be subclassed to provide an appropriate <code>apply</code>
- * method that will check a value <code>a</code></p> 
- * @param a a value to check
+ * <p>The <code>AbstractMatcher</code> class is the base class for Matchers.
+ * 
+ * This class should be subclassed to provide an appropriate <code>apply</code> method that 
+ * will check a value <code>a</code></p>.
  * 
  * Children of that class can use the optional description string to provide enhanced failure messages.
+ * 
+ * <i>Implementation notes</i>:<ul>
+ * <li>the parameter to the apply method should be a by-name parameter. This allow some parameters not to be evaluated
+ * when not necessary. For example in <code>a must (m1(b) and m2(c))</code> m2(c) will not be evaluated if m1(b) is false</li>
+ * <li>However in the implementation of the apply function, it must be taken care of not evaluating the parameter twice. Assigning it to 
+ * a val is the solution to this issue.</li>
+ * <li>2 messages are included in the result of the apply function, to allow the easy creation of the negation of matchers
+ *  with the not method.</li>
+ * <li>The description attribute and the 'd' method can be used to construct precise messages describing the
+ * value being matched against</li>
+ * </ul>
+ * 
  */
 abstract class AbstractMatcher[T] {
+  /** 
+   * this function must be implemented by subclasses.
+   * @return a triple with a boolean indicating the success or failure of the matcher and 2 messages, the ok message, 
+   *  and the ko message
+   */
   def apply(a: => T): (Boolean, String, String)
-  /** precise description of the expectable object. */
+
+  /** 
+   * Optional description of the expectable object that will be passed to the matcher.
+   * It will be set on the matcher when creating it through the following construction:
+   * a aka "this value" must beTrue.<br/>
+   * The 'aka' ("also known as") method sets the description in the ExpectableFactory.
+   */
   protected var desc: Option[String] = None
+
+  /** @return the precise description of the example */
   def description = desc
+  /** set the description of the matcher */
   def setDescription(d: Option[String]): this.type = { desc = d; this }
 
-  protected def dUnquoted(value: Any) = description match {
-    case None => unq(value)
-    case Some(desc) => desc + " " + unq(value)  
-  }
-  
+  /** @return the description of the matched value, quoted. */
   protected def d(value: Any) = description match {
     case None => q(value)
     case Some(desc: String) => desc + " " + q(value)
+  }
+  /** @return the description of the matched value, unquoted. */
+  protected def dUnquoted(value: Any) = description match {
+    case None => unq(value)
+    case Some(desc) => desc + " " + unq(value)  
   }
 }
 
@@ -179,12 +209,13 @@ abstract class Matcher[T] extends AbstractMatcher[T] with MatcherResult { outer 
   def orSkip = orSkipExample
 }
 /**
- *  Result of <code>Matcher.apply</code>. Provides a success flag and status messages
+ * Result of <code>Matcher.apply</code>. Provides a method named 'success' to get the result
+ * of a match, as well as 'okMessage' and 'koMessage' to get the status messages.
  */   
 trait MatcherResult {
   /**
-   * This case class and the associated implicit definition is used to add more meaningful names to
-   * the tuple representing the result of a match when implementing <code>Matcher</code> logical operators<br>
+   * This case class and the associated implicit definition are used to add more meaningful names to
+   * the tuple representing the result of a match when implementing <code>Matcher</code> logical operators.<br/>
    * Usage: <code>matcher.apply(value).okMessage</code> for instance
    */  
   case class MatcherResult(success: Boolean, okMessage: String, koMessage: String) 

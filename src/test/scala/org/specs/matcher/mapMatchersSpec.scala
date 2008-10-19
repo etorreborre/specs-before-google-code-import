@@ -1,7 +1,7 @@
 package org.specs.matcher
 
 object mapMatchersSpec extends MatchersSpecification {
-  "Map matchers" should { usingBefore { () => clearExample }
+  "Map matchers" should { clearExample.before
     "provide an 'haveKey' matcher on maps: Map('one' -> 1, 'two' -> 2) must haveKey('one') [alias for not + haveKey = notHaveKey]" in {
       Map("one" -> 1, "two" -> 2) must haveKey("one")
       expectation(Map("one" -> 1, "two" -> 2) must haveKey("three")) must failWith("Map(one -> 1, two -> 2) doesn't have the key 'three'")

@@ -4,8 +4,8 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
 
-class allMatchersRunner extends Runner(matchersSpec) with JUnit 
-class allMatchersTest extends JUnit3(matchersSpec) 
+class allMatchersRunner extends JUnit4(matchersSpec) 
+class allMatchersTest extends JUnit4(matchersSpec) 
 object matchersSpec extends Specification {
   "Matchers" areSpecifiedBy (objectMatchersSpec, 
                              stringMatchersSpec, 

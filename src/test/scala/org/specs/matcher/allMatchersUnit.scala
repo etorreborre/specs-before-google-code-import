@@ -3,7 +3,6 @@ import scala.collection.mutable.Queue
 import org.specs.runner._
 import org.specs.Sugar._
 
-class allMatchersUnitTest extends JUnit3(allMatchersUnit) 
 object allMatchersUnit extends Specification {
   "Matchers unit tests" areSpecifiedBy (anyMatchersUnit, 
                                         iterableMatchersUnit,
@@ -15,3 +14,4 @@ object allMatchersUnit extends Specification {
                                         scalacheckMatchersUnit,
                                         xmlMatchersUnit)
 }
+class allMatchersUnitTest extends JUnit4(allMatchersUnit) 

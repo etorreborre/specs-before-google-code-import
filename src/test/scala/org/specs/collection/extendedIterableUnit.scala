@@ -39,12 +39,12 @@ object extendedIterableUnit extends IterableData {
 import org.specs.runner._
 import org.specs._
 import scalacheck.Gen._
-import org.specs.Scalacheck
+import org.specs.ScalaCheck
 import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.Sugar._
 
-trait IterableData extends Specification with Sugar with Scalacheck{
+trait IterableData extends Specification with Sugar with ScalaCheck{
   def returnTrue = addToSusVerb("return true")
   val sameIterables = for (i0 <- listOf(elements(1, 2, 3));
                            i1 <- listOf(elements(1, 4, 5, i0));

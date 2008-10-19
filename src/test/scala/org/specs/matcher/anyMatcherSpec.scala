@@ -1,8 +1,6 @@
 package org.specs.matcher
-import org.specs.runner._
 import org.specs.specification._
 
-class anyMatcherSpecTest extends JUnit4(anyMatcherSpec)
 object anyMatcherSpec extends MatchersSpecification {
   "A matcher" can {
     "be created as a case class" in {
@@ -24,7 +22,7 @@ object anyMatcherSpec extends MatchersSpecification {
       10 must divide(100)
       3 must not(divide(100))
     }
-    "be skipped" in {
+    "cause the example to be skipped" in {
       expectation( 1 must be_==(2).orSkipExample ) must throwThis(SkippedException("skipped because '1' is not equal to '2'"))
     }
     "match lazy values" in {
@@ -35,10 +33,14 @@ object anyMatcherSpec extends MatchersSpecification {
       6 must beEqualTo("66") ^^ ((_:Int).toString * 2)
     }
     "be composed with a function using the ^^ operator and return a matcher" in {
-      6 must ((beEqualTo(_:Int)) ^^ ((x: String) => x.size)) {"string"}
+      6 must ((beEqualTo(_:Int)) ^^ ((_:String).size)) ("string")
+      // equivalent to 
+      6 must beEqualTo(((_:String).size)("string")) 
     }
     "be composed with a function using the ^^^ operator and return a function returning a matcher" in {
-      "123456" must ((beEqualTo(_:Int)) ^^^ ((x: String) => x.size))("string")
+      "123456" must ((beEqualTo(_:Int)) ^^^ ((_: String).size))("string")
+      // equivalent to 
+      ((_:String).size)("123456") must beEqualTo(((_:String).size)("string"))
     }
     "transformed to a matcher matching a sequence of objects using the toSeq method" in {
       List("a", "b", "c") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))
@@ -51,7 +53,7 @@ object anyMatcherSpec extends MatchersSpecification {
         failWith("no match for element 'c'") 
     }
     "provide a toSeq method which can be composed with a function" in {
-      List(3, 1, 2) must ((beEqualTo(_:Int)) ^^ ((x: String) => x.size)).toSeq(List("abc", "a", "ab"))
+      List(3, 1, 2) must ((beEqualTo(_:Int)) ^^ ((_:String).size)).toSeq(List("abc", "a", "ab"))
     }
     "be equal with is_== even if using an alias for the object" in {
        "this object" aka "this" must_== "this object"
@@ -76,5 +78,6 @@ object anyMatcherSpec extends MatchersSpecification {
        expectation(List("2") aka "the list" must_== List("1")) must failWith("the list 'List(2)' is not equal to 'List(1)'")
     }
   }
-
 }
+import org.specs.runner._
+class anyMatcherSpecTest extends JUnit4(anyMatcherSpec)

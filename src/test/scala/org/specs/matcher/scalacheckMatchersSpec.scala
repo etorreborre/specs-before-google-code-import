@@ -1,6 +1,5 @@
 package org.specs.matcher
 import org.specs._
-import org.specs.runner._
 import org.specs.Sugar._
 import org.scalacheck._
 import org.scalacheck.Arbitrary._
@@ -9,8 +8,7 @@ import org.scalacheck.Prop.property
 import org.specs.mock._
 import org.specs.io._
 
-class scalacheckMatchersTest extends Runner(scalacheckMatchersSpec) with JUnit
-object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamples {
+object scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamples {
   "A 'pass' matcher" should {
     "be ok if a property is true for all generated values" in {
       alwaysTrue must pass(isTrue)
@@ -55,23 +53,23 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalacheckExamp
     }
   }
 }
-object spec extends Specification with Scalacheck {
+object spec extends Specification with ScalaCheck {
   dontExpectProperties()
   property((a:Int) => isExpectation(a == a)) must pass
 }
-object specWithExpectProperties extends Specification with Scalacheck {
+object specWithExpectProperties extends Specification with ScalaCheck {
   property((a:Int) => a == a) must pass
 }
-object specWithDontExpectProperties extends Specification with Scalacheck {
+object specWithDontExpectProperties extends Specification with ScalaCheck {
   dontExpectProperties()
   property((a:Int) => a == a) must pass
 }
-object specWithFailure extends Specification with Scalacheck {  expectProperties
+object specWithFailure extends Specification with ScalaCheck {  expectProperties
   var counter = 0
   property((a:Int) => {counter +=1; counter < 10}) must pass
 }
 
-trait ScalacheckExamples extends Specification with Scalacheck {
+trait ScalaCheckExamples extends Specification with ScalaCheck {
   val identityProp = property((a:Boolean) => a)
   val alwaysTrueProp = property((a:Int) => true)
   val alwaysTrue = elements(true)
@@ -119,3 +117,5 @@ class Counter(private var n: Int) {
   def get = n
   def reset = n = 0
 }
+import org.specs.runner._
+class scalacheckMatchersTest extends JUnit4(scalacheckMatchersSpec)

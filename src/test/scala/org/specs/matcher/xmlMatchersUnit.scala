@@ -1,9 +1,9 @@
 package org.specs.matcher
-import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.xml.NodeFunctions._
 import org.specs.collection.ExtendedIterable._
 import scala.xml._
+
 object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
   "A equals ignore spaces matcher" should { 
     "not take care of spaces when comparing nodes [Alias ==/]" in {
@@ -147,4 +147,5 @@ object xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     }
   }
 }
+import org.specs.runner._
 class xmlMatchersTest extends JUnit4(xmlMatchersUnit)

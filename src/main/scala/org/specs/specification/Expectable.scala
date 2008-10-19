@@ -168,10 +168,22 @@ class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[I
   def createClone = new IterableExpectable(value)
 
   /** alias for <code>must(exist(function(_))</code> */
-  def mustExist(function: I => Boolean) = applyMatcher(exist {x:I => function(x)}, value)
+  def mustHave(function: I => Boolean) = applyMatcher(have(function((_:I))), value)
 
   /** alias for <code>must(notExist(function(_))</code> */
-  def mustNotExist(function: I => Boolean) = applyMatcher(notExist{x:I => function(x)}, value)
+  def mustNotHave(function: I => Boolean) = applyMatcher(notHave(function((_:I))), value)
+
+  /** 
+   * alias for <code>must(exist(function(_))</code>
+   * @deprecated use mustHave instead
+   */
+  def mustExist(function: I => Boolean) = mustHave(function)
+
+  /** 
+   * alias for <code>must(notExist(function(_))</code> 
+   * @deprecated use mustNotHave instead
+   */
+  def mustNotExist(function: I => Boolean) = mustNotHave(function)
 
   /** alias for <code>must(contain(a))</code> */
   def mustContain(elem: I) = applyMatcher(contain(elem), value)

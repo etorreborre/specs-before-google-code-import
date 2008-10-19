@@ -7,7 +7,7 @@ import org.specs.collection.ExtendedList._
 import org.specs._
 
 class inAnyOrderUnitTest extends JUnit3(inAnyOrderUnit)
-object inAnyOrderUnit extends Specification with TestData with Scalacheck {
+object inAnyOrderUnit extends Specification with TestData with ScalaCheck {
   "A protocol type 'inAnyOrder'" should { usingBefore {() => clearCalls }
     "consume nothing if exp=m and rec=nil" in {
       inAnyOrder.consume((e), ()) must verify { t:Result => val (exp, rec) = t

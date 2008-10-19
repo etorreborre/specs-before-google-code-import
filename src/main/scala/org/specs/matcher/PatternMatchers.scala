@@ -3,7 +3,7 @@ import org.specs.matcher.MatcherUtils._
 
 /**
  * The <code>PatternMatchers</code> trait provides matchers which allow to use pattern matching
- * to match expressions
+ * to match expressions.
  */
 trait PatternMatchers {
   
@@ -15,36 +15,34 @@ trait PatternMatchers {
    * The <code>Sugar</code> object can be used to get a shorter expression by having the <code>ok</code> alias for <code>true</code>:
    *  <ul><li> <code>List(1, 2) must beLike { case x::y::Nil => ok }</code></ul>
    * 
+   * @param pattern a case expression
    * @return false if there is no match
    * @return the value inside the mapped option if there is a match, which should be <code>true</code>
-   * @param pattern a case expression
    */  
-  def beLike(pattern: => (Any => Boolean)) = new Matcher[Any](){
-     def apply(v: => Any) = {
-       val value = v
-      (
-       try {
-        if (value == null)  false  else  Some(value).map(pattern).get 
-      } catch { case e: scala.MatchError => false }, 
-      d(value) + " matches the given pattern", 
-      d(value) + " doesn't match the expected pattern")
-     }
+  def beLike(pattern: => (Any => Boolean)) = new Matcher[Any]() {
+    def apply(v: => Any) = {
+      val value = v
+      (try {
+        if (value == null) false else Some(value).map(pattern).get 
+       } catch { case e: scala.MatchError => false }, 
+       d(value) + " matches the given pattern", 
+       d(value) + " doesn't match the expected pattern")
+    }
   }
   
   /**
    * Matches if the value <code>v</code> is None
    */
-  def beNone[T] = new Matcher[Option[T]](){
-     def apply(v: => Option[T]) = { 
-       val value = v
-       val none: Option[T] = None
-       ( 
-       value match { 
-        case n if (n == none) => true
-        case _ => false 
-      }, 
-      d(value) + " is None", 
-      d(value) + " is not None")
+  def beNone[T] = new Matcher[Option[T]]() {
+    def apply(v: => Option[T]) = { 
+      val value = v
+      val none: Option[T] = None
+      (value match { 
+         case n if (n == none) => true
+         case _ => false 
+       }, 
+       d(value) + " is None", 
+       d(value) + " is not None")
     }
   }
   
@@ -55,7 +53,7 @@ trait PatternMatchers {
   /**
    * Matches if a is None when v is None and a is not None when v is not None
    */   
-  def beAsNoneAs[T](a: =>Option[T]) = new Matcher[Option[T]](){
+  def beAsNoneAs[T](a: =>Option[T]) = new Matcher[Option[T]]() {
     def apply(v: =>Option[T]) = {
       val x = a; 
       val y = v; 
@@ -64,28 +62,25 @@ trait PatternMatchers {
     } 
   }  
 
-
   /**
    * Matches if the value <code>v</code> is Some(x)
    */
-  def beSome[T] = new CaseMatcher[T](){
-     def someApply(v: => Option[T]) = {
-       val value = v
-       ( 
-       value match {
-          case Some(x) => true 
-          case _ => false
-        },
-        d(value) + " is Some(x)", 
-        d(value) + " is not Some(x)")
-     }
-   }
+  def beSome[T] = new CaseMatcher[T]() {
+    def someApply(v: => Option[T]) = {
+      val value = v
+      (value match {
+         case Some(x) => true 
+         case _ => false
+       },
+       d(value) + " is Some(x)", 
+       d(value) + " is not Some(x)")
+    }
+  }
 
   /**
    * Alias for beSome[Any]
    */
   def beSomething = beSome[Any]
-
 
   /**
    * The CaseMatcher class allow to verify expressions such as:<br>
@@ -93,11 +88,12 @@ trait PatternMatchers {
    */
   abstract class CaseMatcher[T] extends Matcher[Option[T]] {
     private var whichFunction: Option[T => Boolean] = None
+    def someApply(value: => Option[T]): (Boolean, String, String)
+
     def which(g: T => Boolean) = {
       whichFunction = Some(g) 
       this
     }
-    def someApply(value: => Option[T]): (Boolean, String, String)
     override def apply(a: => Option[T]) = 
       if (whichFunction == Some(null))
         (false, "the 'which' property is a not a null function", "the 'which' property is a null function")
@@ -110,10 +106,10 @@ trait PatternMatchers {
                         },
                         description.getOrElse("there") + " is a Some(x) verifying the given property", 
                         description.getOrElse("there") + " is no Some(x) verifying the given property")
-    }
+       }
   }
 }
 /**
- * Companion object for PatternMatchers
+ * Companion object for PatternMatchers.
  */
 object PatternMatchers extends PatternMatchers

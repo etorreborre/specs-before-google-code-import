@@ -1,14 +1,8 @@
 package org.specs.matcher
-import org.specs.runner._
 import org.specs._
-import org.scalacheck.Gen._
-import org.scalacheck._
-import Arbitrary._
-import Gen._
-import Prop._
+import org.scalacheck.Prop._
 
-class mapMatchersTest extends Runner(mapMatchersUnit) with JUnit with Console
-object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen with Scalacheck {
+object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen with ScalaCheck {
   "Map matchers" should {
     "not evaluate the expressions twice: haveKey" in {
       val map: Iterable[(String, Any)] = Map("" -> 1)
@@ -48,6 +42,11 @@ object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen wit
     }
   }
 }
+import org.scalacheck.Gen._
+import org.scalacheck._
+import Arbitrary._
+import Gen._
+
 trait PartialFunctionGen {
   implicit def listInt: Arbitrary[List[Int]] = Arbitrary[List[Int]] {
     for {length <- choose(1, 4)
@@ -67,3 +66,5 @@ trait PartialFunctionGen {
     } yield Map(keys.toList zip values.toList map {kv => kv._1 -> kv._2} : _*)
   }
 }
+import org.specs.runner._
+class mapMatchersTest extends JUnit4(mapMatchersUnit)

@@ -1,23 +1,19 @@
 package org.specs.matcher
 import org.specs._
-import org.specs.runner._
 import org.specs.mock._
 import org.specs.Sugar._
 import org.specs.specification._
 
-class anyMatchersTest extends Runner(anyMatchersUnit) with JUnit
 object anyMatchersUnit extends MatchersSpecification {
   "A 'be' matcher" should {
-    "be ok if comparing the same object" in {
-      val name = "string"
-      name must be(name)
+    "be ok if comparing the same object, like the eq method" in {
+      "string" must be("string")
     }
     "display a failure message if comparing different objects" in {
       expectation("name" must be("name2")) must failWith("'name' is not the same as 'name2'")
     }
     "be resilient to a null value" in {
-      val s: String = null
-      expectation("name" must be(s)) must failWith("'name' is not the same as 'null'")
+      expectation("name" must be(null)) must failWith("'name' is not the same as 'null'")
     }
     "display a failure message if comparing different objects even if they are ==" in {
       case class MyObject(value: Int)
@@ -25,8 +21,7 @@ object anyMatchersUnit extends MatchersSpecification {
       expectation(o1 must be(o2)) must failWith("'MyObject(1)' is not the same as 'MyObject(1)'")
     }
     "be ok if comparing the same value" in {
-      val number = 1
-      number must be(number)
+      1 must be(1)
     }
     "display a failure message if comparing different values" in {
       expectation(1 must be(2)) must failWith("'1' is not the same as '2'")
@@ -51,8 +46,7 @@ object anyMatchersUnit extends MatchersSpecification {
       expectation("name" must be_==("name2")) must failWith("'name' is not equal to 'name2'")
     }
     "be resilient to a null value" in {
-      val s: String = null
-      expectation("name" must be_==(s)) must failWith("'name' is not equal to 'null'")
+      expectation("name" must be_==(null)) must failWith("'name' is not equal to 'null'")
     }
   }
   "An 'beEqualTo' matcher" should {
@@ -62,47 +56,38 @@ object anyMatchersUnit extends MatchersSpecification {
       o1 must beEqualTo(o2)
     }
     "be ok when comparing a list of ints" in {
-      val l: Iterable[Int] = List(1)
-      l must beEqualTo(l)
+      List(1) must beEqualTo(List(1))
     }
     "be ok when comparing a list of strings" in {
-      val l: Iterable[String] = List("a")
-      l must beEqualTo(l)
+      List("a") must beEqualTo(List("a"))
     }
     "display a failure message if comparing different objects" in {
       expectation("name" must beEqualTo("name2")) must failWith("'name' is not equal to 'name2'")
     }
     "be resilient to a null value" in {
-      val s: String = null
-      expectation("name" must beEqualTo(s)) must failWith("'name' is not equal to 'null'")
+      expectation("name" must beEqualTo(null:String)) must failWith("'name' is not equal to 'null'")
     }
   }
   "A 'beNull' matcher" should {
     "be ok if comparing with a null object" in {
-      val a: String = null
-      a must beNull
+      (null:String) must beNull
     }
     "display a failure message if the value is not null" in {
-      val a: String = "not null"
-      expectation(a must beNull) must failWith("'not null' is not null")
+      expectation("not null" must beNull) must failWith("'not null' is not null")
     }
     "display a precise failure message if there is a description of the value" in {
-      val a: String = "not null"
-      expectation(a aka "the value" must beNull) must failWith("the value 'not null' is not null")
+      expectation("not null" aka "the value" must beNull) must failWith("the value 'not null' is not null")
     }
   }
   "A 'notBeNull' matcher" should {
     "be ok if comparing with a non-null object" in {
-      val a: String = ""
-      a must notBeNull
+      "" must notBeNull
     }
     "display a failure message if the value is null" in {
-      val a: String = null
-      expectation(a must notBeNull) must failWith("the value is null")
+      expectation((null:String) must notBeNull) must failWith("the value is null")
     }
     "display a precise failure message if there is a description of the value" in {
-      val a: String = null
-      expectation(a aka "this value" must notBeNull) must failWith("this value is null")
+      expectation((null:String) aka "this value" must notBeNull) must failWith("this value is null")
     }
   }
   "A 'beTrue' matcher" should {
@@ -209,3 +194,5 @@ object anyMatchersUnit extends MatchersSpecification {
     }
   }
 }
+import org.specs.runner._
+class anyMatchersTest extends JUnit4(anyMatchersUnit)

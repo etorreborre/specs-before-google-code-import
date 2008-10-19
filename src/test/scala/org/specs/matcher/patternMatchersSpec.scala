@@ -1,23 +1,20 @@
 package org.specs.matcher
-import org.specs.specification
-import org.specs.runner._
 import org.specs.Sugar._
 
-class patternMatchersSpecTest extends JUnit4(patternMatchersSpec) 
 object patternMatchersSpec extends MatchersSpecification {
   "Pattern matchers" should { clearExample.before
     "provide a beLike matcher using pattern matching: (1, 2) must beLike {case (1, _) => ok} " +
     "[ok is syntactic sugar for true from the Sugar trait]" in {
-      "a" must beLike {case "a" => ok}
-      ("a", "b") must beLike {case ("a", _) => ok}
-      ("a", "b", "c") must beLike {case ("a", _, _) => ok}
-      expectation(("a", "b", "c") must beLike {case ("a", _) => ok}) must 
+      "a" must beLike { case "a" => ok }
+      ("a", "b") must beLike { case ("a", _) => ok }
+      ("a", "b", "c") must beLike { case ("a", _, _) => ok }
+      expectation(("a", "b", "c") must beLike { case ("a", _) => ok }) must 
                        failWith ("'(a,b,c)' doesn't match the expected pattern")
 
-      expectation(("a", "b", "c") aka "the triplet" must beLike {case ("a", _) => ok}) must 
+      expectation(("a", "b", "c") aka "the triplet" must beLike { case ("a", _) => ok }) must 
                        failWith ("the triplet '(a,b,c)' doesn't match the expected pattern")
 
-      expectation(("a", "b", "c") must not(beLike {case ("a", _, _) => ok})) must 
+      expectation(("a", "b", "c") must not(beLike { case ("a", _, _) => ok })) must 
            failWith ("'(a,b,c)' matches the given pattern")
     }
     "provide a beNone matcher for options: List().find {_ == 2} must beNone" in {
@@ -41,9 +38,11 @@ object patternMatchersSpec extends MatchersSpecification {
       expectation(List().find {_ == 2} must beSomething) must failWith("'None' is not Some(x)")
     }
   }
-  "Pattern matchers" can { usingBefore { () => clearExample }
+  "Pattern matchers" can { clearExample.before
     "specify a which clause to check additional properties: List('name').find {_ == 'name'} must beSome[String].which {_.size == 4}" in {
       List("name").find {_ == "name"} must beSome[String].which {_.size == 4}
     } 
   }
 }
+import org.specs.runner._
+class patternMatchersSpecTest extends JUnit4(patternMatchersSpec) 

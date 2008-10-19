@@ -16,7 +16,7 @@ import java.util.regex._
 import org.specs._
 import org.specs.Sugar._
 
-trait TestData extends Specification with FileSystem with ConsoleOutput with Scalacheck {
+trait TestData extends Specification with FileSystem with ConsoleOutput with ScalaCheck {
   case class MatchingPath(path: String, glob: String)
   def paths = for { glob <- elements("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
                     path <- elements(pathsMatchingGlob(glob):_*)

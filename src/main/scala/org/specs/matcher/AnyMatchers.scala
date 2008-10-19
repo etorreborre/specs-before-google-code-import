@@ -11,7 +11,7 @@ import scala.collection.Set
 import scala.reflect.Manifest
 
 /**
- * The <code>AnyMatchers</code> object allow the import of matchers from the AnyMatchers trait.
+ * The <code>AnyMatchers</code> object allows the import of matchers from the AnyMatchers trait.
  */
 object AnyMatchers extends AnyMatchers
 /**
@@ -22,7 +22,7 @@ trait AnyMatchers {
   /**
    * Matches if (a eq b)
    */   
-  def be(a: =>Any) = new Matcher[Any](){
+  def be(a: =>Any) = new Matcher[Any]() {
     def apply(v: =>Any) = {
       val (x, y) = (a, v) 
       (x.asInstanceOf[AnyRef] eq y.asInstanceOf[AnyRef], d(y) + " is the same as " + q(x), d(y) + " is not the same as " + q(x))} 
@@ -185,19 +185,48 @@ trait AnyMatchers {
   }
   
   /**
-   * Matches if value is throwing an exception which is assignable from errorType.getClass
+   * Matches if value if an exception is thrown with the expected type
    * <br>Otherwise rethrow any other exception
-   * <br>Usage: <code>value must throwA(new ExceptionType)</code>
-   * <br>Advanced usage: <code>value must throwA(new ExceptionType).like {case ExceptionType(m) => m.startsWith("bad")}</code>
+   * <br>Usage: <code>value must throwA[SpecialException]</code>
+   */   
+  def throwAnException[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = new ExceptionClassMatcher[E](m.erasure.asInstanceOf[Class[E]])
+
+  /**
+   * return a matcher which will be ok if an exception of that type is thrown
+   */   
+  def throwA[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
+  /**
+   * return a matcher which will be ok if an exception of that type is thrown
+   */   
+  def throwAn[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
+  /**
+   * Alias for throwException
+   */   
+  def throwThis[E <: Throwable](exception: =>E): ExceptionMatcher[E] = throwException(exception)
+  /**
+   * Matches if an exception is thrown with the expected class and message.
+   * <br>Otherwise rethrow any other exception
+   * <br>Usage: <code>value must throwA(new SpecialException)</code>
+   * <br>Advanced usage: <code>value must throwA(new SpecialException).like {case ExceptionType(m) => m.startsWith("bad")}</code>
    */   
   def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception)
-  def throwAnException[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = new ExceptionClassMatcher[E](m.erasure.asInstanceOf[Class[E]])
+  /**
+   * create an appropriate failure message for a thrown exception or exception class.
+   * @see throwException
+   */   
+  /**
+   * Exception matcher checking the type of a thrown exception.
+   */   
   class ExceptionClassMatcher[E <: Throwable](exception: Class[E]) extends Matcher[Any] {
      def apply(value: => Any) = { 
        (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined, 
         okMessage(exception, description), koMessage(exception, description))
      }
   }  
+  /**
+   * This matchers matches exception objects.
+   * @see throwException
+   */   
   class ExceptionMatcher[E <: Throwable](exception: E) extends Matcher[Any] {
      def apply(value: => Any) = { 
        (isThrown(value, exception, (e => exception.getClass == e.getClass && exception.getMessage == e.getMessage), description).isDefined, 
@@ -212,29 +241,31 @@ trait AnyMatchers {
            beLike(f)(thrown.get)
        }
      }
-   }  
-  def message(exception: Any) = {
+  }  
+  protected[matcher] def message(exception: Any) = {
     exception match {
       case e: Class[_] => e.toString.replaceFirst("class ", "")
       case ex: Throwable => ex.getClass.getName + ": " + ex.getMessage
       case other => other.toString 
     }
   } 
-  private def okMessage(exception: Any, desc: Option[String]) = {
+  protected[matcher] def okMessage(exception: Any, desc: Option[String]) = {
     message(exception) + " was thrown" + desc.map(" from " + _.toString).getOrElse("")
   } 
-  private def koMessage(exception: Any, desc: Option[String]) = message(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  protected[matcher] def koMessage(exception: Any, desc: Option[String]) = message(exception) + " should have been thrown" + desc.map(" from " + _.toString).getOrElse("") 
+  
   /**
-   * return a matcher which will be ok if an exception of that type is thrown
-   */   
-  def throwA[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
-
-  def throwAn[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
-
-  /**
-   * Alias for throwException
-   */   
-  def throwThis[E <: Throwable](exception: =>E): ExceptionMatcher[E] = throwException(exception)
+   * Creates a FailureException corresponding to a thrown exception.
+   * <br>Sets the stacktrace of the <code>FailureException</code> so that it starts with the code line where the original exception
+   * was thrown
+   * @param e original exception 
+   * @param failureMessage exception message 
+   */
+  private def throwFailure(e: =>Throwable, failureMessage: =>String) = {
+    val failure = FailureException(failureMessage) 
+    failure.setStackTrace((e.getStackTrace.toList.dropWhile {x: StackTraceElement => x.toString.matches("AnyMatchers") || x.toString.matches("Expect")}).toArray)
+    throw failure
+  }
   
   /**
    * @returns an Option with the expected exception if it satisfies function <code>f</code>
@@ -306,19 +337,6 @@ trait AnyMatchers {
    */   
   def notHaveSuperClass[T](implicit m: Manifest[T]) = haveSuperClass(m).not
 
-  /**
-   * Creates a FailureException corresponding to a thrown exception.
-   * <br>Sets the stacktrace of the <code>FailureException</code> so that it starts with the code line where the original exception
-   * was thrown
-   * @param e original exception 
-   * @param failureMessage exception message 
-   */
-  def throwFailure(e: =>Throwable, failureMessage: =>String) = {
-    val failure = FailureException(failureMessage) 
-    failure.setStackTrace((e.getStackTrace.toList.dropWhile {x: StackTraceElement => x.toString.matches("AnyMatchers") || x.toString.matches("Expect")}).toArray)
-    throw failure
-  }
-  
   /**
    * Adds functionalities to functions returning matchers so that they can be combined before taking a value and 
    * returning actual matchers

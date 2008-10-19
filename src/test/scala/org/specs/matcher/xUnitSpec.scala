@@ -1,7 +1,5 @@
 package org.specs.matcher
-import org.specs.runner._
 
-class xUnitSpecTest extends Runner(xUnitSpec) with JUnit
 object xUnitSpec extends MatchersSpecification with xUnit {
   "the xUnit trait" should {
     "provide an assertTrue method" in {
@@ -41,3 +39,5 @@ object xUnitSpec extends MatchersSpecification with xUnit {
     }
   }
 }
+import org.specs.runner._
+class xUnitSpecTest extends JUnit4(xUnitSpec)

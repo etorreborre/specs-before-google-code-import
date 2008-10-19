@@ -48,7 +48,7 @@ object tagsSpec extends LiterateSpecification with Fixtures {
 </t> isSus
 }
 trait Fixtures extends LiterateSpecification {
-   object mySpec extends Specification with Scalacheck {
+   object mySpec extends Specification with ScalaCheck {
      "example 1" in { 1 must_== 2 }
      "example 2" in {
        1 must_== 1

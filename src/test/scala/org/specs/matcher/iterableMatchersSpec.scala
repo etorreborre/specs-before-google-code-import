@@ -1,11 +1,9 @@
 package org.specs.matcher
-import org.specs.runner._
 import org.specs._
 import org.specs.specification.fullDetails
 
-class iterableTest extends JUnit4(iterableMatchersSpec) 
 object iterableMatchersSpec extends MatchersSpecification {
-  "Iterable matchers" should { usingBefore { () => clearExample }
+  "Iterable matchers" should { doBefore { clearExample }
     "provide a 'must beEmpty' matcher on iterables: List() must beEmpty" in {
       List() must beEmpty
       expectation(List("1") must beEmpty) must failWith("List(1) is not empty")
@@ -34,8 +32,6 @@ object iterableMatchersSpec extends MatchersSpecification {
       expectation(List("one", "two") must containAll(List("one", "three"))(new fullDetails("[]"))) must failWith("'one\nt[wo]' doesn't contain all of 'one\nt[hree]'")
     }
     "provide a 'must containInOrder' matcher on iterables checking if one sequence is included inside another" in {
-     
-      containInOrder(List("one", "two"))
       List("one", "two", "three") must containInOrder(List("one", "two"))
       expectation(List("one", "two") must containInOrder(List("two", "one"))) must failWith("'List(one, two)' doesn't contain all of 'List(two, one)' in order")
     }
@@ -49,14 +45,14 @@ object iterableMatchersSpec extends MatchersSpecification {
       expectation("one" must notBeIn(List("one", "two"))) must failWith("'one' is in 'List(one, two)'")
       expectation("one" aka "the element" must notBeIn(List("one", "two"))) must failWith("the element 'one' is in 'List(one, two)'")
     }
-    "provide a 'must exist' matcher on iterables: List('one', 'two') must exist {m: String => m.contains('w')} [alias: mustExist]" in {
-      List("one", "two") must exist {m: String => m.contains("w")}
-      expectation(List("one", "two") mustExist {m: String => m.contains("z")}) must failWith("no element verifies the property in 'List(one, two)'")
-      expectation(List("one", "two") aka "the list" must exist {m: String => m.contains("z")}) must failWith("no element verifies the property in the list 'List(one, two)'")
+    "provide a 'must have' matcher on iterables: List('one', 'two') must have {m: String => m.contains('w')} [alias: mustExist]" in {
+      List("one", "two") must have((_:String).contains("w"))
+      expectation(List("one", "two") mustHave((_:String).contains("z"))) must failWith("no element verifies the property in 'List(one, two)'")
+      expectation(List("one", "two") aka "the list" must have((_:String).contains("z"))) must failWith("no element verifies the property in the list 'List(one, two)'")
     }
-    "provide a 'must notExist' matcher on iterables: List('one', 'two') must notExist {m: String => m.contains('z')}  [alias: mustNotExist]" in {
-      List("one", "two") must notExist {m: String => m.contains("z")}
-      expectation(List("one", "two") aka "the list" must notExist {m: String => m.contains("n")}) must failWith("at least one element verifies the property in the list 'List(one, two)'")
+    "provide a 'must notHave' matcher on iterables: List('one', 'two') must notExist {m: String => m.contains('z')}  [alias: mustNotExist]" in {
+      List("one", "two") must notHave((_:String).contains("z"))
+      expectation(List("one", "two") aka "the list" must notHave((_:String).contains("n"))) must failWith("at least one element verifies the property in the list 'List(one, two)'")
     }
     "provide a 'must containMatch' matcher on iterables: checking if it contains a string including a regexp: " +
     "List('one', 'two') must containMatch('[n-o]') [alias: mustContainMatch]" in {
@@ -78,3 +74,5 @@ object iterableMatchersSpec extends MatchersSpecification {
 
   }
 }
+import org.specs.runner._
+class iterableTest extends JUnit4(iterableMatchersSpec) 

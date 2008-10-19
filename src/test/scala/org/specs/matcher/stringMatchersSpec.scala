@@ -1,9 +1,7 @@
 package org.specs.matcher
-import org.specs.runner._
 
-class stringMatchersSpecTest extends Runner(stringMatchersSpec) with JUnit 
 object stringMatchersSpec extends MatchersSpecification {
-  "String matchers" should { usingBefore { () => clearExample }
+  "String matchers" should { clearExample.before
     "provide a 'must_==/' matcher: 'hello' must_==/ 'HeLLo' " + 
     "[alias: must beEqualToIgnoringCase]" in {
       "string" must_==/ "sTring"
@@ -83,3 +81,5 @@ object stringMatchersSpec extends MatchersSpecification {
     }
   }
 }
+import org.specs.runner._
+class stringMatchersSpecTest extends JUnit4(stringMatchersSpec) 

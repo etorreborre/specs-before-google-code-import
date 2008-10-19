@@ -11,28 +11,35 @@ import org.specs.matcher.MatcherUtils.q
 import org.specs.specification.FailureException
 import org.specs.specification._
 /**
- * The <code>ScalacheckMatchers</code> trait provides matchers which allow to 
+ * The <code>ScalaCheckMatchers</code> trait provides matchers which allow to 
  * assess properties multiple times with generated data.
- * @see the <a href="http://code.google.com/p/scalacheck/">Scalacheck project</a>
+ * @see the <a href="http://code.google.com/p/scalacheck/">ScalaCheck project</a>
  */
-trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with ScalacheckParameters with SuccessValues with ExpectationsListener {
+trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with ScalaCheckParameters with SuccessValues with ExpectationsListener {
   
   /**
-   * This implicit value is useful to transform the SuccessValue returned by matchers to properties
+   * This implicit value is useful to transform the SuccessValue returned by matchers to properties.
+   * More specifically, this allows to write expectations as properties:
+   * (1 + 1) must_== 2 will return a SuccessValue if it is not throwing a FailureException.
+   * That success value will can then be considered as a property in an example:
+   * 
+   * <code>{ (1 + 1) must_== 2 } must pass</code>
+   * 
+   * @see Expectable
    */
-  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => Prop.property(true)
+  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => property(true)
 
    /**
-    * default parameters. Uses Scalacheck default values and doesn't print to the console
+    * default parameters. Uses ScalaCheck default values and doesn't print anything to the console
     */
    implicit def defaultParameters = new Parameters(setParams(Nil))
 		
    /**
     * Matches ok if the <code>function T => Boolean</code> returns <code>true</code> for any generated value<br>
     * Usage: <code>function must pass(generated_values)</code><br>
-    * @param params are the given by the implicit default parameters of Scalacheck
+    * @param params are the given by the implicit default parameters of ScalaCheck
     */
-   def pass[T](g: Gen[T])(implicit params: Parameters) = new Matcher[T => Boolean](){
+   def pass[T](g: Gen[T])(implicit params: Parameters) = new Matcher[T => Boolean]() {
       def apply(f: => (T => Boolean)) = checkFunction(g)(f)(params)
     }
 
@@ -72,14 +79,14 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
     * and indicates if the generation should be verbose or not 
     */
    def checkProperty(prop: Prop)(p: Parameters) = {
-     checkScalacheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand), p.verbose)
+     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand), p.verbose)
    }
     
   /**
    * checks if the property is true for each generated value, and with the specified
    * scalacheck parameters. If verbose is true, then print the results on the console
    */
-  def checkScalacheckProperty(prop: Prop)(params: Params, verbose: Boolean) = {
+  def checkScalaCheckProperty(prop: Prop)(params: Params, verbose: Boolean) = {
      // will print the result of each test if verbose = true
      def printResult(succeeded: Int, discarded: Int): Unit = {
        if (!verbose) return
@@ -104,14 +111,25 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
      // the failure message indicates a counter-example to the property
      def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
      def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
-     def afterNShrinks(args: List[Arg]) = args.map(arg => if (arg.shrinks >= 1) arg.shrinks.toString else "").filter(_.isEmpty).mkString(", ")
+     def afterNShrinks(args: List[Arg]) = {
+       if (args.forall(_.shrinks == 0))
+         ""
+       else
+         args.map { arg => 
+           if (arg.origArg != arg.arg)
+             q(arg.origArg) +" -> " + q(arg.arg) 
+           else 
+             " = "
+        }.mkString(" - shrinked (", ",", ")") 
+     } 
+     
      def counterExample(args: List[Arg]) = {
        if (args.size == 1) 
          args.map(a => if (a.arg == null) "null" else a.arg.toString).mkString("'", "", "'")
        else if (args.exists(_.arg.toString.isEmpty)) 
          args.map(_.arg).mkString("['", "', '", "']") 
        else 
-           args.map(_.arg).mkString("[", ", ", "]")
+         args.map(_.arg).mkString("[", ", ", "]")
      } 
      results match {
        case Result(Proved(as), succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded)) 
@@ -128,18 +146,18 @@ trait ScalacheckMatchers extends ConsoleOutput with ScalacheckFunctions with Sca
    }
 }
 /**
- * This trait is used to facilitate testing by mocking Scalacheck functionalities
+ * This trait is used to facilitate testing by mocking ScalaCheck functionalities
  */
-trait ScalacheckFunctions {
+trait ScalaCheckFunctions {
   def check(params: Params, prop: Prop, printResult: (Int, Int) => Unit) = Test.check(params, prop, printResult)
   def forAll[A,P](g: Gen[A])(f: A => Prop): Prop = Prop.forAll(g)(f)
 }
 /**
- * This trait provides generation parameters to use with the <code>ScalacheckMatchers</code>
+ * This trait provides generation parameters to use with the <code>ScalaCheckMatchers</code>
  */
-trait ScalacheckParameters {
+trait ScalaCheckParameters {
   /**
-   * Values which can be used as Symbol aliases to specify Scalacheck parameters<br>
+   * Values which can be used as Symbol aliases to specify ScalaCheck parameters<br>
    * The naming is a bit different, in order to keep short names for frequent use cases<ul>
    *  <code><li>minTestsOk == minSuccessfulTests
    *  <li>maxDiscarded == maxDiscardedTests
@@ -155,7 +173,7 @@ trait ScalacheckParameters {
   def dontExpectProperties() = { countExpectations = false; this }
   def shouldCountExpectations = countExpectations
   /**
-   * Default values for Scalacheck parameters
+   * Default values for ScalaCheck parameters
 	 */
   def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100) 
 
@@ -211,7 +229,7 @@ trait ScalacheckParameters {
  * It contains a Map of generation parameters and indicates if the generation
  * must be verbose.
  */  
-class Parameters(params: Map[Symbol, Int]) {
+case class Parameters(params: Map[Symbol, Int]) {
   def apply(s: Symbol) = params(s)
   def verbose = false
 }

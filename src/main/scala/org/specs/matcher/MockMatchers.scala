@@ -2,7 +2,7 @@ package org.specs.matcher
 import org.specs.mock._
 
 /**
- * Matcher for mocks
+ * Matcher for mock objects.
  */
 trait MockMatchers {
   /**

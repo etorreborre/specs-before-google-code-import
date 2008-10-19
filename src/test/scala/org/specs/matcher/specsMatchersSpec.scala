@@ -1,8 +1,5 @@
 package org.specs.matcher
-import org.specs._
-import org.specs.runner._
 
-class specsMatchersTest extends JUnit4(specsMatchersSpec)
 object specsMatchersSpec extends MatchersSpecification {
   "specs matchers" can {
     "be reused without a specification by using the SpecsMatchers trait" in {
@@ -15,3 +12,5 @@ object specsMatchersSpec extends MatchersSpecification {
     }
   }
 }
+import org.specs.runner._
+class specsMatchersTest extends JUnit4(specsMatchersSpec)

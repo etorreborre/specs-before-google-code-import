@@ -1,8 +1,5 @@
 package org.specs.matcher
-import org.specs._
-import org.specs.runner._
 
-class stringMatchersTest extends JUnit3(stringMatchersUnit)
 object stringMatchersUnit extends MatchersSpecification {
   "An equalsIgnoreCase matcher" should {
     "be ok even with null values" in {
@@ -55,3 +52,5 @@ object stringMatchersUnit extends MatchersSpecification {
     }
   }
 }
+import org.specs.runner._
+class stringMatchersTest extends JUnit4(stringMatchersUnit)

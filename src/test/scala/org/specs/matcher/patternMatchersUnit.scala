@@ -1,9 +1,6 @@
 package org.specs.matcher
-import org.specs._
-import org.specs.runner._
 import org.specs.Sugar._
 
-class patternMatchersTest extends JUnit3(patternMatchersUnit)
 object patternMatchersUnit extends MatchersSpecification {
   "A 'beLike' pattern matcher" should {
     "be ok even with a null pattern" in {
@@ -12,7 +9,7 @@ object patternMatchersUnit extends MatchersSpecification {
     }
     "be ok even with a null value" in {
       val name : String = null
-      expectation(name must beLike {case s: String => ok}) must failWith("'null' doesn't match the expected pattern")
+      expectation(name must beLike { case s: String => ok }) must failWith("'null' doesn't match the expected pattern")
     }
     "not evaluate the expressions twice" in {
       val anyValue: Any = 1
@@ -40,3 +37,5 @@ object patternMatchersUnit extends MatchersSpecification {
     }
   }
 }
+import org.specs.runner._
+class patternMatchersTest extends JUnit4(patternMatchersUnit)

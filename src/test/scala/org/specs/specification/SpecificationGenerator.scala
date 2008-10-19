@@ -46,7 +46,7 @@ trait SpecificationGenerator { self: Specification =>
   implicit val arbitrarySus: Arbitrary[Sus] = Arbitrary { genSus }
   implicit val arbitrarySpec: Arbitrary[Specification] = Arbitrary { genSpec }
 }
-object generatorSpec extends Specification with SpecificationGenerator with Scalacheck {
+object generatorSpec extends Specification with SpecificationGenerator with ScalaCheck {
 
   "a sus" should {
     "have a number of error + failure + successes + skipped == the number of examples" in {

@@ -1,11 +1,8 @@
 package org.specs.matcher
-import scala.collection.mutable.Queue
-import org.specs.runner._
 import org.specs.Sugar._
 
-class objectMatchersTest extends Runner(objectMatchersSpec) with JUnit 
 object objectMatchersSpec extends MatchersSpecification {
-  "Object matchers" should { doBefore { clearExample }
+  "Object matchers" should { clearExample.before
     "provide a 'must_==' matcher: 'name' must_== 'name'" in {
       "string" must_== "string"
       expectation("string" must_== "string2") must failWith("'string' is not equal to 'string2'")  
@@ -86,3 +83,5 @@ object objectMatchersSpec extends MatchersSpecification {
     }
   }   
 }
+import org.specs.runner._
+class objectMatchersTest extends JUnit4(objectMatchersSpec)

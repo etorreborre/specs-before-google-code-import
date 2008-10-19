@@ -1,15 +1,8 @@
 package org.specs.matcher
-import org.specs.Specification
-import scalacheck.Gen._
-import scalacheck._
 import scalacheck._
 import org.specs._
-import org.specs.matcher._
-import org.specs.runner._
-import org.specs.Sugar._
 
-class matcherUnitTest extends JUnit3(matcherUnit)
-object matcherUnit extends Specification with MatcherCases with Scalacheck {
+object matcherUnit extends Specification with MatcherCases with ScalaCheck {
   "A matcher" should {
     "when negated, use the ok message of the original matcher to indicate a failure" in {
       val m = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok", "ko") }
@@ -54,6 +47,9 @@ object matcherUnit extends Specification with MatcherCases with Scalacheck {
     }
   }
 }
+import org.specs.Specification
+import scalacheck.Gen._
+import org.specs.Sugar._
 trait MatcherCases {
   type TestCase = (Boolean, Matcher[Boolean], Matcher[Boolean])
   val matcherCases = for (b1 <- elements(true, false);
@@ -65,3 +61,5 @@ trait MatcherCases {
   case class MatcherCase(a: Boolean, m1: Matcher[Boolean], m2: Matcher[Boolean])
   def result(resultAndMessages: (Boolean, String, String)) = resultAndMessages._1
 }
+import org.specs.runner._
+class matcherUnitTest extends JUnit4(matcherUnit)
