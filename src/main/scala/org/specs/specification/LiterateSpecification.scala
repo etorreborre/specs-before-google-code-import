@@ -132,7 +132,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 /**
  * This trait provides String properterties with alphabetical names.
  */
-trait AlphaProperties {
+trait AlphaProperties { outer =>
   val a = Property[String]("")
   val b = Property[String]("")
   val c = Property[String]("")
@@ -159,6 +159,35 @@ trait AlphaProperties {
   val x = Property[String]("")
   val y = Property[String]("")
   val z = Property[String]("")
+  implicit def stringToAlpha(value: String) = StringToAlpha(value)
+  case class StringToAlpha(value: String) {
+    def a = { outer.a() = value; value }
+    def b = { outer.b() = value; value }
+    def c = { outer.c() = value; value }
+    def d = { outer.d() = value; value }
+    def e = { outer.e() = value; value }
+    def f = { outer.f() = value; value }
+    def g = { outer.g() = value; value }
+    def h = { outer.h() = value; value }
+    def i = { outer.i() = value; value }
+    def j = { outer.j() = value; value }
+    def k = { outer.k() = value; value }
+    def l = { outer.l() = value; value }
+    def m = { outer.m() = value; value }
+    def n = { outer.n() = value; value }
+    def o = { outer.o() = value; value }
+    def p = { outer.p() = value; value }
+    def q = { outer.q() = value; value }
+    def r = { outer.r() = value; value }
+    def s = { outer.s() = value; value }
+    def t = { outer.t() = value; value }
+    def u = { outer.u() = value; value }
+    def v = { outer.v() = value; value }
+    def w = { outer.w() = value; value }
+    def x = { outer.x() = value; value }
+    def y = { outer.w() = value; value }
+    def z = { outer.z() = value; value }
+  } 
 }
 /**
  * This trait one String property for a current value.
