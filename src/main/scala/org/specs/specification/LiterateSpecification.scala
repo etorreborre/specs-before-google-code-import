@@ -41,7 +41,8 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
    * </pre>. 
    */
   implicit def anyToAs[T](a: T) = new AsProperty(a)
-  class AsProperty[T](a: T) { 
+  implicit def propertyToValue[T](p: Property[T]):T = p()
+  case class AsProperty[T](a: T) { 
     def as(p: Property[T]) = {p() = a; a }
     def apply(p: Property[T]) = {p() = a; a}
     def apply(f: T => Any)= {f(a); a }
@@ -129,6 +130,53 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   def includeSus(susName: String) = "include " + susName + " not implemented yet"
 }
 /**
+ * This trait provides String properterties with alphabetical names.
+ */
+trait AlphaProperties {
+  val a = Property[String]("")
+  val b = Property[String]("")
+  val c = Property[String]("")
+  val d = Property[String]("")
+  val e = Property[String]("")
+  val f = Property[String]("")
+  val g = Property[String]("")
+  val h = Property[String]("")
+  val i = Property[String]("")
+  val j = Property[String]("")
+  val k = Property[String]("")
+  val l = Property[String]("")
+  val m = Property[String]("")
+  val n = Property[String]("")
+  val o = Property[String]("")
+  val p = Property[String]("")
+  val q = Property[String]("")
+  val r = Property[String]("")
+  val s = Property[String]("")
+  val t = Property[String]("")
+  val u = Property[String]("")
+  val v = Property[String]("")
+  val w = Property[String]("")
+  val x = Property[String]("")
+  val y = Property[String]("")
+  val z = Property[String]("")
+}
+/**
+ * This trait one String property for a current value.
+ */
+trait CurrentProperty { outer => 
+  val it = Property[String]("")
+  implicit def stringToIt(s: String) = StringToIt(s)
+  case class StringToIt(s: String) {
+    def it = { outer.it() = s; s }
+  } 
+  
+}
+/**
+ * This trait adds all properties.
+ */
+trait AllProperties extends AlphaProperties with CurrentProperty
+object AllProperties extends AllProperties
+/**
  * This trait provides functions which can be used to ease the use of wiki markup
  */
 trait Wiki {
@@ -141,8 +189,7 @@ trait Wiki {
    * Using this function avoid issues like quotes insides brackets ['something']
    * being displayed as question marks.
    */
-//  def wikiCode(stringToFormat: String) = "<pre><code><ul style=\"list-style: none; padding: 0; margin: 0;\">" + stringToFormat.replaceAll("\n", "<li/>") + "</ul></code></pre>"
-  def wikiCode(stringToFormat: String) = "<pre><code>"+stringToFormat+"</code></pre>"
+  def wikiCode(stringToFormat: String) = "<code>"+stringToFormat+"</code>"
   /** 
    * Alias for wikiCode
    */

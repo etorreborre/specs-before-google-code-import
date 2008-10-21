@@ -2,7 +2,6 @@ package org.specs.specification
 import org.specs._
 
 object contextSpec extends LiterateSpecification("Contexts specification") with ContextDefinitions with Wiki { 
-
 "Contexts" ->> <wiki>
 
 There are 2 types of contexts that can be set on a System under specification, to provide a way to manage the data that examples are using:
@@ -108,6 +107,4 @@ trait ContextDefinitions {
   }
 }
 import org.specs.runner._
-class contextSpecTest extends JUnit4(contextSpec) with Html {
-  override def outputDir = "target"
-}
+class contextSpecTest extends HtmlSuite(contextSpec, "target") with JUnit

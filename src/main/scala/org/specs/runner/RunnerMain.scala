@@ -13,5 +13,4 @@ object RunnerMain extends SpecificationsFinder {
       case None => println("no reporter found for " + args(0))
     }
   }
-
 }

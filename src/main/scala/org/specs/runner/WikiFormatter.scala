@@ -21,12 +21,19 @@ class WikiFormatter extends LiterateDescriptionFormatter {
   }
   def format(desc: String): String = {
 	val parsed = parseToHtml(desc)
-	val p1 = parsed.substring(parsed.indexOf("<p>") + 3, parsed.size)
- 	p1.substring(0, p1.indexOf("</p>"))
+    if (parsed contains "<p>") {
+      val p1 = parsed.substring(parsed.indexOf("<p>") + 3, parsed.size)
+      p1.substring(0, p1.indexOf("</p>"))
+    } else
+      parsed
   }
-  private def parseToHtml(s: String) = new TextileParser().parseToHtml(s).
+  private def parseToHtml(s: String) = {
+    new TextileParser().parseToHtml(s).
+    replace("&#8220;", "\"").
+    replace("&#8221;", "\"").
+    replace("&#8216;", "'").
     replace("&#8217;", "'").
-    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "\n"))
+    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "\n"))}
   
   def format(desc: Elem): Node = format(desc, Nil)
   def format(desc: Elem, examples: Iterable[Example]): Node = {
