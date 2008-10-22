@@ -52,9 +52,9 @@ the text of the description.
 h3. Properties
     
 <ex>Part of the text can be stored as properties and reused later as expected values</ex>:  
-  { """<ex>After prompting for a name like {"Peter" as n}, the system must greet the visitor with the person name: {"hello Peter".it}{ it must be_==(hello(n))  }</ex>""" >@ }
+  { """<ex>After prompting for a name like {"Peter".a}, the system must greet the visitor with the person name: {"hello Peter".it}{ it must be_==(hello(a))  }</ex>""" >@ }
 gives:
-   {"<ex class=\"success\">"}After prompting for a name like _{"Peter" as n}_, the system must greet the visitor with the person name: _{"hello Peter".it}_{ it must be_==(hello(n)) }{"</ex>"}
+   {"<ex class=\"success\">"}After prompting for a name like _{"Peter".a}_, the system must greet the visitor with the person name: _{"hello Peter".it}_{ it must be_==(hello(a)) }{"</ex>"}
     
 </wiki> isSus
 }
