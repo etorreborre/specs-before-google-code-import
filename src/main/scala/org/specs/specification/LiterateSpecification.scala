@@ -54,12 +54,12 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
    */
   implicit def makeTable(s: String) = new TableExample(s)
   case class TableExample(desc: String) {
-    def inTable(table: ExecutableDataTable) = {
+    def inTable(table: =>ExecutableDataTable) = {
+      lazy val tableToExecute = table
       forExample(desc) in {
-        table.execute
-        table.results
+        tableToExecute.execute
       }
-      desc + "\n" + table.toString
+      desc + "\n" + tableToExecute.toHtml.toString
     }
   }    
   
@@ -147,6 +147,26 @@ trait StringProperties { outer =>
     def d = { outer.d() = value; value }
     def e = { outer.e() = value; value }
     def f = { outer.f() = value; value }
+  } 
+}
+/**
+ * This trait provides Xml properterties with alphabetical names.
+ */
+trait XmlProperties { outer =>
+  val xml  = Property[Elem](<e/>)
+  val xml2 = Property[Elem](<e/>)
+  val xml3 = Property[Elem](<e/>)
+  val xml4 = Property[Elem](<e/>)
+  val xml5 = Property[Elem](<e/>)
+  val xml6 = Property[Elem](<e/>)
+  implicit def elemToAlpha(value: Elem) = ElemToAlpha(value)
+  case class ElemToAlpha(value: Elem) {
+    def abc  = { outer.xml() = value; value }
+    def xml2 = { outer.xml2() = value; value }
+    def xml3 = { outer.xml3() = value; value }
+    def xml4 = { outer.xml4() = value; value }
+    def xml5 = { outer.xml5() = value; value }
+    def xml6 = { outer.xml6() = value; value }
   } 
 }
 /**

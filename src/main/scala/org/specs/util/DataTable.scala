@@ -2,7 +2,7 @@ package org.specs.util
 import org.specs.Products._
 import scala._
 import org.specs.specification.FailureException
-
+import scala.xml.NodeSeq
 /**
  * The Datatables trait provides implicit methods to start table headers 
  * and DataRows.<p>
@@ -58,6 +58,10 @@ case class TableHeader(val titles: List[String]) {
    * @returns the header as string: |"a" | "b" | "c = a + b"|
    */
    override def toString = titles.mkString("|", "|", "|")
+  /**
+   * @returns the header as html
+   */
+   def toHtml = <tr>{titles.map((t:Any) => <th>{t.toString}</th>)}</tr>
 }
 
 /**
@@ -162,11 +166,16 @@ case class TableHeader(val titles: List[String]) {
  * </pre>
  * 
  */
-
-abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10, 
-                       +T11, +T12, +T13, +T14, +T15, +T16, +T17, +T18, +T19](val values: (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)) {
+trait AbstractDataRow { 
   var header: TableHeader = TableHeader(Nil)
-  var shouldExecute: Boolean = false;
+  var result: RowResult
+  def succeeds = result match { case RowOk(_) => true; case _ => false; }
+  var shouldExecute = false;
+  def valuesList: List[Any]
+}
+abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10, 
+                       +T11, +T12, +T13, +T14, +T15, +T16, +T17, +T18, +T19](val values: (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)) extends AbstractDataRow {
+  var result: RowResult = RowOk(this)
   def | = this
   def |[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9, 
         S10 >: T10, S11 >: T11, S12 >: T12, S13 >: T13, S14 >: T14, 
@@ -184,10 +193,13 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
   override def toString = {
     valuesList.mkString("|", "|", "|")
   }
+  def toHtml = <tr class={if (succeeds) "success" else "failure"}>{valuesList.map((v:Any) => <td>{v.toString}</td>)}</tr>
 }
 trait ExecutableDataTable {
   def execute: this.type
   def results: String
+  def rowResults: List[RowResult]
+  def toHtml: NodeSeq
 }
 
 /**
@@ -209,13 +221,21 @@ trait ExecutableDataTable {
  * </ul>
  */
 case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](header: TableHeader, rows: List[DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]], var shouldExecute: Boolean) extends ExecutableDataTable { outer =>
+  private var tableFailureFunction: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] => Unit = { t => throw DataTableFailureException(t) }
   
   type AbstractDataRow = DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]
   /**
    * This function can be overriden to provide another behaviour upon table failure
    */  
   def failureFunction(table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) : Unit = {
-    throw DataTableFailureException(table) 
+    tableFailureFunction(table) 
+  }
+  /**
+   * This sets a failing function to use when the table fails
+   */  
+  def whenFailing(f: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] => Unit) = {
+    tableFailureFunction = f
+    this
   }
   /**
    * @returns the result of the function execution on each row: the string representation of the row and an optional error message in case of a failure
@@ -252,8 +272,9 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    * executes the function on each table row  if the function exists
    */  
   def execute = {
-    if (function != null) 
-      function.apply()
+    if (function != null) { 
+      function()
+    }
     if (failed) failureFunction(this)
     this
   }
@@ -278,14 +299,21 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    */  
   override def toString = (header.toString + "\n" + rows.mkString("\n"))
   /**
+   * @returns an html representation of the table
+   */  
+  def toHtml = <table class="dataTable">{header.toHtml}{rows map(_.toHtml)}</table>
+  
+  /**
    * execute a row by checking the execution of the user-supplied function and
    * either displaying the row or displaying the row and an error message
    */  
   private def executeRow(row: AbstractDataRow, rowResult: => Any) = {
     var result: RowResult = RowOk(row)
-    try { rowResult } 
+    try { 
+      rowResult 
+    } 
     catch {
-      case e: Throwable => result = RowKo(row, e)
+      case e: Throwable => { result = RowKo(row, e); row.result = result }
     }
     rowResults = rowResults ::: List(result)
   }

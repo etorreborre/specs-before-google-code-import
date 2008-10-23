@@ -52,6 +52,15 @@ h4. Literate descriptions
 <ex>Literate descriptions should be displayed above their table</ex>{literateDesc}
 <ex>In a literate description the example description which succeeded must be highlighted in green</ex>{greenHighlight}
 
+<ex>If the example contains a DataTableFailureException, then the table rows showing the results must be displayed</ex>
+{"""" 
+    "A calculator can add integers" inTable 
+    "a" | "b" | "c" | 
+     1  !  2  !  3  |
+     2  !  2  !  5  |
+     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) } 
+"""}
+
 h3. Summary
     
 <ex>A column with the list of systems should be available on the left to access a given system directly</ex>{systemsList}

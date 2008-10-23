@@ -203,7 +203,7 @@ trait Html extends File {
    */
   def exampleRow(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     <tr class={if (alternation) "b" else "a"}>
-      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)}{formattedDesc(example)}</td>{message(example, fullSuccess)}
+      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {formattedDesc(example)}</td>{message(example, fullSuccess)}
     </tr>
   }
   
