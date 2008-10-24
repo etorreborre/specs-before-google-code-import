@@ -14,14 +14,13 @@ object calcSpecificationSpec extends LiterateSpecification("Calculator Specifica
 
 A calculator can add integers: {
   "calc.add(a, b) == c"  inTable
-  "first operand" 	| "second operand" | "result" | 
-   1  !  2  !  3  |
+  "First operand" 	| "Second operand" | "Result" | 
    1  !  2  !  3  |
    1  !  2  !  3  |
    2  !  2  !  4  |
    2  !  2  !  4  |
    2  !  2  !  4  |
-   2  !  6  !  9  | { (a,b,c) => if (c == 5) error("bad2") else c must_== calc.add(a, b) } 
+   { (a,b,c) => c must_== calc.add(a, b) } 
 }
 
  Nice, isn't it?

@@ -78,7 +78,7 @@ case class TableHeader(val titles: List[String], var isOk: Boolean) {
  * Abstract representation of a row without the column types.
  */
 trait AbstractDataRow extends DefaultResults { 
-  var header: TableHeader = new TableHeader(Nil)
+  var header: TableHeader = new TableHeader(Nil, true)
   var shouldExecute = false;
   def valuesList: List[Any]
 }
@@ -103,7 +103,7 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
   def toHtml = {
     <tr class={status}>{
       valuesList.map((v:Any) => <td>{v.toString}</td>)}{
-      if (!header.isOk) <td>{issueMessages}</td> else NodeSeq.Empty
+      if (header.isOk) NodeSeq.Empty else <td>{issues.map(_.getMessage)}</td>
     }</tr>
   }
 }
@@ -168,7 +168,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * Adds a new datarow to the existing table
    */  
-  def |(r: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = DataTable(header, rows:::List(r), shouldExecute) 
+  def |(r: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = DataTable(header, rows:::List({r.header_=(header); r}), shouldExecute) 
 
   /**
    * Adds a new datarow to the existing table and sets the table for immediate execution
@@ -225,8 +225,8 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
     } 
     catch {
       case f: FailureException => row.addFailure(f)
-      case e: Throwable => row.addError(e)
       case s: SkippedException => row.addSkipped(s)
+      case e: Throwable => row.addError(e)
     }
   }
   /**

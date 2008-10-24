@@ -85,6 +85,21 @@ object dataTableUnit extends Specification with DataTables {
        datatable.whenFailing { t => () } |> { (a,b,c) => a + b  must_== c }
        datatable.rows(0).toHtml must \\("tr", Map("class"->"failure"))       
     }
+    "have a toHtml method displaying the rows in an html table" in {
+       val datatable = "a"|"b"|"c"|
+                        1 ! 2 ! 3 | 
+                        1 ! 2 ! 3 |
+                        1 ! 2 ! 3 |
+       
+       datatable.whenFailing { t => () } |>  { (a,b,c) => a + b  must_== c }
+       
+       datatable.toHtml must beEqualToIgnoringSpace(<table class="dataTable">
+         <tr><th>a</th><th>b</th><th>c</th></tr>
+         <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
+         <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
+         <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
+       </table>)
+    }
     "have a toHtml method showing the failure messages if any" in {
        val datatable = "a"|"b"|"c"|
                         1 ! 2 ! 3 | 
