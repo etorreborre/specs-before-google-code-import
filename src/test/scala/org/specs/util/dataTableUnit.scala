@@ -82,20 +82,20 @@ object dataTableUnit extends Specification with DataTables {
                          1 ! 2 ! 4 | 
                          1 ! 2 ! 3 |
          
-       datatable.whenFailing { t => () } |> { (a:Int,b:Int,c:Int) => a + b  must_== c }
+       datatable.whenFailing { t => () } |> { (a,b,c) => a + b  must_== c }
        datatable.rows(0).toHtml must \\("tr", Map("class"->"failure"))       
     }
-    "have a toHtml method" in {
+    "have a toHtml method showing the failure messages if any" in {
        val datatable = "a"|"b"|"c"|
                         1 ! 2 ! 4 | 
                         1 ! 2 ! 3 |
        
-       datatable.whenFailing { t => () } |>  { (a:Int,b:Int,c:Int) => a + b  must_== c }
+       datatable.whenFailing { t => () } |>  { (a,b,c) => a + b  must_== c }
        
        datatable.toHtml must beEqualToIgnoringSpace(<table class="dataTable">
-         <tr><th>a</th><th>b</th><th>c</th></tr>
-         <tr class="failure"><td>1</td><td>2</td><td>4</td></tr>
-         <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
+         <tr><th>a</th><th>b</th><th>c</th><th><img src="images/icon_failure_sml.gif"/></th></tr>
+         <tr class="failure"><td>1</td><td>2</td><td>4</td><td>'3' is not equal to '4'</td></tr>
+         <tr class="success"><td>1</td><td>2</td><td>3</td><td/></tr>
        </table>)
     }
   }
