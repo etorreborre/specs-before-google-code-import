@@ -3,6 +3,7 @@ package org.specs.runner
 import org.specs.specification._
 import org.specs.Sugar._
 import org.specs._
+import org.specs.util._
 import org.specs.io.mock._
 import scala.xml._
 
