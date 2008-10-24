@@ -115,4 +115,3 @@ object specification extends LiterateSpecification("Sample Specification") {
   }
 import org.specs.runner._
 class htmlRunnerSpecTest extends HtmlSuite(htmlRunnerSpec, "target") with JUnit
-object allSpecsHtmlRunner extends HtmlRunner(allSpecsAndUnits, "target/allSpecs/")

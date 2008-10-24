@@ -11,7 +11,7 @@ object htmlRunnerUnit extends Specification with DataTables {
                 1    !  1   ! 2        |
                 3    !  1   ! 5        | { (a: Int, b: Int, c: Int) => 
                     a + b must_== c  }
-  def xml = { try { table.execute } catch { case _ => } ; hRunner.xmlFor(table) }
+  def xml = { try { table.execute } catch { case _ => } ; table.toHtml }
   "the xmlFor function" should { 
     "create an html table for a DataTable" in {
       xml must \\(<table class="nested"></table>) 
