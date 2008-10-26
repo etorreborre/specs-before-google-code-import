@@ -125,8 +125,8 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
  */
 trait HasResults {
   def failures: Seq[FailureException]
-  def errors: Seq[Throwable]
   def skipped: Seq[SkippedException]
+  def errors: Seq[Throwable]
   def status = { 
     if (!errors.isEmpty)
       "error"
@@ -159,6 +159,7 @@ trait DefaultResults extends HasResults {
   private val thisFailures: ListBuffer[FailureException] = new ListBuffer()
   private val thisErrors: ListBuffer[Throwable] = new ListBuffer()
   private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer()
+  def reset() = { thisFailures.clear; thisErrors.clear; thisSkipped.clear } 
   def addFailure(f: FailureException) = thisFailures.append(f)
   def addError(t: Throwable) = thisErrors.append(t)
   def addSkipped(s: SkippedException) = thisSkipped.append(s)

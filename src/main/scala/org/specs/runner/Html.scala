@@ -4,6 +4,7 @@ import org.specs.specification._
 import org.specs.io._
 import org.specs.util._
 import org.specs.ExtendedThrowable._
+import org.specs.xml.NodeFunctions._
 
 /**
  * The Html trait outputs the results of a specification execution as an html
@@ -249,13 +250,6 @@ trait Html extends File {
   def exceptionText(e: Throwable) = <a title={e.fullLocation + stackTrace(e)}>{if (e.getMessage != null) new Text(e.getMessage) else new Text("null")}</a>
   
   /** reduce a list with a function returning a NodeSeq. */
-  private def reduce[T](list: Iterable[T], f: T => NodeSeq): NodeSeq = {
-    fold[T](NodeSeq.Empty.toSeq)(list, f)
-  }
-  /** reduce a list with a function and an init NodeSeq value. */
-  private def fold[T](initValue: NodeSeq)(list: Iterable[T], f: T => NodeSeq): NodeSeq = {
-    list.foldLeft(initValue)( (res, value) => res ++ f(value))
-  }
   def onLoadFunction(specification: Specification) = {
     if (nonTrivialSpec(specification)) "" else "noNavBar()"
   }

@@ -147,6 +147,22 @@ table.bodyTable tr.error {
 table.bodyTable tr.skipped {
   background-color: #DDDDDD;
 }
+table.dataTable td.value {
+  background-color: #FFFFFF;
+}
+table.dataTable td.success {
+  background-color: #CCFFCC;
+}
+table.dataTable td.failure {
+  background-color: #FFFF99;
+}
+table.dataTable td.error {
+  background-color: #FF9999;
+}
+table.dataTable td.skipped {
+  background-color: #DDDDDD;
+}
+
 
 table.bodyTable tr.a {
   background-color: #ddd;

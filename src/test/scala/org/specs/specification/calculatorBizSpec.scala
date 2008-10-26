@@ -35,6 +35,7 @@ A calculator can add integers: {
                       2     !  6  !  8  | {(a,b,c) => c must_== calc.add(a, b) }
    }
  }
+
 }
 import org.specs.runner._
 class calcRunner extends HtmlSuite(calcSpecificationSpec, "target") with JUnit

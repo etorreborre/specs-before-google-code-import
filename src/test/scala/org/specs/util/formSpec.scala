@@ -1,8 +1,8 @@
 package org.specs.util
 import org.specs._
-import scala.collection.mutable.ListBuffer
+import scala.xml._
 
-object formSpec extends Specification with Forms {
+object formSpec extends Specification with Forms with Persons {
   "A form" should {
     "have a title" in {
       val form = Person("person")
@@ -32,6 +32,15 @@ object formSpec extends Specification with Forms {
       form.toString must_== "Person\n" +
                             "  First Name: Eric, Last Name: Torreborre"
     }
+    "report its issues in xml when executed" in {
+      val form = new ExpectedPerson("person") {
+        firstName("Eric"); lastName("Torreborre")
+        initials("TE")
+      }
+      form.execute.toXml must \\(<td>TE</td>, Map("class"->"failure"))
+      form.execute.toXml must \\(<td>'TE' is not equal to 'ET'</td>)
+                                                  
+    }
   }
   "A form property" should {
     "have a toString method returning the name and the property value" in {
@@ -48,6 +57,11 @@ object formSpec extends Specification with Forms {
       firstName --> lastName
       lastName.previous must be_==(Some(firstName))
     }
+    "display its status in xml when executed" in {
+      val adder: Prop[Int] = new Prop("Result", Some(2), 1 must_== 2)
+      adder.execute.toXml must \\(<td>2</td>, Map("class"->"failure"))
+      adder.execute.toXml must \\(<td>'1' is not equal to '2'</td>)
+    }  
   }
   "A form" can {
     "have a labelled property" in {
@@ -60,66 +74,86 @@ object formSpec extends Specification with Forms {
     "embedded another following form as if it was a property" in {
       val form = new Person("person") {
         firstName("Eric") --> new Address("home") {
-                                 number(37)
-                                 street("Nando-cho")
-                              }	 
+                                    number(37)
+                                    street("Nando-cho")
+                              }
       }
-      detailedDiffs()
       form.toString must_== "person\n" +
                             "  First Name: Eric, home\n" +
                             "  Number: 37\n" +
                             "  Street: Nando-cho\n" +
                             "  Last Name: "
     }
+    "be executed" in {
+      val form = new ExpectedPerson("person") {
+        firstName("Eric")
+        lastName("Torreborre")
+        initials("ET")
+      }
+      form.execute.isOk must beTrue
+    }
+    "be executed and report a failure if there is one" in {
+      val form = new ExpectedPerson("person") {
+        firstName("Eric"); lastName("Torreborre")
+        initials("TE")
+      }
+      form.execute.isOk must beFalse
+    }
   }
+  "A form when translated to xml" should {
+    "translate its title to a row with a header" in {
+      val form = new Person("Customer")
+      form.toXml must \\(<th>Customer</th>)
+    }
+    "translate a property to a row" in {
+      val form = new Person("Customer") { firstName("Eric") }
+      form.toXml must \\(<tr><td>First Name</td><td colspan="2">Eric</td></tr>)
+    }
+    "translate an embedded form to a nested table" in {
+      val form = new Person("Customer") { tr { new Address("home") { number(37) } } }
+      form.toXml must \\(<tr><th colspan="2">home</th></tr>)
+      form.toXml must \\(<tr><td>Number</td><td colspan="2">37</td></tr>)
+    }
+    "have its title spanning all columns" in {
+      val form = new Person("Customer") { firstName("Eric") }
+      form.toXml must \\(<th>Customer</th>, Map("colspan"->"2"))
+    }
+    "have its title spanning all columns - one column, 2 properties" in {
+      val form = new Person("Customer") { firstName("Eric"); lastName("T") }
+      form.toXml must \\(<th>Customer</th>, Map("colspan"->"2"))
+    }
+    "have its title spanning all columns - 2 columns, 2 properties" in {
+      val form = new Person("Customer") { tr(firstName("Eric"), lastName("T")) }
+      form.toXml must \\(<th>Customer</th>, Map("colspan"->"4"))
+    }
+    "have the last cell of the row spanning the maximum of all the row sizes" in {
+      class MyForm extends Form("my form") {
+        val f1 = Prop("f1", "") 
+        val f2 = Prop("f2", "") 
+        val f3 = Prop("f3", "") 
+        val f4 = Prop("f4", "") 
+        val f5 = Prop("f5", "") 
+      }  
+      val form = new MyForm { 
+        tr(f1("1"), f2("2")) 
+        tr(f3("3"), f4("4"), f5("5")) 
+      }
+      form.toXml must \\(<td>5</td>, Map("colspan"->"6"))
+     }
+  }
+}
+trait Persons extends Specification with Forms {
   case class Person(t: String) extends Form(t) with Properties {
     val firstName: Prop[String] = prop("First Name", "")
     val lastName: Prop[String] = prop("Last Name", "")
   }
+  case class ExpectedPerson(t1: String) extends Person(t1) {
+    val initials: Prop[String] = prop("Initials", "", initials.get must_== computeInitials(firstName.get, lastName.get))
+    def computeInitials(a: String, b: String) = a(0).toString + b(0)
+  }
   case class Address(t: String) extends Form(t) with Properties {
     val number: Prop[Int] = prop("Number", 1)
     val street: Prop[String] = prop("Street", "")
-  }
-  
-}
-trait Forms {
-  trait Linkable {
-    val next: ListBuffer[Linkable] = new ListBuffer() 
-    var previous: Option[Linkable] = None
-    def -->(others: Linkable*) = {
-      next.appendAll(others)
-      others.foreach(_.previous = Some(this))
-    }
-  }
-  case object Prop {
-    def apply[T](label: String, value: T) = new Prop(label, Some(value))
-  }
-  case class Prop[T](label: String, value: Option[T]) extends Property(value) with Linkable {
-   
-    def apply(v: T) = { super.apply(Some(v)); this }
-    def get: T = this().get
-    override def toString = {
-      label + ": " + this().getOrElse("_") + 
-      (if (next.isEmpty) "" else ", ") +
-      next.toList.mkString(", ")
-    }
-  }
-  case class Form(title: String) extends Linkable {
-    protected val properties: ListBuffer[Prop[_]] = new ListBuffer
-    def prop[T](label: String) = {
-      val p = Prop(label, None)
-      properties.append(p)
-      p
-    } 
-    def prop[T](label: String, defaultValue: T) = { 
-      val p = Prop(label, Some(defaultValue))
-      properties.append(p)
-      p
-    } 
-    override def toString = {
-      title + 
-      properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
-    } 
   }
 }
 class formTest extends org.specs.runner.JUnit4(formSpec)
