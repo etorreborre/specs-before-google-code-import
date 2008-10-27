@@ -28,7 +28,7 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) with Xml
   def outputFile = htmlFile.toString must include("./target/specification.html")
   def cssDir = createdDirs must contain("./target/css")
   def imagesDir = createdDirs must contain("./target/images") 
-  def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>))
+  def dataTableFailure = run must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
   def literateDesc = run must \\("h1")
   def subExamples = run must (beMatching("subex1")^^((_: Iterable[Node]).toString) 
                               and \\(<h4>this example has sub-examples</h4>))   
