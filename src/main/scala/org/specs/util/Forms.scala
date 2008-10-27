@@ -63,9 +63,10 @@ trait Forms {
     def toHtmlWithSpan(s: Int): NodeSeq  = NodeSeq.Empty
   }
   case object Prop {
-    def apply[T](label: String, value: T): Prop[T] = new Prop(label, Some(value), ())
+    def apply[T](label: String, value: T): Prop[T] = new Prop(label, Some(value), None)
+    def apply[T](label: String, value: T, toCheck: =>Any): Prop[T] = new Prop(label, Some(value), Some(() => toCheck))
   }
-  class Prop[T](val label: String, val value: Option[T], check: =>Any) extends Property(value) with Linkable with ToHtml with DefaultResults {
+  class Prop[T](val label: String, val value: Option[T], check: Option[() => Any]) extends Property(value) with Linkable with ToHtml with DefaultResults {
     def apply(v: T) = { super.apply(Some(v)); this }
     def get: T = this().get
     private var executed  = false
@@ -75,12 +76,16 @@ trait Forms {
     }
     def execute = {
       reset()
-      try { check } catch {
+      try { 
+        check match {
+          case Some(f) => { executed = true; f() }
+          case None => ()
+        }
+      } catch {
           case f: FailureException => addFailure(f)
           case s: SkippedException => addSkipped(s)
           case e => addError(e)
       }
-      executed = true
       this
     }
     override def toString = {
@@ -92,19 +97,19 @@ trait Forms {
     override def toEmbeddedHtml = toHtml
     override def toHtml = {
       <td>{label}</td> ++ (
-        if (!isOk) 
-          <td class={statusClass}>{this().getOrElse("")}</td><td class={statusClass}>{issueMessages}</td> 
-        else 
+        if (executed) 
+          <td class={statusClass}>{this().getOrElse("")}</td> ++ (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty) 
+        else
           <td class="value">{this().getOrElse("")}</td>
       )
     }
   }
   case class Form(title: String) extends Linkable with ToHtml with Layout with HasResults {
     protected val properties: ListBuffer[Prop[_]] = new ListBuffer
-    def prop[T](label: String) = addProp(label, None, ()) 
-    def prop[T](label: String, value: T) = addProp(label, Some(value), ())
-    def prop[T](label: String, value: T, check: =>Any) = addProp(label, Some(value), check)
-    private def addProp[T](label: String, value: Option[T], check: =>Any): Prop[T] = {
+    def prop[T](label: String) = addProp(label, None, None) 
+    def prop[T](label: String, value: T) = addProp(label, Some(value), None)
+    def prop[T](label: String, value: T, check: =>Any) = addProp(label, Some(value), Some(() => check))
+    private def addProp[T](label: String, value: Option[T], check: Option[()=>Any]): Prop[T] = {
       val p = new Prop(label, value, check)
       properties.append(p)
       p

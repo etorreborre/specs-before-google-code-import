@@ -13,7 +13,7 @@ You can notice that the fields of the form are displayed so that the address is 
     tr(firstName("Eric"),  new Address("home") {
                                number(37)
                                street("Nando-cho") } )
-    tr(lastName("Torreborre"), initials("ETO"))
+    tr(lastName("Torreborre"), initials("ET"))
    }
 }
  

@@ -66,7 +66,7 @@ object formSpec extends Specification with Forms with Persons {
       lastName.previous must be_==(Some(firstName))
     }
     "display its status in xml when executed" in {
-      val adder: Prop[Int] = new Prop("Result", Some(2), 1 must_== 2)
+      val adder: Prop[Int] = new Prop("Result", Some(2), Some(() => 1 must_== 2))
       adder.execute.toHtml must \\(<td>2</td>, Map("class"->"failure"))
       adder.execute.toHtml must \\(<td>'1' is not equal to '2'</td>)
     }  
