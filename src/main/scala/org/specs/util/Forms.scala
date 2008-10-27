@@ -25,17 +25,17 @@ trait Forms {
       others.foreach(_.previous = Some(this))
     }
   }
-  trait Layout extends ToXml {
+  trait Layout extends ToHtml {
     private var rows: ListBuffer[() => NodeSeq] = new ListBuffer
     def xml = reduce(rows, { (f: () => NodeSeq) => f.apply() })
     var columnsNumber = 1  
-    def toRow(values: ToXml*) =  <tr>{reduce(values, {(x:ToXml) => x.toEmbeddedXml})}</tr>
-    def inRow(value: ToXml) = <tr>{value.toEmbeddedXml}</tr>
-    def tr(values: ToXml*) = {
+    def toRow(values: ToHtml*) =  <tr>{reduce(values, {(x:ToHtml) => x.toEmbeddedHtml})}</tr>
+    def inRow(value: ToHtml) = <tr>{value.toEmbeddedHtml}</tr>
+    def tr(values: ToHtml*) = {
       columnsNumber = max(columnsNumber, values.size) 
       rows.append(() => toRow(values:_*))
     }
-    def span = columnsNumber * 2
+    def span = columnsNumber * 3
     protected [util] def updateLastTd(nodes: NodeSeq): NodeSeq = updateLastTd(nodes, span)
     private [util] def updateLastTd(nodes: NodeSeq, spanSize: Int): NodeSeq = {
       nodes.toList match {
@@ -56,16 +56,16 @@ trait Forms {
     values.foreach { (x:Int) =>  if (x > m) m = x }
     m
   }
-  trait ToXml {
-    def toEmbeddedXml: NodeSeq  = <td>{toXml}</td>
-    def toEmbeddedXmlWithSpan(s: Int): NodeSeq  = <td colspan={s.toString}>{toXml}</td>
-    def toXml: NodeSeq  = NodeSeq.Empty
-    def toXmlWithSpan(s: Int): NodeSeq  = NodeSeq.Empty
+  trait ToHtml {
+    def toEmbeddedHtml: NodeSeq  = <td>{toHtml}</td>
+    def toEmbeddedHtmlWithSpan(s: Int): NodeSeq  = <td colspan={s.toString}>{toHtml}</td>
+    def toHtml: NodeSeq  = NodeSeq.Empty
+    def toHtmlWithSpan(s: Int): NodeSeq  = NodeSeq.Empty
   }
   case object Prop {
     def apply[T](label: String, value: T): Prop[T] = new Prop(label, Some(value), ())
   }
-  class Prop[T](val label: String, val value: Option[T], check: =>Any) extends Property(value) with Linkable with ToXml with DefaultResults {
+  class Prop[T](val label: String, val value: Option[T], check: =>Any) extends Property(value) with Linkable with ToHtml with DefaultResults {
     def apply(v: T) = { super.apply(Some(v)); this }
     def get: T = this().get
     private var executed  = false
@@ -89,17 +89,17 @@ trait Forms {
       next.toList.mkString(", ")
     }
     private def statusClass = if (executed) status else "value"
-    override def toEmbeddedXml = toXml
-    override def toXml = {
+    override def toEmbeddedHtml = toHtml
+    override def toHtml = {
       <td>{label}</td> ++ (
         if (!isOk) 
-          <td class={statusClass}>{this().getOrElse("")}</td><td>{issueMessages}</td> 
+          <td class={statusClass}>{this().getOrElse("")}</td><td class={statusClass}>{issueMessages}</td> 
         else 
-          <td>{this().getOrElse("")}</td>
+          <td class="value">{this().getOrElse("")}</td>
       )
     }
   }
-  case class Form(title: String) extends Linkable with ToXml with Layout with HasResults {
+  case class Form(title: String) extends Linkable with ToHtml with Layout with HasResults {
     protected val properties: ListBuffer[Prop[_]] = new ListBuffer
     def prop[T](label: String) = addProp(label, None, ()) 
     def prop[T](label: String, value: T) = addProp(label, Some(value), ())
@@ -113,8 +113,8 @@ trait Forms {
       title + 
       properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
     } 
-    override def toEmbeddedXml = <td>{toXml}</td>
-    override def toXml = {
+    override def toEmbeddedHtml = <td>{toHtml}</td>
+    override def toHtml = {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
       

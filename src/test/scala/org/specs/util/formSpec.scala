@@ -38,8 +38,8 @@ object formSpec extends Specification with Forms with Persons {
         firstName("Eric"); lastName("Torreborre")
         initials("TE")
       }
-      form.execute.toXml must \\(<td>TE</td>, Map("class"->"failure"))
-      form.execute.toXml must \\(<td>'TE' is not equal to 'ET'</td>)
+      form.execute.toHtml must \\(<td>TE</td>, Map("class"->"failure"))
+      form.execute.toHtml must \\(<td>'TE' is not equal to 'ET'</td>)
     }
     "have an updateLastTd function setting a colspan on each last td of a row" in {
       val updated = new Form("").updateLastTd(
@@ -67,8 +67,8 @@ object formSpec extends Specification with Forms with Persons {
     }
     "display its status in xml when executed" in {
       val adder: Prop[Int] = new Prop("Result", Some(2), 1 must_== 2)
-      adder.execute.toXml must \\(<td>2</td>, Map("class"->"failure"))
-      adder.execute.toXml must \\(<td>'1' is not equal to '2'</td>)
+      adder.execute.toHtml must \\(<td>2</td>, Map("class"->"failure"))
+      adder.execute.toHtml must \\(<td>'1' is not equal to '2'</td>)
     }  
   }
   "A form" can {
@@ -111,28 +111,28 @@ object formSpec extends Specification with Forms with Persons {
   "A form when translated to xml" should {
     "translate its title to a row with a header" in {
       val form = new Person("Customer")
-      form.toXml must \\(<th>Customer</th>)
+      form.toHtml must \\(<th>Customer</th>)
     }
     "translate a property to a row" in {
       val form = new Person("Customer") { firstName("Eric") }
-      form.toXml must \\(<tr><td>First Name</td><td colspan="2">Eric</td></tr>)
+      form.toHtml must \\(<tr><td>First Name</td><td colspan="2">Eric</td></tr>)
     }
     "translate an embedded form to a nested table" in {
       val form = new Person("Customer") { tr { new Address("home") { number(37) } } }
-      form.toXml must \\(<tr><th colspan="2">home</th></tr>)
-      form.toXml must \\(<tr><td>Number</td><td colspan="2">37</td></tr>)
+      form.toHtml must \\(<tr><th colspan="2">home</th></tr>)
+      form.toHtml must \\(<tr><td>Number</td><td colspan="2">37</td></tr>)
     }
     "have its title spanning all columns" in {
       val form = new Person("Customer") { firstName("Eric") }
-      form.toXml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"2"))
     }
     "have its title spanning all columns - one column, 2 properties" in {
       val form = new Person("Customer") { firstName("Eric"); lastName("T") }
-      form.toXml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"2"))
     }
     "have its title spanning all columns - 2 columns, 2 properties" in {
       val form = new Person("Customer") { tr(firstName("Eric"), lastName("T")) }
-      form.toXml must \\(<th>Customer</th>, Map("colspan"->"4"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"4"))
     }
     "have the last cell of the row spanning the maximum of all the row sizes" in {
       class MyForm extends Form("my form") {
@@ -146,7 +146,7 @@ object formSpec extends Specification with Forms with Persons {
         tr(f1("1"), f2("2")) 
         tr(f3("3"), f4("4"), f5("5")) 
       }
-      form.toXml must \\(<td>5</td>, Map("colspan"->"6"))
+      form.toHtml must \\(<td>5</td>, Map("colspan"->"6"))
      }
   }
 }

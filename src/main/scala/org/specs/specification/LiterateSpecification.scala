@@ -50,11 +50,10 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
     def inForm(form: =>org.specs.util.Forms#Form) = {
       lazy val formToExecute = form
       forExample(desc) in {
-        form.execute
-        println(form.toXml)
-        if (!form.isOk) throw new FailureException("The form " +  form.title + " failed")
+        formToExecute.execute
+        if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
       }
-      desc + "\n" + form.toXml.toString
+      desc + "\n" + formToExecute.toHtml.toString
     }
   }    
   
