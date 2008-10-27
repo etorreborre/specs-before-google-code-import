@@ -41,7 +41,8 @@ trait Forms {
       val m = max((rows \\ ("td")).map(_.size):_*)
       def update(n: NodeSeq) = {
         n match {
-          case <table>{x}</table> => x
+          case <table>{x}</table> => <table>update(x)</table>
+          case <tr>{_}<td>{x}</td></tr> => update(x)
         }
       }
       xml
