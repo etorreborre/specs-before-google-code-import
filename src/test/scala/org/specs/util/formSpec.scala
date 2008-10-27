@@ -111,28 +111,31 @@ object formSpec extends Specification with Forms with Persons {
   "A form when translated to xml" should {
     "translate its title to a row with a header" in {
       val form = new Person("Customer")
-      form.toHtml must \\(<th>Customer</th>)
+      form.toHtml must \\(<th/>) \(Text("Customer"))
     }
     "translate a property to a row" in {
       val form = new Person("Customer") { firstName("Eric") }
-      form.toHtml must \\(<tr><td>First Name</td><td colspan="2">Eric</td></tr>)
+      form.toHtml must \\(<tr/>)
+      form.toHtml must \\(<td>First Name</td>)
+      form.toHtml must \\(<td colspan="3">Eric</td>)
     }
     "translate an embedded form to a nested table" in {
       val form = new Person("Customer") { tr { new Address("home") { number(37) } } }
-      form.toHtml must \\(<tr><th colspan="2">home</th></tr>)
-      form.toHtml must \\(<tr><td>Number</td><td colspan="2">37</td></tr>)
+      form.toHtml must \\(<table/>) \\(<table/>)
+      form.toHtml must \\(<tr/>) \\(<td>Number</td>)
+      form.toHtml must \\(<tr/>) \\(<td colspan="3">37</td>)
     }
     "have its title spanning all columns" in {
       val form = new Person("Customer") { firstName("Eric") }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"3"))
     }
     "have its title spanning all columns - one column, 2 properties" in {
       val form = new Person("Customer") { firstName("Eric"); lastName("T") }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"3"))
     }
     "have its title spanning all columns - 2 columns, 2 properties" in {
       val form = new Person("Customer") { tr(firstName("Eric"), lastName("T")) }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"4"))
+      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"6"))
     }
     "have the last cell of the row spanning the maximum of all the row sizes" in {
       class MyForm extends Form("my form") {
@@ -146,8 +149,8 @@ object formSpec extends Specification with Forms with Persons {
         tr(f1("1"), f2("2")) 
         tr(f3("3"), f4("4"), f5("5")) 
       }
-      form.toHtml must \\(<td>5</td>, Map("colspan"->"6"))
-     }
+      form.toHtml must \\(<td>5</td>, Map("colspan"->"9", "class"->"value"))
+    }
   }
 }
 trait Persons extends Specification with Forms {
