@@ -115,7 +115,7 @@ trait ExecutableDataTable extends HasResults {
   def failures: Seq[FailureException] = rows.flatMap(_.failures)
   def errors: Seq[Throwable] = rows.flatMap(_.errors)
   def skipped: Seq[SkippedException] = rows.flatMap(_.skipped)
-
+  def reset() = { rows.foreach { r => r.reset() }}
 }
 
 /**
@@ -184,6 +184,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    * executes the function on each table row  if the function exists
    */  
   def execute = {
+    reset()
     if (function != null) { 
       function()
     }
