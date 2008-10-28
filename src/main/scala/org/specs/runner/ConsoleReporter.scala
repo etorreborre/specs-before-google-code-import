@@ -102,7 +102,7 @@ trait OutputReporter extends Reporter with Output {
    * prints one sus specification
    */
   def printSus(sus: Sus, padding: String) = {
-    println(padding + sus.description + " " + sus.verb + sus.skippedSus.map(" (skipped: " + _ + ")").getOrElse(""))
+    println(padding + sus.description + " " + sus.verb + sus.skippedSus.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
     sus.literateDescription map { desc => println(padding + new TextFormatter().format(desc, sus.examples).text) }
     reportExamples(sus.examples, padding)
     println("")

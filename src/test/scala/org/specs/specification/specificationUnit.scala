@@ -44,21 +44,20 @@ object specificationUnit extends Specification with ScalaCheck {
   }
   "the location of a failure" should {
     "indicate the precise location if it is an anonymous example" in {
-      object spec1 extends Specification { 1 must_== 0 }
-      spec1.failures
-      spec1.failures(0).location must_== "specificationUnit.scala:47"
+      anonymousSpec.failures(0).location must_== "specificationUnit.scala:47"
     }
     "indicate the precise location if it is in a sus" in {
-      object spec extends Specification { "it" should { 1 must_== 0; "" in {} } }
-      spec.failures 
-      spec.failures(0).location must_== "specificationUnit.scala:52"
+      failedSpec.failures(0).location must_== "specificationUnit.scala:50"
+    }
+    "indicate the precise location if it is a skipped example" in {
+      skippedSpec.skipped(0).location must_== "specificationUnit.scala:88"
+    }
+    "indicate the precise location if it is a skipped example with a skipped matcher" in {
+      skippedMatcherSpec.skipped(0).location must_== "specificationUnit.scala:89"
     }
     "indicate the precise location if it is in an example" in {
-      object spec extends Specification { "it" should { "do" in { 1 must_== 0 } } }
-      spec.failures
-      //spec.failures(0).printStackTrace
-      spec.failures(0).getMessage must_== "'1' is not equal to '0'"
-      spec.failures(0).location must_== "specificationUnit.scala:57"
+      failedSpec.failures(0).getMessage must_== "'1' is not equal to '0'"
+      failedSpec.failures(0).location must_== "specificationUnit.scala:50"
     }
   }
   "A specification with 2 expectations only" should {
@@ -84,6 +83,11 @@ object specificationUnit extends Specification with ScalaCheck {
   }
   object specification extends Specification
 }
+object anonymousSpec extends Specification { 1 must_== 0 }
+object failedSpec extends Specification { "it" should { 1 must_== 0; "" in {} } }
+object skippedSpec extends Specification { "it" should { "be skipped" in { skip("be skipped") } } }
+object skippedMatcherSpec extends Specification { "it" should { "be skipped" in { 1 must be_==(0).orSkipExample } } }
+
 class specificationUnitTest extends JUnit4(specificationUnit)
 
 

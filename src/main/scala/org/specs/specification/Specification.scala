@@ -101,7 +101,7 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
    * Convenience method: adds a new skippedException to the latest example<br>
    * Usage: <code>skip("this example should be skipped")</code>
    */
-  def skip(m: String) = SkippedException(m).hideCallerAndThrow(this)
+  def skip(m: String) = SkippedException(m).hideCallerAndThrow("org.specs.Specification")
   
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty

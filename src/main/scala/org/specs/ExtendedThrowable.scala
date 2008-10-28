@@ -52,6 +52,9 @@ object ExtendedThrowable {
     def hideCallerAndThrow(caller: Object) = {
       throw removeTracesWhileNameMatches(getClassName(caller))
     }
+    def hideCallerAndThrow(caller: String) = {
+      throw removeTracesWhileNameMatches(caller)
+    }
     /**
      * throw an exception using the stacktrace of another one.
      * @param other other exception whose stacktrace should be used 

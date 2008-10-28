@@ -3,6 +3,7 @@ package org.specs.matcher
 import org.specs._
 import org.specs.specification._
 import org.specs.collection.ExtendedIterable._
+import org.specs.ExtendedThrowable._
 import org.specs.matcher.MatcherUtils._
 
 /**
@@ -198,7 +199,10 @@ abstract class Matcher[T] extends AbstractMatcher[T] with MatcherResult { outer 
       outer.setDescription(this.description)
       def apply(a: => T) = {
           val result = outer(a)
-          if (!result.success) throw new SkippedException("skipped because " + result.koMessage)
+          if (!result.success) {
+            val skippedException = new SkippedException("skipped because " + result.koMessage)
+            skippedException.throwWithStackTraceOf(new SkippedException("").removeTracesWhileNameMatches("(Expectable|Matchers)"))
+          }
           (result.success, result.okMessage, result.koMessage)
       }}
   }
