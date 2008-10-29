@@ -59,4 +59,4 @@ gives:
 </wiki> isSus
 }
 import org.specs.runner._
-class LiterateSpecTest extends HtmlSuite(literateSpec, "target") with JUnit with Console
+class LiterateSpecTest extends HtmlSuite(literateSpec, "target") with JUnit

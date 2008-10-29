@@ -34,4 +34,4 @@ trait Persons extends LiterateSpecification with Forms {
   }
 }
 import org.specs.runner._
-class LiterateSpecTest extends HtmlRunner(literateSpec, "target")
+class LiterateSpecTest extends HtmlSuite(literateSpec, "target") with JUnit
