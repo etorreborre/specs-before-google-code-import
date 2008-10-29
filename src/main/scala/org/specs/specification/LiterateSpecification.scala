@@ -15,7 +15,7 @@ import org.specs.runner._
  * <li>xmlRunnerSpec
  * </ul>
  */
-class LiterateSpecification extends Specification with ExpectableFactory with DataTables {
+class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties {
   setSequential
   def this(n: String) = { this(); name = n; description = n; this }
   
@@ -34,32 +34,26 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   }
   /** This silence function allows to silence calls with this style: shh { a call } */
   def shh(a: =>Any) = { a; () }
-
-  /**
-   * This method is used setup a property value, in order to avoid repeting a string. For example: <pre>
-   * The name of the person should be {"john" as personName in checkPersonName}
-   * </pre>. 
-   */
-  implicit def anyToAs[T](a: T) = new AsProperty(a)
-  implicit def propertyToValue[T](p: Property[T]):T = p()
-  case class AsProperty[T](a: T) { 
-    def as(p: Property[T]) = {p() = a; a }
-    def apply(p: Property[T]) = {p() = a; a}
-    def apply(f: T => Any)= {f(a); a }
-    def as(f: T => Any)= {f(a); a }
-  }
   
   /**
    * This method allows to embbed a DataTable in a literate specification and display the results of its execution
    */
   implicit def makeTable(s: String) = new TableExample(s)
   case class TableExample(desc: String) {
-    def inTable(table: ExecutableDataTable) = {
+    def inTable(table: =>ExecutableDataTable) = {
+      lazy val tableToExecute = table
       forExample(desc) in {
-        table.execute
-        table.results
+        tableToExecute.execute
       }
-      desc + "\n" + table.toString
+      desc + "\n" + tableToExecute.toHtml.toString
+    }
+    def inForm(form: =>org.specs.util.Forms#Form) = {
+      lazy val formToExecute = form
+      forExample(desc) in {
+        formToExecute.execute
+        if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
+      }
+      desc + "\n" + formToExecute.toHtml.toString
     }
   }    
   
@@ -129,102 +123,6 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 
   def includeSus(susName: String) = "include " + susName + " not implemented yet"
 }
-/**
- * This trait provides String properterties with alphabetical names.
- */
-trait StringProperties { outer =>
-  val a = Property[String]("")
-  val b = Property[String]("")
-  val c = Property[String]("")
-  val d = Property[String]("")
-  val e = Property[String]("")
-  val f = Property[String]("")
-  implicit def stringToAlpha(value: String) = StringToAlpha(value)
-  case class StringToAlpha(value: String) {
-    def a = { outer.a() = value; value }
-    def b = { outer.b() = value; value }
-    def c = { outer.c() = value; value }
-    def d = { outer.d() = value; value }
-    def e = { outer.e() = value; value }
-    def f = { outer.f() = value; value }
-  } 
-}
-/**
- * This trait provides Int properterties with alphabetical names.
- */
-trait IntProperties { outer =>
-  val i = Property[Int](0)
-  val j = Property[Int](0)
-  val k = Property[Int](0)
-  val l = Property[Int](0)
-  val m = Property[Int](0)
-  val n = Property[Int](0)
-  implicit def intToAlpha(value: Int) = IntToAlpha(value)
-  case class IntToAlpha(value: Int) {
-    def i = { outer.i() = value; value }
-    def j = { outer.j() = value; value }
-    def k = { outer.k() = value; value }
-    def l = { outer.l() = value; value }
-    def m = { outer.m() = value; value }
-    def n = { outer.n() = value; value }
-  } 
-}
-/**
- * This trait provides Boolean properterties with alphabetical names.
- */
-trait BooleanProperties { outer =>
-  val o = Property[Boolean](true)
-  val p = Property[Boolean](true)
-  val q = Property[Boolean](true)
-  val r = Property[Boolean](true)
-  val s = Property[Boolean](true)
-  val t = Property[Boolean](true)
-  implicit def booleanToAlpha(value: Boolean) = BooleanToAlpha(value)
-  case class BooleanToAlpha(value: Boolean) {
-    def o = { outer.o() = value; value }
-    def p = { outer.p() = value; value }
-    def q = { outer.q() = value; value }
-    def r = { outer.r() = value; value }
-    def s = { outer.s() = value; value }
-    def t = { outer.t() = value; value }
-  } 
-}
-/**
- * This trait provides Double properterties with alphabetical names.
- */
-trait DoubleProperties { outer =>
-  val u = Property[Double](0.0)
-  val v = Property[Double](0.0)
-  val w = Property[Double](0.0)
-  val x = Property[Double](0.0)
-  val y = Property[Double](0.0)
-  val z = Property[Double](0.0)
-  implicit def doubleToAlpha(value: Double) = DoubleToAlpha(value)
-  case class DoubleToAlpha(value: Double) {
-    def u = { outer.u() = value; value }
-    def v = { outer.v() = value; value }
-    def w = { outer.w() = value; value }
-    def x = { outer.x() = value; value }
-    def y = { outer.w() = value; value }
-    def z = { outer.z() = value; value }
-  } 
-}
-/**
- * This trait one String property for a current value.
- */
-trait CurrentProperty { outer => 
-  val it = Property[String]("")
-  implicit def stringToIt(s: String) = StringToIt(s)
-  case class StringToIt(s: String) {
-    def it = { outer.it() = s; s }
-  } 
-  
-}
-/**
- * This trait adds all properties.
- */
-trait AllProperties extends StringProperties with IntProperties with DoubleProperties with BooleanProperties with CurrentProperty
-object AllProperties extends AllProperties
 /**
  * This trait provides functions which can be used to ease the use of wiki markup
  */

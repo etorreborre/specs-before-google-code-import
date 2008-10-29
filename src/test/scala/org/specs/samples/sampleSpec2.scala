@@ -9,6 +9,20 @@ object sampleSpec2 extends Specification {
     }
   }    
 }
+
+
+object allSpec extends Specification {
+  def length11(s: String) = new Specification(s) {
+    s should {
+      "have 11 characters" in {
+        s.length must_== 11
+      }
+    }
+  }
+  include(length11("hello world"), length11("cold today!"))
+}
+
+
 import org.specs.runner._
 class helloWorldTest extends Runner(helloWorld) with JUnit with ScalaTest
 object helloWorld extends Specification("Hello world") {

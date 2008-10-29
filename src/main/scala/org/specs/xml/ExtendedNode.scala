@@ -73,5 +73,12 @@ object NodeFunctions {
                                   iterableComparison(n1.child.filter(!isSpaceNode(_)), n2.child.filter(!isSpaceNode(_)))
       case (n1: NodeSeq, n2: NodeSeq) => iterableComparison(n1.filter(!isSpaceNode(_)), n2.filter(!isSpaceNode(_)))
     }
-  } 
+  }
+  def reduce[T](list: Iterable[T], f: T => NodeSeq): NodeSeq = {
+    fold[T](NodeSeq.Empty.toSeq)(list, f)
+  }
+  /** reduce a list with a function and an init NodeSeq value. */
+  def fold[T](initValue: NodeSeq)(list: Iterable[T], f: T => NodeSeq): NodeSeq = {
+    list.foldLeft(initValue)( (res, value) => res ++ f(value))
+  }
 }

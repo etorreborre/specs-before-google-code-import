@@ -125,8 +125,8 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
  */
 trait HasResults {
   def failures: Seq[FailureException]
-  def errors: Seq[Throwable]
   def skipped: Seq[SkippedException]
+  def errors: Seq[Throwable]
   def status = { 
     if (!errors.isEmpty)
       "error"
@@ -137,12 +137,35 @@ trait HasResults {
     else
       "success"
   }
+  def statusAsText = { 
+    if (!failureAndErrors.isEmpty)
+      "x"
+    else if (!skipped.isEmpty)
+      "o"
+    else
+      ""
+  }
   def hasFailureAndErrors = !failureAndErrors.isEmpty
   def failureAndErrors = (failures ++ errors).toList
   def issues = (failures ++ errors ++ skipped).toList
-  def issueMessages = issues.foldLeft("")(_ + _.getMessage)
+  def issueMessages = issues.map(_.getMessage).mkString(", ")
   def hasIssues = !issues.isEmpty
   def isOk = issues.isEmpty
+}
+/**
+ * Default implementation for the HasResults trait using lists.
+ */
+trait DefaultResults extends HasResults {
+  private val thisFailures: ListBuffer[FailureException] = new ListBuffer()
+  private val thisErrors: ListBuffer[Throwable] = new ListBuffer()
+  private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer()
+  def reset() = { thisFailures.clear; thisErrors.clear; thisSkipped.clear } 
+  def addFailure(f: FailureException) = thisFailures.append(f)
+  def addError(t: Throwable) = thisErrors.append(t)
+  def addSkipped(s: SkippedException) = thisSkipped.append(s)
+  def failures: Seq[FailureException] = thisFailures.toList
+  def errors: Seq[Throwable] = thisErrors.toList
+  def skipped: Seq[SkippedException] = thisSkipped.toList
 }
   
 

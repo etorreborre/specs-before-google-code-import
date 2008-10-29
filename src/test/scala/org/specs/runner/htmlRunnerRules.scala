@@ -1,13 +1,13 @@
 package org.specs.runner
  
 import org.specs.specification._
-import org.specs.runner._
 import org.specs.Sugar._
 import org.specs._
+import org.specs.util._
 import org.specs.io.mock._
 import scala.xml._
 
-class htmlRunnerRules(name: String) extends LiterateSpecification(name) {
+class htmlRunnerRules(name: String) extends LiterateSpecification(name) with XmlProperties {
   
   def title = run must \\(<title>{specification.name}</title>)
   def oneTablePerSus = run must \\(<table></table>)
@@ -28,7 +28,7 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) {
   def outputFile = htmlFile.toString must include("./target/specification.html")
   def cssDir = createdDirs must contain("./target/css")
   def imagesDir = createdDirs must contain("./target/images") 
-  def dataTableFailure = run must (\\(<td>a</td>) and \\(<td>b</td>) and \\(<td>result</td>))
+  def dataTableFailure = run must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
   def literateDesc = run must \\("h1")
   def subExamples = run must (beMatching("subex1")^^((_: Iterable[Node]).toString) 
                               and \\(<h4>this example has sub-examples</h4>))   
@@ -76,6 +76,15 @@ object specification extends LiterateSpecification("Sample Specification") {
     "this literate sus" is 
 <wiki>h1. A h1 title
   {1 must_== 1}
+  {  
+    val calc = new Object { def add(x: Int, y: Int): Int = x + y }
+    "A calculator can add integers" inTable 
+    "a" | "b" | "c" | 
+     1  !  2  !  3  |
+     2  !  2  !  5  |
+     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) } 
+  }
+
 </wiki>
 
     "The system" should {
@@ -106,7 +115,4 @@ object specification extends LiterateSpecification("Sample Specification") {
     }
   }
 import org.specs.runner._
-import org.specs._
-class htmlRunnerSpecTest extends JUnit4(htmlRunnerSpec)
-object htmlRunnerRunner extends HtmlRunner(htmlRunnerSpec, "target/htmlRunnerSpec") with Console
-object allSpecsHtmlRunner extends HtmlRunner(allSpecsAndUnits, "target/allSpecs/") with Console
+class htmlRunnerSpecTest extends HtmlSuite(htmlRunnerSpec, "target") with JUnit

@@ -1,7 +1,7 @@
 package org.specs.specification
 import org.specs.Sugar._
 import org.specs.runner._
-import org.specs.util.Property
+import org.specs.util._
 
 trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wiki {
    object example1 extends LiterateSpecification  {
@@ -32,7 +32,7 @@ trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wi
    def taggedExamples = { 
      example4.successes.size aka "the number of successes" must_== 1 
    }
-   import org.specs.specification.AllProperties._
+   import org.specs.util.AllProperties._
 
    def hello(name: String): String = "hello " + name
 }

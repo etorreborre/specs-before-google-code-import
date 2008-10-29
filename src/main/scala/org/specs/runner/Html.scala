@@ -4,6 +4,7 @@ import org.specs.specification._
 import org.specs.io._
 import org.specs.util._
 import org.specs.ExtendedThrowable._
+import org.specs.xml.NodeFunctions._
 
 /**
  * The Html trait outputs the results of a specification execution as an html
@@ -203,7 +204,7 @@ trait Html extends File {
    */
   def exampleRow(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     <tr class={if (alternation) "b" else "a"}>
-      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)}{formattedDesc(example)}</td>{message(example, fullSuccess)}
+      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {formattedDesc(example)}</td>{message(example, fullSuccess)}
     </tr>
   }
   
@@ -241,56 +242,14 @@ trait Html extends File {
    */
   def failure(f: FailureException): NodeSeq = {
     f match {
-      case DataTableFailureException(table) => xmlFor(table)
+      case DataTableFailureException(table) => table.toHtml
       case regular => exceptionText(regular) 
     }
   }
   def stackTrace(e: Throwable) = if (!e.isInstanceOf[FailureException]) e.stackToString("\r", "\r", "") else ""
   def exceptionText(e: Throwable) = <a title={e.fullLocation + stackTrace(e)}>{if (e.getMessage != null) new Text(e.getMessage) else new Text("null")}</a>
-  /** Alias for DataTable with all type parameters. */
-  type DT = DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] forSome { type T0; type T1; type  T2; type T3; type T4; type T5; type T6; type T7; type T8; type T9; type T10; type T11; type T12; type T13; type T14; type T15; type T16; type T17; type T18; type T19 } 
-
-  /** create an xml nested table for a DataTable. */
-  def xmlFor(table: DT) = {
-    /** the header contains an empty first cell. */
-    val header = fold[Any](<td/>.toSeq)(table.header.titles, s => <td>{s}</td>)
-
-    /** return the <tr/> row for a Row result. */
-    def rowResult(result: RowResult) = {
-      status(result) ++
-      reduce[Any](result.row.valuesList, value => <td>{value.toString}</td>) ++
-      failureMessage(result)
-    }
-
-    /** 
-     * return a message row for a Row result.
-     * The message spans all columns.
-     */
-    def failureMessage(result: RowResult) = {
-      result match {
-        case RowOk(_) => NodeSeq.Empty
-        case RowKo(row, failure) => <tr><td/><td colspan={row.valuesList.size.toString} class="failureMessage">{failure.getMessage}</td></tr>
-      }
-    }
-    /** return a status icon for a Row result. */
-    def status(result: RowResult) = {
-      if (result.isOk) <td/>
-      else <td class="noBorder"><img src="images/icon_failure_sml.gif"/></td>
-    }
-    /** the rows for DataTable results is the sum of all html rows. */
-    val tableRows = reduce[RowResult](table.rowResults, r => <tr>{rowResult(r)}</tr>)
-
-    <table class="nested">{ header ++ tableRows }</table>
-  }
   
   /** reduce a list with a function returning a NodeSeq. */
-  private def reduce[T](list: Iterable[T], f: T => NodeSeq): NodeSeq = {
-    fold[T](NodeSeq.Empty.toSeq)(list, f)
-  }
-  /** reduce a list with a function and an init NodeSeq value. */
-  private def fold[T](initValue: NodeSeq)(list: Iterable[T], f: T => NodeSeq): NodeSeq = {
-    list.foldLeft(initValue)( (res, value) => res ++ f(value))
-  }
   def onLoadFunction(specification: Specification) = {
     if (nonTrivialSpec(specification)) "" else "noNavBar()"
   }

@@ -87,6 +87,43 @@ p {
   color: #000;
 }
 
+
+table.dataTable {
+    table-layout: auto;
+	width: auto;
+	background: #EEEEEE;
+    border-collapse: collapse;
+    empty-cells: show;
+    margin: 8px 0px 8px 0px;
+	padding: 0px;
+	border: solid #AAAAAA;
+	border-width: 1px 0px 0px 1px;
+	font-size: 0.9em;
+}
+table.dataTable th {
+	border: solid #AAAAAA;
+	border-width: 0px 1px 1px 0px;
+	padding: 2px 6px 2px 6px;
+}
+table.dataTable td {
+	border: solid #AAAAAA;
+	border-width: 0px 1px 1px 0px;
+	padding: 1px 3px 1px 3px;
+}
+table.dataTable tr.success {
+  background-color: #CCFFCC;
+}
+table.dataTable tr.failure {
+  background-color: #FFFF99;
+}
+table.dataTable tr.error {
+  background-color: #FF9999;
+}
+table.dataTable tr.skipped {
+  background-color: #DDDDDD;
+}
+
+
 table.bodyTable th {
   color: white;
   background-color: #bbb;
@@ -97,6 +134,35 @@ table.bodyTable th {
 table.bodyTable th, table.bodyTable td {
   font-size: 1em;
 }
+
+table.bodyTable tr.success {
+  background-color: #CCFFCC;
+}
+table.bodyTable tr.failure {
+  background-color: #FFFF99;
+}
+table.bodyTable tr.error {
+  background-color: #FF9999;
+}
+table.bodyTable tr.skipped {
+  background-color: #DDDDDD;
+}
+table.dataTable td.value {
+  background-color: #FFFFFF;
+}
+table.dataTable td.success {
+  background-color: #CCFFCC;
+}
+table.dataTable td.failure {
+  background-color: #FFFF99;
+}
+table.dataTable td.error {
+  background-color: #FF9999;
+}
+table.dataTable td.skipped {
+  background-color: #DDDDDD;
+}
+
 
 table.bodyTable tr.a {
   background-color: #ddd;
@@ -116,11 +182,7 @@ table.nested td.failureMessage {
   color: #900;
 }
 table td.navTitle {
-<<<<<<< HEAD:src/main/resources/css/maven-theme.css
-  border: 0px #666666 
-=======
   border: 0px #666666;
->>>>>>> develop:src/main/resources/css/maven-theme.css
   background-color: #fff;
   color: #36a;
   text-align: center;
