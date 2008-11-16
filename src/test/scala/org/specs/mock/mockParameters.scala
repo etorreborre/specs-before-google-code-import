@@ -74,7 +74,7 @@ trait MovieGuardAndRater {
     def canWatch(w: Watcher, m: Movie) = rater.okForAge(w.age, m)
     def guard(m: Movie) = rater.register(m)
   }
-  case class MovieRater {
+  case class MovieRater() {
     def okForAge(a: Int, m: Movie) = a >= m.minAge
     def register(m: Movie) = {}
   }

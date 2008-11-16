@@ -29,5 +29,5 @@ object timerSpec extends Specification {
       timer.stop mustMatch "2 seconds"
     }
   }
-  case class TestTimer extends SimpleTimer
+  case class TestTimer() extends SimpleTimer
 }

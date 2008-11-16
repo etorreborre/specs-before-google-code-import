@@ -7,6 +7,7 @@ import org.specs.mock._
 import org.specs.io._
 import org.specs.specification._
 import scala.collection.immutable
+import scala.collection.Set
 
 object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock with ScalaCheck {
   "The ScalaCheckParameters object" should {
@@ -95,10 +96,10 @@ trait ScalaCheckMock extends Mocker {
   } 
   val matcher = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener  
   val matcherWithFailure = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
-    override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
+    override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), Set("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
   val matcherWithPropertyException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
-    override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), "label"), 1, 2, FreqMap.empty[immutable.Set[Any]])
+    override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), Set("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }  
   val matcherWithGenerationException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])

@@ -63,7 +63,7 @@ use the system and its as parameters in { (s: System, c: Context) =>
   }
 }
 trait ContextDefinitions {
-  case class SpecificationWithSharedContext extends Specification {
+  case class SpecificationWithSharedContext() extends Specification {
     var sharedCounter = 0
     val sharedContext = beforeContext { sharedCounter = sharedCounter + 1 }
     "A sus with a" ->- sharedContext should {
@@ -74,9 +74,9 @@ trait ContextDefinitions {
   def shared = new SystemContext[SpecificationWithSharedContext] {
     def newSystem = SpecificationWithSharedContext()
   }
-  case class SpecificationWithSystemContext extends Specification {
+  case class SpecificationWithSystemContext() extends Specification {
     var system1: System = _
-    case class System { 
+    case class System() { 
       var counter = 0
     }
     class SampleSystemContext extends SystemContext[System] {

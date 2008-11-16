@@ -122,7 +122,7 @@ trait ButtonAndLight {
     def pound = light.destroy
     def init() = lightOn = false
   }
-  case class Light {
+  case class Light() {
     var state: LightState = Off
     def on = state = On
     def off = state = Off

@@ -16,7 +16,7 @@ trait DetailedFailures {
 /** abstract data type representing Detailed information about failures */
 abstract class Detailed
 /** no details should be shown */
-case class noDetails extends Detailed
+case class noDetails() extends Detailed
 /** all details should be shown */
 case class fullDetails(separators: String) extends Detailed {
   def this() = this("()") 

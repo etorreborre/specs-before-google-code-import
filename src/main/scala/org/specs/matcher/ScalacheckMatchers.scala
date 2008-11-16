@@ -1,5 +1,6 @@
 package org.specs.matcher
-import org.scalacheck.{StdRand, Gen, Prop, Arg, Test}
+import org.scalacheck.{Gen, Prop, Arg, Test}
+import org.scalacheck.util.StdRand
 import org.scalacheck.Prop._
 import org.scalacheck.Test.{Status, Params, Proved, Passed, Failed, Exhausted, GenException, PropException, Result}
 import org.scalacheck.Pretty._
@@ -27,7 +28,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    * 
    * @see Expectable
    */
-  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => property(true)
+  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => property((a: Boolean) => true)
 
    /**
     * default parameters. Uses ScalaCheck default values and doesn't print anything to the console
@@ -79,7 +80,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * and indicates if the generation should be verbose or not 
     */
    def checkProperty(prop: Prop)(p: Parameters) = {
-     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand), p.verbose)
+     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, 1, 1), p.verbose)
    }
     
   /**
