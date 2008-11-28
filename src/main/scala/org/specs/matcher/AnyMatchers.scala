@@ -196,11 +196,21 @@ trait AnyMatchers {
    */   
   def throwA[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
   /**
+   * @see throwException description
+   */   
+  def throwA[E <: Throwable](e: E): ExceptionMatcher[E] = throwException(e)
+  /**
    * return a matcher which will be ok if an exception of that type is thrown
    */   
   def throwAn[E <: Throwable](implicit m: Manifest[E]): ExceptionClassMatcher[E] = throwAnException[E]
   /**
+   * Alias for throwA(new Exception)
+   * @see throwException description
+   */   
+  def throwAn[E <: Throwable](e: E): ExceptionMatcher[E] = throwException(e)
+  /**
    * Alias for throwException
+   * @deprecated use throwA or throwAn preferably
    */   
   def throwThis[E <: Throwable](exception: =>E): ExceptionMatcher[E] = throwException(exception)
   /**
@@ -208,6 +218,7 @@ trait AnyMatchers {
    * <br>Otherwise rethrow any other exception
    * <br>Usage: <code>value must throwA(new SpecialException)</code>
    * <br>Advanced usage: <code>value must throwA(new SpecialException).like {case ExceptionType(m) => m.startsWith("bad")}</code>
+   * @deprecated use throwA or throwAn preferably
    */   
   def throwException[E <: Throwable](exception: =>E): ExceptionMatcher[E] = new ExceptionMatcher[E](exception)
   /**
