@@ -66,7 +66,7 @@ trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
  */
 abstract class FileReporter(outputDirPath: String, fName: Specification => String) extends File {
   override def fileName(s: Specification) = fName(s)
-  override def outputDir = outputDirPath
+  override def outputDir = normalize(outputDirPath)
 }
 
 /** 
@@ -76,7 +76,7 @@ import _root_.org.junit.runner._
 @RunWith(classOf[JUnitSuiteRunner])
 abstract class FileSuite(outputDirPath: String, fName: Specification => String) extends File {
   override def fileName(s: Specification) = fName(s)
-  override def outputDir = outputDirPath
+  override def outputDir = normalize(outputDirPath)
 }
 object NamingFunction {
   import org.specs.util.ExtendedString._

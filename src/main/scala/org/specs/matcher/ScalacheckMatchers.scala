@@ -28,7 +28,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    * 
    * @see Expectable
    */
-  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => property((a: Boolean) => true)
+  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => Prop.forAll((a: Boolean) => true)
 
    /**
     * default parameters. Uses ScalaCheck default values and doesn't print anything to the console
@@ -99,7 +99,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
      }
      
      // check the property
-     def propToCheck = if (!shouldCountExpectations) prop else (prop && property((t: Boolean) => true.isExpectation)) 
+     def propToCheck = if (!shouldCountExpectations) prop else (prop && Prop.forAll((t: Boolean) => true.isExpectation)) 
      val results = check(params, propToCheck, printResult) 
      
      // display the final result if verbose = true

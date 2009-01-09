@@ -33,7 +33,12 @@ trait Html extends File {
   }
  
   /** define the html content for this specification execution. */
-  def specOutput(spec: Specification): String = asHtml(spec).toString 
+  def specOutput(spec: Specification): String = {
+    // it is necessary to replace the br blocks because:
+    // <br></br>: gets interpreted as a double line break in html
+    // </br>: gets interpreted as a single line break in html
+    asHtml(spec).toString.replace("<br></br>", "</br>")
+  } 
   
   /** 
    * Create the html content for this specification execution.

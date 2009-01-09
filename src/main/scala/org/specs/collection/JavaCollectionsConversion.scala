@@ -9,7 +9,7 @@ trait JavaConversions {
   /**
    * @return the vector elements as a List
    */
-  implicit def asList[T](v: java.util.Vector[T]): List[T]= {
+  implicit def vectorToList[T](v: java.util.Vector[T]): List[T]= {
     var list: List[T] = List()
     val it: java.util.Iterator[T] = v.iterator
     while (it.hasNext) { list = it.next.asInstanceOf[T]::list}

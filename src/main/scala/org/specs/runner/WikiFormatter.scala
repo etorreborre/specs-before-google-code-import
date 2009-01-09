@@ -33,7 +33,8 @@ class WikiFormatter extends LiterateDescriptionFormatter {
     replace("&#8221;", "\"").
     replace("&#8216;", "'").
     replace("&#8217;", "'").
-    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "\n"))}
+    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "<br></br>"))
+  }
   
   def format(desc: Elem): Node = format(desc, Nil)
   def format(desc: Elem, examples: Iterable[Example]): Node = {

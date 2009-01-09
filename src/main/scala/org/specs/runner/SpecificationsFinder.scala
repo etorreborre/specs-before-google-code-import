@@ -21,7 +21,7 @@ case class SpecsFinder(path: String, pattern: String, asOneSpecification: Boolea
 
   lazy val specs = collectSpecs(asOneSpecification)
 
-  private def collectSpecs(asOneSpecification: Boolean) = {
+  protected def collectSpecs(asOneSpecification: Boolean) = {
     val collected = new scala.collection.mutable.ListBuffer[Specification]
     val specNames = specificationNames(path, pattern)
     specNames foreach {className => 
@@ -87,5 +87,5 @@ trait SpecificationsFinder extends FileSystem {
    * Tries to load the class name and cast it to a specification
    * @return None in case of an exception. 
    */
-  def createSpecification(className: String): Option[Specification] = createObject[Specification](className, false)
+  def createSpecification(className: String): Option[Specification] = createObject[Specification](className)
 }

@@ -23,12 +23,6 @@ object wikiFormatterSpec extends Specification {
     "format single quotes as single quotes" in {
       formatString("don't") must include("don't")
     }
-    "not add br tags when formatting code" in {
-      formatString("""<pre><code>
-        use the system as a parameter in { s: System =>
-          ...
-        }</code></pre>""") must (notInclude("br") and include("pre"))
-    }
   }
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"

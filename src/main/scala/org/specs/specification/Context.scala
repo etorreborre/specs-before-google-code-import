@@ -172,6 +172,12 @@ abstract class SystemContext[S] extends Context with java.lang.Cloneable {
   def before(s: S) = {}
   def newInstance: SystemContext[S] = this.clone.asInstanceOf[SystemContext[S]]
 }
+
+object SystemContext {
+  def apply[S](s: => S) = new SystemContext[S] {
+    def newSystem = s
+  }
+}
 case class Context() {
   var firstActions: () => Any = () => () 
   var lastActions: () => Any = () => ()

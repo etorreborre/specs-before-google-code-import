@@ -18,7 +18,8 @@ object fs extends FileSystem
  * <p>
  * It mixes the <code>FileReader</code> and <code>FileWriter</code> traits to provide easy read/write operations.  
  */
-trait FileSystem extends FileReader with FileWriter with JavaConversions {
+trait FileSystem extends FileReader with FileWriter {
+  import org.specs.collection.JavaCollectionsConversion._ 
   object logger extends Log with ConsoleOutput
   /**
    * @param path glob expression, for example: <code>./dir/**/*.xml</code>

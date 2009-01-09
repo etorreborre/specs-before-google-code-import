@@ -53,10 +53,10 @@ case class Sus(description: String, var cycle: ExampleLifeCycle) extends Example
   var literateDescription: Option[Elem] = None
 
   /** examples describing the sus behaviour */
-  var examples = new Queue[Example]
+  var examples = List[Example]()
 
   /** add an example to the list of examples. */
-  def addExample(e: Example) = examples += e
+  def addExample(e: Example) = examples = examples ::: List(e)
   def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
     val ex = new Example(ExampleDescription(desc), lifeCycle)
     addExample(ex)

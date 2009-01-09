@@ -4,8 +4,9 @@ import org.specs.ExtendedThrowable._
 import org.specs.io._
 import org.specs.util._
 
-class TeamCityRunner(val specs: Specification*) extends TeamCityReporter
-
+/**
+ * TeamCity string formatting utilities.
+ */
 object TeamCityUtils {
   class TeamCityString(s: String) {
     def quoteForTeamCity = "'" + escapeForTeamCity + "'"
@@ -29,9 +30,9 @@ trait TeamCityOutput extends Output {
   /** create a message for the end of a test */
   def testFinished(name: String) = message("testFinished", "name" -> name)
   /** create a message for an ignored test */
-  def testIgnored(name: String, args: (String, String)*) = message("testIgnored", args:_*)
+  def testIgnored(name: String, args: (String, String)*) = message("testIgnored", Seq("name" -> name) ++ args: _*)
   /** create a message for a failed test (failure or error) */
-  def testFailed(name: String, args: (String, String)*) = message("testFailed", args:_*)
+  def testFailed(name: String, args: (String, String)*) = message("testFailed", Seq("name" -> name) ++ args: _*)
 
   import TeamCityUtils._
   /** create a message with one argument */
@@ -47,44 +48,59 @@ trait TeamCityOutput extends Output {
 }
 
 /**
- * The TeamCityReporter
+ * The TeamCityReporter is an output reporter tailored to output
+ * messages using the TeamCity format.
  */
 trait TeamCityReporter extends OutputReporter with TeamCityOutput {
 
+  /** current specification being reported. */
   private val currentSpec = new scala.util.DynamicVariable[Specification](null)
 
+  /** report a specification, on the TeamCity output. */
   override def reportSpec(spec: Specification, padding: String) = {
     testSuiteStarted(spec.name)
     currentSpec.withValue(spec) {
-      super.reportSpec(spec, padding)
+      super.report(spec.subSpecifications, padding)
+      super.reportSystems(spec.systems, padding)
     }
     testSuiteFinished(spec.name)
     this
   }
    
+  /** report a Sus on the TeamCity output (). */
   override def reportSus(sus: Sus, padding: String) = { 
     testSuiteStarted(sus.description)
-    super.reportSus(sus, padding)
+    for (example <- sus.examples) {
+      reportExample(example, padding)
+    }
     testSuiteFinished(sus.description)
   }
-  override def printSus(sus: Sus, padding: String) = {
-    testSuiteStarted(sus.description)
-    super.printSus(sus, padding)
-    testSuiteFinished(sus.description)
-  }
+  /** 
+   * print a Sus on the TeamCity output (this method is directly called
+   * if there is only sus in the specification). 
+   */
+  override def printSus(sus: Sus, padding: String) = reportSus(sus, padding) 
 
+  /** 
+   * Report one example on the TeamCity output.
+   * The subexample messages are aggregated as one message.
+   */
   override def reportExample(example: Example, padding: String) = {
-    super.reportExample(example, padding)
-
     val testName = currentSpec.value.name + "." + example.description
     testStarted(testName)
-    
-    val m = example.failureAndErrors.map(throwableToMessage _).mkString("; ")
+    def exampleMessages(e: Example) = e.failureAndErrors.map(throwableToMessage _).mkString("; ")
+    def subExampleMessages(e: Example) = e.failureAndErrors.map(e.description + ": " + throwableToMessage(_))
+    val m = if (example.subExamples.isEmpty)
+              exampleMessages(example)
+            else
+              example.subExamples.flatMap(e => subExampleMessages(e)).mkString("; ")
+
     example.failureAndErrors.firstOption.map(e => testFailed(testName, "message" -> m))
     example.skipped.map(s => testIgnored(testName, "message" -> throwableToMessage(s)))
     
     testFinished(testName)
   }
+  
   private def throwableToMessage(t: Throwable) = {
     (if (t.getMessage != null) t.getMessage else "no message") + 
     " (" + t.location + ")" 
@@ -92,3 +108,8 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
   override val timer = new SimpleTimer
 }
 
+/**
+ * This runner provides a main method to take a list of specifications and
+ * report them one by one.
+ */
+class TeamCityRunner(val specs: Specification*) extends TeamCityReporter

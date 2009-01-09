@@ -188,13 +188,3 @@ class ConsoleRunner(val specifications: Specification*) extends Console {
   def ConsoleRunner(specs: List[Specification]) = new ConsoleRunner(specs :_*)
 }
 
-/**
- * This class can be used to search for specifications on a given path 
- * and execute them.<br>
- * Usage: <code>object myFileRunner extends SpecsFileRunner(path, pattern)</code><br>
- * Where <code>path</code> is a path to a directory containing scala files (it can be a glob: i.e. "dir/**/*spec.scala")
- * and <code>pattern</code> is a regular expression which is supposed to match an object name extending a Specification
- * class named ".*Spec.*"
- */  
-class SpecsFileRunner(path: String, pattern: String) extends SpecsFinder(path, pattern, true) with Console 
-

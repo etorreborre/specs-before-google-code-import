@@ -1,8 +1,8 @@
 package org.specs.specification
-import org.scalacheck.Gen._
+import org.scalacheck.Gen.{ choose, sized, vectorOf }
 import org.scalacheck._
 import org.scalacheck.Arbitrary
-import org.scalacheck.Prop._
+import org.scalacheck.Prop.forAll
 import org.specs.matcher._
 
 trait SpecificationGenerator { self: Specification =>
@@ -47,17 +47,16 @@ trait SpecificationGenerator { self: Specification =>
   implicit val arbitrarySpec: Arbitrary[Specification] = Arbitrary { genSpec }
 }
 object generatorSpec extends Specification with SpecificationGenerator with ScalaCheck {
-
   "a sus" should {
     "have a number of error + failure + successes + skipped == the number of examples" in {
-      property {(sus: Sus) => 
+      Prop.forAll {(sus: Sus) => 
         (sus.failures.size + sus.errors.size + sus.skipped.size + sus.successes.size) must be_==(sus.examples.size)
       } must pass(set(maxSize -> 5))
     } 
   }
   "a specification" should {
     "have a number of error + failure + successes + skipped == the number of examples" in {
-      property {(spec: Specification) => 
+      Prop.forAll {(spec: Specification) => 
         (spec.failures.size + spec.errors.size + spec.skipped.size + spec.successes.size) must be_==(spec.examples.size)
       } must pass(set(maxSize -> 5))
     } 

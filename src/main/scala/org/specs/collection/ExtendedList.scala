@@ -1,6 +1,5 @@
 package org.specs.collection
 import scala.collection.immutable._
-
 /**
  * This object provides useful functions for Lists, like:<ul>
  * <li><code>everyOrder</code>: returns all permutations of the list elements 
@@ -29,7 +28,9 @@ object ExtendedList {
       case x::rest => everyOrder(rest).flatMap {mix(x, _)}
     }
   }
-  /**
+  /** @return an ExtendedList object with more functionalities */
+  implicit def listToExtendedList[T](l: List[T]) = new ExtendedList(l)
+   /**
    * See the description of the ExtendedList object
    */
   class ExtendedList[T](l: List[T]) {
@@ -64,7 +65,7 @@ object ExtendedList {
       l match {
         case Nil => Nil
         case x::Nil => List(l)
-        case x::rest => List(x)::(rest).prefixes.map(x::_)
+        case x::rest => List(x)::rest.prefixes.map(x::_)
       }
     }
 
@@ -83,6 +84,4 @@ object ExtendedList {
      */
     def scramble = l.sort((a, b) => (new java.util.Random).nextInt(1) > 0)
   }
-  /** @return an ExtendedList object with more functionalities */
-  implicit def listToExtendedList[T](l: List[T]) = new ExtendedList(l)
 }

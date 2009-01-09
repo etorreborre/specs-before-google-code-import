@@ -101,10 +101,14 @@ trait IterableMatchers {
   def notExistMatch(pattern: String) = existMatch(pattern).not
 
   /**
+   * @deprecated: use haveTheSameElementsAs instead
+   */   
+  def haveSameElementsAs[T](l: Iterable[T]) = haveTheSameElementsAs(l)
+  /**
    * Matches if there l contains the same elements as the Iterable <code>iterable</code>.<br>
    * This verification does not consider the order of the elements but checks the iterables recursively
    */   
-  def haveSameElementsAs[T](l: Iterable[T]) = new Matcher[Iterable[T]](){
+  def haveTheSameElementsAs[T](l: Iterable[T]) = new Matcher[Iterable[T]](){
     def apply(iterable: => Iterable[T]) = (
         l.sameElementsAs(iterable),
         d(l.toDeepString) + " has the same elements as " + q(iterable.toDeepString), 
@@ -112,14 +116,22 @@ trait IterableMatchers {
   }
 
   /**
+   * @deprecated: use beTheSameSeqAs instead
+   */   
+  def beSameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = beTheSameSeqAs(s)(d)
+  /**
    * Matches if a sequence contains the same elements as s, using the equality (in the same order)
    */   
-  def beSameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSeq)(s)
+  def beTheSameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSeq)(s)
 
+  /**
+   * @deprecated: use beTheSameSetAs instead
+   */   
+  def beSameSetAs[T](s: =>Set[T])(implicit d: Detailed) = beTheSameSetAs(s)(d)
   /**
    * Matches if a set contains the same elements as s, using the equality (in the any order)
    */   
-  def beSameSetAs[T](s: =>Set[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSet)(s)
+  def beTheSameSetAs[T](s: =>Set[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSet)(s)
 
   /**
    * Matches if the size is n

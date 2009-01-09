@@ -126,10 +126,12 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 /**
  * This trait provides functions which can be used to ease the use of wiki markup
  */
-trait Wiki {
+trait Wiki extends Properties {
   implicit def toWikiString(a: Any) = new WikiString(a.toString) 
   class WikiString(s: String) {
+    def code = wikiCode(s)
     def >@ = wikiCode(s)
+    def pre = wikiPre(s)
   }
   /** 
    * This function can be used to format code in a wiki description.
@@ -137,6 +139,7 @@ trait Wiki {
    * being displayed as question marks.
    */
   def wikiCode(stringToFormat: String) = "<code>"+stringToFormat+"</code>"
+  def wikiPre(stringToFormat: String) = "<pre>"+stringToFormat+"</pre>"
   /** 
    * Alias for wikiCode
    */
