@@ -45,6 +45,16 @@ object iterableMatchersSpec extends MatchersSpecification {
       expectation("one" must notBeIn(List("one", "two"))) must failWith("'one' is in 'List(one, two)'")
       expectation("one" aka "the element" must notBeIn(List("one", "two"))) must failWith("the element 'one' is in 'List(one, two)'")
     }
+    "provide a 'must beOneOf' matcher on iterables: 'one' must beOneOf('one', 'two')" in {
+      "one" must beOneOf("one", "two")
+      expectation("three" must beOneOf("one", "two")) must failWith("'three' is not one of 'one, two'")
+      expectation("three" aka "the element" must beOneOf("one", "two")) must failWith("the element 'three' is not one of 'one, two'")
+    }
+    "provide a 'must notBeOneOf' matcher on iterables: 'three' must notBeOneOf('one', 'two')" in {
+      "three" must notBeOneOf("one", "two")
+      expectation("one" must notBeOneOf("one", "two")) must failWith("'one' is one of 'one, two'")
+      expectation("one" aka "the element" must notBeOneOf("one", "two")) must failWith("the element 'one' is one of 'one, two'")
+    }
     "provide a 'must have' matcher on iterables: List('one', 'two') must have {m: String => m.contains('w')} [alias: mustExist]" in {
       List("one", "two") must have((_:String).contains("w"))
       expectation(List("one", "two") mustHave((_:String).contains("z"))) must failWith("no element verifies the property in 'List(one, two)'")
@@ -66,6 +76,10 @@ object iterableMatchersSpec extends MatchersSpecification {
       expectation(List("one", "two") mustNotContainMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in 'List(one, two)'")
       expectation(List("one", "two") aka "the list" must notContainMatch("[n-o]")) must failWith("at least one element matches '[n-o]' in the list 'List(one, two)'")
     }
+    "provide a 'must containMatchOnlyOnce' matcher on iterables checking if there is only one match" in {
+      List("one", "three") must containMatchOnlyOnce("[n-o]")
+      expectation(List("one", "two") must containMatchOnlyOnce("[n-o]")) must failWith("more than one element matches '[n-o]' in 'List(one, two)'")
+    }
     "provide a 'haveSize' matcher checking the size of a collection" in {
       List("one", "two") must haveSize(2)
       expectation(List("one", "two") must haveSize(3)) must failWith("'List(one, two)' doesn't have size 3")
@@ -75,4 +89,4 @@ object iterableMatchersSpec extends MatchersSpecification {
   }
 }
 import org.specs.runner._
-class iterableTest extends JUnit4(iterableMatchersSpec) 
+class iterableTest extends JUnit4(iterableMatchersSpec)

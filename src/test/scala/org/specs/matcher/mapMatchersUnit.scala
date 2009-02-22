@@ -1,6 +1,6 @@
 package org.specs.matcher
 import org.specs._
-import org.scalacheck.Prop
+import org.scalacheck.Prop._
 
 object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen with ScalaCheck {
   "Map matchers" should {
@@ -29,7 +29,7 @@ object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen wit
           case (false, _, ko) => { list forall {x:Int => ko.contains(x.toString) || f.isDefinedAt(x)} }
         }
       }
-      Prop.forAll(beDefinedAtAValue) must pass
+      forAll(beDefinedAtAValue) must pass
     }
     "provide a beDefinedBy matcher checking if a PartialFunction is defined at specific values and returns appropriate results" in {
       val beDefinedByValueAndResult = (f: PartialFunction[Int, String], map: Map[Int, String]) => {
@@ -38,7 +38,7 @@ object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen wit
           case (false, _, ko) => { map forall {x:(Int, String) => ko.contains(x.toString) || (f.isDefinedAt(x._1) && f(x._1) == x._2)} }
         }
       }
-      Prop.forAll(beDefinedByValueAndResult) must pass
+      forAll(beDefinedByValueAndResult) must pass
     }
   }
 }

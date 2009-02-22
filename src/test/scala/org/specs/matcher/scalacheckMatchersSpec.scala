@@ -3,8 +3,9 @@ import org.specs._
 import org.specs.Sugar._
 import org.scalacheck._
 import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
 import org.scalacheck.Gen._
-import org.scalacheck.Prop
+import org.scalacheck.Prop.forAll
 import org.specs.mock._
 import org.specs.io._
 
@@ -36,7 +37,7 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamp
     }
     "accept properties based on scalacheck commands" in  {
       expectation(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
-    } 
+    }
   }
   "A ScalaCheck property" should {
     "add new expectations during evaluation if isExpectation is on" in {
@@ -60,23 +61,24 @@ object scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamp
 }
 object spec extends Specification with ScalaCheck {
   dontExpectProperties()
-  Prop.forAll((a:Int) => isExpectation(a == a)) must pass
+  forAll((a:Int) => isExpectation(a == a)) must pass
 }
 object specWithExpectProperties extends Specification with ScalaCheck {
-  Prop.forAll((a:Int) => a == a) must pass
+  forAll((a:Int) => a == a) must pass
 }
 object specWithDontExpectProperties extends Specification with ScalaCheck {
   dontExpectProperties()
-  Prop.forAll((a:Int) => a == a) must pass
+  forAll((a:Int) => a == a) must pass
 }
-object specWithFailure extends Specification with ScalaCheck {  expectProperties
+object specWithFailure extends Specification with ScalaCheck {
+  expectProperties()
   var counter = 0
-  Prop.forAll((a:Int) => {counter +=1; counter < 10}) must pass
+  forAll((a:Int) => {counter +=1; counter < 10}) must pass
 }
 
 trait ScalaCheckExamples extends Specification with ScalaCheck {
-  val identityProp = Prop.forAll((a:Boolean) => a)
-  val alwaysTrueProp = Prop.forAll((a:Int) => true)
+  val identityProp = forAll((a:Boolean) => a)
+  val alwaysTrueProp = forAll((a:Int) => true)
   val alwaysTrue = elements(true)
   val alwaysFalse = elements(false)
   val random = elements(true, false)
@@ -117,7 +119,7 @@ object CounterSpecification extends Commands {
 
 }
 class Counter(private var n: Int) {
-  def inc = n += 1 
+  def inc = n += 1
   def dec = if (n > 3) n else n -= 1
   def get = n
   def reset = n = 0

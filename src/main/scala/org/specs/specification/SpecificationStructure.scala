@@ -18,7 +18,7 @@ import scala.reflect.Manifest
  * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code><br>
  * or <code>declare("A complex specification").isSpecifiedBy(spec1, spec2)</code>
  * <p>
- * A system under test can be created from a string with an implicit definition using <code>should</code>:<br>
+ * A system under specification can be created from a string with an implicit definition using <code>should</code>:<br>
  * <code>"my system under test" should {}</code><br>
  * Alternatively, it could be created with:
  * <code>specify("my system under test").should {}</code>

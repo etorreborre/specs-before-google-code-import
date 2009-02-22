@@ -16,8 +16,13 @@ trait HmsTimer extends Timer {
    */
   def start = {
     elapsed = 0L
-    millis.push(Calendar.getInstance.getTime.getTime)
+    millis.push(getTime)
   }
+
+  /** 
+   * this method can be overriden for testing
+   */
+  protected def getTime = Calendar.getInstance.getTime.getTime
 
   /** 
    * restarts the Timer with no elapsed time
@@ -32,7 +37,7 @@ trait HmsTimer extends Timer {
    * @return the elapsed time as a String
    */
   def stop: String = { 
-    elapsed = Calendar.getInstance.getTime.getTime - millis.top
+    elapsed = getTime - millis.top
     millis.pop
     preciseTime
   }
@@ -71,6 +76,7 @@ trait HmsTimer extends Timer {
     val (hours, minutes, seconds, millis) = hourMinutesSecondsMillis
     hms + ", " + millis + " ms"
   }
+  def time = preciseTime
 }
 
 /** 
@@ -81,6 +87,7 @@ trait Timer {
   def hms: String
   def start
   def restart
+  def time: String
 }
 
 /** 

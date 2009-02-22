@@ -26,7 +26,7 @@ object wikiFormatterSpec extends Specification {
   }
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"
-    val example = new Example("a description", null)
+    val example = new Example("a description", this)
     val descWithStatus = new WikiFormatter().setStatus(exampleDesc, List(example))
 
     "set the example status as an xml attribute" in {

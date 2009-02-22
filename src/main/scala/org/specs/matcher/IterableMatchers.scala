@@ -95,6 +95,19 @@ trait IterableMatchers {
   def notContainMatch(pattern: String) = containMatch(pattern).not 
 
   /**
+   * Matches if there is exactly one element in the iterable[String] matching the <code>pattern</code> parameter</code>
+   */   
+  def containMatchOnlyOnce(pattern: String) = new Matcher[Iterable[String]](){
+    def apply(v: => Iterable[String]) = {
+      val iterable = v;
+      val matchNumber = iterable.filter( matches(pattern) _).toList.size
+      (matchNumber == 1, 
+       "exactly one element matches " + q(pattern) + " in " + d(iterable), 
+       if (matchNumber == 0) "no element matches " + q(pattern) + " in " + d(iterable) 
+       else "more than one element matches " + q(pattern) + " in " + d(iterable))
+    }
+  } 
+  /**
    * Alias for notExistMatch
    * @deprecated: use notContainMatch instead
    */   

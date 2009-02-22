@@ -45,6 +45,7 @@ trait OutputReporter extends Reporter with Output {
     println(padding + "Specification \"" + spec.name + "\"")
     report(spec.subSpecifications, padding + "  ")
     reportSystems(spec.systems, padding + "  ")
+    timer.stop
     
     println(padding + "Total for specification \"" + spec.name + "\":")
     printStats(stats(spec), padding)   
@@ -87,16 +88,23 @@ trait OutputReporter extends Reporter with Output {
    * for that sus
    */
   def reportSystems(systems: Iterable[Sus], padding: String) = {
-    if (systems.toList.size > 1) 
-      systems foreach {reportSus(_, padding)}
-    else
-      systems foreach {printSus(_, padding)}
+    def displaySus(s: Sus) = if (systems.toList.size > 1) reportSus(s, padding) else printSus(s, padding)
+    systems foreach { s => 
+      if (canReport(s)) {
+        timer.start
+        displaySus(s)
+        timer.stop
+      }
+    }
   }
 
   /**
    * reports one sus results: print the sus specifications, then the statistics
    */
-  def reportSus(sus: Sus, padding: String) = { timer.start; printSus(sus, padding); printStats(sus, padding) }
+  def reportSus(sus: Sus, padding: String) = { 
+    printSus(sus, padding); 
+    printStats(sus, padding) 
+  }
 
   /**
    * prints one sus specification
@@ -121,7 +129,7 @@ trait OutputReporter extends Reporter with Output {
   def printStats(stat: (Int, Int, Int, Int, Int), padding: String) = {
     val (examplesNb, expectationsNb,  failuresNb, errorsNb, skippedNb) = stat
     def plural[T](nb: Int) = if (nb > 1) "s" else ""
-    println(padding + "Finished in " + timer.stop)
+    println(padding + "Finished in " + timer.time)
     println(padding + 
             examplesNb + " example" + plural(examplesNb) +
             (if (skippedNb > 0) " (" + skippedNb + " skipped)" else "") + ", " +
@@ -155,17 +163,27 @@ trait OutputReporter extends Reporter with Output {
         "+ "
     }
 
-    println(padding + status(example) + example.description)
+    if (canReport(example))
+      println(padding + status(example) + example.description)
     
     // if the failure, skip or the error message has linefeeds they must be padded too
     def parens(f: Throwable) = " (" + f.location + ")"
-    example.skipped.toList ::: example.failures.toList ::: example.errors.toList foreach { f: Throwable =>
-      if (f.getMessage != null)
-        println(padding + "  " + f.getMessage.replaceAll("\n", "\n" + padding + "  ") + parens(f)) 
-      else
-        println(padding + "  the exception message is null" + parens(f)) 
+
+    // only print out the example messages if there are no subexamples.
+    if (example.subExamples.isEmpty) {
+	    example.skipped.toList ::: example.failures.toList ::: example.errors.toList foreach { f: Throwable =>
+	      if (f.getMessage != null)
+	        println(padding + "  " + f.getMessage.replaceAll("\n", "\n" + padding + "  ") + parens(f)) 
+	      else
+	        println(padding + "  the exception message is null" + parens(f)) 
+	    }
+	    if (stacktrace && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
     }
-    if (stacktrace && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
+  }
+  /** @return true if the results should be printed
+   */
+  private def canReport(hasResults: HasResults) = {
+    !failedAndErrorsOnly || failedAndErrorsOnly && hasResults.hasFailureAndErrors
   }
 }
 

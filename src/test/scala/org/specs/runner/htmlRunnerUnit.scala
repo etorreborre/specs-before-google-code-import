@@ -60,19 +60,19 @@ object htmlRunnerUnit extends Specification with DataTables {
   }
   "the message function for an example" should {
     "return the failure message in a cell if there is a failure" in {
-      val failed = new Example("", null) { addFailure(new FailureException("has failed")) }
+      val failed = new Example("", this) { addFailure(new FailureException("has failed")) }
       hRunner.message(failed, false).toString must include("has failed")
     }
     "return the error message in a cell if there is an error" in {
-      val error = new Example("", null) { addError(new Exception("error")) }
+      val error = new Example("", this) { addError(new Exception("error")) }
       hRunner.message(error, false).toString must include("error")
     }
     "return the skipped message in a cell if the example is skipped" in {
-      val skip = new Example("", null) { addSkipped(new SkippedException("skip")) }
+      val skip = new Example("", this) { addSkipped(new SkippedException("skip")) }
       hRunner.message(skip, false).toString must include("skip")
     }
     "return nothing if the whole sus is a success" in {
-      val ok = new Example("", null)
+      val ok = new Example("", this)
       hRunner.message(ok, true) must_== scala.xml.NodeSeq.Empty
     }
   }

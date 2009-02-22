@@ -83,24 +83,38 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
 
   /** 
    * Report one example on the TeamCity output.
-   * The subexample messages are aggregated as one message.
+   * The subexample messages are aggregated as one TeamCity message.
+   * 
+   * In the TeamCity web interface, only the "details" field is shown. 
+   * Exceptions stacktraces are mapped onto it.
    */
   override def reportExample(example: Example, padding: String) = {
     val testName = currentSpec.value.name + "." + example.description
     testStarted(testName)
-    def exampleMessages(e: Example) = e.failureAndErrors.map(throwableToMessage _).mkString("; ")
-    def subExampleMessages(e: Example) = e.failureAndErrors.map(e.description + ": " + throwableToMessage(_))
-    val m = if (example.subExamples.isEmpty)
-              exampleMessages(example)
-            else
-              example.subExamples.flatMap(e => subExampleMessages(e)).mkString("; ")
-
-    example.failureAndErrors.firstOption.map(e => testFailed(testName, "message" -> m))
-    example.skipped.map(s => testIgnored(testName, "message" -> throwableToMessage(s)))
+    
+    if (!example.failureAndErrors.isEmpty) {
+      def exampleMessages(e: Example) = e.failureAndErrors.map(throwableToMessage _).mkString("; ")
+      def subExampleMessages(e: Example) = e.failureAndErrors.map(e.description + ": " + throwableToMessage(_))
+      val ms = if (example.subExamples.isEmpty)
+                exampleMessages(example)
+              else
+                example.subExamples.flatMap(e => subExampleMessages(e)).mkString("; ")
+      val ds = example.failureAndErrors.map(t => throwableToDetails(t))
+      testFailed(testName, "message" -> ms, "details" -> ds.mkString("\n"))
+    }
+    if (!example.skipped.isEmpty) {
+      val ms = example.skipped.map(t => throwableToMessage(t))
+      testIgnored(testName, "message" -> ms.mkString("; "))
+    }
     
     testFinished(testName)
   }
   
+  /** @return the stacktrace of a Throwable as a String */
+  private def throwableToDetails(t: Throwable) =
+    t.printStackTraceToString
+  
+  /** @return the message (including its location) of a Throwable as a String */
   private def throwableToMessage(t: Throwable) = {
     (if (t.getMessage != null) t.getMessage else "no message") + 
     " (" + t.location + ")" 

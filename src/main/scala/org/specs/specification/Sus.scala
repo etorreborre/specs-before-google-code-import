@@ -23,7 +23,7 @@ import scala.reflect.Manifest
 case class SusWithContext[S](val context: SystemContext[S], desc: String, var cyc: ExampleLifeCycle) extends Sus(desc, cyc) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
     val newContext = context.newInstance
-    val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), lifeCycle)
+    val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), this)
     addExample(ex)
     ex
   }
@@ -38,7 +38,9 @@ case class SusWithContext[S](val context: SystemContext[S], desc: String, var cy
     ex.after
     super.afterExample(ex)
   }
-
+  override def cloneExample(e: Example) = {
+    copyDefAndSubExamples(e, ExampleWithContext(context.newInstance, e.exampleDescription, this))
+  }
 } 
 case class Sus(description: String, var cycle: ExampleLifeCycle) extends ExampleLifeCycle 
                                       with Tagged with HasResults {
@@ -159,6 +161,14 @@ case class Sus(description: String, var cycle: ExampleLifeCycle) extends Example
   def resetForExecution: this.type = {
     examples.foreach(_.resetForExecution)
     this
+  }
+  /** clone the example, possibly attaching context information. */
+  def cloneExample(e: Example): Example = {
+    copyDefAndSubExamples(e, Example(e.exampleDescription, this))
+  }
+  def copyDefAndSubExamples(e: Example, cloned: Example) = {
+    e.subExs.foreach { subEx => cloned.addExample(this.cloneExample(subEx)) }
+    e.copyExecutionTo(cloned)
   }
 }
 

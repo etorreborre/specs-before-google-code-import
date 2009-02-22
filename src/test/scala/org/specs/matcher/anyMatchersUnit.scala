@@ -112,19 +112,24 @@ object anyMatchersUnit extends MatchersSpecification {
       expectation(true aka "this value" must beFalse) must failWith("this value is true")
     }
   }
+  "A 'beEmpty' matcher" should {
+    "be ok when testing an empty string" in {
+      stringWrapper("") must beEmpty
+    }
+  }
   "A throwA + exception matcher" should {
     "be ok if a value throws the expected exception type" in {
-      throwThis(new Error("test"))(throw new Error("test")) must beLike { case (true, _, _) => ok } 
+      throwThis(new Error("test"))(throw new Error("test")) must beLike { case (true, _, _) => ok }
     }
     "be ko if the value doesn't throw any exception" in {
-      throwThis(new Exception)(1) must beLike { case (false, _, message) => ok } 
+      throwThis(new Exception)(1) must beLike { case (false, _, message) => ok }
     }
     "specify the expected exception in the failure message" in {
-      throwThis(new Exception)(1)._3 must include((new Exception).getClass.getName) 
+      throwThis(new Exception)(1)._3 must include((new Exception).getClass.getName)
     }
     "throw a Failure exception if the value throws another exception" in {
       val matcher: ExceptionClassMatcher[Error] = throwAn[Error]
-      matcher(throw new Exception) must throwA[FailureException] 
+      matcher(throw new Exception) must throwA[FailureException]
     }
     "throw a Failure exception with the other exception message, if the value throws another exception" in {
       throwThis(new Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
@@ -145,13 +150,13 @@ object anyMatchersUnit extends MatchersSpecification {
   case class SimpleException(s: String) extends Exception(s)
   "A throwThis + exception matcher" should {
     "be ok if a value throws an exception equals to the expected exception one" in {
-      throwThis(SimpleException("Message"))(throw SimpleException("Message"))._1 mustBe true 
+      throwThis(SimpleException("Message"))(throw SimpleException("Message"))._1 mustBe true
     }
   }
   "A throwA + exception matcher" can {
     "specify a like clause to add pattern matching" in {
       throwThis(SimpleException("Message")).like {case SimpleException(x) => !x.isEmpty}(
-          throw new SimpleException("Message")) must beLike {case (true, _, _) => ok} 
+          throw new SimpleException("Message")) must beLike {case (true, _, _) => ok}
     }
   }
   "Any matchers" should {
@@ -177,7 +182,7 @@ object anyMatchersUnit extends MatchersSpecification {
       beNull[Int] must evalOnce(exp(nullValue))
     }
     "not evaluate the expressions twice: verify" in {
-      verify((x:Int) => x == 1) must evalOnce(exp(1)) 
+      verify((x:Int) => x == 1) must evalOnce(exp(1))
     }
     "not evaluate the expressions twice: beTrue" in {
       beTrue must evalOnce(exp(boolValue))

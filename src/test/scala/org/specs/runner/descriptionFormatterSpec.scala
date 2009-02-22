@@ -19,7 +19,7 @@ object descriptionFormatterSpec extends Specification {
     }
   }
   "A wiki description formatter" should {
-    val example = new Example("example desc", null)
+    val example = new Example("example desc", this)
     "set the status of the example descriptions depending on the example status" in {
       wikiFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)) must (
         include("""this is the ==<ex class="success" """) and 

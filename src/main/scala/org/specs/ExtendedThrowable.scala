@@ -1,5 +1,8 @@
 package org.specs
 import org.specs.util.ExtendedString._
+import java.io.StringWriter
+import java.io.PrintWriter
+
 /**
  * This object allows to add some utility methods to </code>Throwable</code> objects.
  */
@@ -27,6 +30,12 @@ object ExtendedThrowable {
     def stackToString: String = stackToString("", "\n", "\n")
     /** @return the stack trace with user-specified separators */
     def stackToString(first: String, separator: String, last: String): String = t.getStackTrace.mkString(first, separator, last)
+    /** @return stack trace written using <code>Throwable.printStackTrace()</code> */
+    def printStackTraceToString = {
+      val w = new StringWriter
+      t.printStackTrace(new PrintWriter(w))
+      w.toString
+    }
     /** 
      * remove all traces of this exception until the last line matching <code>name</code> is found.
      */

@@ -32,7 +32,7 @@ object patternMatchersUnit extends MatchersSpecification {
   }
   "A 'beNone' option matcher" should {
     "not evaluate the expressions twice" in {
-      val nothing: Option[Nothing] = None
+      val nothing: Option[Any] = None
       beNone must evalOnce(exp(nothing))
     }
   }

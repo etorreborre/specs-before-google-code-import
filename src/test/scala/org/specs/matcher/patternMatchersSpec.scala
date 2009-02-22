@@ -8,19 +8,19 @@ object patternMatchersSpec extends MatchersSpecification {
       "a" must beLike { case "a" => ok }
       ("a", "b") must beLike { case ("a", _) => ok }
       ("a", "b", "c") must beLike { case ("a", _, _) => ok }
-      expectation(("a", "b", "c") must beLike { case ("a", _) => ok }) must 
+      expectation(("a", "b", "c") must beLike { case ("a", _) => ok }) must
                        failWith ("'(a,b,c)' doesn't match the expected pattern")
 
-      expectation(("a", "b", "c") aka "the triplet" must beLike { case ("a", _) => ok }) must 
+      expectation(("a", "b", "c") aka "the triplet" must beLike { case ("a", _) => ok }) must
                        failWith ("the triplet '(a,b,c)' doesn't match the expected pattern")
 
-      expectation(("a", "b", "c") must not(beLike { case ("a", _, _) => ok })) must 
+      expectation(("a", "b", "c") must not(beLike { case ("a", _, _) => ok })) must
            failWith ("'(a,b,c)' matches the given pattern")
     }
     "provide a beNone matcher for options: List().find {_ == 2} must beNone" in {
       List().find {_ == 2} must beNone
-      expectation(List(2).find {_ == 2} must beNone[Int]) must failWith("'Some(2)' is not None")
-      expectation(List(2).find {_ == 2} aka "searching 2 in a list:" must beNone[Int]) must 
+      expectation(List(2).find {_ == 2} must beNone) must failWith("'Some(2)' is not None")
+      expectation(List(2).find {_ == 2} aka "searching 2 in a list:" must beNone) must
                                           failWith("searching 2 in a list: 'Some(2)' is not None")
     }
     "provide a beAsNoneAs matcher matching if 2 options are None at the same time" in {
@@ -41,8 +41,8 @@ object patternMatchersSpec extends MatchersSpecification {
   "Pattern matchers" can { clearExample.before
     "specify a which clause to check additional properties: List('name').find {_ == 'name'} must beSome[String].which {_.size == 4}" in {
       List("name").find {_ == "name"} must beSome[String].which {_.size == 4}
-    } 
+    }
   }
 }
 import org.specs.runner._
-class patternMatchersSpecTest extends JUnit4(patternMatchersSpec) 
+class patternMatchersSpecTest extends JUnit4(patternMatchersSpec)

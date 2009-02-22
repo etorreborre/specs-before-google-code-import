@@ -35,34 +35,34 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock 
   }
   "The checkFunction method" should {
     "call the forAll function of scalacheck to create a property that will be checked for all generated values" in {
-      expect { matcher.forAll(any[Gen[Boolean]])(x => Prop.proved) }
+      expect { matcher.forAllProp(any[Gen[Boolean]])(x => Prop.proved) }
       matcher.checkFunction(Gen.value(true))(x => true)(set(minTestsOk->1))
     }
   }
   "The checkScalaCheckProperty method" should {
     "call the printf function of Output to print the results if verbose=true" in {
       expect { matcher.printf(any[String], any[String]) }
-      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, true)
+      matcher.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, true)
     }
     "call the check function of scalacheck to check the property" in {
-      expect { matcher.check(Test.defaultParams, Prop.proved, (s, d) => ()) }
-      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)
+      expect { matcher.checkProp(Test.defaultParams, Prop.proved, (s, d) => ()) }
+      matcher.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false)
     }
     "return a true status if the check function return a succeeded result" in {
-      expect { matcher.check(any[Test.Params], any[Prop], (s, d) => ()) }
-      matcher.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false)._1 mustBe true
+      expect { matcher.checkProp(any[Test.Params], any[Prop], (s, d) => ()) }
+      matcher.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false)._1 mustBe true
     }
     "return a false status if the check function return a failure" in {
-      matcherWithFailure.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithFailure.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return a property exception" in {
-      matcherWithPropertyException.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithPropertyException.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return an generation exception" in {
-      matcherWithGenerationException.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithGenerationException.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
     "return a false status if the check function return an exhausted status" in {
-      matcherWithExhaustedGeneration.checkScalaCheckProperty(forAll(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
+      matcherWithExhaustedGeneration.checkScalaCheckProperty(forAllProp(Gen.value(true))(x => true))(Test.defaultParams, false).success mustBe false
     }
   }
   "The afterNtries function" should {
@@ -85,28 +85,28 @@ object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock 
 trait ScalaCheckMock extends Mocker {
   trait ScalaCheckFunctionsMock extends ScalaCheckFunctions {
     def result = Test.Result(Test.Passed, 1, 2, FreqMap.empty[immutable.Set[Any]])
-    override def check(params: Test.Params, prop: Prop, printResult: (Int, Int) => Unit) = { 
+    override def checkProp(params: Test.Params, prop: Prop, printResult: (Int, Int) => Unit) = {
       recordAndReturn(result)
     }
-    override def forAll[A,P](g: Gen[A])(f: A => Prop): Prop = recordAndReturn(Prop.proved)
-  } 
+    override def forAllProp[A,P](g: Gen[A])(f: A => Prop): Prop = recordAndReturn(Prop.proved)
+  }
   trait ConsoleOutputMock extends Output {
     override def println(s: Any) = record
     override def printf(format: String, args: Any*) = record
-  } 
-  val matcher = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener  
+  }
+  val matcher = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener
   val matcherWithFailure = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), Set("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
-  }  
+  }
   val matcherWithPropertyException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), Set("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
-  }  
+  }
   val matcherWithGenerationException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])
-  }  
+  }
   val matcherWithExhaustedGeneration = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
-  }  
+  }
 }
 import org.specs.runner._
 class scalacheckMatchersUnitTest extends JUnit4(scalacheckMatchersUnit)
