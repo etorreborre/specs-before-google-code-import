@@ -1,4 +1,5 @@
 package org.specs.util
+import matcher.Matcher
 import org.specs._
 import scala.xml._
 import org.specs.Sugar._
@@ -39,15 +40,15 @@ object formSpec extends Specification with Forms with Persons {
         initials("TE")
       }
       form.execute.toHtml must \\(<td>TE</td>, Map("class"->"failure"))
-      form.execute.toHtml must \\(<td>'TE' is not equal to 'ET'</td>)
+      form.execute.toHtml must \\(<td>'ET' is not equal to 'TE'</td>)
     }
     "have an updateLastTd function setting a colspan on each last td of a row" in {
-      val updated = new Form("").updateLastTd(
+      val updated = new Form("", this).updateLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
-        </table>, 4) 
-      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4"))) 
+        </table>, 4)
+      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
   }
   "A form property" should {
@@ -66,10 +67,10 @@ object formSpec extends Specification with Forms with Persons {
       lastName.previous must be_==(Some(firstName))
     }
     "display its status in xml when executed" in {
-      val adder: Prop[Int] = new Prop("Result", Some(2), Some(() => 1 must_== 2))
-      adder.execute.toHtml must \\(<td>2</td>, Map("class"->"failure"))
-      adder.execute.toHtml must \\(<td>'1' is not equal to '2'</td>)
-    }  
+      val adder: Prop[Int] = new Prop("Result", Some(1), Some(2), Some(new Constraint(2, (t: Int, m: Matcher[Int]) => t must m)))
+      adder.execute.toHtml must \\(<td>1</td>, Map("class"->"failure"))
+      adder.execute.toHtml must \\(<td>'2' is not equal to '1'</td>)
+    }
   }
   "A form" can {
     "have a labelled property" in {
@@ -83,14 +84,14 @@ object formSpec extends Specification with Forms with Persons {
       val form = new Person("person") {
         firstName("Eric") --> new Address("home") {
                                     number(37)
-                                    street("Nando-cho")
-                              }
+                                    street("Nando-cho")}
+        lastName("Torreborre")
       }
       form.toString must_== "person\n" +
                             "  First Name: Eric, home\n" +
                             "  Number: 37\n" +
                             "  Street: Nando-cho\n" +
-                            "  Last Name: "
+                            "  Last Name: Torreborre"
     }
     "be executed" in {
       val form = new ExpectedPerson("person") {
@@ -138,31 +139,31 @@ object formSpec extends Specification with Forms with Persons {
       form.toHtml must \\(<th>Customer</th>, Map("colspan"->"6"))
     }
     "have the last cell of the row spanning the maximum of all the row sizes" in {
-      class MyForm extends Form("my form") {
-        val f1 = Prop("f1", "") 
-        val f2 = Prop("f2", "") 
-        val f3 = Prop("f3", "") 
-        val f4 = Prop("f4", "") 
-        val f5 = Prop("f5", "") 
-      }  
-      val form = new MyForm { 
-        tr(f1("1"), f2("2")) 
-        tr(f3("3"), f4("4"), f5("5")) 
+      class MyForm extends Form("my form", this) {
+        val f1 = Prop("f1", "")
+        val f2 = Prop("f2", "")
+        val f3 = Prop("f3", "")
+        val f4 = Prop("f4", "")
+        val f5 = Prop("f5", "")
+      }
+      val form = new MyForm {
+        tr(f1("1"), f2("2"))
+        tr(f3("3"), f4("4"), f5("5"))
       }
       form.toHtml must \\(<td>5</td>, Map("colspan"->"9", "class"->"value"))
     }
   }
 }
 trait Persons extends Specification with Forms {
-  case class Person(t: String) extends Form(t) with Properties {
-    val firstName: Prop[String] = prop("First Name", "")
-    val lastName: Prop[String] = prop("Last Name", "")
+  case class Person(t: String) extends Form(t, this) with Properties {
+    val firstName: Prop[String] = prop("First Name", "Eric")
+    val lastName: Prop[String] = prop("Last Name", "Torreborre")
   }
   case class ExpectedPerson(t1: String) extends Person(t1) {
-    val initials: Prop[String] = prop("Initials", "", initials.get must_== computeInitials(firstName.get, lastName.get))
+    val initials: Prop[String] = prop("Initials", computeInitials(firstName.get, lastName.get))
     def computeInitials(a: String, b: String) = a(0).toString + b(0)
   }
-  case class Address(t: String) extends Form(t) with Properties {
+  case class Address(t: String) extends Form(t, this) with Properties {
     val number: Prop[Int] = prop("Number", 1)
     val street: Prop[String] = prop("Street", "")
   }
