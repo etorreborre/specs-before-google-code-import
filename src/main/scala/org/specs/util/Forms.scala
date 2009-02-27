@@ -1,10 +1,11 @@
 package org.specs.util
+import matcher.{HaveTheSameElementsAs, BeEqualTo, Matcher, Matchers}
 import scala.xml._
 import scala.collection.mutable._
 import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
 import org.specs.specification._
-
+import org.specs._
 /**
  * This trait defines properties <code>Prop</code> and Forms which can group properties together.
  *
@@ -17,12 +18,13 @@ import org.specs.specification._
  *
  */
 trait Forms {
-  trait Linkable {
-    val next: ListBuffer[Linkable] = new ListBuffer()
-    var previous: Option[Linkable] = None
-    def -->(others: Linkable*) = {
-      next.appendAll(others)
-      others.foreach(_.previous = Some(this))
+  trait Linkable[T] {
+    val next: ListBuffer[Linkable[_]] = new ListBuffer()
+    var previous: Option[Linkable[_]] = None
+    def -->[X](other: Linkable[X]): Linkable[X] = {
+      next.append(other)
+      other.previous = Some(this)
+      other
     }
   }
   trait Layout extends ToHtml {
@@ -62,45 +64,54 @@ trait Forms {
     def toHtml: NodeSeq  = NodeSeq.Empty
     def toHtmlWithSpan(s: Int): NodeSeq  = NodeSeq.Empty
   }
-  case object Prop {
-    def apply[T](label: String, value: T): Prop[T] = new Prop(label, Some(value), None)
-    def apply[T](label: String, value: T, toCheck: =>Any): Prop[T] = new Prop(label, Some(value), Some(() => toCheck))
+  trait Commentable {
+    private var commented  = false
+    def comment(): this.type = { commented = true; this }
+    def uncomment(): this.type = { commented = false; this }
+    def isCommented = commented
   }
-  class Prop[T](val label: String, val value: Option[T], var check: Option[() => Any]) extends Property(value) with Linkable with ToHtml with DefaultResults {
-    def apply(v: T): Prop[T] = { super.apply(Some(v)); this }
-    def apply(v: T, toCheck: =>Any): Prop[T] = {
-      super.apply(Some(v))
-      check = Some(() => toCheck)
-      this
-    }
-    def apply(v: T, toCheck: T => Any): Prop[T] = apply(v, toCheck(this.get))
+  case class Constraint[T](actual: T, f: (T, Matcher[T]) => Any) {
+    private var matcher: T => Matcher[T] = (t:T) => new BeEqualTo(t)
+    def matchWith(m: T => Matcher[T]) = { matcher = m; this }
+    def execute(expected: T) = f(actual, matcher(expected))
+  }
+  trait Executable[T] {
+    def execute: T
+  }
+   object Prop {
+     def apply[T](label: String, expected: T) = new Prop(label, Some(expected), None, None)
+     def apply[T](label: String, expected: T, actual: T) = new Prop(label, Some(expected), Some(actual), None)
+   }
+   class Prop[T](val label: String, var expected: Option[T], val actual: Option[T], val constraint: Option[Constraint[T]]) extends Property(expected)
+    with Linkable[Prop[T]] with ToHtml with DefaultResults with Commentable with Executable[Prop[T]] {
+    def apply(v: T): Prop[T] = { super.apply(Some(v)); expected = Some(v); this }
     def get: T = this().get
-    private var executed  = false
+    protected var executed  = false
     override def reset = {
       super.reset
       executed = false
     }
-    def execute = {
+    def execute: Prop[T] = {
       reset()
-      try {
-        executed = true;
-        check match {
-          case Some(f) => f()
-          case None => ()
+      if (!isCommented) {
+        try {
+          executed = true
+          expected.map(exp => constraint.map(c => c.execute(exp)))
+        } catch {
+            case f: FailureException => addFailure(f)
+            case s: SkippedException => addSkipped(s)
+            case e => addError(e)
         }
-      } catch {
-          case f: FailureException => addFailure(f)
-          case s: SkippedException => addSkipped(s)
-          case e => addError(e)
       }
       this
     }
+    def matchWith(m: T => Matcher[T]) = { constraint.map(_.matchWith(m)); this }
     override def toString = {
       label + ": " + this().getOrElse("_") +
       (if (next.isEmpty) "" else ", ") +
       next.toList.mkString(", ")
     }
-    private def statusClass = if (executed) status else "value"
+    protected def statusClass = if (executed) status else "value"
     override def toEmbeddedHtml = toHtml
     override def toHtml = {
       <td>{label}</td> ++ (
@@ -111,15 +122,41 @@ trait Forms {
       )
     }
   }
-  case class Form(title: String) extends Linkable with ToHtml with Layout with HasResults {
-    protected val properties: ListBuffer[Prop[_]] = new ListBuffer
-    def prop[T](label: String) = addProp(label, None, None)
-    def prop[T](label: String, value: T) = addProp(label, Some(value), None)
-    def prop[T](label: String, value: T, check: =>Any) = addProp(label, Some(value), Some(() => check))
-    private def addProp[T](label: String, value: Option[T], check: Option[()=>Any]): Prop[T] = {
-      val p = new Prop(label, value, check)
+  class PropIterable[T](override val label: String, var expectedIt: Option[Iterable[T]],
+                   override val actual: Option[Iterable[T]], override val constraint: Option[Constraint[Iterable[T]]]) extends
+    Prop(label, expectedIt, actual, constraint) {
+    def apply(v: T*): PropIterable[T] = { super.apply(Some(v)); expectedIt = Some(v); this }
+    override def toHtml = {
+      <td>{label}</td> ++ (
+        if (executed)
+          <td class={statusClass}>{expectedIt.getOrElse(Nil: Iterable[T]).mkString(", ")}</td> ++ (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
+        else
+          <td class="value">{expectedIt.getOrElse(Nil: Iterable[T]).mkString(", ")}</td>
+      )
+    }
+
+  }
+
+
+  case class Form(title: String, factory: ExpectableFactory) extends
+        DelegatedExpectableFactory(factory) with Matchers
+        with Linkable[Form] with ToHtml with Layout with HasResults with Commentable with Executable[Form] {
+    protected val properties: ListBuffer[Executable[_] with Linkable[_] with HasResults with ToHtml] = new ListBuffer
+    def prop[T](label: String, value: T): Prop[T] = {
+      val p = new Prop(label, Some(value), None, Some(new Constraint(value, (t: T, m: Matcher[T]) => t must m)))
       properties.append(p)
       p
+    }
+    def propIterable[T](label: String, value: Iterable[T]): PropIterable[T] = {
+      val p = new PropIterable(label, Some(value), None, Some(new Constraint(value, (t: Iterable[T], m: Matcher[Iterable[T]]) => t must m)))
+      p.matchWith(haveTheSameElementsAs(_))
+      properties.append(p)
+      p
+    }
+    def set(f: this.type => Any): this.type = { f(this); this }
+    def form[F <: Form](f: F) = {
+      properties.append(f)
+      f
     }
     override def toString = {
       title +
@@ -130,8 +167,11 @@ trait Forms {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
 
-    def execute = {
-      properties.foreach(_.execute)
+    def execute: Form = {
+      if (!isCommented)
+        properties.foreach(_.execute)
+      else
+        ()
       this
     }
     def failures = properties.flatMap(_.failures)
