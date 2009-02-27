@@ -15,65 +15,68 @@ object consoleReporterSpec extends Specification with MockOutput {
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
     }
-    "report the specification examples: '-have example 1 ok'" in { 
+    "report the specification examples: '-have example 1 ok'" in {
       specWithOneExample(that.isOk) must containMatch("have example 1 ok")
     }
-    "display '0 failure' if there is no expectation" in { 
+    "display '0 failure' if there is no expectation" in {
       specWithOneExample(that.isOk) must containMatch("0 failure")
-    } 
-    "display '1 failure' if one example isKo" in { 
-      specWithOneExample(that.isKo) must containMatch("1 failure") 
-    } 
-    "indicate the line and class where the failure occurred" in { 
-      specWithOneExample(that.isKo) must containMatch("(consoleReporterSpec.scala:\\d)") 
-    } 
-    "display the first failure of an example having several failures" in { 
-      specWithOneExample(that.isKo, that.isKo) must containMatch("first failure") 
+    }
+    "display '1 failure' if one example isKo" in {
+      specWithOneExample(that.isKo) must containMatch("1 failure")
+    }
+    "indicate the line and class where the failure occurred" in {
+      specWithOneExample(that.isKo) must containMatch("(consoleReporterSpec.scala:\\d)")
+    }
+    "display the first failure of an example having several failures" in {
+      specWithOneExample(that.isKo, that.isKo) must containMatch("first failure")
       specWithOneExample(that.isKo, that.isKo) must notContainMatch("second failure")
-    } 
-    "display the failures of subexamples" in { 
-      specWithOneExample(that.hasTwoSubExamples) must containMatchOnlyOnce("sub1 failed") 
-    } 
+    }
+    "display the failures of subexamples" in {
+      specWithOneExample(that.hasTwoSubExamples) must containMatchOnlyOnce("sub1 failed")
+    }
     "display '1 error' if one example throws an exception" in {
-      specWithOneExample(that.throwsAnException) must containMatch("1 error") 
-    } 
-    "display '1 skipped' if one example is skipped" in { 
-      specWithOneExample(that.isSkipped) must containMatch("1 skipped") 
-    } 
-    "report a pluralized message if there are several examples failing" in { 
+      specWithOneExample(that.throwsAnException) must containMatch("1 error")
+    }
+    "display the exception type if one example throws an exception" in {
+      specWithOneExample(that.throwsAnException) must containMatch("java.lang.Exception")
+    }
+    "display '1 skipped' if one example is skipped" in {
+      specWithOneExample(that.isSkipped) must containMatch("1 skipped")
+    }
+    "report a pluralized message if there are several examples failing" in {
       specWithTwoExamples(that.isKo) must containMatch("2 examples")
       specWithTwoExamples(that.isKo) must containMatch("2 failures")
-    } 
-    "report the number of expectations: '2 expectations'" in { 
+    }
+    "report the number of expectations: '2 expectations'" in {
       specWithOneExample(that.isOk) must containMatch("1 expectation")
       specWithTwoExamples(that.isKo) must containMatch("2 expectations")
-    } 
-    "display the failure message next to the corresponding example" in { 
+    }
+    "display the failure message next to the corresponding example" in {
       specWithTwoExamples(that.isKo, that.isOk) verifies(messages =>
             messages.findIndexOf(matches("first failure")) ==
             messages.findIndexOf(matches("example 2.1 ok")) + 1)
-    } 
-    "report the elapsed time" in { 
+    }
+    "report the elapsed time" in {
       specWithOneExample(that.isOk) mustContainMatch "Finished in"
     }
     "report failures created with the 'fail' method" in {
-      specWithOneExample(that.isKoWithTheFailMethod) mustContainMatch "1 failure" 
+      specWithOneExample(that.isKoWithTheFailMethod) mustContainMatch "1 failure"
     }
     "report skipped examples created with the 'skip' method with a small circle" in {
-      specWithOneExample(that.isSkipped) mustContainMatch "o " 
+      specWithOneExample(that.isSkipped) mustContainMatch "o "
     }
     "report skipped examples created with the 'orSkipExample' on a faulty matcher with a small circle" in {
-      specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustContainMatch "o " 
+      specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustContainMatch "o "
     }
     "report the literal description of a sus if it is set"  in {
       new SpecWithLiterateDescription(that.isOk).run mustContainMatch "Some text with embedded expectations"
     }
     "report the reason for a skipped example" in {
-      specWithOneExample(that.isSkipped) mustContainMatch "irrelevant" 
+      specWithOneExample(that.isSkipped) mustContainMatch "irrelevant"
     }
-    "indicate the line and class where the skipping occurred" in { 
-      specWithOneExample(that.isSkipped) must containMatch("(consoleReporterSpec.scala:\\d)") 
-    } 
+    "indicate the line and class where the skipping occurred" in {
+      specWithOneExample(that.isSkipped) must containMatch("(consoleReporterSpec.scala:\\d)")
+    }
     "report the time for each system and add times for the total" in {
       specWithTwoSystems.messages
       val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
@@ -89,7 +92,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
-      val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput 
+      val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput
       testSpecRunner.args ++= Array("-ns")
       testSpecRunner.reportSpecs
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
@@ -97,33 +100,33 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   "A console trait" can { clean.before
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
-      runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+      runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a -rej argument to only exclude examples having some tags in the specification" in {
-      runWith("-rej", "out") must (containMatch("\\+ included") and containMatch("o excluded")) 
+      runWith("-rej", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a --accept argument to only include examples having some tags in the specification" in {
-      runWith("--accept", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+      runWith("--accept", "in") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a -acc argument to only exclude examples having some tags in the specification" in {
-      runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded")) 
+      runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a -xOnly (--failedOnly) argument to only show failed and error examples" in {
-      runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error")) 
-      runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error")) 
+      runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
+      runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
     }
     "not display the sus at all if all examples are ok with the -xOnly flag" in {
-      runWith("-acc", "in", "-xOnly") must (notContainMatch("this sus")) 
+      runWith("-acc", "in", "-xOnly") must (notContainMatch("this sus"))
     }
   }
   "A console trait" should { clean.before
     "print a warning message if a accept/reject argument is not followed by tags" in {
-      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted") 
+      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
     }
     "work with several tags separated by a comma" in {
       runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
     }
-  } 
+  }
   def runWith(args: String*): List[String] = {
     specRunner.args = args.toArray
     specRunner.reportSpecs
@@ -137,11 +140,11 @@ object consoleReporterSpec extends Specification with MockOutput {
   }
   object spec extends Specification {
     "this sus" should {
-      ("excluded" in {}).tag("out") 
-      ("included" in {}).tag("in") 
-      "failed" in {throw new FailureException("failed")} 
+      ("excluded" in {}).tag("out")
+      ("included" in {}).tag("in")
+      "failed" in {throw new FailureException("failed")}
       "error" in {throw new Error("error")}
-    } 
+    }
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput
 
@@ -160,15 +163,15 @@ abstract class TestSpec extends LiterateSpecification with Console with MockOutp
   val failMethod = () => fail("failure with the fail method")
   val exception= () => throw new Exception("new Error")
   val subExamples = () => { "subexample1" in fail("sub1 failed"); "subexample2" in fail("sub2 failed") }
-  def expectations(behaviours: List[that.Value]) = behaviours map { 
+  def expectations(behaviours: List[that.Value]) = behaviours map {
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped
                                     case that.isSkippedBecauseOfAFaultyMatcher => isSkippedBecauseOfAFaultyMatcher
                                     case that.isKo => failure1
-                                    case that.isKoTwice => () => {failure1(); failure2()} 
-                                    case that.isKoWithTheFailMethod => failMethod 
+                                    case that.isKoTwice => () => {failure1(); failure2()}
+                                    case that.isKoWithTheFailMethod => failMethod
                                     case that.throwsAnException => exception
-                                    case that.hasTwoSubExamples => subExamples 
+                                    case that.hasTwoSubExamples => subExamples
   }
 }
 
@@ -181,7 +184,7 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
     }
     reportSpecs
     messages
-  }   
+  }
 }
 
 class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
@@ -192,7 +195,7 @@ class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
     }
     reportSpecs
     messages
-  }   
+  }
 }
 class SpecWithTwoSystems extends TestSpec {
   def elapsedTimes = messages.flatMap(_.groups("Finished in .* (\\d+) ms")).filter(!_.isEmpty).toList.map(_.toInt)
@@ -209,20 +212,20 @@ class SpecWithTwoSystems extends TestSpec {
     reportSpecs
     messages
     this
-  }   
+  }
 }
 class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpec {
   def run = {
-    "The specification" is <p> 
+    "The specification" is <p>
       Some text with {"embedded expectations" in {expectations(behaviours) foreach {_.apply}}}
     </p>
     reportSpecs
     messages
-  }   
+  }
 }
 
 object that extends Enumeration {
-  val isKo, isOk, isKoTwice, isKoWithTheFailMethod, 
+  val isKo, isOk, isKoTwice, isKoWithTheFailMethod,
       throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher,
       hasTwoSubExamples = Value
 }
