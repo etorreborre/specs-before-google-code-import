@@ -8,13 +8,13 @@ import org.specs.matcher._
  * 2.1 must beCloseTo(2.0, .1)
  * </code>or<br><code>
  * theDouble(2.1) must beCloseTo(2.0, .1)
- * </code><p> 
- * 
+ * </code><p>
+ *
  * Then StringMatchers are expecting values with String as an upper bound so that effectively only String instances
  * will be used with the implicit def (only solution found to make it all work, to my current understanding)
  */
 trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
-  
+
   /** implicit transformation of an object into one supporting AnyMatcher matchers */
   implicit def theValue[A](value: =>A): Expectation[A] = {
     val a = new Expectation(value)
@@ -29,9 +29,9 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     a.setExpectationsListener(this)
   }
 
-  /** 
-   * implicit transformation of a block returning Nothing. 
-   * This is necessary when testing thrown exceptions <pre>stream.close must throwA(new IOException)</pre> 
+  /**
+   * implicit transformation of a block returning Nothing.
+   * This is necessary when testing thrown exceptions <pre>stream.close must throwA(new IOException)</pre>
    */
   implicit def theBlock(value: =>Nothing): Expectation[Nothing] = {
     val a = new Expectation(value)
@@ -51,4 +51,8 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
   }
+}
+class DelegatedExpectableFactory(delegate: ExpectableFactory) extends ExpectableFactory {
+  def forExample: Example = delegate.forExample
+  def lastExample: Option[Example] = delegate.lastExample
 }

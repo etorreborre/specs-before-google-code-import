@@ -1,25 +1,29 @@
 package org.specs.collection
+
+import matcher.MatchersSpecification
 import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 
 object extendedIterableUnit extends IterableData {
-  "A sameElementsAs function" should returnTrue {
-	"if 2 lists of lists contain the same elements in a different order" in {
-	  List(List(1), List(2, 3)) must haveSameElementsAs(List(List(3, 2), List(1)))
-	}
+  "A sameElementsAs function" should returnTrue{
+    "if 2 lists of lists contain the same elements in a different order" in {
+      List(List(1), List(2, 3)) must haveSameElementsAs(List(List(3, 2), List(1)))
+    }
     "if deeply nested lists have the same elements but in a different order" in {
       List(1, List(2, 3, List(4)), 5) must haveSameElementsAs(List(5, List(List(4), 2, 3), 1))
     }
     "when comparing xml nodes in a different order" in {
-      <a><b/><c/></a>.child must haveSameElementsAs(<a><c/><b/></a>.child)
+      <a> <b/> <c/> </a>.child must haveSameElementsAs(<a> <c/> <b/> </a>.child)
     }
     "for 2 iterables created with same elements in a different order" in {
-      sameIterables must pass { t: (Iterable[Any], Iterable[Any]) => val (i1, i2) = t
+      sameIterables must pass{
+        t: (Iterable[Any], Iterable[Any]) => val (i1, i2) = t
         i1 must haveSameElementsAs(i2)
       }
     }
     "for 2 iterables created with same elements in a different order, even with different types like Stream and List" in {
-      sameIterablesOfDifferentTypes must pass { t: (Iterable[Any], Iterable[Any]) => val (i1, i2) = t
+      sameIterablesOfDifferentTypes must pass{
+        t: (Iterable[Any], Iterable[Any]) => val (i1, i2) = t
         i1 must haveSameElementsAs(i2)
       }
     }
@@ -44,8 +48,9 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.Sugar._
 
-trait IterableData extends Specification with Sugar with ScalaCheck{
+trait IterableData extends Specification with Sugar with ScalaCheck {
   def returnTrue = addToSusVerb("return true")
+
   val sameIterables = for (i0 <- listOf(elements(1, 2, 3));
                            i1 <- listOf(elements(1, 4, 5, i0));
                            i2 <- listOf(elements(i0, i1, 2, 3));
