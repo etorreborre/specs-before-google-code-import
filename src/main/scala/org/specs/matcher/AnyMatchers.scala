@@ -41,12 +41,7 @@ trait AnyMatchers {
   /**
    * Matches if (a == b)
    */
-  def beEqualTo[T](a: =>T) = new Matcher[T](){
-    def apply(v: =>T) = {
-      val (x, y) = (a, v)
-      (x == y, d(y) + " is equal to " + q(x), d(y) + " is not equal to " + q(x))
-    }
-  }
+  def beEqualTo[T](a: =>T) = new BeEqualTo(a)
 
   /**
    * Matches if (a != b)
@@ -488,5 +483,15 @@ trait AnyMatchers {
                                                results.filter(!_._1).map(_._3).mkString("; "))
       }
     }
+  }
+}
+
+/**
+ * Reusable equalTo matcher
+ */
+class BeEqualTo[T](a: =>T) extends Matcher[T] {
+  def apply(v: =>T) = {
+    val (x, y) = (a, v)
+    (x == y, d(y) + " is equal to " + q(x), d(y) + " is not equal to " + q(x))
   }
 }

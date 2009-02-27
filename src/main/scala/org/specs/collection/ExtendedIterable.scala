@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 /**
  * The ExtendedIterable object offers utility methods applicable to iterables like:<ul>
- * <li><code>toStream</code> 
+ * <li><code>toStream</code>
  * <li><code>toDeepString</code>: calls toString recursively on the iterable elements
  * <li><code>sameElementsAs</code>: compares 2 iterables recursively
  * </ul>
@@ -27,8 +27,8 @@ object ExtendedIterable {
     /**
      * alias for any type of Iterable
      */
-    type anyIterable = Iterable[T] forSome {type T} 
-    
+    type anyIterable = Iterable[T] forSome {type T}
+
     /**
      * @return the representation of the elements of the iterable using the toString method recursively
      */
@@ -38,11 +38,11 @@ object ExtendedIterable {
       else
           "[" + xs.toList.map { x =>
             if (x.isInstanceOf[anyIterable]) x.asInstanceOf[anyIterable].toDeepString else x.toString
-          }.mkString(", ") + "]" 
+          }.mkString(", ") + "]"
     }
-    
+
     /**
-     * @return true if the 2 iterables contain the same elements, in the same order, according to a function f 
+     * @return true if the 2 iterables contain the same elements, in the same order, according to a function f
      */
     def isSimilar[B >: A](that: Iterable[B], f: Function2[A, B, Boolean]): Boolean = {
       val ita = xs.elements
@@ -54,20 +54,31 @@ object ExtendedIterable {
       !ita.hasNext && !itb.hasNext && res
     }
     /**
-     * @return true if the second iterable elements are contained in the first, in order 
+     * @return true if the second iterable elements are contained in the first, in order
      */
-    def containsInOrder[A](l: Iterable[A]) = {
-        val indexes: List[Int] = l.foldLeft(new ListBuffer[Int]()) { (ind, x) => ind.append(xs.toSeq.findIndexOf(x == _)); ind }.toList
-        (!indexes.contains(-1) && indexes.sort(_ <= _) == indexes)
-    } 
+    def containsInOrder[A](l: Iterable[A]): Boolean = {
+      val firstList = xs.toList
+      val secondList = l.toList
+      (firstList, secondList) match {
+         case (_, Nil) => true
+         case (Nil, _) => false
+         case (a :: Nil, b :: Nil) => a == b
+         case (a :: firstRest, b :: secondRest) => {
+           if (a != b)
+             firstRest.containsInOrder(secondList)
+           else
+             firstRest.containsInOrder(secondRest)
+         }
+      }
+    }
 
     /**
-     * @return true if the 2 iterables contain the same elements recursively, in any order 
+     * @return true if the 2 iterables contain the same elements recursively, in any order
      */
     def sameElementsAs(that: Iterable[A]): Boolean = sameElementsAs(that, (x, y) => x == y)
 
     /**
-     * @return true if the 2 iterables contain the same elements (according to a comparision function f) recursively, in any order 
+     * @return true if the 2 iterables contain the same elements (according to a comparision function f) recursively, in any order
      */
     def sameElementsAs(that: Iterable[A], f: (A, A) => Boolean): Boolean = {
       def isNotItsOwnIterable(a: Iterable[_]) = a.isEmpty || a.elements.next != a
@@ -86,26 +97,26 @@ object ExtendedIterable {
           if (a.firstOption.isDefined && b.firstOption.isDefined) {
             val (x, y, resta, restb) = (a.head, b.head, a.drop(1), b.drop(1))
             matchTwo(x, y) && resta.sameElementsAs(restb, f) ||
-            resta.exists(matchTwo(_, y)) && restb.exists(matchTwo(_, x)) && 
+            resta.exists(matchTwo(_, y)) && restb.exists(matchTwo(_, x)) &&
               resta.removeFirst(matchTwo(_, y)).sameElementsAs(restb.removeFirst(matchTwo(_, x)), f)
           }
           else
             false
         }
-        case _ => ita == itb  
-      } 
+        case _ => ita == itb
+      }
     }
 
     /**
-     * adds the sameElementsAs method to any object in order to do that comparison recursively 
+     * adds the sameElementsAs method to any object in order to do that comparison recursively
      */
     implicit def anyToSameElements(x: Any) = new AnyWithSameElements(x)
 
     /**
-     * Class adding the <code>sameElementsAs</code> method to any object. The default implementation uses standard equality (==) 
+     * Class adding the <code>sameElementsAs</code> method to any object. The default implementation uses standard equality (==)
      */
-    class AnyWithSameElements(x: Any) { 
-       def sameElementsAs(that: Any): Boolean = x == that 
+    class AnyWithSameElements(x: Any) {
+       def sameElementsAs(that: Any): Boolean = x == that
     }
   }
 }
