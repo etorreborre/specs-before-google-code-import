@@ -2,8 +2,9 @@ package org.specs.samples
 import org.specs.specification._
 import org.specs.matcher._
 import org.specs.util._
+import org.specs.form._
 
-object literateSpec extends Persons {
+object formSpec extends Persons {
   "Forms can be used in a Literate specifications" ->> <wiki>
 
 This is a Person form, checking that the initials are set properly on a Person object.
@@ -44,4 +45,3 @@ trait Persons extends LiterateSpecification with Forms {
 }
 import org.specs.runner._
 class LiterateSpecTest extends HtmlSuite(literateSpec, "target") with JUnit
-object formSpec extends LiterateSpecTest
