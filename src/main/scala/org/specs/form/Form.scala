@@ -25,23 +25,44 @@ trait Forms {
         with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
     protected val properties: ListBuffer[Executable[_] with Linkable[_] with HasResults with ToHtml] = new ListBuffer
 
+    /**
+     * add a Prop to the Form.
+     */
+    def add[T](p: Prop[T]): this.type = { properties.append(p); this }
+    /**
+     * factory method for creating a property linked to an actual value.
+     * Using this method adds the property to the Form
+     */
     def prop[T](label: String, actual: T): Prop[T] = {
       val p = Prop(label, actual, MatcherConstraint(m => actual must m))
-      properties.append(p)
+      add(p)
       p
     }
+
+    /**
+     * factory method for creating an iterable property linked to an actual value.
+     *
+     * The default matcher for an iterable properties is "haveTheSameElementsAs"
+     * Using this method adds the property to the Form.
+     */
     def propIterable[T](label: String, value: Iterable[T]): MatcherPropIterable[T] = {
       val p = PropIterable(label, value, MatcherConstraint(m => actual must m))
-      p.matchWith(haveTheSameElementsAs(_))
-      properties.append(p)
+      p.matchesWith(haveTheSameElementsAs(_))
+      add(p)
       p
     }
-    def form[F <: Form](f: F) = {
-      properties.append(f)
+    /**
+     * add a subForm to this form.
+     */
+    def form[F <: Form](f: F): F = {
+      add(f)
       f
     }
 
+    /** executing the Form is done by executing all of its properties. */
     def executeThis = properties.foreach(_.execute)
+
+    /** the Form failures is the executing the Form is done by executing all of its properties. */
     def failures = properties.flatMap(_.failures)
     def skipped = properties.flatMap(_.skipped)
     def errors = properties.flatMap(_.errors)
