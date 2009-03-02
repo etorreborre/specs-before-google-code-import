@@ -102,14 +102,16 @@ class JUnit4(val specifications : Specification*) extends JUnit {
 
 /**
  * A <code>ExamplesTestSuite</code> is a JUnitSuite reporting the results of
- * a System under test (sus) as a list of examples, represented by ExampleTestCase objects. If an example has subExamples, they are reported with a separate <code>ExamplesTestSuite</code>
+ * a System under test (sus) as a list of examples, represented by ExampleTestCase objects.
+ * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
+ * run the example during the initialization time.
  */
 class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Classes {
 
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /**
-   * create one TestCase per example and a new ExamplesTestSuite for the sub-examples
+   * create one TestCase per example
    */
   def initialize = {
     setName(description)
@@ -117,11 +119,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
       // if the test is run with Maven the sus description is added to the example description for a better
       // description in the console
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-
-      if (example.subExamples.isEmpty)
-        addTest(new ExampleTestCase(example, exampleDescription))
-      else
-        addTest(new ExamplesTestSuite(description, example.subExamples, skipped))
+      addTest(new ExampleTestCase(example, exampleDescription))
     }
   }
 
@@ -141,16 +139,32 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
  * A <code>ExampleTestCase</code> reports the result of an example<p>
  * It overrides the run method from <code>junit.framework.TestCase</code>
  * to add errors and failures to a <code>junit.framework.TestResult</code> object
+ *
+ * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
 class ExampleTestCase(example: Example, description: String) extends TestCase(description.replaceAll("\n", " ")) {
   override def run(result: TestResult) = {
     result.startTest(this)
-    println("running test: " + description)
-    example.failures foreach {failure: FailureException => result.addFailure(this, new SpecAssertionFailedError(failure))}
-    example.skipped foreach {skipped: SkippedException => result.addFailure(this, new SkippedAssertionError(skipped)) }
-    example.errors foreach {error: Throwable => result.addError(this, new SpecError(error)) }
+    def report(ex: Example, context: String) = {
+      ex.ownFailures foreach { failure: FailureException =>
+        result.addFailure(this, new SpecAssertionFailedError(ContextualizedThrowable(failure, context)))
+      }
+      ex.ownSkipped foreach { skipped: SkippedException =>
+        result.addFailure(this, new SkippedAssertionError(ContextualizedThrowable(skipped, context)))
+      }
+      ex.ownErrors foreach { error: Throwable =>
+        result.addError(this, new SpecError(ContextualizedThrowable(error, context)))
+      }
+    }
+    report(example, "")
+    example.subExamples foreach { subExample => report(subExample, subExample.description + " -> ") }
     result.endTest(this)
   }
+}
+
+case class ContextualizedThrowable(t: Throwable, context: String) extends Throwable {
+  setStackTrace(t.getStackTrace)
+  override def getMessage = context + t.getMessage
 }
 /**
  * This class refines the <code>AssertionFailedError</code> from junit
@@ -162,6 +176,7 @@ class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getM
   override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
   override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
 }
+
 /**
  * This class represents errors thrown in an example. It needs to be set as something
  * different from an AssertionFailedError so that tools like Ant can make the distinction between failures and errors

@@ -91,7 +91,7 @@ trait TestDescription extends Classes {
   def makeDescription(test: Test): Description = {
 	  if (test.isInstanceOf[JUnitSuite]) {
   	  val ts = test.asInstanceOf[JUnitSuite];
-      val description= asDescription(ts)
+      val description = asDescription(ts)
       for (suite <- ts.suites)
 		    description.addChild(makeDescription(suite))
       for (t <- ts.testCases)

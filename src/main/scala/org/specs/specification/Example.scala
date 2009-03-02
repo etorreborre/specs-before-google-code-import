@@ -23,7 +23,7 @@ import scala.reflect.Manifest
  * <p>
  * An example can also contain subexamples which are executed will evaluating the <code>in</code> method.
  * <p>
- * When expectations have been evaluated inside an example they register their failures and errors for later reporting 
+ * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
 case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc: ExampleDescription, cyc: ExampleLifeCycle) extends Example(exampleDesc, cyc) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
@@ -51,7 +51,7 @@ case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc:
   override def clone: ExampleWithContext[S] = {
     copyExecutionTo(ExampleWithContext(context, exampleDesc, cyc))
   }
-} 
+}
 case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends Tagged with HasResults {
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
@@ -88,17 +88,17 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
 
   /** @return the subexamples, executing the example if necessary */
   def subExamples = {execute; subExs}
-  
+
   /** alias for the <code>in</code> method */
   def >>[T](expectations: => T) = in(expectations)
   def doTest[T](expectations: => T) = cycle.executeTest(this, expectations)
-  
+
   /** encapsulates the expectations to execute */
   var execution = new ExampleExecution(this, () => ())
 
   /**
-   * creates a new Example object and store as an ExampleExecution object the expectations to be executed. 
-   * This <code>expectations</code> parameter is a block of code which may contain expectations with matchers. 
+   * creates a new Example object and store as an ExampleExecution object the expectations to be executed.
+   * This <code>expectations</code> parameter is a block of code which may contain expectations with matchers.
    * Upon execution, errors and failures will be attached to the current example
    * by calling the <code>addFailure</code> and <code>addError</code> methods
    * Execution will be triggered when requesting status information on that example: failures, errors, expectations number, subexamples
@@ -110,7 +110,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
       execute
     this
   }
-  
+
   /** execute the example, checking the expectations. */
   def execute: Unit =  execution.execute
 
@@ -129,19 +129,24 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
 
   /** @return the failures of this example and its subexamples, executing the example if necessary */
   def failures: Seq[FailureException] = { execute; thisFailures ++ subExamples.flatMap { _.failures } }
+  /** @return the failures of this example, executing the example if necessary */
+  def ownFailures: Seq[FailureException] = { execute; thisFailures }
 
   /** @return the skipped messages for this example and its subexamples, executing the example if necessary  */
   def skipped: Seq[SkippedException] = { execute; thisSkipped ++ subExamples.flatMap { _.skipped } }
+  /** @return the skipped messages for this example, executing the example if necessary  */
+  def ownSkipped: Seq[SkippedException] = { execute; thisSkipped }
 
-  /** @return the errors of this example and its subexamples, executing the example if necessary  */
+  /** @return the errors of this example, executing the example if necessary  */
   def errors: Seq[Throwable] = { execute; thisErrors ++ subExamples.flatMap {_.errors} }
+  def ownErrors: Seq[Throwable] = { execute; thisErrors }
 
   /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
-  def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} + 
+  def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
   /** @return the example description */
   override def toString = description.toString
-  
+
   /** reset in order to be able to run the example again */
   def resetForExecution: this.type = {
     execution.resetForExecution
@@ -155,7 +160,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   override def clone: Example = {
     copyExecutionTo(Example(exampleDescription, cycle))
   }
-  
+
   def copyExecutionTo[E <: Example](e: E): E = {
     e.execution = new ExampleExecution(e, execution.expectations)
     e
@@ -169,7 +174,7 @@ case class ExampleDescription(desc: String) {
   def format: String = desc.toString
 }
 /**
- * This class encapsulates the execution of an example 
+ * This class encapsulates the execution of an example
  */
 class ExampleExecution(example: Example, val expectations: () => Any) {
   /** function containing the expectations to be run */
@@ -183,13 +188,13 @@ class ExampleExecution(example: Example, val expectations: () => Any) {
 
   /** flag used to memorize if the example has already been executed once. In that case, it will not be re-executed */
   private[this] var executed = false
-  
+
   val execution = () => {
     var failed = false
     // try the "before" methods. If there is an exception, add an error and return the current example
     try { example.cycle.beforeExample(example) } catch {
-      case t: Throwable => { 
-        example.addError(t) 
+      case t: Throwable => {
+        example.addError(t)
         failed = true
       }
     }
@@ -200,7 +205,7 @@ class ExampleExecution(example: Example, val expectations: () => Any) {
         example.cycle.executeTest(example, expectations())
         example.cycle.afterTest(example)
       }
-    } catch { 
+    } catch {
       // failed expectations will launch a FailureException
       // skipped expectations will launch a SkippedException
       case f: FailureException => example.addFailure(f)
@@ -208,9 +213,9 @@ class ExampleExecution(example: Example, val expectations: () => Any) {
       case t: Throwable => example.addError(t)
       }
       // try the "after" methods. If there is an exception, add an error and return the current example
-      try { 
-        if (!failed) 
-          example.cycle.afterExample(example) 
+      try {
+        if (!failed)
+          example.cycle.afterExample(example)
       } catch { case t: Throwable => example.addError(t) }
       example
   }

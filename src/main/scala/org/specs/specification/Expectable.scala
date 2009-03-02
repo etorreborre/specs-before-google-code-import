@@ -15,14 +15,14 @@ import org.specs.Sugar._
  *   // @see org.specs.specification.ExpectableFactory
  *   // @see org.specs.specification.ExampleExpectationsListener
  *   1 must_== 1
- * 
+ *
  *   // in that case, no example is set but during the execution of the "in" part
  *   // the failure exception will be caught by the example and stored
  *   "this example fails" in { 1 must_== 0 }
  * }
  * object test extends SpecsMatchers {
  *   // this expectable is not related to any example and executes right away throwing an exception if failing
- *   1 must_== 1 
+ *   1 must_== 1
  * }
  * </pre>
  */
@@ -33,29 +33,29 @@ trait Expectable[T] {
   private var successValueToString: SuccessValue => String = s => ""
   /** the listener will be called for every match to register a new Expectation. */
   private var expectationsListener: Option[ExampleExpectationsListener] = None
-  /** 
-   * stores a precise description of the thing being expected. 
+  /**
+   * stores a precise description of the thing being expected.
    * This description is meant to be passed to the matcher for better failure reporting.
    */
   protected var description: Option[String] = None
 
-  /** 
+  /**
    * Apply a matcher for this expectable value.
-   * 
+   *
    * Execute the matcher directly or add it to its related example for execution.
-   * It either throws a FailureException or return a SuccessValue object. 
+   * It either throws a FailureException or return a SuccessValue object.
    *
    * The expectation listener gets notified of a new expectation with a fresh copy of this expectable.
-   * The matcher gets 
+   * The matcher gets
    */
   def applyMatcher[U >: T](m: => Matcher[U], value: => T): SuccessValue = {
-    expectationsListener.map(_.addExpectation(Some(this))) 
+    expectationsListener.map(_.addExpectation(Some(this)))
 
     val failureTemplate = FailureException("")
     def executeMatch = {
       val matcher = m
       matcher.setDescription(description)
-      val (result, _, koMessage) = matcher.apply(value) 
+      val (result, _, koMessage) = matcher.apply(value)
       result match {
         case false => {
           new FailureException(koMessage).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("Expectable"))
@@ -71,15 +71,15 @@ trait Expectable[T] {
         res
       }
     }
-  }  
+  }
   /**
    * Set a specific example to hold the results of this matcher
    */
   def setExample[T](ex: Example) = example = Some(ex)
-  
+
   /** setter for the expectation listener. */
-  def setExpectationsListener(listener: ExampleExpectationsListener): this.type = { 
-    expectationsListener = Some(listener); 
+  def setExpectationsListener(listener: ExampleExpectationsListener): this.type = {
+    expectationsListener = Some(listener);
     this
   }
 
@@ -93,24 +93,24 @@ trait Expectable[T] {
  * Usage: <code>new Expect(value, example) must beMatching(otherValue)</code><p>
  *
  * An assert is created with its parent <code>Example</code> in order to register failures
- * and errors if a matcher is not ok 
+ * and errors if a matcher is not ok
  *
  */
 class Expectation[T](value: => T) extends Expectable[T] {
 
   override def toString() = value.toString
   def createClone = new Expectation(value)
-  
+
   /** set a better description on the value. */
   def aka(desc: String): this.type = { description = Some(desc); this }
 
   /**
-   * applies a matcher to the current value and throw a failure is the result is not true 
+   * applies a matcher to the current value and throw a failure is the result is not true
    */
   def must[S >: T](m: => Matcher[S]) = applyMatcher[S](m, value)
-  
+
   /**
-   * applies the negation of a matcher 
+   * applies the negation of a matcher
    */
   def mustNot[S >: T](m: => Matcher[S]) =  must(m.not)
 
@@ -121,13 +121,13 @@ class Expectation[T](value: => T) extends Expectable[T] {
   def verifies(f: T => Boolean) = mustVerify(f)
 
   /** alias for <code>must be(other)</code>  */
-  def mustBe(otherValue: Any) = must(be(otherValue)) 
+  def mustBe(otherValue: Any) = must(be(otherValue))
 
   /** alias for <code>must be(other)</code>  */
   def mustEq(otherValue: Any) = must(be(otherValue))
 
   /** alias for <code>must notEq(other)</code>  */
-  def mustNotBe(otherValue: Any) = must(notEq(otherValue)) 
+  def mustNotBe(otherValue: Any) = must(notEq(otherValue))
 
   /** alias for <code>must notEq(other)</code>  */
   def mustNotEq(otherValue: Any) = mustNotBe(otherValue)
@@ -144,10 +144,14 @@ class Expectation[T](value: => T) extends Expectable[T] {
   def mustEqual(otherValue: Any)(implicit details: Detailed) = must(is_==(otherValue)(details))
 }
 /** RuntimeException carrying a matcher ko message */
-case class FailureException(var message: String) extends RuntimeException(message)
+case class FailureException(var message: String) extends RuntimeException(message) {
+  override def getMessage = message
+}
 
 /** RuntimeException carrying a matcher skip message */
-case class SkippedException(message: String) extends RuntimeException(message)
+case class SkippedException(var message: String) extends RuntimeException(message) {
+  override def getMessage = message
+}
 
 /** Specialized expectable class with string matchers aliases */
 class StringExpectable[A <: String](value: => A) extends Expectable[A] {
@@ -158,7 +162,7 @@ class StringExpectable[A <: String](value: => A) extends Expectable[A] {
 
   /** alias for <code>must(not(beMatching(a)))</code> */
   def mustNotMatch(a: String) = applyMatcher(not(beMatching(a)), value)
-  
+
   /** alias for <code>must(beEqualToIgnoringCase(a))</code> */
   def must_==/(a: String) = applyMatcher(beEqualToIgnoringCase(a), value)
 
@@ -175,14 +179,14 @@ class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[I
   /** alias for <code>must(notExist(function(_))</code> */
   def mustNotHave(function: I => Boolean) = applyMatcher(notHave(function((_:I))), value)
 
-  /** 
+  /**
    * alias for <code>must(exist(function(_))</code>
    * @deprecated use mustHave instead
    */
   def mustExist(function: I => Boolean) = mustHave(function)
 
-  /** 
-   * alias for <code>must(notExist(function(_))</code> 
+  /**
+   * alias for <code>must(notExist(function(_))</code>
    * @deprecated use mustNotHave instead
    */
   def mustNotExist(function: I => Boolean) = mustNotHave(function)
@@ -209,34 +213,34 @@ class IterableStringExpectable(value: =>Iterable[String]) extends Expectable[Ite
   /** alias for <code>must(notContainMatch(pattern))</code> */
   def mustNotHaveMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
 
-  /** 
+  /**
    * alias for <code>must(containMatch(pattern))</code>
-   * @deprecated: use mustContainMatch or mustHaveMatch instead 
+   * @deprecated: use mustContainMatch or mustHaveMatch instead
    */
   def mustExistMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
 
-  /** 
-   * alias for <code>must(notContainMatch(pattern))</code> 
-   * @deprecated: use mustNotContainMatch or mustNotHaveMatch instead 
+  /**
+   * alias for <code>must(notContainMatch(pattern))</code>
+   * @deprecated: use mustNotContainMatch or mustNotHaveMatch instead
    */
   def mustNotExistMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
 }
 /**
- * By default the result value of an expectable expression doesn't output anything when 
+ * By default the result value of an expectable expression doesn't output anything when
  * toString is called.
  */
 /**
- * This trait transforms SuccessValue objects to a Boolean value if it is necessary, for example in 
+ * This trait transforms SuccessValue objects to a Boolean value if it is necessary, for example in
  * ScalaCheck properties.
  */
 trait SuccessValues {
 
   /** transforms a SuccessValue to a boolean */
   implicit def successValueToBoolean(s: SuccessValue) = true
-  
+
   /** by default a SuccessValue is "silent" */
   def successValueToString(s: SuccessValue) = ""
-  
+
 }
 /** value returned by an expectable whose string representation can vary. */
 case class SuccessValue(f: SuccessValue => String) {
