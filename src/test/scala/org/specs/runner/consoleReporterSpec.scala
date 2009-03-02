@@ -118,6 +118,12 @@ object consoleReporterSpec extends Specification with MockOutput {
     "not display the sus at all if all examples are ok with the -xOnly flag" in {
       runWith("-acc", "in", "-xOnly") must (notContainMatch("this sus"))
     }
+    "print a help message with the options description if passed the -h or --help flag" in {
+      mainWith("--help") must (containMatch("--help"))
+    }
+    "not execute the specification when passed the -h or --help flag" in {
+      mainWith("--help") must (notContainMatch("this sus"))
+    }
   }
   "A console trait" should { clean.before
     "print a warning message if a accept/reject argument is not followed by tags" in {
@@ -130,6 +136,10 @@ object consoleReporterSpec extends Specification with MockOutput {
   def runWith(args: String*): List[String] = {
     specRunner.args = args.toArray
     specRunner.reportSpecs
+    specRunner.messages.toList
+  }
+  def mainWith(args: String*): List[String] = {
+    specRunner.main(args.toArray)
     specRunner.messages.toList
   }
   def clean = {
