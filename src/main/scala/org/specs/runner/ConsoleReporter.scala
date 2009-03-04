@@ -47,8 +47,10 @@ trait OutputReporter extends Reporter with Output {
     reportSystems(spec.systems, padding + "  ")
     timer.stop
 
-    println(padding + "Total for specification \"" + spec.name + "\":")
-    printStats(stats(spec), padding)
+    if (statistics)  {
+      println(padding + "Total for specification \"" + spec.name + "\":")
+      printStats(stats(spec), padding)
+    }
     this
   }
 
@@ -103,7 +105,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportSus(sus: Sus, padding: String) = {
     printSus(sus, padding);
-    printStats(sus, padding)
+    if (statistics) printStats(sus, padding)
   }
 
   /**

@@ -6,10 +6,10 @@ import org.specs.specification._
  * Usage:<code>
  * class mySpecRunner extends ScalaTestSuite(mySpec)
  * </code>
- * Then it can be run with the ScalaTest gui runner: <code>java -cp ... org.scalatest.Runner -g -s mySpecRunner</code> 
+ * Then it can be run with the ScalaTest gui runner: <code>java -cp ... org.scalatest.Runner -g -s mySpecRunner</code>
  */
-class ScalaTestSuite(specifications: Specification*) extends ScalaTest { 
-  val specs: Seq[Specification] = specifications 
+class ScalaTestSuite(specifications: Specification*) extends ScalaTest {
+  val specs: Seq[Specification] = specifications
 }
 
 /**
@@ -19,35 +19,35 @@ class ScalaTestSuite(specifications: Specification*) extends ScalaTest {
  * class mySpecRunner extends Runner(mySpec) with ScalaTest
  * <code>
  */
-trait ScalaTest extends SpecsHolder with org.scalatest.Suite {
+trait ScalaTest extends SpecsFilter with org.scalatest.Suite {
   /**
-   * @return the name of the suite which is either the specification name if there's only one or 
+   * @return the name of the suite which is either the specification name if there's only one or
    * a name build after <code>this</code> class
    */
   override def suiteName = {
-    if (specs.size > 1)
+    if (filteredSpecs.size > 1)
       this.getClass.getName.replaceAll("\\$", "")
     else
-      specs(0).description
+      filteredSpecs(0).description
   }
-    
+
   /**
    * @return an empty map for now. The notion of group may be added later to specifications
    */
-  override def groups: Map[String, Set[String]] = Map() 
+  override def groups: Map[String, Set[String]] = Map()
 
   /**
    * @return the subspecifications or the systems as ScalaTest suites
    */
   override def nestedSuites: List[org.scalatest.Suite] = {
-    var result: List[org.scalatest.Suite] = Nil 
-    specs foreach { specification => 
+    var result: List[org.scalatest.Suite] = Nil
+    filteredSpecs foreach { specification => 
       specification.subSpecifications.foreach { s: Specification => result = new ScalaTestSuite(s)::result }
       specification.systems foreach {sus => result = new SusSuite(sus)::result }
     }
     result.reverse
   }
-  
+
   /**
    * @return an empty set as a specification doesn't hold tests by itself
    */
@@ -59,7 +59,7 @@ trait ScalaTest extends SpecsHolder with org.scalatest.Suite {
  * its subspecifications or its systems under test (sus)
  */
 class SusSuite(sus: Sus) extends Suite {
-  
+
   /**
    * @return the description of the sus with either "should" or "can"
    */
@@ -80,11 +80,11 @@ class SusSuite(sus: Sus) extends Suite {
   }
 
   /**
-   * Report the result of several examples, checking if they are included or not  
+   * Report the result of several examples, checking if they are included or not
    */
-  override def runTests(testName: Option[java.lang.String], 
-                         reporter: org.scalatest.Reporter, 
-                         stopper: Stopper, 
+  override def runTests(testName: Option[java.lang.String],
+                         reporter: org.scalatest.Reporter,
+                         stopper: Stopper,
                          includes: scala.collection.immutable.Set[String],
                          excludes: scala.collection.immutable.Set[String],
                          properties: Map[java.lang.String, Any]): Unit = {
@@ -104,20 +104,20 @@ class SusSuite(sus: Sus) extends Suite {
           case Some(includedNames) => {
             if (isIncluded(name) && isNotExcluded(name))
               runTest(name, reporter, stopper, properties)
-          } 
+          }
         }
       }
     }
     /**
-     * Report the result of an example given its description to the reporter.  
+     * Report the result of an example given its description to the reporter.
      */
-    override def runTest(testName: java.lang.String, 
-                         reporter: org.scalatest.Reporter, 
-                         stopper: Stopper, 
+    override def runTest(testName: java.lang.String,
+                         reporter: org.scalatest.Reporter,
+                         stopper: Stopper,
                          properties: Map[java.lang.String, Any]): Unit = {
       sus.examples.find(_.description == testName).map(e => runExample(e, reporter))
-    } 
-    
+    }
+
   /**
    * Report the result of an example: ignored if it is skipped, failed if it has failures or errors, succeeded otherwise
    * call this method recursively if the example has subexamples
@@ -131,7 +131,7 @@ class SusSuite(sus: Sus) extends Suite {
       reporter.testSucceeded(new Report(e.description, ""))
     e.subExamples foreach { sub => runExample(sub, reporter) }
   }
-    
+
   import scala.collection.immutable._
   /**
    * @return a map with the keys being the examples tags and the values the example names for each tag

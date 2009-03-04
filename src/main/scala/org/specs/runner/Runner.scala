@@ -13,28 +13,31 @@ import org.specs.specification._
  * class mySpecRunner extends Runner(mySpec) with JUnit with Xml with ScalaTest
  * which will also output the results in an xml file
  * <code>
- * 
+ *
  * Then mySpecRunner class can be executed in many ways:<ul>
  * <li>scala -cp ... -e "new mySpecRunner.reportSpecs"
  * <li>java -cp ... org.scalatest.Runner -g -s mySpecRunner
  * <li>java -cp ... org.junit.runner.JUnitCore mySpecRunner
  * </ul>
- * 
- * It is annotated with a JUnit annotation because JUnit requires that annotation should be placed on the class which will be executed. 
+ *
+ * It is annotated with a JUnit annotation because JUnit requires that annotation should be placed on the class which will be executed.
  * In the example above, Runner(mySpec) is the only class; JUnit, Console and ScalaTest are all traits.
  */
 @RunWith(classOf[JUnitSuiteRunner])
 class Runner(val specifications: Seq[Specification], val reporters: Seq[Reporter]) extends Reporter {
 
-  def this(s: Specification*) = this(s, List(new ConsoleRunner))
+  def this(s: Specification*) = {
+    this(s, List(new ConsoleRunner))
+  }
   def this(reporter: Reporter, s: Specification*) = this(s, List(reporter))
-  /** alternate constructor with a specs holder (possibly a SpecsFinder object). */  
+  /** alternate constructor with a specs holder (possibly a SpecsFinder object). */
   def this(specsHolder: SpecsHolder, reps: Seq[Reporter]) = this(specsHolder.specs, reps)
   def this(specsHolder: SpecsHolder) = this(specsHolder.specs, List(new ConsoleRunner))
   val specs = specifications
   override def report(specs: Seq[Specification]) = {
     super.report(specs)
     reporters foreach { reporter =>
+      reporter.args = reporter.args ++ this.args
       reporter.report(specs)
     }
     this

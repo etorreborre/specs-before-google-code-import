@@ -35,22 +35,27 @@ trait SpecsHolder {
  * to allow the chaining of several reporters as traits:
  * object runner extends Runner(spec) with Html with Xml for example
  */
-trait Reporter extends SpecsHolder with ConsoleLog {
+trait Reporter extends SpecsFilter with ConsoleLog {
 
   /** this variable controls if stacktraces should be printed. */
   protected var stacktrace = true
   /** this variable controls if ok examples should be printed. */
   protected var failedAndErrorsOnly = false
+  /** this variable controls if the statistics should be printed. */
+  protected var statistics = true
 
   /** allow subclasses to remove the stacktrace display. */
   def setNoStacktrace(): this.type = { stacktrace = false; this }
   /** allow subclasses to remove the ok and skipped examples. */
   def setFailedAndErrorsOnly(): this.type = { failedAndErrorsOnly = true; this }
+  /** allow subclasses to remove the statistics. */
+  def setNoStatistics(): this.type = { statistics = false; this }
   /** reset all options. */
   def resetOptions(): this.type = {
     args = Array()
     stacktrace = true
     failedAndErrorsOnly = false
+    statistics = false
     this
   }
 
@@ -70,22 +75,37 @@ trait Reporter extends SpecsHolder with ConsoleLog {
     if (arguments != null)
       args = args ++ arguments
     if (argsContain("-h", "--help")) {
-      println("""usage java <classpath> package.mySpecification [-h|--help] [-ns|--nostacktrace] [-xonly | -failedonly] [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
+      println("""
+usage java <classpath> package.mySpecification [-h|--help]
+                                               [-ns|--nostacktrace]
+                                               [-nostats|--nostatistics]
+                                               [-xonly | -failedonly]
+                                               [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
+                                               [-sus | --system]
+                                               [-ex | --example]
 
 -h, --help           prints this message and doesn't execute the specification
 -ns, --nostacktrace  removes the stacktraces from the reporting
+-nostats, --nostatistics  removes the statistics from the reporting
 -xonly, --failedonly reports only failures and errors
 -acc, --accept tags  accept only the specified tags (comma-separated names)
 -rej, --reject tags  reject the specified tags (comma-separated names)
+-sus, --system  only the systems under specifications matching this regular expression will be executed
+-ex, --example  only the examples matching this regular expression will be executed
 """.stripMargin)
     } else {
       reportSpecs
-      if (specs.exists(_.isFailing)) System.exit(1) else System.exit(0)
+      if (filteredSpecs.exists(_.isFailing)) System.exit(1) else System.exit(0)
     }
   }
+  /** regexp for filtering systems. */
+  override def susFilterPattern = argValue(args, List("-sus", "--system")).getOrElse(".*")
+
+  /** regexp for filtering examples. */
+  override def exampleFilterPattern = argValue(args, List("-ex", "--example")).getOrElse(".*")
 
   /** report the list of specifications held by the object mixing this trait. */
-  def reportSpecs: this.type = report(this.specs)
+  def reportSpecs: this.type = report(this.filteredSpecs)
 
   /**
    * report specifications.
@@ -96,7 +116,8 @@ trait Reporter extends SpecsHolder with ConsoleLog {
    */
   def report(specs: Seq[Specification]): this.type = {
     if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
-    if (argsContain("-xonly", "--failedOnly")) setFailedAndErrorsOnly()
+    if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
+    if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
     setTags(specs, args)
     this
   }
@@ -114,12 +135,27 @@ trait Reporter extends SpecsHolder with ConsoleLog {
     def setAcceptedTags(specifications: Seq[Specification], argumentNames: List[String], f: (Specification, Int) => Specification) = {
       arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
         case -1 => ()
-        case i if (i < arguments.length - 1) => specs.foreach(f(_, i))
+        case i if (i < arguments.length - 1) => filteredSpecs.foreach(f(_, i))
         case _ => if (!arguments.isEmpty) printWarning
       }
     }
     setAcceptedTags(specifications, List("-acc", "--accept"), acceptSpecTags(_, _))
     setAcceptedTags(specifications, List("-rej", "--reject"), rejectSpecTags(_, _))
+  }
+
+  /**
+   * @return the argument value in a list of arguments for a given flag in the argumentNames list.
+   * for example: argValue(Array("-ex", ".*ex.*"), List("-ex", "--example")) = Some(".*ex.*")
+   */
+  private def argValue(arguments: Array[String], argumentNames: List[String]): Option[String] = {
+    arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
+      case -1 => None
+      case i if (i < arguments.length - 1) => Some(arguments(i + 1))
+      case _ => {
+        if (!arguments.isEmpty) warning("missing values for flags: " + argumentNames.mkString(", ") + " in " + arguments.mkString(", "))
+        None
+      }
+    }
   }
 
   def ::(r: Reporter) = List(r, this)

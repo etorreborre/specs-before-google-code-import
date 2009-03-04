@@ -12,8 +12,8 @@ import org.specs.specification._
 object junitTestSuiteSpec extends Specification {
   "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
-      object S1 extends Specification
-      object S2 extends Specification
+      object S1 extends Specification { 1 must_== 1 }
+      object S2 extends Specification { 1 must_== 1 }
       object Composite extends Specification { "this composite spec" isSpecifiedBy (S1, S2) }
 
       makeRunners(Composite) foreach { r =>
@@ -22,8 +22,8 @@ object junitTestSuiteSpec extends Specification {
     }
     "create one test suite per sus" in {
       object S1 extends Specification {
-        "sus1" should {}
-        "sus2" should {}
+        "sus1" should { "ex" in {} }
+        "sus2" should { "ex" in {} }
       }
       makeRunners(S1) foreach { r =>
         r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sus1 should", "sus2 should")

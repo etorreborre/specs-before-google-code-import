@@ -1,4 +1,5 @@
 package org.specs.runner
+
 import org.specs.specification._
 import _root_.junit.framework._
 import _root_.org.junit.runner._
@@ -21,48 +22,48 @@ import org.specs.util.Classes
  * The suite is initialized once whenever some information is required, like getName, or countTestCases
  */
 trait JUnitSuite extends Test {
-  /** embedded JUnit3 TestSuite object */
+  /**embedded JUnit3 TestSuite object */
   val testSuite = new TestSuite
 
-  /** this variable is set to true if the suite has been initialized */
+  /**this variable is set to true if the suite has been initialized */
   private var initialized = false
 
-  /** the init method is called before any "getter" method is called. Then it initializes the object if it hasn't been done before */
+  /**the init method is called before any "getter" method is called. Then it initializes the object if it hasn't been done before */
   def init = if (!initialized) {initialize; initialized = true}
 
-  /** the initialize method should be provided to build the testSuite object by adding nested suites and test cases */
+  /**the initialize method should be provided to build the testSuite object by adding nested suites and test cases */
   def initialize
 
-  /** run the embedded suite */
+  /**run the embedded suite */
   def run(result: TestResult) = {init; testSuite.run(result)}
 
-  /** @return the name of the embedded suite */
+  /**@return the name of the embedded suite */
   def getName = {init; testSuite.getName}
 
-  /** set the name of the embedded suite */
+  /**set the name of the embedded suite */
   def setName(n: java.lang.String) = testSuite.setName(n)
 
-  /** add a new test to the embedded suite */
+  /**add a new test to the embedded suite */
   def addTest(t: Test) = testSuite.addTest(t)
 
-  /** @return the tests of the embedded suite (suites and test cases) */
+  /**@return the tests of the embedded suite (suites and test cases) */
   def tests: List[Test] = {init; enumerationToList(testSuite.tests)}
 
-  /** @return the number of tests of the embedded suite (suites and test cases) */
-  def countTestCases: Int = { init; tests.size }
+  /**@return the number of tests of the embedded suite (suites and test cases) */
+  def countTestCases: Int = {init; tests.size}
 
-  /** @return the test cases of the embedded suite */
+  /**@return the test cases of the embedded suite */
   def testCases: List[Test] = {
     init
     for (tc <- tests; if (tc.isInstanceOf[TestCase]))
-         yield tc.asInstanceOf[TestCase]
+    yield tc.asInstanceOf[TestCase]
   }
 
-  /** @return the test suites of the embedded suite */
+  /**@return the test suites of the embedded suite */
   def suites = {
     init
     for (ts <- tests; if (ts.isInstanceOf[JUnitSuite] || ts.isInstanceOf[TestSuite]))
-         yield ts.asInstanceOf[Test]
+    yield ts.asInstanceOf[Test]
   }
 }
 
@@ -71,14 +72,15 @@ trait JUnitSuite extends Test {
  */
 trait JUnit extends JUnitSuite with Reporter {
   def initialize = {
-    if (specs.size > 1)
+    if (filteredSpecs.size > 1)
       setName(this.getClass.getName.replaceAll("\\$", ""))
     else
-	   setName(specs(0).description)
-	specs foreach { specification =>
-	  specification.subSpecifications.foreach {s: Specification => addTest(new JUnit3(s))}
-	  specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skippedSus))}
-	}
+      setName(filteredSpecs.firstOption.map(_.description).getOrElse("no specs"))
+    filteredSpecs foreach {
+      specification =>
+              specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
+              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skippedSus))}
+    }
   }
 }
 
@@ -87,7 +89,7 @@ trait JUnit extends JUnitSuite with Reporter {
  * @deprecated use JUnit4 instead as the JUnitSuite class runs with a JUnit4 runner
  */
 @RunWith(classOf[JUnitSuiteRunner])
-class JUnit3(val specifications : Specification*) extends JUnit {
+class JUnit3(val specifications: Specification*) extends JUnit {
   val specs: Seq[Specification] = specifications
 }
 
@@ -95,7 +97,7 @@ class JUnit3(val specifications : Specification*) extends JUnit {
  * Concrete class providing specifications to be used as a JUnitSuite
  */
 @RunWith(classOf[JUnitSuiteRunner])
-class JUnit4(val specifications : Specification*) extends JUnit {
+class JUnit4(val specifications: Specification*) extends JUnit {
   val specs: Seq[Specification] = specifications
 }
 
@@ -108,18 +110,20 @@ class JUnit4(val specifications : Specification*) extends JUnit {
  */
 class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Classes {
 
-  /** return true if the current test is executed with Maven */
+  /**return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
+
   /**
    * create one TestCase per example
    */
   def initialize = {
     setName(description)
-    examples foreach { example =>
-      // if the test is run with Maven the sus description is added to the example description for a better
-      // description in the console
-      val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      addTest(new ExampleTestCase(example, exampleDescription))
+    examples foreach {
+      example =>
+              // if the test is run with Maven the sus description is added to the example description for a better
+              // description in the console
+              val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
+              addTest(new ExampleTestCase(example, exampleDescription))
     }
   }
 
@@ -146,18 +150,21 @@ class ExampleTestCase(example: Example, description: String) extends TestCase(de
   override def run(result: TestResult) = {
     result.startTest(this)
     def report(ex: Example, context: String) = {
-      ex.ownFailures foreach { failure: FailureException =>
-        result.addFailure(this, new SpecAssertionFailedError(ContextualizedThrowable(failure, context)))
+      ex.ownFailures foreach {
+        failure: FailureException =>
+                result.addFailure(this, new SpecAssertionFailedError(ContextualizedThrowable(failure, context)))
       }
-      ex.ownSkipped foreach { skipped: SkippedException =>
-        result.addFailure(this, new SkippedAssertionError(ContextualizedThrowable(skipped, context)))
+      ex.ownSkipped foreach {
+        skipped: SkippedException =>
+                result.addFailure(this, new SkippedAssertionError(ContextualizedThrowable(skipped, context)))
       }
-      ex.ownErrors foreach { error: Throwable =>
-        result.addError(this, new SpecError(ContextualizedThrowable(error, context)))
+      ex.ownErrors foreach {
+        error: Throwable =>
+                result.addError(this, new SpecError(ContextualizedThrowable(error, context)))
       }
     }
     report(example, "")
-    example.subExamples foreach { subExample => report(subExample, subExample.description + " -> ") }
+    example.subExamples foreach {subExample => report(subExample, subExample.description + " -> ")}
     result.endTest(this)
   }
 }
@@ -166,14 +173,18 @@ case class ContextualizedThrowable(t: Throwable, context: String) extends Throwa
   setStackTrace(t.getStackTrace)
   override def getMessage = context + t.getMessage
 }
+
 /**
  * This class refines the <code>AssertionFailedError</code> from junit
  * and provides the stackTrace of an exception which occured during the specification execution
  */
-class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage){
+class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage) {
   override def getStackTrace = t.getStackTrace
+
   override def printStackTrace = t.printStackTrace
+
   override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
+
   override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
 }
 
@@ -181,10 +192,13 @@ class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getM
  * This class represents errors thrown in an example. It needs to be set as something
  * different from an AssertionFailedError so that tools like Ant can make the distinction between failures and errors
  */
-class SpecError(t: Throwable) extends java.lang.Error(t.getMessage){
+class SpecError(t: Throwable) extends java.lang.Error(t.getMessage) {
   override def getStackTrace = t.getStackTrace
+
   override def printStackTrace = t.printStackTrace
+
   override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
+
   override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
 }
 class SkippedAssertionError(t: Throwable) extends SpecAssertionFailedError(t)
