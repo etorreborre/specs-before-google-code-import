@@ -10,8 +10,8 @@ trait HmsTimer extends Timer {
 
   /** current number of millis when instantiating the object using this Trait */
   var millis: Stack[Long] = new Stack[Long]
-  
-  /** 
+
+  /**
    * starts the with new elapsed time
    */
   def start = {
@@ -19,12 +19,12 @@ trait HmsTimer extends Timer {
     millis.push(getTime)
   }
 
-  /** 
+  /**
    * this method can be overriden for testing
    */
   protected def getTime = Calendar.getInstance.getTime.getTime
 
-  /** 
+  /**
    * restarts the Timer with no elapsed time
    */
   def restart = {
@@ -32,18 +32,18 @@ trait HmsTimer extends Timer {
     millis = new Stack[Long]
   }
 
-  /** 
+  /**
    * Stop the timer, store the number of elapsed millis and return a String representing the time as hour/minute/second/ms
    * @return the elapsed time as a String
    */
-  def stop: String = { 
-    elapsed = getTime - millis.top
-    millis.pop
+  def stop: String = {
+    val startMillis = if (!millis.isEmpty) millis.pop else 0L
+    elapsed = getTime - startMillis
     preciseTime
   }
-    
-  /** 
-   * @return a tuple with the elapsed hours, minutes, seconds and millis 
+
+  /**
+   * @return a tuple with the elapsed hours, minutes, seconds and millis
    */
   def hourMinutesSecondsMillis = {
     var totalMillis = elapsed
@@ -55,22 +55,22 @@ trait HmsTimer extends Timer {
     val millis = totalMillis - seconds * 1000
     (hours, minutes, seconds, millis)
   }
-  
-  /** 
-   * @return a formatted string showing the hours, minutes and seconds 
+
+  /**
+   * @return a formatted string showing the hours, minutes and seconds
    */
   def hms: String = {
     val (hours, minutes, seconds, millis) = hourMinutesSecondsMillis
     def plural(v: Long) = if (v > 1) "s" else ""
     var result = ""
-    if (hours > 0) { result += hours + " hour" + plural(hours) + " " } 
-    if (minutes > 0) { result += minutes + " minute" + plural(minutes) + " " } 
+    if (hours > 0) { result += hours + " hour" + plural(hours) + " " }
+    if (minutes > 0) { result += minutes + " minute" + plural(minutes) + " " }
     result += (seconds + " second" + plural(seconds))
     result
   }
-  
-  /** 
-   * @return a formatted string showing the hours, minutes, seconds and millis 
+
+  /**
+   * @return a formatted string showing the hours, minutes, seconds and millis
    */
   def preciseTime: String = {
     val (hours, minutes, seconds, millis) = hourMinutesSecondsMillis
@@ -79,7 +79,7 @@ trait HmsTimer extends Timer {
   def time = preciseTime
 }
 
-/** 
+/**
  * The Timer trait acts as a simple stopwatch. It can be stopped to get the elapsed time as a formatted String.
  */
 trait Timer {
@@ -90,7 +90,7 @@ trait Timer {
   def time: String
 }
 
-/** 
+/**
  * Default class for the HmsTimer trait
  */
 class SimpleTimer extends HmsTimer

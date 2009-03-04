@@ -12,43 +12,23 @@ import org.specs.xml._
 
 object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
-        fileSystemSpec,  
-        fileWriterSpec,  
-        allUtilSpec,
-        matchersSpec, 
-        specificationSpec, 
-        org.specs.specification.literateSpec, 
-        org.specs.runner.descriptionFormatterSpec,
-        exampleSpec,
-        sugarSpec, 
-        consoleReporterSpec,  
-        beforeAfterSpec, 
-        contextSpec, 
-        specsFinderSpec,
-        specsRunnerSpec,
-        teamCityRunnerSpec,
-        stackSpecification,
-        junitTestSuiteSpec,
-        xmlRunnerSpec,
-        htmlRunnerSpec,
-        scalaTestSpec,
-        mocksSpec,
-        jmockSpec)
+        ioSpecification,
+        utilSpecification,
+        matcherSpecification,
+        specificationSpecification,
+        stackSpecification)
 }
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-      extendedThrowableUnit,
-      extendedNodeUnit,
       collectionUnit,
-      fileSystemUnit, 
-      collectionUnit,  
-      allUtilUnit, 
-      specificationUnit, 
-      allMatchersUnit, 
-      protocolsUnit,
-      xmlRunnerUnit,
-      htmlRunnerUnit)
+      ioUnit,
+      utilUnit,
+      specificationUnit,
+      matcherUnit,
+      mockUnit,
+      runnerUnit,
+      xmlUnit)
 }
 
 object allSpecsAndUnits extends Specification {

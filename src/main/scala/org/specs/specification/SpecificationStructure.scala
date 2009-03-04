@@ -69,7 +69,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   }
 
   def include(specifications: Specification*) = {
-    subSpecifications = subSpecifications ::: specifications.toList
+    subSpecifications = subSpecifications ::: specifications.toList.filter((s: Specification) => !(s eq this))
   }
 
   /** alias for isSpecifiedBy */

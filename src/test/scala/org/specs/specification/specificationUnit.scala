@@ -10,7 +10,7 @@ import scala.collection.mutable._
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
-object specificationUnit extends Specification with ScalaCheck {
+object specificationsUnit extends Specification with ScalaCheck {
 
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {
@@ -88,7 +88,7 @@ object failedSpec extends Specification { "it" should { 1 must_== 0; "" in {} } 
 object skippedSpec extends Specification { "it" should { "be skipped" in { skip("be skipped") } } }
 object skippedMatcherSpec extends Specification { "it" should { "be skipped" in { 1 must be_==(0).orSkipExample } } }
 
-class specificationUnitTest extends JUnit4(specificationUnit)
+class specificationUnitTest extends JUnit4(specificationsUnit)
 
 
 
