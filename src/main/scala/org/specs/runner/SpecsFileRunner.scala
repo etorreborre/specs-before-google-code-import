@@ -28,5 +28,4 @@ class SpecsFileRunner(path: String, val specFilterPattern: String, susFilter: St
 
   /** short constructor with the path only. */
   def this(path: String) = this(path, ".*", ".*", ".*")
-
 }

@@ -18,23 +18,23 @@ import org.specs.runner._
 class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties {
   setSequential
   def this(n: String) = { this(); name = n; description = n; this }
-  
+
   /**
    * This method is used to silence the result of a call in an action. For example: <pre>
    * The timer should be stopped {timer.stop.shh}
    * </pre>. This will not output the result of the stop method
    */
   implicit def anyToShh(a: Any) = new Silenced
-  
+
   class Silenced {
-    def shh = () 
-    
+    def shh = ()
+
     /** the pipe bar must be interpreted visually as a stop and the < sign as a pike. */
     def <| = shh
   }
   /** This silence function allows to silence calls with this style: shh { a call } */
   def shh(a: =>Any) = { a; () }
-  
+
   /**
    * This method allows to embbed a DataTable in a literate specification and display the results of its execution
    */
@@ -47,7 +47,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
       desc + "\n" + tableToExecute.toHtml.toString
     }
-    def inForm(form: =>org.specs.util.Forms#Form) = {
+    def inForm(form: =>org.specs.form.Forms#Form) = {
       lazy val formToExecute = form
       forExample(desc) in {
         formToExecute.execute
@@ -55,15 +55,15 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
       desc + "\n" + formToExecute.toHtml.toString
     }
-  }    
-  
+  }
+
   /** create an anonymous example which will be skipped until it is implemented */
   def notImplemented = forExample in { skip ("not implemented yet")}
   implicit def toSus(e: => Elem) = new Object { def isSus = toLiterateSus("") ->> e }
-  
+
   implicit def toLiterateSusWithDesc(string: String) = new LiterateSus(specify(string))
   implicit def toLiterateSus(sus: Sus) = new LiterateSus(sus)
-  
+
   /** This class acts as an extension of a Sus to provide a literate description of a sus as an xml specification */
   class LiterateSus(sus: Sus) {
     def ->>(e: => Elem)= {
@@ -77,7 +77,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       val exNodes = content.\("ex")
       exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
         val (node, example) = pair
-        example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text) 
+        example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text)
         List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
       }
       sus.literateDescription = Some(content)
@@ -88,20 +88,20 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
         case Some(a) => a.toString.split(",").foreach(t => example.addTag(t.trim))
       }
    }
- 
+
     /** specifies the system with a literate description and embedded expectations */
     def is(e: => Elem)= {
       sus.verb = "specifies"
       format(e)
     }
   }
-  
+
   /**
-   * Create an anonymous example with a function on a System, 
+   * Create an anonymous example with a function on a System,
    * giving it a number depending on the existing created examples/
    */
   def eg[S](function: S => Any): Unit = (forExample in function).shh
-  /** 
+  /**
    * embeddeds a test into a new example and silence the result
    * @deprecated
    */
@@ -109,7 +109,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 
   /** embeddeds a test into a new example and silence the result */
   def eg(test: =>Any): Unit = (forExample in test).shh
-  /** 
+  /**
    * embeddeds a test into a new example and silence the result
    * @deprecated
    */
@@ -127,20 +127,20 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
  * This trait provides functions which can be used to ease the use of wiki markup
  */
 trait Wiki extends Properties {
-  implicit def toWikiString(a: Any) = new WikiString(a.toString) 
+  implicit def toWikiString(a: Any) = new WikiString(a.toString)
   class WikiString(s: String) {
     def code = wikiCode(s)
     def >@ = wikiCode(s)
     def pre = wikiPre(s)
   }
-  /** 
+  /**
    * This function can be used to format code in a wiki description.
    * Using this function avoid issues like quotes insides brackets ['something']
    * being displayed as question marks.
    */
   def wikiCode(stringToFormat: String) = "<code>"+stringToFormat+"</code>"
   def wikiPre(stringToFormat: String) = "<pre>"+stringToFormat+"</pre>"
-  /** 
+  /**
    * Alias for wikiCode
    */
   def >@(stringToFormat: String) = wikiCode(stringToFormat)

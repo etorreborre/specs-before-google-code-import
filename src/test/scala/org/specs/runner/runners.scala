@@ -11,7 +11,7 @@ object runnerSpecification extends Specification {
         specsFinderSpec,
         specsRunnerSpec,
         teamCityRunnerSpec,
-        xmlRunnerSpec,
+        xmlRunnerSpec
 	)
 }
 object runnerUnit extends Specification {

@@ -239,4 +239,4 @@ object that extends Enumeration {
       throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher,
       hasTwoSubExamples = Value
 }
-class consoleReporterSpecTest extends JUnit4(consoleReporterSpec)
+class consoleReporterSpecTest extends JUnit4(consoleReporterSpec) with ScalaTest
