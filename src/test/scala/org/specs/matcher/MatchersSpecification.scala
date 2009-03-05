@@ -4,16 +4,6 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
 
-class allMatchersRunner extends JUnit4(matchersSpec) 
-class allMatchersTest extends JUnit4(matchersSpec) 
-object matchersSpec extends Specification {
-  "Matchers" areSpecifiedBy (objectMatchersSpec, 
-                             stringMatchersSpec, 
-                             iterableMatchersSpec, 
-                             mapMatchersSpec,
-                             patternMatchersSpec,
-                             scalacheckMatchersSpec)
-}
 class MatchersSpecification extends Specification {
   var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sus("", this))
   def clearExample = { reported = new Example("", new Sus("", this)) }

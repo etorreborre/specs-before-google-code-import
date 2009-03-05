@@ -14,7 +14,7 @@ object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
         ioSpecification,  
         utilSpecification,
-        matchersSpec, 
+        matcherSpecification, 
         specificationSpec, 
         org.specs.specification.literateSpec, 
         org.specs.runner.descriptionFormatterSpec,
@@ -40,9 +40,9 @@ object allUnits extends Specification {
       collectionUnit,
       ioUnit, 
       utilUnit, 
+      matcherUnit, 
       xmlUnit, 
       specificationUnit, 
-      allMatchersUnit, 
       protocolsUnit,
       xmlRunnerUnit,
       htmlRunnerUnit)

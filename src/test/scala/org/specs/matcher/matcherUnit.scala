@@ -1,9 +1,7 @@
 package org.specs.matcher
-import scala.collection.mutable.Queue
-import org.specs.runner._
-import org.specs.Sugar._
+import org.specs.specification._
 
-object allMatchersUnit extends Specification {
+object matcherUnit extends Specification {
   "Matchers unit tests" areSpecifiedBy (anyMatchersUnit, 
                                         iterableMatchersUnit,
                                         logicalMatchersUnit,
@@ -14,4 +12,3 @@ object allMatchersUnit extends Specification {
                                         scalacheckMatchersUnit,
                                         xmlMatchersUnit)
 }
-class allMatchersUnitTest extends JUnit4(allMatchersUnit) 
