@@ -4,20 +4,19 @@ import org.specs.runner._
 import org.specs._
 
 
-object utilSpecification extends Specification {
+class allUtilTest extends JUnit4(allUtilSpec)
+object allUtilSpec extends Specification {
     "The util specifications" areSpecifiedBy (
-        editDistanceSpec,
-		extendedStringSpec,
-		formSpec,
-        timerSpec
+        timerSpec,
+        extendedStringSpec,
+        editDistanceSpec
     )
 }
 
-object utilUnit extends Specification {
+object allUtilUnit extends Specification {
   "The unit tests for the util package" areSpecifiedBy (
       dataRowUnit, 
       dataTableHeaderUnit,  
-      dataTableUnit,
-	  extendedThrowableUnit)
+      dataTableUnit)
 }
 

@@ -1,6 +1,5 @@
 package org.specs.matcher
-import scalacheck._
-import org.specs._
+import org.specs.specification._
 
 object matchersUnit extends Specification with MatcherCases with ScalaCheck {
   "A matcher" should {

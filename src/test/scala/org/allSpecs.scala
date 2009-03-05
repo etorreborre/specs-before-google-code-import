@@ -12,23 +12,24 @@ import org.specs.xml._
 
 object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
-        ioSpecification,
+        ioSpecification,  
         utilSpecification,
-        matcherSpecification,
-        specificationSpecification,
+        matcherSpecification, 
+		specificationSpecification,
+		runnerSpecification,
         stackSpecification)
 }
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-      collectionUnit,
-      ioUnit,
-      utilUnit,
-      specificationUnit,
-      matcherUnit,
-      mockUnit,
-      runnerUnit,
-      xmlUnit)
+		collectionUnit,
+		ioUnit, 
+		matcherUnit,
+		mockUnit,
+		runnerUnit,
+		specificationUnit, 
+		utilUnit, 
+		xmlUnit)
 }
 
 object allSpecsAndUnits extends Specification {

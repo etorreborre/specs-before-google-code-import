@@ -1,20 +1,21 @@
 package org.specs.specification
+
 import org.specs._
 
-
 object specificationSpecification extends Specification {
-  "specifications" areSpecifiedBy (beforeAfterSpec,
-								                   timerSpecificationSpec,
-								                   calcSpecificationSpec,
-								                   contextSpec,
-								                   literateSpec,
-								                   specificationSpec,
-								                   sugarSpec,
-								                   taggedSpec)
+    "The Specification specifications" areSpecifiedBy (
+        beforeAfterSpec, 
+		calcSpecificationSpec,
+        contextSpec,
+        exampleSpec,
+        literateSpec, 
+        specificationSpec, 
+        sugarSpec, 
+		taggedSpec,
+		timerSpecificationSpec
+	)
 }
 object specificationUnit extends Specification {
-  "specifications unit tests" areSpecifiedBy (
-      extendedThrowableUnit,
-      specificationsUnit)
+    "The specification unit tests" areSpecifiedBy (
+        specificationsUnit)
 }
-
