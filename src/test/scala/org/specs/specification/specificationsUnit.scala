@@ -20,8 +20,8 @@ object specificationsUnit extends Specification with ScalaCheck {
         name <- elements(className, className + "$inner", className + "$inner$", className + "$2", className + "$2$")
       } yield name
 
-      classNames must pass { name : String => 
-        specification.createDescription(name) must (not(beMatching("\\$")) and 
+      classNames must pass { name : String =>
+        specification.createDescription(name) must (not(beMatching("\\$")) and
                                            not(beMatching("\\.")) and
                                            not(beInt))
       }
@@ -44,27 +44,27 @@ object specificationsUnit extends Specification with ScalaCheck {
   }
   "the location of a failure" should {
     "indicate the precise location if it is an anonymous example" in {
-      anonymousSpec.failures(0).location must_== "specificationUnit.scala:47"
+      anonymousSpec.failures(0).location must_== "specificationsUnit.scala:47"
     }
     "indicate the precise location if it is in a sus" in {
-      failedSpec.failures(0).location must_== "specificationUnit.scala:50"
+      failedSpec.failures(0).location must_== "specificationsUnit.scala:50"
     }
     "indicate the precise location if it is a skipped example" in {
-      skippedSpec.skipped(0).location must_== "specificationUnit.scala:88"
+      skippedSpec.skipped(0).location must_== "specificationsUnit.scala:88"
     }
     "indicate the precise location if it is a skipped example with a skipped matcher" in {
-      skippedMatcherSpec.skipped(0).location must_== "specificationUnit.scala:89"
+      skippedMatcherSpec.skipped(0).location must_== "specificationsUnit.scala:89"
     }
     "indicate the precise location if it is in an example" in {
       failedSpec.failures(0).getMessage must_== "'1' is not equal to '0'"
-      failedSpec.failures(0).location must_== "specificationUnit.scala:50"
+      failedSpec.failures(0).location must_== "specificationsUnit.scala:50"
     }
   }
   "A specification with 2 expectations only" should {
     object twoNamedExamples extends Specification {
       val n = "name" aka "the string"
       n mustEqual "name"
-      n mustEqual "name2" 
+      n mustEqual "name2"
     }
     object twoExamples extends Specification {
       "name" mustEqual "name"
