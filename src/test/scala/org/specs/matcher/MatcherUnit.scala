@@ -2,7 +2,7 @@ package org.specs.matcher
 import scalacheck._
 import org.specs._
 
-object matcherUnit extends Specification with MatcherCases with ScalaCheck {
+object matchersUnit extends Specification with MatcherCases with ScalaCheck {
   "A matcher" should {
     "when negated, use the ok message of the original matcher to indicate a failure" in {
       val m = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok", "ko") }
@@ -62,4 +62,4 @@ trait MatcherCases {
   def result(resultAndMessages: (Boolean, String, String)) = resultAndMessages._1
 }
 import org.specs.runner._
-class matcherUnitTest extends JUnit4(matcherUnit)
+class matcherUnitTest extends JUnit4(matchersUnit)

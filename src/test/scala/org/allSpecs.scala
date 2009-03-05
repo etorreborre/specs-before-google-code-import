@@ -12,9 +12,8 @@ import org.specs.xml._
 
 object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
-        fileSystemSpec,  
-        fileWriterSpec,  
-        allUtilSpec,
+        ioSpecification,  
+        utilSpecification,
         matchersSpec, 
         specificationSpec, 
         org.specs.specification.literateSpec, 
@@ -38,12 +37,10 @@ object allSpecs extends Specification {
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-      extendedThrowableUnit,
-      extendedNodeUnit,
       collectionUnit,
-      fileSystemUnit, 
-      collectionUnit,  
-      allUtilUnit, 
+      ioUnit, 
+      utilUnit, 
+      xmlUnit, 
       specificationUnit, 
       allMatchersUnit, 
       protocolsUnit,

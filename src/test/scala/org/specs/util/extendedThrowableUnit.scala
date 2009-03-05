@@ -1,8 +1,9 @@
-package org.specs
-import ExtendedThrowable._
+package org.specs.util
+
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
+import org.specs.ExtendedThrowable._
 
 object extendedThrowableUnit extends Specification with ExceptionSamples {
   
