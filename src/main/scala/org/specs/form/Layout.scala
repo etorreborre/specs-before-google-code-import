@@ -45,12 +45,13 @@ trait Layoutable extends ToHtml {
 
   def updateLastTd(nodes: NodeSeq, spanSize: Int): NodeSeq = {
     nodes.toList match {
-      case List(<th>{ b }</th>) => (<th colspan= {spanSize.toString}> {b} </th> % nodes.toList.first.attributes)
-      case List(<td>{ b }</td>) => <td colspan= {spanSize.toString}> {b} </td> % nodes.toList.first.attributes
+      case List(<th>{ b }</th>) => <th colspan={spanSize.toString}>{b}</th> % nodes.toList.first.attributes
+      case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
+      case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
       case <th>{ b }</th> :: otherThs => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
       case <td>{ b }</td> :: otherTds => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
-      case List(<table>{ x @ _*}</table>) => <table class="dataTable"> {updateLastTd(x, spanSize)} </table>
-      case <tr>{ y @ _*}</tr> :: otherRows => <tr> {updateLastTd(y, spanSize)} </tr> ++ updateLastTd(otherRows, spanSize)
+      case List(<table>{ x @ _*}</table>) => <table class="dataTable">{updateLastTd(x, spanSize)}</table>
+      case <tr>{ y @ _*}</tr> :: otherRows => <tr>{updateLastTd(y, spanSize)}</tr> ++ updateLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ updateLastTd(other, spanSize)
       case other => other
     }

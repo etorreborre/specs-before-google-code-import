@@ -87,13 +87,12 @@ class Prop[T](val label: String,
    * isOk (green, yes!)
    */
   override def toHtml = {
-    <td> {label} </td> ++ (
+    <td>{label}</td> ++ (
             if (executed)
-              <td class= {statusClass}> {this().getOrElse("")} </td> ++
-              (if (!isOk) <td class= {statusClass}> {issueMessages} </td> else NodeSeq.Empty)
+              <td class={statusClass}>{this().getOrElse("")}</td> ++
+              (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
             else
-              <td class="value"> {this().getOrElse("")} </td>
-    )
+              <td class="value">{this().getOrElse("")}</td>)
   }
   /**
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.
