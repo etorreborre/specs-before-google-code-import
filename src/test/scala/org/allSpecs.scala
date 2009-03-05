@@ -16,28 +16,20 @@ object allSpecs extends Specification {
         utilSpecification,
         matcherSpecification, 
 		specificationSpecification,
-        org.specs.runner.descriptionFormatterSpec,
-        specsFinderSpec,
-        specsRunnerSpec,
-        teamCityRunnerSpec,
-        stackSpecification,
-        junitTestSuiteSpec,
-        xmlRunnerSpec,
-        htmlRunnerSpec,
-        scalaTestSpec)
+		runnerSpecification,
+        stackSpecification)
 }
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-      collectionUnit,
-      ioUnit, 
-      utilUnit, 
-      matcherUnit,
-	  mockUnit,
-      xmlUnit, 
-      specificationUnit, 
-      xmlRunnerUnit,
-      htmlRunnerUnit)
+		collectionUnit,
+		ioUnit, 
+		matcherUnit,
+		mockUnit,
+		runnerUnit,
+		specificationUnit, 
+		utilUnit, 
+		xmlUnit)
 }
 
 object allSpecsAndUnits extends Specification {
