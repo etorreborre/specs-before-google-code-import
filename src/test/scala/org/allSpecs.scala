@@ -30,9 +30,7 @@ object allSpecs extends Specification {
         junitTestSuiteSpec,
         xmlRunnerSpec,
         htmlRunnerSpec,
-        scalaTestSpec,
-        mocksSpec,
-        jmockSpec)
+        scalaTestSpec)
 }
 
 object allUnits extends Specification {
@@ -40,10 +38,10 @@ object allUnits extends Specification {
       collectionUnit,
       ioUnit, 
       utilUnit, 
-      matcherUnit, 
+      matcherUnit,
+	  mockUnit,
       xmlUnit, 
       specificationUnit, 
-      protocolsUnit,
       xmlRunnerUnit,
       htmlRunnerUnit)
 }
