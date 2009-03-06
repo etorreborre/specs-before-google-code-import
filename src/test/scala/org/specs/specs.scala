@@ -3,6 +3,7 @@ import org.specs.runner._
 import org.specs.matcher._
 import org.specs.samples._
 import org.specs.mock._
+import org.specs.form._
 import org.specs.specification._
 import org.specs._
 import org.specs.io._
@@ -13,6 +14,7 @@ import org.specs.xml._
 object allSpecs extends Specification {
     "The specifications" areSpecifiedBy (
         ioSpecification,  
+        formSpecification,
         utilSpecification,
         matcherSpecification, 
 		specificationSpecification,

@@ -1,6 +1,6 @@
-package org.specs.util
+package org.specs.form
 
-import org.specs.form._
+import org.specs.util._
 import matcher.Matcher
 import org.specs._
 import samples.Persons

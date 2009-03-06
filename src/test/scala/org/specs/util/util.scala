@@ -8,7 +8,6 @@ object utilSpecification extends Specification {
     "The util specifications" areSpecifiedBy (
         editDistanceSpec,
 		extendedStringSpec,
-		formSpec,
         timerSpec
     )
 }
