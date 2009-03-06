@@ -244,6 +244,15 @@ trait AnyMatchers {
        (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined,
         okMessage(exception, description), koMessage(exception, description))
      }
+    def like(f: =>(Any => Boolean)) = new Matcher[Any](){
+      def apply(v: => Any) = {
+        val thrown = isThrown(v, exception, (e => exception.isAssignableFrom(e.getClass)), description)
+        if (!thrown.isDefined)
+          (false, okMessage(exception, description), koMessage(exception, description))
+        else
+          beLike(f)(thrown.get)
+      }
+    }
   }
   /**
    * This matchers matches exception objects.
@@ -254,7 +263,7 @@ trait AnyMatchers {
        (isThrown(value, exception, (e => exception.getClass == e.getClass && exception.getMessage == e.getMessage), description).isDefined,
         okMessage(exception, description), koMessage(exception, description))
      }
-     def like[E <: Throwable](f: =>(Any => Boolean)) = new Matcher[Any](){
+     def like(f: =>(Any => Boolean)) = new Matcher[Any](){
        def apply(v: => Any) = {
          val thrown = isThrown(v, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description)
          if (!thrown.isDefined)

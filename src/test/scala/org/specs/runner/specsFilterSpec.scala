@@ -40,6 +40,20 @@ object specsFilterSpec extends Specification {
       s2.examples.size must_== 1
       s2.examples.first.description must beMatching("ex1")
     }
+    "check the patterns for sus and examples" in {
+      val filter = new SpecsFilter {
+        val specs = List(new Specification {})
+        override def susFilterPattern = "[][]BAD PATTERN"
+        override def exampleFilterPattern = "[][]BAD PATTERN"
+      }
+      val throwASpecsFilterPatternException: ExceptionClassMatcher[_] = throwA[SpecsFilterPatternException]
+      filter.susFilter must throwASpecsFilterPatternException.like {
+        case e: Exception => e.getMessage contains "Wrong pattern for the sus filter: Unclosed character class near index 14"
+      }
+      filter.exampleFilter must throwASpecsFilterPatternException.like {
+        case e: Exception => e.getMessage contains "Wrong pattern for the example filter: Unclosed character class near index 14"
+      }
+    }
   }
   def filter(specifications: List[Specification], susToFilter: String, examplesToFilter: String) =  new SpecsFilter {
     val specs = specifications

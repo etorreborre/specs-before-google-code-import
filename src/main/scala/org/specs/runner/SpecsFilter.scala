@@ -2,6 +2,7 @@ package org.specs.runner
 
 import org.specs.specification._
 import java.util.regex.Pattern.compile
+import java.util.regex.PatternSyntaxException
 
 trait SpecsFilter extends SpecsHolder {
 
@@ -15,10 +16,18 @@ trait SpecsFilter extends SpecsHolder {
   lazy val filteredSpecs = filter(specs)
 
   /**pattern for the sus. */
-  lazy val susFilter = compile(susPattern)
+  lazy val susFilter = compilePattern("sus", susPattern)
 
   /**pattern for the examples. */
-  lazy val exampleFilter = compile(examplePattern)
+  lazy val exampleFilter = compilePattern("example", examplePattern)
+
+  private def compilePattern(description: String, pattern: String) = {
+    try { compile(pattern) }
+    catch {
+      case e: PatternSyntaxException => throw new SpecsFilterPatternException(description, e)
+      case other => throw other
+    }
+  }
 
   /**filter a list of specifications. */
   def filter(specifications: Seq[Specification]): List[Specification] = {
@@ -97,3 +106,6 @@ trait SpecsFilter extends SpecsHolder {
     }
   }
 }
+/** specific exception for pattern compilation errors */
+case class SpecsFilterPatternException(description: String, cause: Exception) extends
+    Exception("Wrong pattern for the " + description + " filter: " + cause.getMessage, cause)

@@ -34,23 +34,23 @@ object anyMatcherSpec extends MatchersSpecification {
     }
     "be composed with a function using the ^^ operator and return a matcher" in {
       6 must ((beEqualTo(_:Int)) ^^ ((_:String).size)) ("string")
-      // equivalent to 
-      6 must beEqualTo(((_:String).size)("string")) 
+      // equivalent to
+      6 must beEqualTo(((_:String).size)("string"))
     }
     "be composed with a function using the ^^^ operator and return a function returning a matcher" in {
       "123456" must ((beEqualTo(_:Int)) ^^^ ((_: String).size))("string")
-      // equivalent to 
+      // equivalent to
       ((_:String).size)("123456") must beEqualTo(((_:String).size)("string"))
     }
     "transformed to a matcher matching a sequence of objects using the toSeq method" in {
       List("a", "b", "c") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))
-      expectation(List("a", "c", "b") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))) must 
-        failWith("'c' is not equal to 'b'; 'b' is not equal to 'c'") 
+      expectation(List("a", "c", "b") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))) must
+        failWith("'c' is not equal to 'b'; 'b' is not equal to 'c'")
     }
     "transformed to a matcher matching a set of objects using the toSet method" in {
       Set("a", "b", "c") must (beEqualTo(_:String)).toSet(Set("b", "a", "c"))
-      expectation(Set("a", "b", "c") must (beEqualTo(_:String)).toSet(Set("b", "a", "d"))) must 
-        failWith("no match for element 'c'") 
+      expectation(Set("a", "b", "c") must (beEqualTo(_:String)).toSet(Set("b", "a", "d"))) must
+        failWith("no match for element 'c'")
     }
     "provide a toSeq method which can be composed with a function" in {
       List(3, 1, 2) must ((beEqualTo(_:Int)) ^^ ((_:String).size)).toSeq(List("abc", "a", "ab"))
@@ -59,7 +59,7 @@ object anyMatcherSpec extends MatchersSpecification {
        "this object" aka "this" must_== "this object"
     }
     "use the alias declaration for a string being tested with is_==" in {
-       val s = "that" aka "that string" 
+       val s = "that" aka "that string"
        s must_== "that"
 
        "this" aka "this string" must_== "this"

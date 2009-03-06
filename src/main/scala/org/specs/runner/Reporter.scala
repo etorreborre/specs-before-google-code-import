@@ -112,7 +112,12 @@ usage java <classpath> package.mySpecification [-h|--help]
   override def exampleFilterPattern = argValue(args, List("-ex", "--example")).getOrElse(".*")
 
   /** report the list of specifications held by the object mixing this trait. */
-  def reportSpecs: this.type = report(this.filteredSpecs)
+  def reportSpecs: this.type = {
+    try { report(this.filteredSpecs) }
+    catch {
+      case e: SpecsFilterPatternException => println(e.getMessage); this
+    }
+  }
 
   /**
    * report specifications.
