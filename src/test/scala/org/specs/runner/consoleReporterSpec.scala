@@ -116,13 +116,29 @@ object consoleReporterSpec extends Specification with MockOutput {
       runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
     }
     "not display the sus at all if all examples are ok with the -xOnly flag" in {
-      runWith("-acc", "in", "-xOnly") must (notContainMatch("this sus"))
+      runWith("-acc", "in", "-xOnly") must notContainMatch("this sus")
     }
     "print a help message with the options description if passed the -h or --help flag" in {
-      mainWith("--help") must (containMatch("--help"))
+      mainWith("--help") must containMatch("--help")
     }
     "not execute the specification when passed the -h or --help flag" in {
-      mainWith("--help") must (notContainMatch("this sus"))
+      mainWith("--help") must notContainMatch("this sus")
+    }
+    def asString(s: String) = s.replace("\\", "\\\\").replace("[", "\\[")
+    "report statuses with ANSI color codes when passed the -c or --color flag" in {
+      runWith("--color") must containMatch(asString(AnsiColors.green))
+    }
+    "report a success in green when passed the -c or --color flag" in {
+      runWith("-c", "-ex", "included") must containMatch(asString(AnsiColors.green))
+    }
+    "report a failure in red when passed the -c or --color flag" in {
+      runWith("-c", "-ex", "failure") must containMatch(asString(AnsiColors.red))
+    }
+    "report an error in red when passed the -c or --color flag" in {
+      runWith("-c", "-ex", "error") must containMatch(asString(AnsiColors.red))
+    }
+    "report a skipped example in yellow when passed the -c or --color flag" in {
+      runWith("-c", "-ex", "skipped") must containMatch(asString(AnsiColors.yellow))
     }
   }
   "A console trait" should { clean.before
@@ -154,6 +170,7 @@ object consoleReporterSpec extends Specification with MockOutput {
       ("included" in {}).tag("in")
       "failed" in {throw new FailureException("failed")}
       "error" in {throw new Error("error")}
+      "skipped" in { skip("skipped") }
     }
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput

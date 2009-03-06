@@ -13,6 +13,22 @@ import org.specs.ExtendedThrowable._
  */
 trait OutputReporter extends Reporter with Output {
 
+  /** colors the text in red if colors are enabled   */
+  def failureColored(text: String) =
+    if (colorize) AnsiColors.red + text + AnsiColors.reset
+    else text
+
+  /** colors the text in green if colors are enabled   */
+  def successColored(text: String) =
+    if (colorize) AnsiColors.green + text + AnsiColors.reset
+    else text
+
+  /** colors the text in yellow if colors are enabled   */
+  def skipColored(text: String) =
+    if (colorize) AnsiColors.yellow + text + AnsiColors.reset
+    else text
+
+
   /** the timer is used to display execution times */
   val timer: Timer
 
@@ -131,13 +147,16 @@ trait OutputReporter extends Reporter with Output {
   def printStats(stat: (Int, Int, Int, Int, Int), padding: String) = {
     val (examplesNb, expectationsNb,  failuresNb, errorsNb, skippedNb) = stat
     def plural[T](nb: Int) = if (nb > 1) "s" else ""
+    def failureColoredIf(text: String, cond: Boolean) =
+      if (cond) failureColored(text)
+      else text
     println(padding + "Finished in " + timer.time)
     println(padding +
             examplesNb + " example" + plural(examplesNb) +
             (if (skippedNb > 0) " (" + skippedNb + " skipped)" else "") + ", " +
             expectationsNb + " expectation" + plural(expectationsNb) + ", " +
-            failuresNb + " failure" + plural(failuresNb) + ", " +
-            errorsNb + " error" + plural(errorsNb)
+            failureColoredIf(failuresNb + " failure" + plural(failuresNb), failuresNb > 0) + ", " +
+            failureColoredIf(errorsNb + " error" + plural(errorsNb), errorsNb > 0)
             )
     println("")
   }
@@ -158,15 +177,15 @@ trait OutputReporter extends Reporter with Output {
   def reportExample(example: Example, padding: String) = {
     def status(example: Example) = {
       if (example.errors.size + example.failures.size > 0)
-        "x "
+        failureColored("x")
       else if (example.skipped.size > 0)
-        "o "
+        skipColored("o")
       else
-        "+ "
+        successColored("+")
     }
 
     if (canReport(example))
-      println(padding + status(example) + example.description)
+      println(padding + status(example) + " " + example.description)
 
     // if the failure, skip or the error message has linefeeds they must be padded too
     def parens(f: Throwable) = " (" + f.location + ")"
@@ -213,3 +232,20 @@ class ConsoleRunner(val specifications: Specification*) extends Console {
   def ConsoleRunner(specs: List[Specification]) = new ConsoleRunner(specs :_*)
 }
 
+
+/**
+ * This object provides AnsiColors codes for the OutputReporter
+ * @see http://en.wikipedia.org/wiki/ANSI_escape_code
+ */
+object AnsiColors {
+  val black   = "\033[30m"
+  val red     = "\033[31m"
+  val green   = "\033[32m"
+  val yellow  = "\033[33m"
+  val blue    = "\033[34m"
+  val magenta = "\033[35m"
+  val cyan    = "\033[36m"
+  val white   = "\033[37m"
+
+  val reset   = "\033[0m"
+}

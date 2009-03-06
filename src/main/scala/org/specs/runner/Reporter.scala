@@ -43,6 +43,8 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   protected var failedAndErrorsOnly = false
   /** this variable controls if the statistics should be printed. */
   protected var statistics = true
+  /** this variable controls if the ANSI color sequences should be used to colorize output */
+  protected var colorize = false
 
   /** allow subclasses to remove the stacktrace display. */
   def setNoStacktrace(): this.type = { stacktrace = false; this }
@@ -50,11 +52,14 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   def setFailedAndErrorsOnly(): this.type = { failedAndErrorsOnly = true; this }
   /** allow subclasses to remove the statistics. */
   def setNoStatistics(): this.type = { statistics = false; this }
+  /** allow subclasses to add colorization to the output. */
+  def setColorize(): this.type = { colorize = true; this }
   /** reset all options. */
   def resetOptions(): this.type = {
     args = Array()
     stacktrace = true
     failedAndErrorsOnly = false
+    colorize = false
     statistics = false
     this
   }
@@ -83,15 +88,17 @@ usage java <classpath> package.mySpecification [-h|--help]
                                                [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
                                                [-sus | --system]
                                                [-ex | --example]
+                                               [-c | --color]
 
--h, --help           prints this message and doesn't execute the specification
--ns, --nostacktrace  removes the stacktraces from the reporting
--nostats, --nostatistics  removes the statistics from the reporting
--xonly, --failedonly reports only failures and errors
--acc, --accept tags  accept only the specified tags (comma-separated names)
--rej, --reject tags  reject the specified tags (comma-separated names)
--sus, --system  only the systems under specifications matching this regular expression will be executed
--ex, --example  only the examples matching this regular expression will be executed
+-h, --help                print this message and doesn't execute the specification
+-ns, --nostacktrace       remove the stacktraces from the reporting
+-nostats, --nostatistics  remove the statistics from the reporting
+-xonly, --failedonly      report only failures and errors
+-acc, --accept tags       accept only the specified tags (comma-separated names)
+-rej, --reject tags       reject the specified tags (comma-separated names)
+-sus, --system            only the systems under specifications matching this regular expression will be executed
+-ex, --example            only the examples matching this regular expression will be executed
+-c, --color               report with color
 """.stripMargin)
     } else {
       reportSpecs
@@ -118,6 +125,7 @@ usage java <classpath> package.mySpecification [-h|--help]
     if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
     if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
+    if (argsContain("-c", "--color")) setColorize()
     setTags(specs, args)
     this
   }
