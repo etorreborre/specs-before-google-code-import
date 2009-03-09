@@ -45,7 +45,7 @@ trait Matchers extends AnyMatchers with
  * </ul>
  * 
  */
-abstract class AbstractMatcher[T] {
+abstract class AbstractMatcher[-T] {
   /** 
    * this function must be implemented by subclasses.
    * @return a triple with a boolean indicating the success or failure of the matcher and 2 messages, the ok message, 
@@ -88,16 +88,16 @@ abstract class AbstractMatcher[T] {
  * <code>not</code> operator is used, the ok message is used as a ko message</p>
  *   
  */
-abstract class Matcher[T] extends AbstractMatcher[T] with MatcherResult { outer =>
+abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer =>
   
   /**
    *  The <code>and</code> operator allow to combine to matchers through a logical and.
    *  <code>m1 and m2</code> can successfully match a value <code>a</code> only if m1 succeeds 
    *  and m2 succeeds also
    */   
-  def and(m: => Matcher[T]): Matcher[T] = { 
-    new Matcher[T](){
-      def apply(a: => T) = {
+  def and[U <: T](m: => Matcher[U]): Matcher[U] = { 
+    new Matcher[U](){
+      def apply(a: => U) = {
         outer.setDescription(this.description)
         val r1 = outer(a)
         if (!r1.success)
@@ -115,9 +115,9 @@ abstract class Matcher[T] extends AbstractMatcher[T] with MatcherResult { outer 
    *  <code>m1 or m2</code> can successfully match a value <code>a</code> if m1 succeeds 
    *  or m2 succeeds. <code>m2</code> is not evaluated if m1 succeeds
    */   
-  def or(m: => Matcher[T]) : Matcher[T] = { 
-    new Matcher[T]() {
-    def apply(a: =>T) = {
+  def or[U <: T](m: => Matcher[U]) : Matcher[U] = { 
+    new Matcher[U]() {
+    def apply(a: =>U) = {
       outer.setDescription(this.description)
       val r1 = outer(a)
       if (r1.success)
@@ -138,7 +138,7 @@ abstract class Matcher[T] extends AbstractMatcher[T] with MatcherResult { outer 
    *  <code>m1 xor m2</code> can successfully match a value <code>a</code> if m1 succeeds 
    *  and m2 fails, or if m1 fails and m2 succeeds
    */   
-  def xor(m: => Matcher[T]) : Matcher[T] = (this and m.not) or (this.not and m)
+  def xor[U <: T](m: => Matcher[U]) : Matcher[U] = (this and m.not) or (this.not and m)
 
   /**
    *  The <code>not</code> operator allow to combine to matchers through a logical not.

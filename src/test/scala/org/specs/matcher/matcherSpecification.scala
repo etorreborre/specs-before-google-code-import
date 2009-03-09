@@ -9,6 +9,7 @@ object matcherSpecification extends Specification {
 		objectMatchersSpec, 
         patternMatchersSpec,
         scalacheckMatchersSpec,
-        stringMatchersSpec
+        stringMatchersSpec,
+        new varianceSpecTest
 	)
 }
