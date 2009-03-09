@@ -41,7 +41,7 @@ trait ScalaTest extends SpecsFilter with org.scalatest.Suite {
    */
   override def nestedSuites: List[org.scalatest.Suite] = {
     var result: List[org.scalatest.Suite] = Nil
-    filteredSpecs foreach { specification => 
+    filteredSpecs foreach { specification =>
       specification.subSpecifications.foreach { s: Specification => result = new ScalaTestSuite(s)::result }
       specification.systems foreach {sus => result = new SusSuite(sus)::result }
     }

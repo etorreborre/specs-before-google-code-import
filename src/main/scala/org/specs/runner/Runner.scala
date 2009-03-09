@@ -26,13 +26,10 @@ import org.specs.specification._
 @RunWith(classOf[JUnitSuiteRunner])
 class Runner(val specifications: Seq[Specification], val reporters: Seq[Reporter]) extends Reporter {
 
-  def this(s: Specification*) = {
-    this(s, List(new ConsoleRunner))
-  }
   def this(reporter: Reporter, s: Specification*) = this(s, List(reporter))
   /** alternate constructor with a specs holder (possibly a SpecsFinder object). */
   def this(specsHolder: SpecsHolder, reps: Seq[Reporter]) = this(specsHolder.specs, reps)
-  def this(specsHolder: SpecsHolder) = this(specsHolder.specs, List(new ConsoleRunner))
+  def this(specsHolder: SpecsHolder*) = this(specsHolder.flatMap(_.specs), List(new ConsoleRunner))
   val specs = specifications
   override def report(specs: Seq[Specification]) = {
     super.report(specs)

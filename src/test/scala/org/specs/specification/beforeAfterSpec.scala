@@ -6,67 +6,67 @@ import org.specs.runner._
 
 object beforeAfterSpec extends Specification {
   "A specification with before clauses" should {
-    "have each example using the doBefore method before being executed" in { 
+    "have each example using the doBefore method before being executed" in {
       doBeforeExample.execute
       doBeforeExample.messages mustContain "before called 1"
       doBeforeExample.messages mustContain "before called 2"
-    } 
-    "not execute its test if the doBefore method fails" in { 
+    }
+    "not execute its test if the doBefore method fails" in {
       doBeforeExampleFailing.execute
       doBeforeExampleFailing.messages must containMatch("1 error")
       doBeforeExampleFailing.messages must notContainMatch("tested")
     }
-    "be executed even if the doBefore clause is not declared inside a sus" in { 
+    "be executed even if the doBefore clause is not declared inside a sus" in {
       object badSpec extends Specification {
         doBefore {}
       }
       badSpec
-    } 
-    "deprecated - have each example using the usingBefore method before being executed" in { 
+    }
+    "deprecated - have each example using the usingBefore method before being executed" in {
       beforeEx.execute
       beforeEx.messages mustContain "before called 1"
       beforeEx.messages mustContain "before called 2"
-    } 
-    "deprecated - not execute its test if the usingBefore method fails" in { 
+    }
+    "deprecated - not execute its test if the usingBefore method fails" in {
       beforeExampleFailing.execute
       beforeExampleFailing.messages must containMatch("1 error")
       beforeExampleFailing.messages must notContainMatch("tested")
-    } 
+    }
   }
   "A specification with after clauses" should {
-    "have each example using the doAfter method after being executed" in { 
+    "have each example using the doAfter method after being executed" in {
       doAfterExample.execute
       doAfterExample.messages mustContain "after called 1"
       doAfterExample.messages mustContain "after called 2"
-    } 
-    "not execute its test if the doAfter method fails" in { 
+    }
+    "not execute its test if the doAfter method fails" in {
       doAfterExampleFailing.execute
       doAfterExampleFailing.messages must containMatch("1 error")
       doAfterExampleFailing.messages must notContainMatch("tested")
     }
-    "work even if the doAfter clause is not declared inside a sus" in { 
+    "work even if the doAfter clause is not declared inside a sus" in {
       object badSpec extends Specification {
         doAfter {}
       }
       badSpec
-    } 
-    "deprecated - have each example using the usingAfter method after being executed" in { 
+    }
+    "deprecated - have each example using the usingAfter method after being executed" in {
       afterEx.execute
       afterEx.messages mustContain "after called 1"
       afterEx.messages mustContain "after called 2"
-    } 
-    "deprecated - not execute its test if the usingAfter method fails" in { 
+    }
+    "deprecated - not execute its test if the usingAfter method fails" in {
       afterExampleFailing.execute
       afterExampleFailing.messages must containMatch("1 error")
       afterExampleFailing.messages must notContainMatch("tested")
-    } 
+    }
   }
   "A system under test" can {
     "specify a doBeforeAll method to setup the context before any example is executed" in {
       specWithDoBeforeAll.execute
       specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must containMatch("doBeforeAll")
       specWithDoBeforeAll.messages.filter(_.startsWith("msg")).drop(1) must (
-        containMatch("example 1") and 
+        containMatch("example 1") and
         containMatch("example 2") and
         notContainMatch("doBeforeAll"))
     }
@@ -74,7 +74,7 @@ object beforeAfterSpec extends Specification {
       specWithDoAfterAll.execute
       specWithDoAfterAll.messages.filter(_.startsWith("msg")) must containMatch("doAfterAll")
       specWithDoAfterAll.messages.filter(_.startsWith("msg")).drop(2) must (
-        notContainMatch("example 1") and 
+        notContainMatch("example 1") and
         notContainMatch("example 2") and
         containMatch("doAfterAll"))
     }
@@ -106,11 +106,11 @@ object beforeAfterSpec extends Specification {
     "use a context to setup the before actions of a system under test" in {
       specWithBeforeContext.execute
       specWithBeforeContext.beforeIsCalled must beTrue
-    } 
+    }
     "use a context to setup the after actions of a system under test" in {
       specWithAfterContext.execute
       specWithAfterContext.afterIsCalled must beTrue
-    } 
+    }
     "use a context to setup the before and after actions of a system under test" in {
       specWithContext.execute
       specWithContext.beforeIsCalled must beTrue
@@ -128,13 +128,13 @@ object beforeAfterSpec extends Specification {
     }
   }
 }
-class beforeAfterTest extends JUnit4(beforeAfterSpec) 
+class beforeAfterTest extends JUnit4(beforeAfterSpec)
 
 trait beforeAfterTestSpec extends Specification with Console with MockOutput {
   def error(msg: String) = scala.Predef.error(msg)
   def execute = { systems = Nil; executeSpec }
   def executeSpec
-  val specs = List(this)
+  override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
 }
 
@@ -146,7 +146,7 @@ object doBeforeExample extends beforeAfterTestSpec {
       "have example 2 ok" in { true }
     }
     reportSpecs
-  }   
+  }
 }
 object doBeforeExampleFailing extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -155,7 +155,7 @@ object doBeforeExampleFailing extends beforeAfterTestSpec {
       "have example 1 ok" in {  }
     }
     reportSpecs
-  }   
+  }
 }
 object beforeEx extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -166,7 +166,7 @@ object beforeEx extends beforeAfterTestSpec {
       "have example 2 ok" in { true }
     }
     reportSpecs
-  }   
+  }
 }
 object beforeExampleFailing extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -176,7 +176,7 @@ object beforeExampleFailing extends beforeAfterTestSpec {
       "have example 1 ok" in { }
     }
     reportSpecs
-  }   
+  }
 }
 object doAfterExample extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -186,7 +186,7 @@ object doAfterExample extends beforeAfterTestSpec {
       "have example 2 ok" in { true }
     }
     reportSpecs
-  }   
+  }
 }
 object doAfterExampleFailing extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -195,7 +195,7 @@ object doAfterExampleFailing extends beforeAfterTestSpec {
       "have example 1 ok" in {  }
     }
     reportSpecs
-  }   
+  }
 }
 object afterEx extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -206,7 +206,7 @@ object afterEx extends beforeAfterTestSpec {
       "have example 2 ok" in { true }
     }
     reportSpecs
-  }   
+  }
 }
 object afterExampleFailing extends beforeAfterTestSpec {
   override def executeSpec = {
@@ -216,7 +216,7 @@ object afterExampleFailing extends beforeAfterTestSpec {
       "have example 1 ok" in { }
     }
     reportSpecs
-  }   
+  }
 }
 object specWithBeforeContext extends beforeAfterTestSpec {
   var beforeIsCalled = false

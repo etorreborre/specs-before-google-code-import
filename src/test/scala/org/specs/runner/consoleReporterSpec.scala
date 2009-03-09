@@ -180,7 +180,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
 abstract class TestSpec extends LiterateSpecification with Console with MockOutput {
-  val specs = List(this)
+  override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
   val success = () => true mustBe true
   val isSkipped = () => skip("irrelevant")

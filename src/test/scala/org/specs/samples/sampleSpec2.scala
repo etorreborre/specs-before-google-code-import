@@ -7,7 +7,7 @@ object sampleSpec2 extends Specification {
     "return something" in {
        "hello" mustBe "hello"
     }
-  }    
+  }
 }
 
 
@@ -33,6 +33,8 @@ object helloWorld extends Specification("Hello world") {
     "hello world" must beMatching("h.* w.*")
   } tag "excluded"
 }
+
+
 import org.specs.mock._
 import java.io._
 object expectationsOnly extends Specification("Hello world") with JMocker with ClassMocker {

@@ -18,20 +18,22 @@ import org.specs.ExtendedThrowable._
  * <li>specify examples and expectations</ul>
  * Usage: <code>object mySpec extends Specification</code>
  * <p>
- * A specification is "executed" when it is constructed, then the failures and errors can 
+ * A specification is "executed" when it is constructed, then the failures and errors can
  * be collected with the corresponding methods
  *
  */
 abstract class Specification extends Matchers with ExpectableFactory with SpecificationStructure
                with DetailedFailures
-               with Contexts with SuccessValues with HasResults { outer =>
+               with Contexts with SuccessValues with HasResults with SpecsFilter { outer =>
+
+  val specs = List(this)
 
   /** nested reporter so that a specification is executable on the console */
   private val reporter = new ConsoleRunner(this)
 
   /** A specification has a main method to be executable and print its result on a Console */
   def main(args: Array[String]) = reporter.main(args)
-  
+
   /**
    * Alternate constructor with the name of the specification
    */
@@ -42,11 +44,11 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
    */
   def this(subspecs: Specification*) = { this(); subSpecifications = subspecs.toList; this }
 
-  /** 
+  /**
    * Syntactic sugar for examples sharing between systems under test.<p>
-   * Usage: <code>  
+   * Usage: <code>
    *   "A stack below full capacity" should {
-   *    behave like "A non-empty stack below full capacity" 
+   *    behave like "A non-empty stack below full capacity"
    *    ...
    * </code>
    * In this example we suppose that there is a system under test with the same name previously defined.
@@ -55,9 +57,9 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
   object behave {
     def like(other: Sus): Example = {
       val behaveLike = currentSus.createExample("behave like " + other.description.uncapitalize, currentSus)
-      
-      other.examples.foreach { example => 
-         behaveLike.addExample(currentSus.cloneExample(example)) 
+
+      other.examples.foreach { example =>
+         behaveLike.addExample(currentSus.cloneExample(example))
       }
       behaveLike
     }
@@ -88,49 +90,49 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
   /** @return a description of this specification with all its systems (used for the ConsoleReporter) */
   def pretty = description + systems.foldLeft("")(_ + _.pretty(addSpace("\n")))
 
-  /** 
+  /**
    * Convenience method: adds a new failure to the latest example<br>
    * Usage: <code>fail("this code should fail anyway")</code>
    */
   def fail(m: String) = FailureException(m).hideCallerAndThrow(this)
 
-  /** 
+  /**
    * Convenience method: adds a new failure to the latest example. The failure message is "failure"<br>
    * Usage: <code>fail</code>
    */
   def fail(): Nothing = fail("failure")
 
-  /** 
+  /**
    * Convenience method: adds a new skippedException to the latest example<br>
    * Usage: <code>skip("this example should be skipped")</code>
    */
   def skip(m: String) = SkippedException(m).hideCallerAndThrow("org.specs.Specification")
-  
+
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
-  
+
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
   override def taggedComponents = this.subSpecifications ++ this.systems
-  
+
   /** reset in order to be able to run the examples again */
   def resetForExecution: this.type = {
     subSpecifications.foreach(_.resetForExecution)
     systems.foreach(_.resetForExecution)
     this
   }
-  
+
   def ::(s: Specification) = List(s, this)
 
 }
 
-/** 
+/**
  * This trait is useful to get a common interface for Specifications, Sus and Examples.
  */
 trait HasResults {
   def failures: Seq[FailureException]
   def skipped: Seq[SkippedException]
   def errors: Seq[Throwable]
-  def status = { 
+  def status = {
     if (!errors.isEmpty)
       "error"
     else if (!failures.isEmpty)
@@ -140,7 +142,7 @@ trait HasResults {
     else
       "success"
   }
-  def statusAsText = { 
+  def statusAsText = {
     if (!failureAndErrors.isEmpty)
       "x"
     else if (!skipped.isEmpty)
@@ -162,7 +164,7 @@ trait DefaultResults extends HasResults {
   private val thisFailures: ListBuffer[FailureException] = new ListBuffer()
   private val thisErrors: ListBuffer[Throwable] = new ListBuffer()
   private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer()
-  def reset() = { thisFailures.clear; thisErrors.clear; thisSkipped.clear } 
+  def reset() = { thisFailures.clear; thisErrors.clear; thisSkipped.clear }
   def addFailure(f: FailureException) = thisFailures.append(f)
   def addError(t: Throwable) = thisErrors.append(t)
   def addSkipped(s: SkippedException) = thisSkipped.append(s)
@@ -170,12 +172,12 @@ trait DefaultResults extends HasResults {
   def errors: Seq[Throwable] = thisErrors.toList
   def skipped: Seq[SkippedException] = thisSkipped.toList
 }
-  
+
 
 /**
  * This trait can be used to access Matchers functionalities outside a Specification.
  * For example like this:<code>
- * 
+ *
  *  trait Functions extends Expectations {
  *    def bar(name: String) = name.length < 4 mustBe true
  *  }
@@ -184,7 +186,7 @@ trait DefaultResults extends HasResults {
  *    bar("FooFoo")
  *  }
  * </code>
- * 
+ *
  */
 trait Expectations extends Matchers with ExpectableFactory
 /**
