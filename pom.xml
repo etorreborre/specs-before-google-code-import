@@ -114,9 +114,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	  <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.scalatest</groupId>
+      <groupId>org.scala-tools.testing</groupId>
       <artifactId>scalatest</artifactId>
-      <version>0.9.3</version>
+      <version>0.9.5</version>
       <optional>true</optional>
     </dependency>
     <dependency>

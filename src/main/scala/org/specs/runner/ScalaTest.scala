@@ -19,7 +19,7 @@ class ScalaTestSuite(specifications: Specification*) extends ScalaTest {
  * class mySpecRunner extends Runner(mySpec) with ScalaTest
  * <code>
  */
-trait ScalaTest extends SpecsFilter with org.scalatest.Suite {
+trait ScalaTest extends SpecsFilter with FailOrSkip with org.scalatest.Suite {
   /**
    * @return the name of the suite which is either the specification name if there's only one or
    * a name build after <code>this</code> class
@@ -52,6 +52,25 @@ trait ScalaTest extends SpecsFilter with org.scalatest.Suite {
    * @return an empty set as a specification doesn't hold tests by itself
    */
   override def testNames = Set()
+
+   /**
+    * Convenience method: adds a new failure to the latest example<br>
+    * Usage: <code>fail("this code should fail anyway")</code>
+    */
+   override def fail(m: String) = super[FailOrSkip].fail(m)
+
+   /**
+    * Convenience method: adds a new failure to the latest example. The failure message is "failure"<br>
+    * Usage: <code>fail</code>
+    */
+   override def fail(): Nothing = super[FailOrSkip].fail()
+
+   /**
+    * Convenience method: adds a new skippedException to the latest example<br>
+    * Usage: <code>skip("this example should be skipped")</code>
+    */
+   override def skip(m: String) = super[FailOrSkip].skip(m)
+
 }
 
 /**
@@ -123,12 +142,12 @@ class SusSuite(sus: Sus) extends Suite {
    * call this method recursively if the example has subexamples
    */
   private[this] def runExample(e: Example, reporter: org.scalatest.Reporter): Unit = {
-    reporter.testStarting(new Report(e.description, ""))
-    e.skipped foreach {skipped => reporter.testIgnored(new Report(e.description, skipped.message))}
-    e.failures foreach {f => reporter.testFailed(new Report(e.description, f.getMessage))}
-    e.errors foreach {error => reporter.testFailed(new Report(e.description, error.getMessage, Some(error), None))}
+    reporter.testStarting(new SpecReport(e.description, "", e.description, e.description, true))
+    e.skipped foreach {skipped => reporter.testIgnored(new SpecReport(e.description, skipped.message, e.description, e.description, true))}
+    e.failures foreach {f => reporter.testFailed(new SpecReport(e.description, f.getMessage, e.description, e.description, true))}
+    e.errors foreach {error => reporter.testFailed(new SpecReport(e.description, error.getMessage, e.description, e.description, true, Some(error), None, Thread.currentThread.getName, new java.util.Date))}
     if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
-      reporter.testSucceeded(new Report(e.description, ""))
+      reporter.testSucceeded(new SpecReport(e.description, "", e.description, e.description, true))
     e.subExamples foreach { sub => runExample(sub, reporter) }
   }
 

@@ -131,7 +131,6 @@ object beforeAfterSpec extends Specification {
 class beforeAfterTest extends JUnit4(beforeAfterSpec)
 
 trait beforeAfterTestSpec extends Specification with Console with MockOutput {
-  def error(msg: String) = scala.Predef.error(msg)
   def execute = { systems = Nil; executeSpec }
   def executeSpec
   override val specs = List(this)

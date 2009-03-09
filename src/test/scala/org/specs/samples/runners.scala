@@ -14,12 +14,20 @@ object runners {
   object runner3 extends XmlRunner(spec, "target")
   // 4. run a spec as an html file (created in the 'target' directory)
   object runner4 extends HtmlRunner(spec, "target")
-  // 5. run a spec as an html file and in the console	
-  object runner5 extends HtmlRunner(spec, "target") with Console 
+  // 5. run a spec as an html file and in the console
+  object runner5 extends HtmlRunner(spec, "target") with Console
   // 6. run a spec as an xml + html file + in the console
   object runner6 extends Runner(spec :: spec2, runner3 :: runner4) with Console
   // 8. run 2 specs as an xml + html file + in the console
   object runner8 extends Runner(spec, spec2) with Console
   // 9. run all specifications found on a given path as an xml + html file + in the console
-  object runner9 extends Runner(SpecsFinder("src/test", ".*Spec.*"), new XmlRunner :: new HtmlRunner) with Console with JUnit 
+  object runner9 extends Runner(SpecsFinder("src/test", ".*Spec.*"), new XmlRunner :: new HtmlRunner) with Console with JUnit
+}
+class spec10 extends Specification with ScalaTest {
+  1 must_== 1
+  2 must_== 2
+}
+class spec11Test extends Specification with JUnit with ScalaTest {
+  1 must_== 1
+  2 must_== 2
 }

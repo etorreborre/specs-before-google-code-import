@@ -6,17 +6,17 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.specification._
 
 class specificationTest extends Runner(specificationSpec) with JUnit with Console
-object specificationSpec extends Specification { 
+object specificationSpec extends Specification {
   "A specification" isSpecifiedBy (basicFeatures, advancedFeatures)
 }
 
 object basicFeatures extends SpecificationWithSamples {
   "A specification" should {
-    "have a description being its unqualified class name by default" in { 
+    "have a description being its unqualified class name by default" in {
       object mySpec extends Specification
       mySpec.description must_== "mySpec"
     }
-    "reference zero or more systems under test (sus)" in { 
+    "reference zero or more systems under test (sus)" in {
       emptySpec.systems must beEmpty
       oneEx(that.isOk).systems.size mustBe 1
       twoSystems(that.isOk, that.isOk).systems.size mustBe 2
@@ -25,39 +25,39 @@ object basicFeatures extends SpecificationWithSamples {
       twoSystems(that.isOk, that.isKo).systems.first.status must_== "success"
       twoSystems(that.isOk, that.isKo).systems.last.status must_== "failure"
     }
-   "have no failures if it contains no expectation" in { 
+   "have no failures if it contains no expectation" in {
      oneEx(that.isOk).failures must beEmpty
-   } 
-   "have one failure if one example fails" in { 
-     oneEx(that.isKo).failures must beLike { case Seq(FailureException(_)) => ok } 
-   } 
-   "fail on the first example when having several failing examples" in { 
-     oneEx(that.isKoTwice).failures must beLike { case Seq(FailureException(msg)) => msg must beMatching("first failure")} 
-   } 
-   "raise one error if one example throws an exception" in { 
-     errorSpec.errors must beLike {case Seq(x: Throwable) => x.getMessage must_== "new Error"} 
-   } 
-   "provide the number of expectations" in { 
+   }
+   "have one failure if one example fails" in {
+     oneEx(that.isKo).failures must beLike { case Seq(FailureException(_)) => ok }
+   }
+   "fail on the first example when having several failing examples" in {
+     oneEx(that.isKoTwice).failures must beLike { case Seq(FailureException(msg)) => msg must beMatching("first failure") }
+   }
+   "raise one error if one example throws an exception" in {
+     errorSpec.errors must beLike { case Seq(x: Throwable) => x.getMessage must_== "new Error" }
+   }
+   "provide the number of expectations" in {
      val spec = twoSystems(that.isOk, List(that.isOk, that.isOk))
      spec.systems.map {_.expectationsNb} must_== List(1, 2)
      spec.expectationsNb mustBe 3
-   } 
+   }
    "provide a 'fail' method adding a new failure to the current example" in {
      object failMethodSpec extends oneEx(List(that.isOk, that.isKoWithTheFailMethod))
-     failMethodSpec.failures must beLike {case Seq(FailureException(msg)) => 
-                                                 msg must_== "failure with the fail method"} 
+     failMethodSpec.failures must beLike {case Seq(FailureException(msg)) =>
+                                                 msg must_== "failure with the fail method"}
    }
    "provide a 'fail' method with no argument adding a new failure to the current example" in {
      object failMethodSpec extends oneEx(List(that.isKoWithTheFailMethodWithNoArgument))
-     failMethodSpec.failures must beLike {case Seq(FailureException(msg)) => 
-                                                 msg must_== "failure"} 
+     failMethodSpec.failures must beLike {case Seq(FailureException(msg)) =>
+                                                 msg must_== "failure"}
    }
    "provide a 'skip' method skipping the current example" in {
      object skipSpec extends oneEx(List(that.isSkipped, that.isOk))
-     skipSpec.skipped must beLike {case Seq(SkippedException(msg)) => 
-                                        msg must_== "skipped with the skip method"} 
+     skipSpec.skipped must beLike {case Seq(SkippedException(msg)) =>
+                                        msg must_== "skipped with the skip method"}
      skipSpec.expectationsNb mustBe 0
-   } 
+   }
    "provide a 'skip' method skipping the sus if positioned before all examples" in {
      object skipAll extends Specification {
        "a system" should {
@@ -65,9 +65,9 @@ object basicFeatures extends SpecificationWithSamples {
          "for all its examples" in { 1 mustBe 1 }
        }
      }
-     skipAll.systems must exist { s: Sus => s.skippedSus != None } 
+     skipAll.systems must exist { s: Sus => s.skippedSus != None }
      skipAll.expectationsNb mustBe 0
-   } 
+   }
    "not execute its examples unless asked for their status" in {
      var executed = false
      object spec extends Specification {
@@ -77,32 +77,32 @@ object basicFeatures extends SpecificationWithSamples {
      executed must beFalse
      spec.failures
      executed must beTrue
-   } 
+   }
    "execute all examples sequentially during their definition if setSequential is called" in {
      var executions: List[String] = Nil
      object spec extends Specification { setSequential
-       "it" should { 
+       "it" should {
          "do ex1" in {executions = executions:::List("ex1")}
          "do ex2" in {executions = executions:::List("ex2")}
        }
      }
      spec.name
      executions must_== List("ex1", "ex2")
-   } 
+   }
  }
 }
 object advancedFeatures extends SpecificationWithSamples {
   "A specification " can {
     "have a user-defined name" in {
-      val spec = oneEx(that.isOk) 
+      val spec = oneEx(that.isOk)
       spec.name = "This is a great spec"
       spec.name must_== "This is a great spec"
     }
     "use 'can' instead of 'should' to describe the sus functionalities" in {
-      val spec = oneEx(that.isOk) 
+      val spec = oneEx(that.isOk)
       spec.systems.first.verb must_== "can"
     }
-    "be composed of other specifications. The composite specification has subSpecifications.\n" + 
+    "be composed of other specifications. The composite specification has subSpecifications.\n" +
     "Use the isSpecifiedBy method to do so [alias areSpecifiedBy]."  in {
        object compositeSpec extends Specification {
          "A complex system" isSpecifiedBy (okSpec, koSpec)
@@ -130,23 +130,23 @@ object advancedFeatures extends SpecificationWithSamples {
       }
       compositeSpec.description must_== "compositeSpec"
       compositeSpec.systems.head.examples must beLike {
-        case Seq(ex: Example) => 
+        case Seq(ex: Example) =>
           ex.subExamples must beLike { case Seq(subEx) => true }
       }
     }
     "display detailled difference messages with the detailedDiff method" in {
-      val spec = oneEx(that.isKoWithDetailedDiffs) 
+      val spec = oneEx(that.isKoWithDetailedDiffs)
       spec.failures.first.message must_== "'hel(l)o' is not equal to 'hel(t)o'"
     }
     "display detailled difference messages with with other difference separators than '(' and ')'" in {
-      val spec = oneEx(that.isKoWithDetailedDiffsAndAlternateSeparator) 
+      val spec = oneEx(that.isKoWithDetailedDiffsAndAlternateSeparator)
       spec.failures.first.message must_== "'hel[l]o' is not equal to 'hel[t]o'"
     }
   }
 }
 
 trait SpecificationWithSamples extends Specification {
- 
+
   abstract class TestSpec extends Specification {
     val success = () => true mustBe true
     val failure1 = () => "ok" mustBe "first failure"
@@ -161,10 +161,10 @@ trait SpecificationWithSamples extends Specification {
                                       case that.isKo => failure1
                                       case that.isKoTwice => () => { failure1(); failure2() }
                                       case that.isSkipped => skipMethod
-                                      case that.isKoWithTheFailMethod => failMethod 
-                                      case that.isKoWithTheFailMethodWithNoArgument => failMethodWithNoArgument 
-                                      case that.isKoWithDetailedDiffs => detailedFailure 
-                                      case that.isKoWithDetailedDiffsAndAlternateSeparator => detailedFailureWithAlternateSeparator 
+                                      case that.isKoWithTheFailMethod => failMethod
+                                      case that.isKoWithTheFailMethodWithNoArgument => failMethodWithNoArgument
+                                      case that.isKoWithDetailedDiffs => detailedFailure
+                                      case that.isKoWithDetailedDiffsAndAlternateSeparator => detailedFailureWithAlternateSeparator
                                       case that.throwsAnException => exception }
   }
   object specification extends Specification
@@ -209,9 +209,9 @@ trait SpecificationWithSamples extends Specification {
   }
 }
 object that extends Enumeration {
-  val isKo, isOk, isSkipped, isKoTwice, isKoWithTheFailMethod, 
-      isKoWithDetailedDiffs, 
-      isKoWithDetailedDiffsAndAlternateSeparator, 
+  val isKo, isOk, isSkipped, isKoTwice, isKoWithTheFailMethod,
+      isKoWithDetailedDiffs,
+      isKoWithDetailedDiffsAndAlternateSeparator,
       isKoWithTheFailMethodWithNoArgument, throwsAnException = Value
 }
 

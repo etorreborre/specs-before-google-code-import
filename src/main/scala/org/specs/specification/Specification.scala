@@ -9,6 +9,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
+import _root_.org.junit.runner._
 
 /**
  * This class is the main class for declaring a new specification<br>
@@ -22,17 +23,19 @@ import org.specs.ExtendedThrowable._
  * be collected with the corresponding methods
  *
  */
+@RunWith(classOf[JUnitSuiteRunner])
 abstract class Specification extends Matchers with ExpectableFactory with SpecificationStructure
-               with DetailedFailures
+               with DetailedFailures with FailOrSkip with Reporter
                with Contexts with SuccessValues with HasResults with SpecsFilter { outer =>
 
+  /** A specification is its own specs holder. */
   val specs = List(this)
 
   /** nested reporter so that a specification is executable on the console */
   private val reporter = new ConsoleRunner(this)
 
   /** A specification has a main method to be executable and print its result on a Console */
-  def main(args: Array[String]) = reporter.main(args)
+  override def main(args: Array[String]) = reporter.main(args)
 
   /**
    * Alternate constructor with the name of the specification
@@ -90,24 +93,6 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
   /** @return a description of this specification with all its systems (used for the ConsoleReporter) */
   def pretty = description + systems.foldLeft("")(_ + _.pretty(addSpace("\n")))
 
-  /**
-   * Convenience method: adds a new failure to the latest example<br>
-   * Usage: <code>fail("this code should fail anyway")</code>
-   */
-  def fail(m: String) = FailureException(m).hideCallerAndThrow(this)
-
-  /**
-   * Convenience method: adds a new failure to the latest example. The failure message is "failure"<br>
-   * Usage: <code>fail</code>
-   */
-  def fail(): Nothing = fail("failure")
-
-  /**
-   * Convenience method: adds a new skippedException to the latest example<br>
-   * Usage: <code>skip("this example should be skipped")</code>
-   */
-  def skip(m: String) = SkippedException(m).hideCallerAndThrow("org.specs.Specification")
-
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
 
@@ -123,8 +108,32 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
 
   def ::(s: Specification) = List(s, this)
 
+  def error(msg: String) = Predef.error(msg)
 }
 
+/**
+ * This trait gives some flexibility when mixing in the ScalaTest trait because it uses the same method names
+ */
+ trait FailOrSkip {
+   /**
+    * Convenience method: adds a new failure to the latest example<br>
+    * Usage: <code>fail("this code should fail anyway")</code>
+    */
+   def fail(m: String) = FailureException(m).hideCallerAndThrow(this)
+
+   /**
+    * Convenience method: adds a new failure to the latest example. The failure message is "failure"<br>
+    * Usage: <code>fail</code>
+    */
+   def fail(): Nothing = fail("failure")
+
+   /**
+    * Convenience method: adds a new skippedException to the latest example<br>
+    * Usage: <code>skip("this example should be skipped")</code>
+    */
+   def skip(m: String) = SkippedException(m).hideCallerAndThrow("org.specs.Specification")
+
+ }
 /**
  * This trait is useful to get a common interface for Specifications, Sus and Examples.
  */
