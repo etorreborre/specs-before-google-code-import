@@ -2,6 +2,8 @@ package org.specs.samples
 import org.specs._
 import org.specs.specification._
 import org.specs.Sugar._
+import org.specs.runner._
+
 object sampleSpec2 extends Specification {
   "A sample specification2" should {
     "return something" in {
@@ -23,9 +25,7 @@ object allSpec extends Specification {
 }
 
 
-import org.specs.runner._
-class helloWorldTest extends Runner(helloWorld) with JUnit with ScalaTest
-object helloWorld extends Specification("Hello world") {
+class helloWorldTest extends Specification("Hello world") with JUnit with ScalaTest {
   "'hello world' has 11 characters" in {
      "hello world".size mustBe 11
   }
@@ -34,6 +34,22 @@ object helloWorld extends Specification("Hello world") {
   } tag "excluded"
 }
 
+class helloWorld2 extends Specification("Hello world") with ScalaTest {
+  "The hello world string" should {
+    "have 11 characters" in {
+       "hello world".size mustBe 12
+    }
+    "match 'h.* w.*'" in {
+      "hello world" must beMatching("h.* w.*")
+    }
+    "not throw an error" in {
+      error("this is an error")
+    }
+    "have a skipped example" in {
+      skip("this is skipped")
+    }
+  }
+}
 
 import org.specs.mock._
 import java.io._

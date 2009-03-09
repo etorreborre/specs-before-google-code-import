@@ -143,9 +143,15 @@ class SusSuite(sus: Sus) extends Suite {
    */
   private[this] def runExample(e: Example, reporter: org.scalatest.Reporter): Unit = {
     reporter.testStarting(new SpecReport(e.description, "", e.description, e.description, true))
-    e.skipped foreach {skipped => reporter.testIgnored(new SpecReport(e.description, skipped.message, e.description, e.description, true))}
-    e.failures foreach {f => reporter.testFailed(new SpecReport(e.description, f.getMessage, e.description, e.description, true))}
-    e.errors foreach {error => reporter.testFailed(new SpecReport(e.description, error.getMessage, e.description, e.description, true, Some(error), None, Thread.currentThread.getName, new java.util.Date))}
+    e.skipped foreach { skipped =>
+      reporter.testIgnored(new SpecReport(e.description, skipped.message, skipped.message, skipped.message, true))
+    }
+    e.failures foreach { f =>
+      reporter.testFailed(new SpecReport(e.description, f.getMessage, f.getMessage, f.getMessage, true))
+    }
+    e.errors foreach { error =>
+      reporter.testFailed(new SpecReport(e.description, error.getMessage, error.getMessage, error.getMessage, true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
+    }
     if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
       reporter.testSucceeded(new SpecReport(e.description, "", e.description, e.description, true))
     e.subExamples foreach { sub => runExample(sub, reporter) }
