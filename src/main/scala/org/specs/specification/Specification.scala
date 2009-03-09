@@ -157,7 +157,7 @@ trait HasResults {
     else if (!skipped.isEmpty)
       "o"
     else
-      ""
+      "+"
   }
   def hasFailureAndErrors = !failureAndErrors.isEmpty
   def failureAndErrors = (failures ++ errors).toList

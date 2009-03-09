@@ -142,18 +142,22 @@ class SusSuite(sus: Sus) extends Suite {
    * call this method recursively if the example has subexamples
    */
   private[this] def runExample(e: Example, reporter: org.scalatest.Reporter): Unit = {
-    reporter.testStarting(new SpecReport(e.description, "", e.description, e.description, true))
+    def report(desc: String, msg: String) = new SpecReport(desc, msg, msg, msg, true)
+    reporter.testStarting(new SpecReport(e.description, e.description, e.description, e.statusAsText + " " + e.description, true))
     e.skipped foreach { skipped =>
-      reporter.testIgnored(new SpecReport(e.description, skipped.message, skipped.message, skipped.message, true))
+      reporter.testIgnored(report(e.description, "    " + skipped.message))
     }
     e.failures foreach { f =>
-      reporter.testFailed(new SpecReport(e.description, f.getMessage, f.getMessage, f.getMessage, true))
+      reporter.testFailed(report(e.description, "    " + f.getMessage))
     }
     e.errors foreach { error =>
-      reporter.testFailed(new SpecReport(e.description, error.getMessage, error.getMessage, error.getMessage, true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
+      reporter.testFailed(new SpecReport(e.description, "    " + error.getMessage,
+                                                        "    " + error.getMessage,
+                                                        "    " + error.getMessage,
+                                         true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
     }
     if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
-      reporter.testSucceeded(new SpecReport(e.description, "", e.description, e.description, true))
+      reporter.testSucceeded(report(e.description, e.description))
     e.subExamples foreach { sub => runExample(sub, reporter) }
   }
 
