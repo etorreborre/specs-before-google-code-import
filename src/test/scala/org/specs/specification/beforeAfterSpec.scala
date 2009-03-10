@@ -4,7 +4,7 @@ import org.specs.runner._
 import org.specs._
 import org.specs.runner._
 
-object beforeAfterSpec extends Specification {
+class beforeAfterSpec extends Specification with JUnit {
   "A specification with before clauses" should {
     "have each example using the doBefore method before being executed" in {
       doBeforeExample.execute
@@ -128,16 +128,15 @@ object beforeAfterSpec extends Specification {
     }
   }
 }
-class beforeAfterTest extends JUnit4(beforeAfterSpec)
 
-trait beforeAfterTestSpec extends Specification with Console with MockOutput {
+trait beforeAfterSpecification extends Specification with Console with MockOutput {
   def execute = { systems = Nil; executeSpec }
   def executeSpec
   override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
 }
 
-object doBeforeExample extends beforeAfterTestSpec {
+object doBeforeExample extends beforeAfterSpecification {
   override def executeSpec = {
     var beforeCalls = 0
     "A specification" should { doBefore { beforeCalls += 1; println("before called " + beforeCalls) }
@@ -147,7 +146,7 @@ object doBeforeExample extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object doBeforeExampleFailing extends beforeAfterTestSpec {
+object doBeforeExampleFailing extends beforeAfterSpecification {
   override def executeSpec = {
       var beforeCalls = 0
     "A specification" should { doBefore { error("before error") }
@@ -156,7 +155,7 @@ object doBeforeExampleFailing extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object beforeEx extends beforeAfterTestSpec {
+object beforeEx extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       var beforeCalls = 0
@@ -167,7 +166,7 @@ object beforeEx extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object beforeExampleFailing extends beforeAfterTestSpec {
+object beforeExampleFailing extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       var beforeCalls = 0
@@ -177,7 +176,7 @@ object beforeExampleFailing extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object doAfterExample extends beforeAfterTestSpec {
+object doAfterExample extends beforeAfterSpecification {
   override def executeSpec = {
     var afterCalls = 0
     "A specification" should { doAfter { afterCalls += 1; println("after called " + afterCalls) }
@@ -187,7 +186,7 @@ object doAfterExample extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object doAfterExampleFailing extends beforeAfterTestSpec {
+object doAfterExampleFailing extends beforeAfterSpecification {
   override def executeSpec = {
       var afterCalls = 0
     "A specification" should { doAfter { println("after");error("after error") }
@@ -196,7 +195,7 @@ object doAfterExampleFailing extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object afterEx extends beforeAfterTestSpec {
+object afterEx extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       var afterCalls = 0
@@ -207,7 +206,7 @@ object afterEx extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object afterExampleFailing extends beforeAfterTestSpec {
+object afterExampleFailing extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       var afterCalls = 0
@@ -217,7 +216,7 @@ object afterExampleFailing extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithBeforeContext extends beforeAfterTestSpec {
+object specWithBeforeContext extends beforeAfterSpecification {
   var beforeIsCalled = false
   val context1 = beforeContext(beforeIsCalled = true)
   override def executeSpec = {
@@ -227,7 +226,7 @@ object specWithBeforeContext extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithAfterContext extends beforeAfterTestSpec {
+object specWithAfterContext extends beforeAfterSpecification {
   var afterIsCalled = false
   val context1 = afterContext(afterIsCalled = true)
   override def executeSpec = {
@@ -237,7 +236,7 @@ object specWithAfterContext extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithContext extends beforeAfterTestSpec {
+object specWithContext extends beforeAfterSpecification {
   var beforeIsCalled = false
   var afterIsCalled = false
   val context1 = context(beforeIsCalled = true, afterIsCalled = true)
@@ -248,7 +247,7 @@ object specWithContext extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithRepeatedContext extends beforeAfterTestSpec {
+object specWithRepeatedContext extends beforeAfterSpecification {
   var data = 0
   val context1 = beforeContext(data += 1).until(data == 10)
   override def executeSpec = {
@@ -258,7 +257,7 @@ object specWithRepeatedContext extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithUntil extends beforeAfterTestSpec {
+object specWithUntil extends beforeAfterSpecification {
   var counter = 0
   override def executeSpec = {
     "A specification" should {
@@ -268,7 +267,7 @@ object specWithUntil extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithDoBeforeAll extends beforeAfterTestSpec {
+object specWithDoBeforeAll extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       doFirst { println("msg doBeforeAll") }
@@ -278,7 +277,7 @@ object specWithDoBeforeAll extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithDoAfterAll extends beforeAfterTestSpec {
+object specWithDoAfterAll extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
       doLast { println("msg doAfterAll") }
@@ -288,7 +287,7 @@ object specWithDoAfterAll extends beforeAfterTestSpec {
     reportSpecs
   }
 }
-object specWithAll extends beforeAfterTestSpec {
+object specWithAll extends beforeAfterSpecification {
   override def executeSpec = {
     doBeforeSpec { println("msg doBeforeAllSpec") }
     "A specification" should {

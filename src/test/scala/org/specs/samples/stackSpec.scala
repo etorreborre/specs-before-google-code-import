@@ -2,8 +2,8 @@ package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
 
-object stackSpecification extends StackSpec {
-  "An empty stack" definedAs(empty) should { 
+class stackSpec extends StackSpecification with JUnit {
+  "An empty stack" definedAs(empty) should {
     "throw an exception when sent #top" in { stack: LimitedStack[Int] =>
       stack.top must throwA[NoSuchElementException]
     }
@@ -32,26 +32,25 @@ object stackSpecification extends StackSpec {
     }
   }
   "A stack below full capacity" definedAs(belowCapacity) should {
-    behave like "A non-empty stack below full capacity" 
+    behave like "A non-empty stack below full capacity"
     "add to the top when sent #push" in { stack: LimitedStack[Int] =>
       stack push 3
       stack.top mustBe 3
     }
   }
-  "A full stack" definedAs(full) should { 
-    behave like "A non-empty stack below full capacity" 
+  "A full stack" definedAs(full) should {
+    behave like "A non-empty stack below full capacity"
     "throw an exception when sent #push" in { stack: LimitedStack[Int] =>
       stack.push(11) must throwAn[Error]
     }
   }
 }
-class stackTest extends JUnit4(stackSpecification)
 
-class StackSpec extends Specification {
+class StackSpecification extends Specification {
   case class SampleStack(stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
     def this(capacity: Int) = this(capacity, 0)
     var lastItemAdded = 0
-    for (i <- 1 to itemsNb) { this += i; lastItemAdded = i } 
+    for (i <- 1 to itemsNb) { this += i; lastItemAdded = i }
   }
   case class StackContext(capacity: Int, itemsNb: Int) extends SystemContext[SampleStack] {
     def this(capacity: Int) = this(capacity, 0)

@@ -1,5 +1,4 @@
 package org.specs.runner
-
 import org.specs._
 import org.specs.specification._
 import org.specs.runner._
@@ -10,7 +9,7 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 
-object consoleReporterSpec extends Specification with MockOutput {
+class consoleReporterSpec extends Specification with MockOutput with JUnit {
   "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
@@ -179,7 +178,7 @@ object consoleReporterSpec extends Specification with MockOutput {
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
   def specWithTwoSystems = new SpecWithTwoSystems().run
 }
-abstract class TestSpec extends LiterateSpecification with Console with MockOutput {
+abstract class TestSpecification extends LiterateSpecification with Console with MockOutput {
   override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
   val success = () => true mustBe true
@@ -202,7 +201,7 @@ abstract class TestSpec extends LiterateSpecification with Console with MockOutp
   }
 }
 
-class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
+class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecification {
   def run = {
     "A specification" should {
        "have example 1 ok" in {
@@ -214,7 +213,7 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpec {
   }
 }
 
-class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
+class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpecification {
   def run = {
     "A specification" should {
       "have example 2.1 ok" in { expectations(behaviours).head.apply}
@@ -224,7 +223,7 @@ class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpec {
     messages
   }
 }
-class SpecWithTwoSystems extends TestSpec {
+class SpecWithTwoSystems extends TestSpecification {
   def elapsedTimes = messages.flatMap(_.groups("Finished in .* (\\d+) ms")).filter(!_.isEmpty).toList.map(_.toInt)
   def run = {
     messages.clear
@@ -241,7 +240,7 @@ class SpecWithTwoSystems extends TestSpec {
     this
   }
 }
-class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpec {
+class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpecification {
   def run = {
     "The specification" is <p>
       Some text with {"embedded expectations" in {expectations(behaviours) foreach {_.apply}}}
@@ -256,4 +255,3 @@ object that extends Enumeration {
       throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher,
       hasTwoSubExamples = Value
 }
-class consoleReporterSpecTest extends JUnit4(consoleReporterSpec) with ScalaTest

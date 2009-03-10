@@ -1,7 +1,8 @@
 package org.specs.specification
 import org.specs.matcher._
+import org.specs.runner._
 
-object taggedSpec extends Specification {
+class taggedSpec extends Specification with JUnit{
   "A tagged object" should { createTagged.before
     "be accepted if there is no tag added" in {
       tagged must beAccepted
@@ -29,7 +30,7 @@ object taggedSpec extends Specification {
     }
     "be taggable with another tagged object" in {
       val other = (new Object with Tagged).addTag("a").accept("a").reject("b")
-      
+
       tagged.tagWith(other)
       tagged.tags must_== other.tags
       tagged.accepted must_== other.accepted
@@ -92,5 +93,3 @@ object taggedSpec extends Specification {
     def apply(v: => Tag) = (v.matches(other), v + " matches " + other, v + " doesn't match " + other)
   }
 }
-import org.specs.runner._
-class taggedSpecTest extends Runner(taggedSpec) with JUnit

@@ -1,6 +1,6 @@
 package org.specs.matcher
 
-object mapMatchersSpec extends MatchersSpecification {
+class mapMatchersSpec extends MatchersSpecification {
   "Map matchers" should { clearExample.before
     "provide an 'haveKey' matcher on maps: Map('one' -> 1, 'two' -> 2) must haveKey('one') [alias for not + haveKey = notHaveKey]" in {
       Map("one" -> 1, "two" -> 2) must haveKey("one")
@@ -44,5 +44,3 @@ object mapMatchersSpec extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class mapMatchersSpecTest extends JUnit4(mapMatchersSpec)

@@ -5,16 +5,16 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
 
-object htmlRunnerUnit extends Specification with DataTables {
+class htmlRunnerUnit extends Specification with DataTables with JUnit {
   val table = "a"    | "b"  | "result" |
                 1    !  1   ! 2        |
                 1    !  1   ! 2        |
-                3    !  1   ! 5        | { (a: Int, b: Int, c: Int) => 
+                3    !  1   ! 5        | { (a: Int, b: Int, c: Int) =>
                     a + b must_== c  }
   def html = { try { table.execute } catch { case _ => } ; table.toHtml }
-  "the toHtml function" should { 
+  "the toHtml function" should {
     "create an html table for a DataTable" in {
-      html must \\(<table class="dataTable"></table>) 
+      html must \\(<table class="dataTable"></table>)
     }
     "create a header for the DataTable" in {
       html must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
@@ -47,16 +47,16 @@ object htmlRunnerUnit extends Specification with DataTables {
 
     "return an error icon for a result having errors" in {
       hRunner.statusIcon(new errors()).toString must include("images/icon_error_sml.gif")
-    }      
+    }
     "return a warning icon for a result having failures" in {
       hRunner.statusIcon(new failed()).toString must include("images/icon_failure_sml.gif")
-    }       
+    }
     "return an info icon for a result having skipped" in {
       hRunner.statusIcon(new skipped()).toString must include("images/icon_skipped_sml.gif")
-    }      
+    }
     "mention a rowicon id identifying the icon for the example" in {
       hRunner.statusIcon(new skipped()).toString must include("id=\"rowicon:")
-    }      
+    }
   }
   "the message function for an example" should {
     "return the failure message in a cell if there is a failure" in {
@@ -92,4 +92,3 @@ object htmlRunnerUnit extends Specification with DataTables {
   }
 }
 object hRunner extends HtmlRunner
-class htmlRunnerUnitTest extends JUnit4(htmlRunnerUnit)

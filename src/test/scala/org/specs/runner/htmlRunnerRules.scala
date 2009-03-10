@@ -1,5 +1,5 @@
 package org.specs.runner
- 
+
 import org.specs.specification._
 import org.specs.Sugar._
 import org.specs._
@@ -7,8 +7,9 @@ import org.specs.util._
 import org.specs.io.mock._
 import scala.xml._
 
-class htmlRunnerRules(name: String) extends LiterateSpecification(name) with XmlProperties {
-  
+class htmlRunnerRules(name: String) extends LiterateSpecification(name) with XmlProperties with JUnit with Html {
+  override def htmlDir = "target"
+
   def title = run must \\(<title>{specification.name}</title>)
   def oneTablePerSus = run must \\(<table></table>)
   def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>)
@@ -24,27 +25,27 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) with Xml
   def failedExample = runString must include("'1' is not equal to '0'")
   def errorExample = runString must beMatching("bug")
   def skippedExample = runString must beMatching("skipped")
-  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>))  
+  def rowsAlternation = run must (\\(<tr class="a"></tr>) and \\(<tr class="b"></tr>))
   def outputFile = htmlFile.toString must include("./target/specification.html")
   def cssDir = createdDirs must contain("./target/css")
-  def imagesDir = createdDirs must contain("./target/images") 
+  def imagesDir = createdDirs must contain("./target/images")
   def dataTableFailure = run must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
   def literateDesc = run must \\("h1")
-  def subExamples = run must (beMatching("subex1")^^((_: Iterable[Node]).toString) 
-                              and \\(<h4>this example has sub-examples</h4>))   
+  def subExamples = run must (beMatching("subex1")^^((_: Iterable[Node]).toString)
+                              and \\(<h4>this example has sub-examples</h4>))
   def systemsList = run must (\\(<div id="leftColumn"/>) and \\(<td>{specification.name}</td>))
   def noSystemsListForOneOnly = runSmall.toString must include("onLoad=\"noNavBar()\"")
   def collapsibleColumn = run must \\(<img src="images/expanded.gif" onclick="toggleNavBar(this)"/>)
   def greenHighlight = 1 must_== 1
-    
-  lazy val executeRunner = { 
+
+  lazy val executeRunner = {
     hRunner.report(hRunner.specs)
     hRunner
-  } 
-  lazy val executeSmallRunner = { 
+  }
+  lazy val executeSmallRunner = {
     smallRunner.report(smallRunner.specs)
     smallRunner
-  } 
+  }
   val run = executeRunner.results aka "the generated html"
   val runString = executeRunner.results.toString aka "the generated html"
   val runSmall = executeSmallRunner.results
@@ -66,23 +67,23 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) with Xml
       results = asHtml(spec)
       new PrettyPrinter(200, 2).format(results)
     }
-    
+
   }
 }
 import org.specs.specification._
 
 object specification extends LiterateSpecification("Sample Specification") {
     include(subSpecification)
-    "this literate sus" is 
+    "this literate sus" is
 <wiki>h1. A h1 title
   {1 must_== 1}
-  {  
+  {
     val calc = new Object { def add(x: Int, y: Int): Int = x + y }
-    "A calculator can add integers" inTable 
-    "a" | "b" | "c" | 
+    "A calculator can add integers" inTable
+    "a" | "b" | "c" |
      1  !  2  !  3  |
      2  !  2  !  5  |
-     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) } 
+     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) }
   }
 
 </wiki>
@@ -96,14 +97,14 @@ object specification extends LiterateSpecification("Sample Specification") {
         "a"    | "b"  | "result" |>
           1    !  1   ! 2        |
           1    !  1   ! 2        |
-          3    !  1   ! 5        | { (a: Int, b: Int, c: Int) => 
-            a + b must_== c 
+          3    !  1   ! 5        | { (a: Int, b: Int, c: Int) =>
+            a + b must_== c
           }
       }
       "this example has sub-examples" in {
          "subex1" in { 1 must_== 1 }
          "subex2" in { 1 must_== 1 }
-      } 
+      }
     }
   }
   object subSpecification extends Specification("Sample subspecification") {
@@ -114,5 +115,3 @@ object specification extends LiterateSpecification("Sample Specification") {
       "ex4" in { skip("skipped") }
     }
   }
-import org.specs.runner._
-class htmlRunnerSpecTest extends HtmlSuite(htmlRunnerSpec, "target") with JUnit

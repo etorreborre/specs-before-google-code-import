@@ -6,12 +6,11 @@ import scalacheck.Gen._
 import org.specs.collection.ExtendedList._
 import org.specs._
 
-class inAnyOrderUnitTest extends JUnit3(inAnyOrderUnit)
-object inAnyOrderUnit extends Specification with TestData with ScalaCheck {
+class inAnyOrderUnit extends Specification with TestData with ScalaCheck with JUnit {
   "A protocol type 'inAnyOrder'" should { usingBefore {() => clearCalls }
     "consume nothing if exp=m and rec=nil" in {
       inAnyOrder.consume((e), ()) must verify { t:Result => val (exp, rec) = t
-        exp.forall(!_.passes) && rec.isEmpty 
+        exp.forall(!_.passes) && rec.isEmpty
       }
     }
     "consume all if exp=m and rec=m" in {
@@ -37,16 +36,16 @@ object inAnyOrderUnit extends Specification with TestData with ScalaCheck {
    "not consume all expected calls if it is a strict sublist of expected calls" in {
       val lessReceivedCalls = receivedSizeIs(_ < _)
       lessReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
-        inAnyOrder.consume(expected, received) 
+        inAnyOrder.consume(expected, received)
         expected.forall(_.passes) must beFalse.unless(expected.isEmpty || received.isEmpty)
       }(set(maxSize->5))
     }
     "consume all received calls if it is a the same list of calls in a different order" in {
       val sameReceivedCalls = receivedSizeIs(_ == _)
       sameReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
-        inAnyOrder.consume(expected, received) 
+        inAnyOrder.consume(expected, received)
         expected.forall(_.passes) must beTrue
-        received.forall(_.consumed) must beTrue 
+        received.forall(_.consumed) must beTrue
       }(set(maxSize->5, maxDiscarded->1000))
     }
     "consume all expected calls if the received calls are a the superset of the expected calls" in {
@@ -70,11 +69,11 @@ trait TestData extends ProtocolTypes {
   }
   def sameCalls = for (expected <- listOf(elements(methods: _*)))
                     yield (expected.map(new ExpectedCall(_)), expected.scramble.map(new ReceivedCall(_)))
- 
+
   def receivedSizeIs(f: (Int, Int) => Boolean) = {
     for (expected <- listOf(elements(methods: _*));
          n <- choose(-2, 2);
-         val received = (expected.scramble:::expected.scramble).take(expected.size + n) 
+         val received = (expected.scramble:::expected.scramble).take(expected.size + n)
                         if (f(n + expected.size, expected.size)))
      yield (expected.map(new ExpectedCall(_)), received.map(new ReceivedCall(_)))
   }

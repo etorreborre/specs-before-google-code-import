@@ -1,8 +1,9 @@
 package org.specs.collection
 import org.specs.collection.ExtendedList._
 import org.specs.Products._
+import org.specs.runner._
 
-object extendedListUnit extends TestData {
+class extendedListUnit extends TestData with JUnit {
   "A removeFirst predicate function" should {
     "remove nothing if the list is empty" in {
       (Nil: List[String]).removeFirst(_ == "a") must_== Nil
@@ -30,7 +31,7 @@ object extendedListUnit extends TestData {
       everyOrder(("a", "b")) must beLike { case List(List("a", "b"), List("b", "a")) => ok }
     }
     "return a list of 6 permutations for a list with 3 elements" in {
-      everyOrder(("a", "b", "c")) must (contain(List("a", "b", "c")) and 
+      everyOrder(("a", "b", "c")) must (contain(List("a", "b", "c")) and
                                         contain(List("c", "b", "a")) and
                                         contain(List("c", "a", "b")) and
                                         contain(List("b", "c", "a")) and
@@ -43,7 +44,7 @@ object extendedListUnit extends TestData {
       mix("a", List("b")) must beLike { case List(List("a", "b"), List("b", "a")) => ok }
     }
     "create 3 lists with a list of 2 elements" in {
-      mix("a", List("b", "c")) must beLike { case List(List("a", "b", "c"), 
+      mix("a", List("b", "c")) must beLike { case List(List("a", "b", "c"),
                                                        List("b", "a", "c"),
                                                        List("b", "c", "a")) => ok }
     }
@@ -61,7 +62,6 @@ object extendedListUnit extends TestData {
     }
   }
 }
-import org.specs.runner._
 import org.specs.Sugar._
 import org.specs._
 import scalacheck.Gen._
@@ -73,4 +73,3 @@ trait TestData extends Specification with Sugar with ScalaCheck {
                                 val prefix = list.take(n))
                                 yield (list, list.prefixes, prefix)
 }
-class extendedListUnitTest extends Runner(extendedListUnit) with JUnit

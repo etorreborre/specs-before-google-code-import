@@ -5,8 +5,7 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.specification._
 
-class specificationTest extends Runner(specificationSpec) with JUnit with Console
-object specificationSpec extends Specification {
+class specificationSpec extends Specification with JUnit {
   "A specification" isSpecifiedBy (basicFeatures, advancedFeatures)
 }
 

@@ -3,10 +3,9 @@ import org.specs.io.mock.MockFileSystem
 import org.specs.io.ConsoleOutput
 import org.specs.runner._
 
-class specsFinderTest extends JUnit4(specsFinderSpec)
-object specsFinderSpec extends Specification with Init {
-  
-  "A specs finder" should { 
+class specsFinderSpec extends Specification with Init with JUnit {
+
+  "A specs finder" should {
     usingBefore { () => {
       finder.defaultExtension = ".scala"
       finder.reset

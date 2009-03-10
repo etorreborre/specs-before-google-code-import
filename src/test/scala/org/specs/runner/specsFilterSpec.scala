@@ -1,7 +1,8 @@
 package org.specs.runner
 import org.specs.Specification
+import org.specs.runner._
 
-object specsFilterSpec extends Specification {
+class specsFilterSpec extends Specification with JUnit {
   "a specs filter" should {
     "filter the SUS of the specification according to a regular expression" in {
       object spec extends Specification {
@@ -61,5 +62,3 @@ object specsFilterSpec extends Specification {
     override def exampleFilterPattern = examplesToFilter
   }.filter(specifications)
 }
-import org.specs.runner._
-class specsFilterSpecTest extends JUnit4(specsFilterSpec)

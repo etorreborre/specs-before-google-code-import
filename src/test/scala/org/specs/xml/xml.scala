@@ -1,7 +1,7 @@
 package org.specs.xml
 import org.specs._
 
-object xmlUnit extends Specification {
+object xmlUnits extends Specification {
     "The xml unit tests" areSpecifiedBy (
-        extendedNodeUnit)
+        new extendedNodeUnit)
 }

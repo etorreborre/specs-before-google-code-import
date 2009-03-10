@@ -9,7 +9,7 @@ import org.scalacheck.Prop.forAll
 import org.specs.mock._
 import org.specs.io._
 
-object scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamples {
+class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamples {
   "A 'pass' matcher" should {
     "be ok if a property is true for all generated values" in {
       alwaysTrue must pass(isTrue)
@@ -124,5 +124,3 @@ class Counter(private var n: Int) {
   def get = n
   def reset = n = 0
 }
-import org.specs.runner._
-class scalacheckMatchersTest extends JUnit4(scalacheckMatchersSpec)

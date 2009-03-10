@@ -1,9 +1,9 @@
 package org.specs.matcher
 import java.io.File
 
-object fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
-  
-  "The PathMatchers trait" should { doBefore { setFileSystem } 
+class fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
+
+  "The PathMatchers trait" should { doBefore { setFileSystem }
     "provide an beEqualToIgnoringSep matcher checking if two paths are the same regardless of their separators" in {
       "c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp/hello")
       expectation("c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp2/hello")) must failWith("'c:\\temp\\hello' is not equal ignoring separators to 'c:/temp2/hello'")
@@ -118,7 +118,7 @@ object fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
       new File("c:/tmp") must haveList("c:/tmp/test.txt")
     }
   }
-  "The File matchers" can { doBefore { setFileSystem } 
+  "The File matchers" can { doBefore { setFileSystem }
     "be used from string using the path function, like 'c:/projects'.path must exist" in {
       existingPath.path must exist
     }
@@ -128,10 +128,8 @@ import org.specs.io.mock._
 trait TestFileSystem extends MockFileSystem {
   val existingPath = "path"
   val missingPath = "absent"
-  def setFileSystem  = {  
+  def setFileSystem  = {
     reset
     addFile(existingPath, "")
   }
 }
-import org.specs.runner._
-class FileMatchersTest extends JUnit4(fileMatchersSpec)

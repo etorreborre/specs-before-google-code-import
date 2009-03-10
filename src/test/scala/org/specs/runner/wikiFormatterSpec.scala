@@ -4,11 +4,11 @@ import org.specs.specification._
 import scala.xml._
 import org.specs.Sugar._
 
-object wikiFormatterSpec extends Specification {
+class wikiFormatterSpec extends Specification with JUnit {
   "A wiki formatter" should {
-    def formatString(s: String): String = new WikiFormatter().format(s) 
+    def formatString(s: String): String = new WikiFormatter().format(s)
     def formatElem(e: Elem): Node = new WikiFormatter().format(e)
-    
+
     "return a string as it is if isn't some html text" in {
       formatString("a description") must_== "a description"
     }
@@ -48,4 +48,3 @@ object wikiFormatterSpec extends Specification {
     }
   }
 }
-class wikiFormatterSpecTest extends JUnit4(wikiFormatterSpec)

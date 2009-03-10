@@ -1,6 +1,6 @@
 package org.specs.matcher
 
-object stringMatchersUnit extends MatchersSpecification {
+class stringMatchersUnit extends MatchersSpecification {
   "An equalsIgnoreCase matcher" should {
     "be ok even with null values" in {
       val s: String = null
@@ -52,5 +52,3 @@ object stringMatchersUnit extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class stringMatchersTest extends JUnit4(stringMatchersUnit)

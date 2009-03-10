@@ -3,14 +3,13 @@ import org.specs.specification._
 import org.specs.util.Property
 import scala.xml._
 
-
 trait RunnerFixture extends LiterateSpecification with RunnerTestData {
   def createSimpleSpecRunner = runner = simpleSpecRunner
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpecs.shh }
   def runnerOutputDir = { runner.setOutputDir _ }
-  def checkXml = XML.loadString(runner.readFile(runner.files.keys.next)) must \\(xml()) 
- 
+  def checkXml = XML.loadString(runner.readFile(runner.files.keys.next)) must \\(xml())
+
   def checkFilePath = {
     createSimpleSpecRunner
     executeRunner
@@ -36,13 +35,12 @@ trait RunnerTestData {
   var runner: XmlRunner with Console with MockFileSystem with OutputDirSettable = _
   object simpleSpecRunner extends XmlRunner(sp1) with Console with MockFileSystem with MockOutput with OutputDirSettable
   object compositeSpecRunner extends XmlRunner(compositeSpec) with Console with MockFileSystem with MockOutput with OutputDirSettable
-  object compositeSpec extends Specification { 
+  object compositeSpec extends Specification {
     "a composite spec" isSpecifiedBy(sp1, sp1)
   }
 }
-class xmlTest extends JUnit4(xmlRunnerSpec)
 
-  object sp1 extends Specification {
+object sp1 extends Specification {
     override def toString = name
     "the sus" should {
       "have one ok example" in {1 mustBe 1}

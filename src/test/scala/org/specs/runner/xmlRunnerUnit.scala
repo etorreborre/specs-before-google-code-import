@@ -3,8 +3,9 @@ import org.specs.specification._
 import org.specs.util.DataTables
 import org.specs.Sugar._
 
-class xmlRunnerUnitTest extends HtmlSuite(xmlRunnerUnit, "./target/xmlRunnerUnit") with JUnit
-object xmlRunnerUnit extends Specification with DataTables {
+class xmlRunnerUnit extends Specification with DataTables with Html with JUnit {
+  override def htmlDir = "target"
+
   "An xml runner" should {
     "create an xml file in the default directory if nothing is specified" in {
        xRunner.reportSpecs
@@ -12,10 +13,10 @@ object xmlRunnerUnit extends Specification with DataTables {
     }
     "create an xml file in the specified output directory, handling file separators" in {
        "output dir" | 	"spec name" | 	"file path"  				|>
-       "" 		    ! 	"spec1" 	!	"./spec1.xml"				|  
-       "result" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
-       "result/" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
-       "result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|  
+       "" 		    ! 	"spec1" 	!	"./spec1.xml"				|
+       "result" 	!	"spec1" 	!	"./result/spec1.xml" 		|
+       "result/" 	!	"spec1" 	!	"./result/spec1.xml" 		|
+       "result\\" 	!	"spec1" 	!	"./result/spec1.xml" 		|
        "/result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "\\result" 	!	"spec1" 	!	"/result/spec1.xml" 		|
        "result/xml" ! 	"spec1"     !	"./result/xml/spec1.xml"	| { (dir, spec, result) =>

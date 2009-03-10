@@ -9,40 +9,45 @@ import org.specs.xml.NodeFunctions._
 /**
  * The Html trait outputs the results of a specification execution as an html
  * file in a given output directory.
- * 
+ *
  * The default file name for the report is "specs-report.html" and that report
  * contains all examples description with their execution status: error, failure, success, skipped.
  */
 trait Html extends File {
   val descriptionFormatter = new DescriptionFormatter()
-  
+
   /** definition of the file name of a specification. */
-  override def fileName(spec: Specification): String = HtmlNamingFunction.default(spec) 
+  override def fileName(spec: Specification): String = HtmlNamingFunction.default(spec)
 
   /** definition of the output directory of the report. */
-  override def outputDir = normalize(".")
+  override def outputDir = normalize(htmlDir)
 
-  /** report the specification hold by this runner. */
+  /** default directory name. */
+  def htmlDir = "."
+
+  /** report the specification held by this runner. */
   override def report(specifications: Seq[Specification]) = {
     // reuse the inherited method using the specOutput method
     super.report(specifications)
     // provide the additional resources for the html files
     copySpecResourcesDir("images", outputDir)
     copySpecResourcesDir("css", outputDir)
+
+    debug("Html - reporting to " + outputDir + ": " + specs.map(_.description).mkString(", "))
     this
   }
- 
+
   /** define the html content for this specification execution. */
   def specOutput(spec: Specification): String = {
     // it is necessary to replace the br blocks because:
     // <br></br>: gets interpreted as a double line break in html
     // </br>: gets interpreted as a single line break in html
     asHtml(spec).toString.replace("<br></br>", "</br>")
-  } 
-  
-  /** 
+  }
+
+  /**
    * Create the html content for this specification execution.
-   * 
+   *
    * The html page is composed of a left column with a table summarizing the status for all systems
    * and a right (larger) column with a table containing all examples.
    */
@@ -58,9 +63,9 @@ trait Html extends File {
     </body>
   </html>
 
-  /** 
+  /**
    * head declaration for the specification.
-   * 
+   *
    * The title of the document is the specification name.
    */
   def head(specification: Specification) = <head>
@@ -76,13 +81,13 @@ trait Html extends File {
         <script type="text/javascript" src="./css/tooltip.js"/>
         {javaScript}
     </head>
-  
+
   /** return a formatted string depending on the type of literate description: text, wiki or html. */
   def formattedDescription(sus: Sus): Option[Node] = sus.literateDescription map (descriptionFormatter.format(_, sus.examples))
 
-  /** 
-   * returns a table with the name of all systems, with their status, 
-   * possibly shortened if the system's description is too long. 
+  /**
+   * returns a table with the name of all systems, with their status,
+   * possibly shortened if the system's description is too long.
    */
   def summaryTable(specification: Specification) = {
     /** returns the title of the specification spanning 2 columns for the summary table. */
@@ -90,7 +95,7 @@ trait Html extends File {
       <tr>
         <td><img src="images/expanded.gif" onclick="toggleNavBar(this)"/></td>
         <td class="navTitle">{specification.name}</td>
-      </tr> 
+      </tr>
     }
     <div id="leftColumn">
      { if (nonTrivialSpec(specification)) {
@@ -102,19 +107,19 @@ trait Html extends File {
         NodeSeq.Empty }
     </div>
   }
-  
-  def summarySpec(spec: Specification): NodeSeq = 
-    reduce[Sus](spec.systems, summarySus(_, spec)) ++ 
+
+  def summarySpec(spec: Specification): NodeSeq =
+    reduce[Sus](spec.systems, summarySus(_, spec)) ++
     reduce[Specification](spec.subSpecifications, summarySpec(_))
-    
+
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
 	<td>{statusIcon(sus)}</td>
     <td>{anchorRef(susName(sus, spec))}</td>
   </tr>
- 
-  /** 
-   * creates an anchor reference for a given name, 
+
+  /**
+   * creates an anchor reference for a given name,
    * possibly shortening it for the left column display, but leaving the full name
    * as a tooltip.
    */
@@ -126,7 +131,7 @@ trait Html extends File {
 
   /** sanitize a string so that it can be used as a href */
   def sanitize(s: String) = java.net.URLEncoder.encode(s, "UTF-8")
-  
+
   /** shorten a string to 30 characters maximum. */
   def shorten(s: String) = if (s.size <= 27) s else (s.take(27) + "...")
 
@@ -140,26 +145,26 @@ trait Html extends File {
 
   /** create tables for systems. */
   def susTables(spec: Specification): NodeSeq = reduce[Sus](spec.systems, susTable(_, spec))
-  
+
   /** create a table for a system. */
   def susTable(sus: Sus, spec: Specification): NodeSeq = {
-    anchorName(susName(sus, spec)) ++ 
-    susHeader(sus) ++ 
-    literateDesc(sus) ++ 
+    anchorName(susName(sus, spec)) ++
+    susHeader(sus) ++
+    literateDesc(sus) ++
     examplesTable(sus)
-  }  
+  }
 
   /** return the sus header if it is not empty, otherwise return the spec name. */
-  def susName(sus: Sus, spec: Specification) = if (sus.header.trim.isEmpty) spec.name else sus.header 
+  def susName(sus: Sus, spec: Specification) = if (sus.header.trim.isEmpty) spec.name else sus.header
 
   /** return the sus header if not empty or an Empty Node. */
   def susHeader(sus: Sus) = {
-    if (!sus.header.trim.isEmpty) 
+    if (!sus.header.trim.isEmpty)
       <h3>{sus.header}{upArrow}</h3>.toSeq
     else
       NodeSeq.Empty
   }
-   
+
   def examplesTable(sus: Sus) = {
     sus.literateDescription match {
       case None => {
@@ -185,21 +190,21 @@ trait Html extends File {
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
 
   /** create rows for each example, alternating style. */
-  def exampleRows(examples: Iterable[Example], fullSuccess: Boolean): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) => 
+  def exampleRows(examples: Iterable[Example], fullSuccess: Boolean): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) =>
     val (node, alternation) = result
-    (node ++ example(ex, alternation, fullSuccess), !alternation) 
+    (node ++ example(ex, alternation, fullSuccess), !alternation)
   }._1
-  
-  /** 
+
+  /**
    * create a row for an example and its subexamples.
-   * 
+   *
    * If the example has subexamples, a small header is created.
    */
   def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     example.subExamples.toList match {
       case Nil => exampleRow(example, alternation, fullSuccess)
-      case subexamples => <h4>{formattedDesc(example)}</h4> ++ exampleRows(subexamples, fullSuccess) 
-    }  
+      case subexamples => <h4>{formattedDesc(example)}</h4> ++ exampleRows(subexamples, fullSuccess)
+    }
   }
   def formattedDesc(ex: Example) = {
     descriptionFormatter.formatDesc(ex)
@@ -212,7 +217,7 @@ trait Html extends File {
       <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {formattedDesc(example)}</td>{message(example, fullSuccess)}
     </tr>
   }
-  
+
   /**
    * status icon for anything having results (errors, failures, skipped).
    */
@@ -222,8 +227,8 @@ trait Html extends File {
   def image(result: HasResults) = {
     "images/icon_" + result.status + "_sml.gif"
   }
-  
-  /** Message for an example. */ 
+
+  /** Message for an example. */
   def message(example: Example, fullSuccess: Boolean) = {
     def msg = {
 	  if (!example.failures.isEmpty)
@@ -240,20 +245,20 @@ trait Html extends File {
     else
       <td id={"rowmess:" + System.identityHashCode(example)}>{msg}</td>
   }
-  
-  /** 
+
+  /**
    * the failure message for an example is displayed differently depending on its nature.
    * Failures for DataTables will be reported in a nested table.
    */
   def failure(f: FailureException): NodeSeq = {
     f match {
       case DataTableFailureException(table) => table.toHtml
-      case regular => exceptionText(regular) 
+      case regular => exceptionText(regular)
     }
   }
   def stackTrace(e: Throwable) = if (!e.isInstanceOf[FailureException]) e.stackToString("\r", "\r", "") else ""
   def exceptionText(e: Throwable) = <a title={e.fullLocation + stackTrace(e)}>{if (e.getMessage != null) new Text(e.getMessage) else new Text("null")}</a>
-  
+
   /** reduce a list with a function returning a NodeSeq. */
   def onLoadFunction(specification: Specification) = {
     if (nonTrivialSpec(specification)) "" else "noNavBar()"
@@ -263,7 +268,7 @@ trait Html extends File {
   }
   def javaScript = <script language="javascript"> {"""
 
-    // found on : http://www.tek-tips.com/faqs.cfm?fid=6620                                                   
+    // found on : http://www.tek-tips.com/faqs.cfm?fid=6620
     String.prototype.endsWith = function(str) { return (this.match(str+'$') == str) }
 
     function changeWidth(id,width) {
@@ -273,17 +278,17 @@ trait Html extends File {
       document.getElementById(id).style.marginLeft = margin;
     }
     function noNavBar() {
-      changeWidth('leftColumn','0px'); 
+      changeWidth('leftColumn','0px');
       changeMarginLeft('bodyColumn', '10px')
    }
    function toggleNavBar(image) {
       toggleImage(image)
       if (image.src.endsWith('images/expanded.gif')) {
-		changeWidth('leftColumn','20px'); 
+		changeWidth('leftColumn','20px');
       	changeMarginLeft('bodyColumn', '35px')
 	  }
     else {
-		changeWidth('leftColumn','250px'); 
+		changeWidth('leftColumn','250px');
       	changeMarginLeft('bodyColumn', '277px')
 	  }
    }
@@ -308,11 +313,11 @@ trait Html extends File {
 		exampleDesc = document.getElementById('rowdesc:' + exId)
         showToolTip('Description', exampleDesc.innerHTML, event)
 	}
-	
+
 """}
     </script>
 }
 object HtmlNamingFunction {
-  val default = { (s: Specification) => NamingFunction.default(s) + ".html" } 
-  val short = { (s: Specification) => NamingFunction.short(s) + ".html" } 
+  val default = { (s: Specification) => NamingFunction.default(s) + ".html" }
+  val short = { (s: Specification) => NamingFunction.short(s) + ".html" }
 }

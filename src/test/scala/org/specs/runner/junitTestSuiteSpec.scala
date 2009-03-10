@@ -9,7 +9,7 @@ import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.specs.specification._
 
-object junitTestSuiteSpec extends Specification {
+class junitTestSuiteSpec extends Specification with JUnit {
   "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
       object S1 extends Specification { 1 must_== 1 }
@@ -69,7 +69,7 @@ object junitTestSuiteSpec extends Specification {
       listener.desc must beSome[Description]
     }
   }
-  def suite(behaviours: that.Value*) = new JUnit3(new SimpleSpec(behaviours.toList))
+  def suite(behaviours: that.Value*) = new JUnit4(new SimpleSpecification(behaviours.toList))
   def makeRunners(spec: Specification) = {
     object R1 extends JUnit4(spec)
     object R2 extends Runner(spec) with JUnit
@@ -94,9 +94,7 @@ object junitTestSuiteSpec extends Specification {
     }
   }
 }
-class JUnit4RunnerTest extends Runner(junitTestSuiteSpec) with JUnit
-
-class SimpleSpec(behaviours: List[(that.Value)]) extends TestSpec {
+class SimpleSpecification(behaviours: List[(that.Value)]) extends TestSpecification {
   "A specification" should {
     "have example 1 ok" in {
       expectations(behaviours) foreach {_.apply}

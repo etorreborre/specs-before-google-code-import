@@ -1,10 +1,11 @@
 package org.specs.util
 import org.specs.Specification
+import org.specs.runner._
 
-object dataTableHeaderUnit extends Specification with DataTables {
+class dataTableHeaderUnit extends Specification with DataTables with JUnit {
   "a data table header" should {
     val tableHeader = "a"|"b"|"c"|
-      
+
     "print out the column names separated by |" in {
       tableHeader.toString must_== "|a|b|c|"
     }
@@ -13,5 +14,3 @@ object dataTableHeaderUnit extends Specification with DataTables {
     }
   }
 }
-import org.specs.runner._
-class datatableHeaderTest extends JUnit4(dataTableHeaderUnit)

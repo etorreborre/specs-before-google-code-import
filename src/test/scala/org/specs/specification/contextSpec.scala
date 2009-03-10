@@ -1,8 +1,11 @@
 package org.specs.specification
 import org.specs._
+import org.specs.runner._
 
-object contextSpec extends LiterateSpecification("Contexts specification") with ContextDefinitions with Wiki {
-"Contexts" ->> <wiki>
+class contextSpec extends LiterateSpecification("Contexts specification") with ContextDefinitions with Wiki with Html with JUnit {
+  override def htmlDir = "."
+
+  "Contexts" ->> <wiki>
 
 There are 2 types of contexts that can be set on a System under specification, to provide a way to manage the data that examples are using:
 * shared contexts: {linkTo("Shared contexts")}
@@ -154,6 +157,3 @@ trait ContextDefinitions {
     def newSystem = SpecificationWithSystemContextAndSharedExamples()
   }
 }
-
-import org.specs.runner._
-class contextSpecTest extends HtmlSuite(contextSpec, "target") with JUnit

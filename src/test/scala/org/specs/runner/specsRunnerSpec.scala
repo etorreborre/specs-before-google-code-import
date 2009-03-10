@@ -7,7 +7,7 @@ import org.specs.io.mock.MockOutput
 import org.specs.runner._
 import org.specs.specification._
 
-object specsRunnerSpec extends Specification with TestRunner {
+class specsRunnerSpec extends Specification with TestRunner with JUnit {
   "A specs file runner" should { runner.messages.clear.before
 
     "execute a specification contained in a file" in {
@@ -23,8 +23,6 @@ object specsRunnerSpec extends Specification with TestRunner {
   "A specs file runner" should {
   }
 }
-class specsRunnerTest extends JUnit4(specsRunnerSpec)
-
 trait MockSpecsFinder extends SpecsFinder {
   var classNames: List[String] = Nil
   override def specificationNames(filesPath: String, pattern: String) = classNames

@@ -11,31 +11,31 @@ import org.specs.collection._
 import org.specs.util._
 import org.specs.xml._
 
-object allSpecs extends Specification {
+object allSpecifications extends Specification {
     "The specifications" areSpecifiedBy (
-        ioSpecification,  
-        formSpecification,
-        utilSpecification,
-        matcherSpecification, 
-		specificationSpecification,
-		runnerSpecification,
-        stackSpecification)
+        ioSpecifications,
+        formSpecifications,
+        utilSpecifications,
+        matcherSpecifications,
+		    specificationSpecifications,
+		    runnerSpecifications,
+        samplesSpecifications)
 }
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-		collectionUnit,
-		ioUnit, 
-		matcherUnit,
-		mockUnit,
-		runnerUnit,
-		specificationUnit, 
-		utilUnit, 
-		xmlUnit)
+		collectionUnits,
+		ioUnits,
+		matcherUnits,
+		mockUnits,
+		runnerUnits,
+		specificationUnits,
+		utilUnits,
+		xmlUnits)
 }
 
 object allSpecsAndUnits extends Specification {
-  "The specs and unit tests for the specs project" areSpecifiedBy (allSpecs, allUnits)
+  "The specs and unit tests for the specs project" areSpecifiedBy (allSpecifications, allUnits)
 }
 class allSuite extends JUnit4(allSpecsAndUnits)
 object allRunner extends Runner(allSpecsAndUnits) with ScalaTest with JUnit

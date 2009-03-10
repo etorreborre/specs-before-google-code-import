@@ -1,9 +1,9 @@
 package org.specs.specification
-
 import org.specs._
+import org.specs.runner._
 
-object exampleSpec extends Specification {
-  setSequential
+class exampleSpec extends Specification with JUnit {
+  setSequential()
   "An example" should {
     "not be executed if not asked for results" in {
       ex.hasBeenExecuted must beFalse
@@ -17,12 +17,12 @@ object exampleSpec extends Specification {
     "be resetted for execution" in {
       ex.resetExample
       ex.hasBeenExecuted must beFalse
-      ex.failures 
+      ex.failures
       ex.hasBeenExecuted must beTrue
     }
   }
   "A subexample must have the same lifecycle as its parent example" in {
-    ex.failures 
+    ex.failures
     ex.subexample.cycle mustBe ex.testExample.cycle
   }
   "An example" should {
@@ -64,4 +64,3 @@ object ex extends Specification {
   override def failures = testExample.failures.toList
   def resetExample = { hasBeenExecuted = false; testExample.resetForExecution }
 }
-class exampleSpecTest extends org.specs.runner.JUnit4(exampleSpec)

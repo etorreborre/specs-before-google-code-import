@@ -1,9 +1,10 @@
 package org.specs.specification
 import org.specs.Sugar._
-import org.specs.runner._
 import org.specs.util._
+import org.specs.runner._
 
 trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wiki {
+
    object example1 extends LiterateSpecification  {
      <text>{"1 must be 1" in {1 must_== 1}}</text> isSus  }
    object example2 extends LiterateSpecification  {
@@ -21,7 +22,7 @@ trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wi
    def notImplementedExample = checkSkipped(example3)
    def checkSuccess(s: Specification) = {
      s.systems.flatMap(_.examples).flatMap(_.failures).size aka "the number of failures" must_== 0
-   } 
+   }
    def checkSkipped(s: Specification) = {
      s.systems.flatMap(_.examples).flatMap(_.skipped).size aka "the number of skipped" must_== 1
    }
@@ -29,8 +30,8 @@ trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wi
    def isText = desc(example1) must include("1 must be 1")
    def isWiki = desc(example2) must include("<strong>1 must be 1</strong>")
    def isHtml = desc(example3) must include("<i>this example is not yet implemented</i>")
-   def taggedExamples = { 
-     example4.successes.size aka "the number of successes" must_== 1 
+   def taggedExamples = {
+     example4.successes.size aka "the number of successes" must_== 1
    }
    import org.specs.util.AllProperties._
 

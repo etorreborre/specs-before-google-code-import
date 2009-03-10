@@ -1,13 +1,12 @@
 package org.specs.io
-
 import org.specs._
 
-object ioSpecification extends Specification {
+object ioSpecifications extends Specification {
     "The io specifications" areSpecifiedBy (
-        fileSystemSpec,
-        fileWriterSpec)
+        new fileSystemSpec,
+        new fileWriterSpec)
 }
-object ioUnit extends Specification {
+object ioUnits extends Specification {
     "The io unit tests" areSpecifiedBy (
-        fileSystemUnit)
+        new fileSystemUnit)
 }

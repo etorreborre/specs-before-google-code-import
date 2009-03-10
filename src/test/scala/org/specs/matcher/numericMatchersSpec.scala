@@ -1,7 +1,7 @@
 package org.specs.matcher
 import org.specs.runner._
 
-object numericMatchersSpec extends MatchersSpecification {
+class numericMatchersSpec extends MatchersSpecification {
   "Numeric matchers" should {
     "provide a 'be_<' matcher: 1 must be_<(2)" in {
       1 must be_<(2)
@@ -57,4 +57,3 @@ object numericMatchersSpec extends MatchersSpecification {
     }
   }
 }
-class numericTestSpecTest extends JUnit4(numericMatchersSpec) 

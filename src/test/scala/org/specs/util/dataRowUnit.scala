@@ -1,13 +1,14 @@
 package org.specs.util
 import org.specs._
 import org.specs.specification._
+import org.specs.runner._
 
-object dataRowUnit extends Specification with DataTables {
+class dataRowUnit extends Specification with DataTables with JUnit {
   type DR = DataRow3[Int, Int, Int]
   val newRow = new SystemContext[DR]() {
     def newSystem = DataRow3[Int, Int, Int](1, 2, 3)
   }
-  "a data row".definedAs(newRow) should { 
+  "a data row".definedAs(newRow) should {
     "print out its values separated by |" in { datarow: DR =>
       datarow.toString must_== "|1|2|3|"
     }
@@ -23,10 +24,10 @@ object dataRowUnit extends Specification with DataTables {
       datarow.toHtml must \\("tr", Map("class"->"error"))
     }
   }
-  "a data row" should { 
+  "a data row" should {
     "have the same header as its previous row" in {
       val datarow = 1!2!3|
-        
+
       datarow.header = "a"|"b"|"c"
       (datarow | 4!5!6).header must be(datarow.header)
     }
@@ -40,8 +41,6 @@ object dataRowUnit extends Specification with DataTables {
       table.rows(1).header.isOk must beFalse
       table.rows(2).header.isOk must beFalse
     }
-     
-  } 
+
+  }
 }
-import org.specs.runner._
-class dataRowTest extends JUnit4(dataRowUnit)

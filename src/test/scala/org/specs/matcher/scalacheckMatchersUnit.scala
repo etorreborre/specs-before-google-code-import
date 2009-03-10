@@ -9,7 +9,7 @@ import org.specs.specification._
 import scala.collection.immutable
 import scala.collection.Set
 
-object scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock with ScalaCheck {
+class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock with ScalaCheck {
   "The ScalaCheckParameters object" should {
     "provide a 'display' value which is verbose" in {
        display.verbose mustBe true
@@ -108,5 +108,3 @@ trait ScalaCheckMock extends Mocker {
     override def result = Test.Result(Test.Exhausted, 1, 2, FreqMap.empty[immutable.Set[Any]])
   }
 }
-import org.specs.runner._
-class scalacheckMatchersUnitTest extends JUnit4(scalacheckMatchersUnit)
