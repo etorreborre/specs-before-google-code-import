@@ -4,8 +4,8 @@ import org.specs.io.mock._
 import org.specs.util.Property
 
 class teamCityRunnerRules extends LiterateSpecification("Team city runner") with Wiki with JUnit with Html {
-  override val htmlDir = "target"
-
+  override def htmlDir = "target"
+  detailedDiffs()
   def clearDetails(messages: Seq[String]) = messages.map(_.replaceAll("details='.*'", "details='exception stacktrace'"))
   val message: Property[String] = new Property[String]("")
   val messages: Property[List[String]] = new Property[List[String]](Nil)

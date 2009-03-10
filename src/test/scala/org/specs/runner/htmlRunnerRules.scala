@@ -8,8 +8,8 @@ import org.specs.io.mock._
 import scala.xml._
 
 class htmlRunnerRules(name: String) extends LiterateSpecification(name) with XmlProperties with JUnit with Html {
-  override val htmlDir = "target"
-  
+  override def htmlDir = "target"
+
   def title = run must \\(<title>{specification.name}</title>)
   def oneTablePerSus = run must \\(<table></table>)
   def subSpecsHeader = run must \\(<h2>Sample subspecification</h2>)

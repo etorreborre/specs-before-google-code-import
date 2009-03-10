@@ -132,6 +132,8 @@ usage java <classpath> package.mySpecification [-h|--help]
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
     if (argsContain("-c", "--color")) setColorize()
     setTags(specs, args)
+
+    debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
     this
   }
   /** @return true if the args contain one of the options, regardless of the case. */

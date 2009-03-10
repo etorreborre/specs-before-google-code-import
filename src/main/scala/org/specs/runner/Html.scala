@@ -15,22 +15,25 @@ import org.specs.xml.NodeFunctions._
  */
 trait Html extends File {
   val descriptionFormatter = new DescriptionFormatter()
-  
+
   /** definition of the file name of a specification. */
   override def fileName(spec: Specification): String = HtmlNamingFunction.default(spec)
 
   /** definition of the output directory of the report. */
   override def outputDir = normalize(htmlDir)
-  /** default directory name. */
-  val htmlDir = "."
 
-  /** report the specification hold by this runner. */
+  /** default directory name. */
+  def htmlDir = "."
+
+  /** report the specification held by this runner. */
   override def report(specifications: Seq[Specification]) = {
     // reuse the inherited method using the specOutput method
     super.report(specifications)
     // provide the additional resources for the html files
     copySpecResourcesDir("images", outputDir)
     copySpecResourcesDir("css", outputDir)
+
+    debug("Html - reporting to " + outputDir + ": " + specs.map(_.description).mkString(", "))
     this
   }
 

@@ -4,7 +4,7 @@ import org.specs.util.DataTables
 import org.specs.Sugar._
 
 class xmlRunnerUnit extends Specification with DataTables with Html with JUnit {
-  override val htmlDir = "target"
+  override def htmlDir = "target"
 
   "An xml runner" should {
     "create an xml file in the default directory if nothing is specified" in {

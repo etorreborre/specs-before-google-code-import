@@ -16,20 +16,15 @@ class timerSpecificationSpec extends TimerSpecificationActionWords with JUnit {
    then {"the person must be named Peter" in checkName}
 </p>
 }
-class TimerSpecification extends LiterateSpecification {
-  val timer = new SimpleTimer
-  class Person {var name: String = ""; def setName(n: String) = name = n}
-  val person = new Person; val Peter = "Peter"
-}
 
 class TimerSpecificationActionWords extends LiterateSpecification {
-  val timer = new SimpleTimer
+  val simpleTimer = new SimpleTimer
   class Person {var name: String = ""; def setName(n: String) = name = n}
   val person = new Person;
   val Peter = "Peter"
-  def stop = timer.stop.shh
-  def failTime = timer.hms must beMatching("\\d second")
-  def succeeds = timer.hms must beMatching("\\d second")
+  def stop = simpleTimer.stop.shh
+  def failTime = simpleTimer.hms must beMatching("\\d second")
+  def succeeds = simpleTimer.hms must beMatching("\\d second")
   def personName = person.setName _
   def checkName = person.name must_== Peter
 }

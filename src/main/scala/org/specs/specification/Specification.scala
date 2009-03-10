@@ -25,17 +25,11 @@ import _root_.org.junit.runner._
  */
 @RunWith(classOf[JUnitSuiteRunner])
 abstract class Specification extends Matchers with ExpectableFactory with SpecificationStructure
-               with DetailedFailures with FailOrSkip with Reporter
+               with DetailedFailures with FailOrSkip with Console
                with Contexts with SuccessValues with HasResults with SpecsFilter { outer =>
 
   /** A specification is its own specs holder. */
   val specs = List(this)
-
-  /** nested reporter so that a specification is executable on the console */
-  private val reporter = new ConsoleRunner(this)
-
-  /** A specification has a main method to be executable and print its result on a Console */
-  override def main(args: Array[String]) = reporter.main(args)
 
   /**
    * Alternate constructor with the name of the specification

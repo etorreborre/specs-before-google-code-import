@@ -2,7 +2,7 @@ package org.specs.specification
 import org.specs.runner._
 
 class literateSpec extends LiterateSpecRules with Html with JUnit {
-  override val htmlDir = "target"
+  override def htmlDir = "target"
 
   <wiki> h3. Description
 
