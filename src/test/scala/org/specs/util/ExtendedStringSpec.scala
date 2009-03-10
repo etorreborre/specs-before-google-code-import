@@ -3,14 +3,13 @@ import org.specs._
 import org.specs.runner._
 import org.specs.util.ExtendedString._
 
-class ExtendedStringTest extends JUnit4(extendedStringSpec)
-object extendedStringSpec extends Specification {
+class extendedStringSpec extends Specification with JUnit{
   "the uncapitalize function" should {
     "lower-case only the first letter of a string" in {
-      "Hello".uncapitalize must_== "hello"     
+      "Hello".uncapitalize must_== "hello"
     }
     "lower-case only the first letter of a one letter string" in {
-      "H".uncapitalize must_== "h"     
+      "H".uncapitalize must_== "h"
     }
   }
   "the removeAll function" should {

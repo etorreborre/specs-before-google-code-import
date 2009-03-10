@@ -1,25 +1,25 @@
 package org.specs.matcher
 
-object stringMatchersSpec extends MatchersSpecification {
+class stringMatchersSpec extends MatchersSpecification {
   "String matchers" should { clearExample.before
-    "provide a 'must_==/' matcher: 'hello' must_==/ 'HeLLo' " + 
+    "provide a 'must_==/' matcher: 'hello' must_==/ 'HeLLo' " +
     "[alias: must beEqualToIgnoringCase]" in {
       "string" must_==/ "sTring"
       "string" must beEqualToIgnoringCase("sTring")
-      expectation("string" must_==/ "striNg2") must failWith("'string' is not equal ignoring case to 'striNg2'")  
-      expectation("string" aka "the string" must be_==/("striNg2")) must failWith("the string 'string' is not equal ignoring case to 'striNg2'")  
+      expectation("string" must_==/ "striNg2") must failWith("'string' is not equal ignoring case to 'striNg2'")
+      expectation("string" aka "the string" must be_==/("striNg2")) must failWith("the string 'string' is not equal ignoring case to 'striNg2'")
     }
-    "provide a 'must_!=/' matcher: 'name' must_!=/ 'naME' will fail" + 
+    "provide a 'must_!=/' matcher: 'name' must_!=/ 'naME' will fail" +
     "[alias: notEqualIgnoreCase]" in {
       "string" must_!=/ "sTring2"
       "string" must notEqualIgnoreCase("sTring2")
-      expectation("string" must_!=/ "strinG") must failWith("'string' is equal ignoring case to 'strinG'")  
-      expectation("string" aka "the string" must be_!=/("strinG")) must failWith("the string 'string' is equal ignoring case to 'strinG'")  
+      expectation("string" must_!=/ "strinG") must failWith("'string' is equal ignoring case to 'strinG'")
+      expectation("string" aka "the string" must be_!=/("strinG")) must failWith("the string 'string' is equal ignoring case to 'strinG'")
     }
     "provide a 'beEqualToIgnoringSpace' matcher: 'hello' must beEqualToIgnoringSpace ' hello\t' " in {
       "string" must beEqualToIgnoringSpace(" string ")
-      expectation("string" must beEqualToIgnoringSpace(" string2")) must failWith("'string' is not equal ignoring space to ' string2'")  
-      expectation("string" aka "the string" must beEqualToIgnoringSpace(" string2")) must failWith("the string 'string' is not equal ignoring space to ' string2'")  
+      expectation("string" must beEqualToIgnoringSpace(" string2")) must failWith("'string' is not equal ignoring space to ' string2'")
+      expectation("string" aka "the string" must beEqualToIgnoringSpace(" string2")) must failWith("the string 'string' is not equal ignoring space to ' string2'")
     }
     "provide a 'beMatching' matcher to match a pattern inside a string: " +
     " 'name' must beMatching('.*am.*') [alias: mustMatch]" in {
@@ -81,5 +81,3 @@ object stringMatchersSpec extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class stringMatchersSpecTest extends JUnit4(stringMatchersSpec) 

@@ -1,8 +1,9 @@
 package org.specs.util
 import org.specs._
 import org.specs.specification._
+import org.specs.runner._
 
-object dataTableUnit extends Specification with DataTables {
+class dataTableUnit extends Specification with DataTables with JUnit {
   "a data table" should {
     "be just a datarow if it has one single row" in {
       val data = "a"|"b"|"c"|
@@ -119,5 +120,3 @@ object dataTableUnit extends Specification with DataTables {
     }
   }
 }
-import org.specs.runner._
-class datatableTest extends JUnit4(dataTableUnit)

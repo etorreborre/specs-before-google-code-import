@@ -2,7 +2,7 @@ package org.specs.matcher
 import org.specs._
 import org.specs.specification.fullDetails
 
-object iterableMatchersSpec extends MatchersSpecification {
+class iterableMatchersSpec extends MatchersSpecification {
   "Iterable matchers" should { doBefore { clearExample }
     "provide a 'must beEmpty' matcher on iterables: List() must beEmpty" in {
       List() must beEmpty
@@ -88,5 +88,3 @@ object iterableMatchersSpec extends MatchersSpecification {
 
   }
 }
-import org.specs.runner._
-class iterableTest extends JUnit4(iterableMatchersSpec)

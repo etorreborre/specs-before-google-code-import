@@ -3,12 +3,13 @@ package org.specs.form
 import org.specs.util._
 import matcher.Matcher
 import org.specs._
+import org.specs.runner.JUnit
 import samples.Persons
 import scala.xml._
 import org.specs.Sugar._
 import specification.LiterateSpecification
 
-object formSpec extends LiterateSpecification with Forms with Persons { persons =>
+class formSpec extends LiterateSpecification with Forms with Persons with JUnit { persons =>
   "A form" should {
     "have a title" in {
       val form = PersonForm("person", person)
@@ -158,4 +159,3 @@ object formSpec extends LiterateSpecification with Forms with Persons { persons 
     }
   }
 }
-class formTest extends org.specs.runner.JUnit4(formSpec)

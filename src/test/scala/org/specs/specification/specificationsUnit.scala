@@ -10,7 +10,7 @@ import scala.collection.mutable._
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
-object specificationsUnit extends Specification with ScalaCheck {
+class specificationsUnit extends Specification with ScalaCheck with JUnit {
 
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {
@@ -44,20 +44,20 @@ object specificationsUnit extends Specification with ScalaCheck {
   }
   "the location of a failure" should {
     "indicate the precise location if it is an anonymous example" in {
-      anonymousSpec.failures(0).location must_== "specificationsUnit.scala:47"
+      anonymousSpecification.failures(0).location must_== "specificationsUnit.scala:47"
     }
     "indicate the precise location if it is in a sus" in {
-      failedSpec.failures(0).location must_== "specificationsUnit.scala:50"
+      failedSpecification.failures(0).location must_== "specificationsUnit.scala:50"
     }
     "indicate the precise location if it is a skipped example" in {
-      skippedSpec.skipped(0).location must_== "specificationsUnit.scala:88"
+      skippedSpecification.skipped(0).location must_== "specificationsUnit.scala:88"
     }
     "indicate the precise location if it is a skipped example with a skipped matcher" in {
-      skippedMatcherSpec.skipped(0).location must_== "specificationsUnit.scala:89"
+      skippedMatcherSpecification.skipped(0).location must_== "specificationsUnit.scala:89"
     }
     "indicate the precise location if it is in an example" in {
-      failedSpec.failures(0).getMessage must_== "'1' is not equal to '0'"
-      failedSpec.failures(0).location must_== "specificationsUnit.scala:50"
+      failedSpecification.failures(0).getMessage must_== "'1' is not equal to '0'"
+      failedSpecification.failures(0).location must_== "specificationsUnit.scala:50"
     }
   }
   "A specification with 2 expectations only" should {
@@ -83,12 +83,11 @@ object specificationsUnit extends Specification with ScalaCheck {
   }
   object specification extends Specification
 }
-object anonymousSpec extends Specification { 1 must_== 0 }
-object failedSpec extends Specification { "it" should { 1 must_== 0; "" in {} } }
-object skippedSpec extends Specification { "it" should { "be skipped" in { skip("be skipped") } } }
-object skippedMatcherSpec extends Specification { "it" should { "be skipped" in { 1 must be_==(0).orSkipExample } } }
+object anonymousSpecification extends Specification { 1 must_== 0 }
+object failedSpecification extends Specification { "it" should { 1 must_== 0; "" in {} } }
+object skippedSpecification extends Specification { "it" should { "be skipped" in { skip("be skipped") } } }
+object skippedMatcherSpecification extends Specification { "it" should { "be skipped" in { 1 must be_==(0).orSkipExample } } }
 
-class specificationsUnitTest extends JUnit4(specificationsUnit)
 
 
 

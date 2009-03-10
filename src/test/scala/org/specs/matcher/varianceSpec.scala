@@ -1,7 +1,6 @@
 package org.specs.matcher
-import org.specs.runner._
 
-class varianceSpecTest extends MatchersSpecification with JUnit {
+class varianceSpec extends MatchersSpecification {
   "the variance of matchers" should {
     "enable matcher types that should in theory be compatible to be anded/ored/xored together" in {
       val map = Map("one" -> 1, "two" -> 2, "three" -> 3)

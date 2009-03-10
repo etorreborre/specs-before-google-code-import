@@ -1,17 +1,17 @@
 package org.specs.matcher
 import org.specs.Sugar._
 
-object objectMatchersSpec extends MatchersSpecification {
+class objectMatchersSpec extends MatchersSpecification {
   "Object matchers" should { clearExample.before
     "provide a 'must_==' matcher: 'name' must_== 'name'" in {
       "string" must_== "string"
-      expectation("string" must_== "string2") must failWith("'string' is not equal to 'string2'")  
+      expectation("string" must_== "string2") must failWith("'string' is not equal to 'string2'")
     }
     "provide a 'must_!=' matcher 'name' must_!= 'name2'" in {
       "string" must_!= "string2"
       expectation("string" must_!= "string") must failWith("'string' is equal to 'string'")
     }
-    "provide a 'must be' matcher: o1 must be(o2) if they are the same object " + 
+    "provide a 'must be' matcher: o1 must be(o2) if they are the same object " +
       "('must eq' cannot be used because it overrides the eq matcher from Object) [alias: mustBe, mustEq]" in {
         val o1 = new Object {override def toString = {"o1"}}
         val o3 = new Object {override def toString = {"o3"}}
@@ -42,14 +42,14 @@ object objectMatchersSpec extends MatchersSpecification {
       {throw new MyError("subclass of error");()} must throwAn[Error]
 
       expectation({throw new NullPointerException;()} must throwAn[Error]) must failWith("java.lang.Error should have been thrown. Got: java.lang.NullPointerException")
-    } 
+    }
     "provide a throwAn[T] matcher expecting an exception" in {
       {throw new Error("user error");()} must throwAn[Error]
-      
+
       {throw new RuntimeException("e");()} must throwA[RuntimeException]
-    } 
+    }
     "provide a beAsNullAs matcher which will check if 2 objects are null at the same time" in {
-      val nullString: String = null 
+      val nullString: String = null
       nullString must beAsNullAs(nullString)
       1 must beAsNullAs(1)
       expectation(nullString must beAsNullAs("not null")) must failWith("'not null' is not null")
@@ -81,7 +81,5 @@ object objectMatchersSpec extends MatchersSpecification {
       expectation(classOf[java.io.OutputStream] must beAssignableFrom[String]) must failWith("'java.io.OutputStream' is not assignable from 'java.lang.String'")
       expectation(classOf[java.io.OutputStream] aka "the class" must beAssignableFrom[String]) must failWith("the class 'java.io.OutputStream' is not assignable from 'java.lang.String'")
     }
-  }   
+  }
 }
-import org.specs.runner._
-class objectMatchersTest extends JUnit4(objectMatchersSpec)

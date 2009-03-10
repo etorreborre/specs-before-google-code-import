@@ -2,8 +2,7 @@ package org.specs
 import org.specs.runner._
 import org.specs.io.mock._
 
-class sugarTest extends JUnit4(sugarSpec)
-object sugarSpec extends Specification with Sugar with MockOutput {
+class sugarSpec extends Specification with Sugar with MockOutput with JUnit {
   "A sugar trait" should {
     "allow tuples to have List methods, like (1, 2, 3).tail // List(2, 3)" in {
        (1, 2, 3).tail must_== List(2, 3)
@@ -17,5 +16,5 @@ object sugarSpec extends Specification with Sugar with MockOutput {
       List(1, 2, 3) printEach
     }
   }
-  
+
 }

@@ -4,7 +4,7 @@ import org.specs.mock._
 import org.specs.Sugar._
 import org.specs.specification._
 
-object anyMatchersUnit extends MatchersSpecification {
+class anyMatchersUnit extends MatchersSpecification {
   "A 'be' matcher" should {
     "be ok if comparing the same object, like the eq method" in {
       "string" must be("string")
@@ -199,5 +199,3 @@ object anyMatchersUnit extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class anyMatchersTest extends JUnit4(anyMatchersUnit)

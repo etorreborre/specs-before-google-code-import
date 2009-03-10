@@ -1,10 +1,10 @@
 package org.specs.collection
-
 import matcher.MatchersSpecification
 import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
+import org.specs.runner._
 
-object extendedIterableUnit extends IterableData {
+class extendedIterableUnit extends IterableData with JUnit {
   "A sameElementsAs function" should returnTrue{
     "if 2 lists of lists contain the same elements in a different order" in {
       List(List(1), List(2, 3)) must haveSameElementsAs(List(List(3, 2), List(1)))
@@ -40,7 +40,6 @@ object extendedIterableUnit extends IterableData {
     }
   }
 }
-import org.specs.runner._
 import org.specs._
 import scalacheck.Gen._
 import org.specs.ScalaCheck
@@ -59,4 +58,3 @@ trait IterableData extends Specification with Sugar with ScalaCheck {
                                            val i2 = i1.scramble.toList) yield (i1.toStream, i2)
 
 }
-class extendedIterableUnitTest extends Runner(extendedIterableUnit) with JUnit

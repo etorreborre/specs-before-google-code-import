@@ -6,20 +6,20 @@ import org.specs.xml.NodeFunctions._
 import scala.xml.NodeSeq._
 import scala.xml._
 
-object extendedNodeUnit extends Specification {
+class extendedNodeUnit extends Specification with JUnit {
   "An isSpaceNode function" should {
     "return false for a node with a simple label" in {
-      <a/>.isSpaceNode mustBe false  
+      <a/>.isSpaceNode mustBe false
     }
     "return true for a node containing space" in {
-      <a> </a>.child.last.isSpaceNode mustBe true  
+      <a> </a>.child.last.isSpaceNode mustBe true
     }
     "return true for a node containing a newline and spaces" in {
       <a>
-        </a>.child.last.isSpaceNode mustBe true  
+        </a>.child.last.isSpaceNode mustBe true
     }
   }
-  
+
   "An isEqualIgnoringSpace function" should {
     "return true for <a> ==/ <a>" in {
       <a/> ==/ <a/> mustBe true
@@ -37,11 +37,11 @@ object extendedNodeUnit extends Specification {
       fromSeq(<a><b/><c>1</c></a>.child.toList) ==/ fromSeq(<a><b/><c></c></a>.child.toList) mustBe false
     }
     "return true for <a>\n</a> ==/ <a></a>" in {
-      <a> 
+      <a>
       </a> ==/ <a></a> mustBe true
     }
     "return true for unordered sequences of nodes <a><b/><c/></a> ==/ <a><c/><b/></a>" in {
-      <a><b/><c/></a> ==/ <a><c/><b/></a> must beTrue 
+      <a><b/><c/></a> ==/ <a><c/><b/></a> must beTrue
     }
     "return false for <a>1</a> ==/ <a></a>" in {
       <a>1</a> ==/ <a></a> mustBe false
@@ -62,4 +62,3 @@ object extendedNodeUnit extends Specification {
     }
   }
 }
-class extendedNodeTest extends JUnit4(extendedNodeUnit)

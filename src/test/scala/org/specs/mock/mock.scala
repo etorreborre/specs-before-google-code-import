@@ -2,17 +2,16 @@ package org.specs.mock
 import org.specs.runner._
 
 
-object mockSpecification extends Specification {
-  "Mock specifications" areSpecifiedBy (        
-		countingNamingSchemeSpec,
-        jmockSpec,
-		mockParametersSpec,
-		mockProtocolsSpec)
+object mockSpecifications extends Specification {
+  "Mock specifications" areSpecifiedBy (
+    new jmockSpec,
+		new mockParametersSpec,
+		new mockProtocolsSpec)
 }
-object mockUnit extends Specification {
-  "Mock unit tests" areSpecifiedBy (inAnyOrderUnit,
-                                    inSequenceUnit,
-                                    numberOfMessagesUnit,
-                                    mockerUnit)
+object mockUnits extends Specification {
+  "Mock unit tests" areSpecifiedBy (new inAnyOrderUnit,
+                                    new inSequenceUnit,
+                                    new numberOfMessagesUnit,
+                                    new mockerUnit)
 }
 

@@ -2,7 +2,7 @@ package org.specs.matcher
 import org.specs._
 import scalacheck.Gen._
 
-object numericMatchersUnit extends MatchersSpecification with ScalaCheck {
+class numericMatchersUnit extends MatchersSpecification with ScalaCheck {
   "A 'beClose' matcher" should {
     "be ok if x is inside the range n - delta, n + delta" in {
       case class RangeMatch(x: Double, n: Double, delta: Double)
@@ -33,5 +33,3 @@ object numericMatchersUnit extends MatchersSpecification with ScalaCheck {
     }
   }
 }
-import org.specs.runner._
-class numericMatchersTest extends JUnit4(numericMatchersUnit)

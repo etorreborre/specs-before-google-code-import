@@ -1,7 +1,7 @@
 package org.specs.matcher
 import org.specs.specification._
 
-object anyMatcherSpec extends MatchersSpecification {
+class anyMatcherSpec extends MatchersSpecification {
   "A matcher" can {
     "be created as a case class" in {
       case class matchHello(a: String) extends Matcher[String]() {
@@ -79,5 +79,3 @@ object anyMatcherSpec extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class anyMatcherSpecTest extends JUnit4(anyMatcherSpec)

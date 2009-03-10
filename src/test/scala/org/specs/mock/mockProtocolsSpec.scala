@@ -3,13 +3,12 @@ import org.specs.runner._
 import org.specs.matcher._
 import org.specs.Sugar._
 
-class mockProtocolsRunnerTest extends JUnit4(mockProtocolsSpec)
-object mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
+class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock with JUnit {
   "Mock protocols" should { doBefore { clearExample; button.init() }
    "provide an 'expect oneOf' protocol checking if one call exactly has been made" in {
      var protocol = expect(oneOf) { mock.on; mock.off }
      expectation(protocol must beMet) must failWithMatch("Expected in any order \\[on\\(.*\\); off\\(.*\\)\\]. Received none")
-     protocol.clear                                                                                                   
+     protocol.clear
 
      protocol = expect(oneOf) { mock.on; mock.off }
      2.times {i => button.push}
@@ -86,25 +85,25 @@ object mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
   }
   "Mock protocols" can { doBefore { clearExample; button.init() }
      "be nested to allow complex expectations: expect, inAnyOrder 1 'on' and 2 'off'" in {
-     val protocol = expect(inAnyOrder) { 
+     val protocol = expect(inAnyOrder) {
         expect(oneOf){mock.on; mock.off; mock.on}
         expect(oneOf){mock.off}
-      } 
+      }
 
       expectation(protocol must beMet) must failWithMatch(".*Expected in any order \\[in any order \\[on\\(.*\\); off\\(.*\\); on\\(.*\\)]; in any order \\[off\\(.*\\)\\]\\]. Received none")
 
       2.times {i => button.push}
       expectation(protocol must beMet) must failWithMatch(".*Expected in any order \\[in any order \\[on\\(.*\\); off\\(.*\\); on\\(.*\\)\\]; in any order \\[off\\(.*\\)\\]\\]. Received.*")
-      
+
       protocol.clear
       button.init()
       2.times {i => button.push}
     }
- 
+
   }
 }
 trait ButtonAndLightMock extends ButtonAndLight with Mocker {
-  val mock = new Light { 
+  val mock = new Light {
     override def on = record
     override def off = record
     override def destroy = record
@@ -115,7 +114,7 @@ trait ButtonAndLight {
   case class Button(light: Light) {
     var lightOn = false
     def push = {
-      if (lightOn) light.off else light.on 
+      if (lightOn) light.off else light.on
       lightOn = !lightOn
     }
     def pound = light.destroy

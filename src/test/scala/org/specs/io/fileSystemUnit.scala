@@ -1,9 +1,10 @@
 package org.specs.io
+import org.specs.runner._
 
-object fileSystemUnit extends TestData {
+class fileSystemUnit extends TestData with JUnit {
   "A file system" should {
     "provide a globToPattern function returning the regex pattern corresponding to a glob definition" in {
-      paths must pass { matchingPath: MatchingPath => 
+      paths must pass { matchingPath: MatchingPath =>
         matchingPath.path must beMatching(globToPattern(matchingPath.glob))
       }
     }
@@ -24,11 +25,9 @@ trait TestData extends Specification with FileSystem with ConsoleOutput with Sca
 
   def pathsMatchingGlob(glob: String): List[String] = {
     for { doubleStar   <- List("dir", "dir1/dir2")
-          specialChar <-  "!@#$%^&';{}[]".elements.toList 
-          name         <- List("name", "name" + specialChar, "name2") 
-          ext          <- List("ext1", "ext2") 
+          specialChar <-  "!@#$%^&';{}[]".elements.toList
+          name         <- List("name", "name" + specialChar, "name2")
+          ext          <- List("ext1", "ext2")
         } yield "./" + glob.replace("**", doubleStar).replace(".*", "." + ext).replace("*", name)
   }
 }
-import org.specs.runner._
-class fileSystemUnitTest extends JUnit4(fileSystemUnit)

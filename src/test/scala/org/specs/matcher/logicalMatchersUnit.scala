@@ -1,6 +1,6 @@
 package org.specs.matcher
 
-object logicalMatchersUnit extends MatchersSpecification {
+class logicalMatchersUnit extends MatchersSpecification {
   "A 'verifyAll' matcher" should {
     "return a True matcher with an empty list" in {
       verifyAll(List())(true) must_== (true, "no matchers", "no matchers")
@@ -34,5 +34,3 @@ object logicalMatchersUnit extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class logicalMatchersTest extends JUnit4(logicalMatchersUnit)

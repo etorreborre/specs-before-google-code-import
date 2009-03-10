@@ -1,12 +1,10 @@
 package org.specs.util
-
 import org.specs._
 import org.specs.specification._
 import org.specs.runner._
 import org.specs.matcher._
 
-class editDistanceTest extends JUnit4(editDistanceSpec)
-object editDistanceSpec extends Specification with EditDistance with DataTables {
+class editDistanceSpec extends Specification with EditDistance with DataTables with JUnit {
   "The edit distance" should {
     "return 0 if there's no insertions" in {
       editDistance("kitte", "kitte") must_== 0
@@ -50,7 +48,7 @@ object editDistanceSpec extends Specification with EditDistance with DataTables 
        "" 	! "a"	   	! ("", "(a)")  		|
        "a" 	! ""	   	! ("(a)", "")    	|
        "" 	! "ab"	   	! ("", "(ab)")		|
-       "ab" ! ""   		! ("(ab)", "") 		|	 
+       "ab" ! ""   		! ("(ab)", "") 		|
        { (a: String, b: String, result: (String, String)) =>
          showDistance(a, b) must_== result
        }

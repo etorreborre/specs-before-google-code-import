@@ -2,7 +2,7 @@ package org.specs.matcher
 import org.specs._
 import org.scalacheck.Prop._
 
-object mapMatchersUnit extends MatchersSpecification with PartialFunctionGen with ScalaCheck {
+class mapMatchersUnit extends MatchersSpecification with PartialFunctionGen with ScalaCheck {
   "Map matchers" should {
     "not evaluate the expressions twice: haveKey" in {
       val map: Iterable[(String, Any)] = Map("" -> 1)
@@ -66,5 +66,3 @@ trait PartialFunctionGen {
     } yield Map(keys.toList zip values.toList map {kv => kv._1 -> kv._2} : _*)
   }
 }
-import org.specs.runner._
-class mapMatchersTest extends JUnit4(mapMatchersUnit)

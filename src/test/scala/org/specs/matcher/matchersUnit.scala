@@ -1,7 +1,8 @@
 package org.specs.matcher
 import org.specs.specification._
+import org.specs.runner._
 
-object matchersUnit extends Specification with MatcherCases with ScalaCheck {
+class matchersUnit extends Specification with MatcherCases with ScalaCheck with JUnit {
   "A matcher" should {
     "when negated, use the ok message of the original matcher to indicate a failure" in {
       val m = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok", "ko") }
@@ -26,22 +27,22 @@ object matchersUnit extends Specification with MatcherCases with ScalaCheck {
   "A matcher" can {
     "be combined with another matcher with a logical 'and' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result((m1 and m2)(a)) mustBe result(m1(a)) && result(m2(a)) 
+        result((m1 and m2)(a)) mustBe result(m1(a)) && result(m2(a))
       }(set(minTestsOk->20))
-    }             
+    }
     "be combined with another matcher with a logical 'or' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result((m1 or m2)(a)) mustBe result(m1(a)) || result(m2(a)) 
+        result((m1 or m2)(a)) mustBe result(m1(a)) || result(m2(a))
       }(set(minTestsOk->20))
-    }             
+    }
     "be combined with another matcher with a logical 'xor' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result((m1 xor m2)(a)) mustBe result(m1(a)) && !result(m2(a)) || !result(m1(a)) && result(m2(a))  
+        result((m1 xor m2)(a)) mustBe result(m1(a)) && !result(m2(a)) || !result(m1(a)) && result(m2(a))
       }(set(minTestsOk->20))
-    }             
+    }
     "be combined with another matcher with a logical 'not' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result(not(m1)(a)) mustBe !result(m1(a)) 
+        result(not(m1)(a)) mustBe !result(m1(a))
       }(set(minTestsOk->20))
     }
   }
@@ -60,5 +61,3 @@ trait MatcherCases {
   case class MatcherCase(a: Boolean, m1: Matcher[Boolean], m2: Matcher[Boolean])
   def result(resultAndMessages: (Boolean, String, String)) = resultAndMessages._1
 }
-import org.specs.runner._
-class matchersUnitTest extends JUnit4(matchersUnit)

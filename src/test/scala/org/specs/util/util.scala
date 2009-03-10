@@ -1,22 +1,19 @@
 package org.specs.util
-
-import org.specs.runner._
 import org.specs._
 
-
-object utilSpecification extends Specification {
+object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
-        editDistanceSpec,
-		extendedStringSpec,
-        timerSpec
+        new editDistanceSpec,
+		    new extendedStringSpec,
+        new timerSpec
     )
 }
 
-object utilUnit extends Specification {
+object utilUnits extends Specification {
   "The unit tests for the util package" areSpecifiedBy (
-      dataRowUnit, 
-      dataTableHeaderUnit,  
-      dataTableUnit,
-	  extendedThrowableUnit)
+      new dataRowUnit,
+      new dataTableHeaderUnit,
+      new dataTableUnit,
+	    new extendedThrowableUnit)
 }
 

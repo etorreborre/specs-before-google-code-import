@@ -1,8 +1,7 @@
 package org.specs.matcher
-
 import org.specs._
 
-object iterableMatchersUnit extends MatchersSpecification {
+class iterableMatchersUnit extends MatchersSpecification {
   "A 'contain' matcher" should {
     "be ok if an iterable contains an element" in {
       List(1, 2, 3) must contain(1)
@@ -59,6 +58,3 @@ object iterableMatchersUnit extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-
-class iterableMatchersTest extends JUnit4(iterableMatchersUnit)

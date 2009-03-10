@@ -1,9 +1,11 @@
 package org.specs.specification
 import org.specs._
+import org.specs.runner._
 import org.specs.specification._
 import org.specs.util.DataTables
+import org.specs.runner._
 
-object calcSpecificationSpec extends LiterateSpecification("Calculator Specification") with DataTables with Wiki {
+class calculatorSpec extends LiterateSpecification("Calculator Specification") with DataTables with Wiki with JUnit with Html {
   val calc = new Object { def add(x: Int, y: Int): Int = x + y }
 
 "A literate specification for a calculator" ->> <wiki>
@@ -14,13 +16,13 @@ object calcSpecificationSpec extends LiterateSpecification("Calculator Specifica
 
 A calculator can add integers: {
   "calc.add(a, b) == c"  inTable
-  "First operand" 	| "Second operand" | "Result" | 
+  "First operand" 	| "Second operand" | "Result" |
    1  !  2  !  3  |
    1  !  2  !  3  |
    2  !  2  !  4  |
    2  !  2  !  4  |
    2  !  2  !  4  |
-   { (a,b,c) => c must_== calc.add(a, b) } 
+   { (a,b,c) => c must_== calc.add(a, b) }
 }
 
  Nice, isn't it?
@@ -29,7 +31,7 @@ A calculator can add integers: {
 
   "A classical specification for a calculator" should {
     "use tables directly" in {
-                     "a" 	| "b" | "c" |> 
+                     "a" 	| "b" | "c" |>
                       1	   	!  2  !  3  |
                       2     !  2  !  4  |
                       2     !  6  !  8  | {(a,b,c) => c must_== calc.add(a, b) }
@@ -37,5 +39,3 @@ A calculator can add integers: {
  }
 
 }
-import org.specs.runner._
-class calcRunner extends HtmlSuite(calcSpecificationSpec, "target") with JUnit

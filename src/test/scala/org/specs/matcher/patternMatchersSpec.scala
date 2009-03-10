@@ -1,7 +1,7 @@
 package org.specs.matcher
 import org.specs.Sugar._
 
-object patternMatchersSpec extends MatchersSpecification {
+class patternMatchersSpec extends MatchersSpecification {
   "Pattern matchers" should { clearExample.before
     "provide a beLike matcher using pattern matching: (1, 2) must beLike {case (1, _) => ok} " +
     "[ok is syntactic sugar for true from the Sugar trait]" in {
@@ -44,5 +44,3 @@ object patternMatchersSpec extends MatchersSpecification {
     }
   }
 }
-import org.specs.runner._
-class patternMatchersSpecTest extends JUnit4(patternMatchersSpec)

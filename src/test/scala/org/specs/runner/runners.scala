@@ -1,21 +1,20 @@
 package org.specs.runner
-
 import org.specs._
 
-object runnerSpecification extends Specification {
+object runnerSpecifications extends Specification {
     "The Runners specifications" areSpecifiedBy (
-        descriptionFormatterSpec,
-        htmlRunnerSpec,
-        junitTestSuiteSpec,
-        scalaTestSpec,
-        specsFinderSpec,
-        specsRunnerSpec,
-        teamCityRunnerSpec,
-        xmlRunnerSpec
+        new descriptionFormatterSpec,
+        new htmlRunnerSpec,
+        new junitTestSuiteSpec,
+        new scalaTestSpec,
+        new specsFinderSpec,
+        new specsRunnerSpec,
+        new teamCityRunnerSpec,
+        new xmlRunnerSpec
 	)
 }
-object runnerUnit extends Specification {
+object runnerUnits extends Specification {
     "The Runners unit tests" areSpecifiedBy (
-		xmlRunnerUnit,
-		htmlRunnerUnit)
+		  new xmlRunnerUnit,
+		  new htmlRunnerUnit)
 }

@@ -1,20 +1,20 @@
 package org.specs.runner
 
-object htmlRunnerSpec extends htmlRunnerRules("Html Runner") { "Html Runner Specification" ->> <wiki>
- 
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") { "Html Runner Specification" ->> <wiki>
+
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:
-    
+
 * statistics about the specification execution
 * the list of all examples, sorted by sub-specifications and systems
 * an overview list of all sub-specifications and systems with a status icon to allow a rapid access
-  
+
 h3. Specification Title
-    
+
 <ex>The title of the html page should be the title of the specification.</ex>{title}
-    
+
 h3. Specifications headers
-    
+
 <ex>There should be one header per specification</ex>{subSpecsHeader}
 
 h3. System tables
@@ -23,9 +23,9 @@ h3. System tables
 <ex>The table must be preceded by the system name as a separate header.</ex>{systemName}
 <ex>Close to the system name, there should be a small _up_ arrow !images/up.gif! to go to the top of the page</ex>{topArrow}
 <ex>In each table, there should be a row per example</ex>{oneRowPerExample}
-    
+
 h3. Example rows
-    
+
 On each row, there should be:
 
 * <ex>the description of the example</ex>{exampleDescription}
@@ -40,44 +40,44 @@ On each row, there should be:
   <ex>The rows must alternate in style for better visibility</ex>{rowsAlternation}
 
 h4. Subexamples
-          
+
 An example can also have sub-examples. In that case, <ex>the description of the example must be displayed as a title and sub-examples displayed in a table</ex>{subExamples}
-     
+
 h4. DataTables
-      
+
 <ex>DataTables failures should be displayed as an inner table in the message cell</ex>{dataTableFailure}
-    
+
 h4. Literate descriptions
-      
+
 <ex>Literate descriptions should be displayed above their table</ex>{literateDesc}
 <ex>In a literate description the example description which succeeded must be highlighted in green</ex>{greenHighlight}
 
 <ex>If the example contains a DataTableFailureException, then the table rows showing the results must be displayed</ex>
-{"""" 
-    "A calculator can add integers" inTable 
-    "a" | "b" | "c" | 
+{""""
+    "A calculator can add integers" inTable
+    "a" | "b" | "c" |
      1  !  2  !  3  |
      2  !  2  !  5  |
-     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) } 
+     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) }
 """}
 
 h3. Summary
-    
+
 <ex>A column with the list of systems should be available on the left to access a given system directly</ex>{systemsList}
 <ex>Yet this column should only be displayed if there is more than one system</ex>{noSystemsListForOneOnly}
 <ex>This column should be collapsible/expensible by clicking on an icon</ex>{collapsibleColumn}
 
 h3. Output directory
-    
+
 h4. File name
-      
+
 The output of an HtmlRunner can be specified by specifiying an output directory.
-In that case, <ex>the runner generates a file named after the specification name + .html in that directory.</ex>{outputFile} 
-    
+In that case, <ex>the runner generates a file named after the specification name + .html in that directory.</ex>{outputFile}
+
 h4. Stylesheets and images
-      
-<ex>The stylesheets for the report must be created in a directory named css, relative to the output directory.</ex>{cssDir} 
-<ex>The images for the report must be created in a directory named images, relative to the output directory.</ex>{imagesDir} 
-   
+
+<ex>The stylesheets for the report must be created in a directory named css, relative to the output directory.</ex>{cssDir}
+<ex>The images for the report must be created in a directory named images, relative to the output directory.</ex>{imagesDir}
+
 </wiki>
 }
