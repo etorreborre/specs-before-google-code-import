@@ -26,6 +26,8 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
    */
   implicit def anyToShh(a: Any) = new Silenced
 
+  /** allow empty sus to be reported. */
+  override def filterEmptySus = false
   class Silenced {
     def shh = ()
 

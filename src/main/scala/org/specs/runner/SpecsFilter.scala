@@ -6,20 +6,23 @@ import java.util.regex.PatternSyntaxException
 
 trait SpecsFilter extends SpecsHolder {
 
-  /**default regexp for filtering sus. */
+  /** default regexp for filtering sus. */
   def susFilterPattern = ".*"
 
-  /**default regexp for filtering examples. */
+  /** default regexp for filtering examples. */
   def exampleFilterPattern = ".*"
 
-  /**filtered specs to run. */
+  /** filtered specs to run. */
   lazy val filteredSpecs = filter(specs)
 
-  /**pattern for the sus. */
+  /** pattern for the sus. */
   lazy val susFilter = compilePattern("sus", susPattern)
 
-  /**pattern for the examples. */
+  /** pattern for the examples. */
   lazy val exampleFilter = compilePattern("example", examplePattern)
+
+  /** will not return sus whose all examples are filtered. */
+  def filterEmptySus = true
 
   private def compilePattern(description: String, pattern: String) = {
     try { compile(pattern) }
@@ -54,8 +57,8 @@ trait SpecsFilter extends SpecsHolder {
   def filter(sus: Sus): Option[Sus] = {
     if (susFilter.matcher(sus.description).find) {
       filterExamples(sus) match {
-        case s if s.examples.size > 0 => Some(s)
-        case _ => None
+        case s if s.examples.size > 0 =>  Some(s)
+        case s => if (filterEmptySus) None else Some(s)
       }
     }
     else
