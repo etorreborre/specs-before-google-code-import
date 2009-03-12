@@ -75,6 +75,8 @@ trait Html extends File {
 	      @import url('./css/maven-theme.css');
 	      @import url('./css/site.css');
 	    </style>
+        <link href="./css/prettify.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="./css/prettify.js"></script>
         <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
         <link href="./css/tooltip.css" rel="stylesheet" type="text/css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -261,13 +263,16 @@ trait Html extends File {
 
   /** reduce a list with a function returning a NodeSeq. */
   def onLoadFunction(specification: Specification) = {
-    if (nonTrivialSpec(specification)) "" else "noNavBar()"
+    "prettyPrint()" + (if (nonTrivialSpec(specification)) "" else ";noNavBar()")
   }
   def nonTrivialSpec(specification: Specification) = {
     (specification.systems ++ specification.subSpecifications).size > 1
   }
   def javaScript = <script language="javascript"> {"""
-
+    function init() {
+	   prettyPrint()
+     noNavBar()
+    }
     // found on : http://www.tek-tips.com/faqs.cfm?fid=6620
     String.prototype.endsWith = function(str) { return (this.match(str+'$') == str) }
 

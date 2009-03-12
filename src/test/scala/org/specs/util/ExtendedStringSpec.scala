@@ -55,6 +55,9 @@ class extendedStringSpec extends Specification with JUnit{
     "replace every found group with the application of a function" in {
       "hello".replaceGroups("(l)", (s: String) => s.size) must_== "he11o"
     }
+    "replace every found group with the application of a function, replacing only the group" in {
+      "wor<code>l</code>d".replaceGroups("<code>(l)</code>", (s: String) => s.size) must_== "wor<code>1</code>d"
+    }
   }
   "the findAll function" should {
     "return Nil if the pattern is null" in {

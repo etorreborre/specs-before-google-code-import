@@ -1,15 +1,18 @@
 package org.specs.runner
+import org.specs.log.ConsoleLog
 import org.specs.specification._
 import scala.xml._
 import net.java.textilej.parser._
+import net.java.textilej.parser.markup.textile._
+import net.java.textilej.parser.markup.confluence._
 import org.specs.util.ExtendedString._
 
-class WikiFormatter extends LiterateDescriptionFormatter {
+class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
   def setStatus(desc: String, examples: Iterable[Example]) = {
     var result = desc
-    examples foreach { example => 
+    examples foreach { example =>
       def onmouse(example: Example) = {
-        var function = if (example.hasIssues) "showExampleMessage('" + example.status.capitalize + "','" else "showExampleDesc('" 
+        var function = if (example.hasIssues) "showExampleMessage('" + example.status.capitalize + "','" else "showExampleDesc('"
         "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
         "onmouseout=\"hideToolTip();\""
       }
@@ -28,19 +31,28 @@ class WikiFormatter extends LiterateDescriptionFormatter {
       parsed
   }
   private def parseToHtml(s: String) = {
-    new TextileParser().parseToHtml(s).
+    debug("before is \n" + s)
+    val parser = new MarkupParser(new TextileDialect())
+    val parsed = parser.parseToHtml(s)
+    debug("parsed is \n" + parsed)
+    val replaced = parsed.
     replace("&#8220;", "\"").
     replace("&#8221;", "\"").
     replace("&#8216;", "'").
     replace("&#8217;", "'").
-    replaceGroups("(<code>(.+?)</code>)", (s: String) => s.replace("<br/>", "<br></br>"))
+    replaceGroups("(<code>((.)*)</code>)", (s: String) =>
+      s.replace("<br/>", "<br></br>").
+      replace("&amp;quot;", "\"")
+    )
+    debug("replaced is \n" + replaced)
+    replaced
   }
-  
+
   def format(desc: Elem): Node = format(desc, Nil)
   def format(desc: Elem, examples: Iterable[Example]): Node = {
     val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
-      XML.loadString(parsed) 
+      XML.loadString(parsed)
     } catch {
       case e => Text(e.getMessage + "\\n" + parsed)
     }

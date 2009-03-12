@@ -103,19 +103,9 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
    * giving it a number depending on the existing created examples/
    */
   def eg[S](function: S => Any): Unit = (forExample in function).shh
-  /**
-   * embeddeds a test into a new example and silence the result
-   * @deprecated
-   */
-  def check[S](function: S => Any): Unit = eg(function)
 
   /** embeddeds a test into a new example and silence the result */
   def eg(test: =>Any): Unit = (forExample in test).shh
-  /**
-   * embeddeds a test into a new example and silence the result
-   * @deprecated
-   */
-  def check(test: =>Any): Unit = eg(test)
 
   /** return a String containing the output messages from the console with a given padding such as a newline for instance */
   def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
@@ -140,8 +130,11 @@ trait Wiki extends Properties {
    * Using this function avoid issues like quotes insides brackets ['something']
    * being displayed as question marks.
    */
-  def wikiCode(stringToFormat: String) = "<code>"+stringToFormat+"</code>"
-  def wikiPre(stringToFormat: String) = "<pre>"+stringToFormat+"</pre>"
+  def wikiPre(stringToFormat: String) = <pre>stringToFormat</pre>
+  def wikiCode(stringToFormat: String) = stringToFormat.replace("\r\n", "\n").replace("\n\r", "\n").
+          split("\n").foldLeft("") { (res: String, s: String) =>
+    res + "\n==<code class=\"prettyprint\">" + s + "</code>=="
+  }
   /**
    * Alias for wikiCode
    */

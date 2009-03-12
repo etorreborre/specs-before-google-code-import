@@ -5,22 +5,26 @@ import org.specs.runner._
 
 class mockitoSpec extends mockitoRules {
   <wiki>
-Mockito is a Java library for mocking. The following samples are taken from the main documentation which can be found "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Mockito.html.
+Mockito is a Java library for mocking.
+
+  The following samples are taken from the main documentation which can be found "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Mockito.html
 
 h3. Let's verify some behaviour
 
-A mock is created with the mock method:
-{ """//mock creation
+A mock is created with the @mock@ method:{"""
+ //mock creation
  val mockedList = mock(List.class)
 
- //using mock object
+ // using mock object
  mockedList.add("one")
  mockedList.clear()
 
  //verification
  verify(mockedList).add("one")
- verify(mockedList).clear() """ >@}
- <ex>It can be checked with the verify method</ex>{sample1IsOk}
+ verify(mockedList).clear()""" >@}
+
+It is possible to check that some calls have been done on the mock.
+ <ex>The @verify@ method is used to check a call</ex>{sample1IsOk}
 
   </wiki> isSus
 }
