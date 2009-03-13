@@ -12,50 +12,43 @@ Mockito is a Java library for mocking.
 h3. Let's verify some behaviour
 
 A mock is created with the @mock@ method:{"""
- //mock creation
- val mockedList = mock[List]
+object s extends org.specs.Specification with org.specs.mock.Mockito {
 
- // using mock object
- mockedList.add("one")
- mockedList.clear()""" >@}
+  // mock creation
+  val mockedList = mock[java.util.List[String]]
 
-<ex>It is possible to check that some calls have been done on the mock with the @called@ matcher</ex>:{"""
-  //verification
+  // using mock object
+  mockedList.add("one")
+  mockedList.clear()""" snip (it) }
+
+   // <ex>It is possible to check that some calls have been done on the mock with the @called@ matcher</ex>:
+{"""  // verification
   theMethod(mockedList).add("one") was called
   theMethod(mockedList).clear() was called
-  """ >@}{sample1IsOk}
+} """ addTo (it) } { executeIsNot("error") }
+
+h4. Failures
+
+If one method has not been called on a mock, <ex>the @was called@ matcher must throw a FailureException</ex>:
+{"""object s extends org.specs.Specification with org.specs.mock.Mockito {
+    val m = mock[java.util.List[String]]
+    theMethod(m).clear() was called
+  }
+  s.failures.first.getMessage
+  """ snip (it) } { outputIs("The method was not called: list.clear()") }
 
   </wiki> isSus
 }
-trait Mockito extends ExpectableFactory {
-  def mock[T](implicit m: scala.reflect.Manifest[T]): T = org.mockito.Mockito.mock(m.erasure).asInstanceOf[T]
-  def theMethod[T](m: T) = org.mockito.Mockito.verify(m)
-  implicit def theCall(c: =>Any) = new CalledMock(c)
-  class CalledMock(c: =>Any) {
-    def was(callMatcher: CallMatcher) = theValue(c) must callMatcher
-  }
-  import org.specs.matcher._
-  import org.specs.matcher.MatcherUtils._
-  def called = new CallMatcher
-  class CallMatcher extends Matcher[Any] {
-    def apply(v: =>Any) = {
-      try { v } catch {
-    case e => (false, d(v) + " was called", d(v) + " was not called: " + e.getMessage)
-      }
-      (true, d(v) + " was called", d(v) + " was not called")
-    }
-  }
-}
-class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with Wiki with Html with JUnit {
+class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with Snippets  with Wiki with Html with JUnit {
   override def htmlDir = "target"
-  import org.mockito.Mockito._
-  import org.mockito.Mockito
-  def sample1IsOk = eg {
-    import java.util.List
-    val mockedList = mock[List[String]]
-    mockedList.add("one")
-    mockedList.clear()
-    theMethod(mockedList).add("one") was called
-    theMethod(mockedList).clear() was called
+  def executeIs(s: String) = { execute(it) must include(s) }
+  def outputIs(s: String) = {
+    val result = execute(it)
+    var out = "> " + result
+    try  { result must include(s) }
+    catch { case e => out = "> " + e.getMessage }
+    out >@
   }
+  def executeIsNot(s: String) = execute(it) mustNot include(s)
 }
+

@@ -191,11 +191,11 @@ trait DefaultResults extends HasResults {
  * </code>
  *
  */
-trait Expectations extends Matchers with ExpectableFactory
+trait Expectations extends Matchers with ExpectableFactory with DetailedFailures
 /**
  * This trait can be reused in any test based framework to access Matchers functionalities
  */
-trait SpecsMatchers extends Expectations with DefaultExampleExpectationsListener with DetailedFailures
+trait SpecsMatchers extends Expectations with DefaultExampleExpectationsListener
 
 
 /** utility object to indent a string with 2 spaces */

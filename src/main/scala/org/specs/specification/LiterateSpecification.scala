@@ -17,6 +17,7 @@ import org.specs.runner._
  */
 class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties {
   setSequential()
+
   def this(n: String) = { this(); name = n; description = n; this }
 
   /**

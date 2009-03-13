@@ -23,7 +23,7 @@ trait Html extends File {
   override def outputDir = normalize(htmlDir)
 
   /** default directory name. */
-  def htmlDir = "."
+  def htmlDir = "target"
 
   /** report the specification held by this runner. */
   override def report(specifications: Seq[Specification]) = {
