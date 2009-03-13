@@ -19,7 +19,7 @@ A mock is created with the @mock@ method:{"""
  mockedList.add("one")
  mockedList.clear()""" >@}
 
-<ex>It is possible to check that some calls have been done on the mock with the @called@ matcher</ex>{"""
+<ex>It is possible to check that some calls have been done on the mock with the @called@ matcher</ex>:{"""
   //verification
   theMethod(mockedList).add("one") was called
   theMethod(mockedList).clear() was called
@@ -46,7 +46,7 @@ trait Mockito extends ExpectableFactory {
     }
   }
 }
-trait mockitoRules extends LiterateSpecification with Mockito with Wiki with Html with JUnit {
+class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with Wiki with Html with JUnit {
   override def htmlDir = "target"
   import org.mockito.Mockito._
   import org.mockito.Mockito
