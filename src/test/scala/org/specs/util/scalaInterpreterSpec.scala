@@ -6,13 +6,16 @@ class scalaInterpreterSpec extends Specification with JUnit with ScalaInterprete
   detailedDiffs()
   "A Scala interpreter" should {
     "interpret a simple expression 1 + 1 to 2" in {
-      interpret("1 + 1") must_== "2"
+      interpret("1 + 1") must include("2")
+    }
+    "interpret a simple string" in {
+      interpret("\"this is a message\"") must include("this is a message")
     }
     "interpret a 2 lines snippet" in {
       val snippet = "val a = 1\n" +
                     "val b = 1\n" +
                     "a + b"
-      interpret(snippet) must_== "2"
+      interpret(snippet) must include("2")
     }
     "interpret a specification with traits" in {
       val snippet = """

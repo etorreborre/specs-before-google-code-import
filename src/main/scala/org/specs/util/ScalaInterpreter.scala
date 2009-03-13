@@ -35,9 +35,7 @@ trait ScalaInterpreter {
         case InterpreterResults.Incomplete => // no action necessary
         case InterpreterResults.Success => constructedLine = None
       }
-      val last = writer.toString.split("\\s").last
-      if (last != "^") output.append("\n" + last)
-      else output.append("\n" + writer.toString)
+      output.append("\n" + writer.toString)
       clear(writer)
     }
     if (output.toString.contains("error")) output.toString
