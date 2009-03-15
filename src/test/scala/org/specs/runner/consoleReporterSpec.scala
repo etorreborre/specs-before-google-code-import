@@ -77,9 +77,8 @@ class consoleReporterSpec extends Specification with JUnit {
       specWithOneExample(that.isSkipped) must containMatch("(consoleReporterSpec.scala:\\d)")
     }
     "report the time for each system and add times for the total" in {
-      val s = new SpecWithTwoSystems()
-      s.run
-      val susTime1 :: susTime2 :: total :: Nil = s.elapsedTimes
+      specWithTwoSystems.messages
+      val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
       (susTime1 + susTime2) must beCloseTo(total, 1) // to account for rounding errors
     }
   }
@@ -174,8 +173,8 @@ class consoleReporterSpec extends Specification with JUnit {
     specRunner.resetOptions
     spec.acceptAnyTag
     spec.resetForExecution
-    specWithTwoSystems.acceptAnyTag
-    specWithTwoSystems.resetForExecution
+    specTwoSystems.acceptAnyTag
+    specTwoSystems.resetForExecution
     specRunner.messages.clear
   }
   object spec extends Specification {
@@ -188,12 +187,12 @@ class consoleReporterSpec extends Specification with JUnit {
     }
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput
-  object specWithTwoSystems extends Specification {
+  object specTwoSystems extends Specification {
     "this is system one" should { "do nothing" in {} }
     "this is system two" should { "do nothing" in {} }
   }
-  object specTwoSystemsRunner extends ConsoleRunner(specWithTwoSystems) with MockOutput
-
+  object specTwoSystemsRunner extends ConsoleRunner(specTwoSystems) with MockOutput
+  def specWithTwoSystems = new SpecWithTwoSystems().run
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
 }
