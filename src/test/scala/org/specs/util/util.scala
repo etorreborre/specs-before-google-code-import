@@ -5,6 +5,7 @@ object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
         new editDistanceSpec,
 		    new extendedStringSpec,
+        new scalaInterpreterSpec,
         new timerSpec
     )
 }

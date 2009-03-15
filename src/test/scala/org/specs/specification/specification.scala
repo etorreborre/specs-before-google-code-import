@@ -9,6 +9,7 @@ object specificationSpecifications extends Specification {
         new contextSpec,
         new exampleSpec,
         new literateSpec,
+        new literateSnippetSpec,
         new specificationSpec,
         new sugarSpec,
 		    new taggedSpec,
