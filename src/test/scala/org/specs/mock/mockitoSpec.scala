@@ -14,27 +14,27 @@ h3. Let's verify some behaviour
 A mock is created with the @mock@ method:{"""
 object s extends org.specs.Specification with org.specs.mock.Mockito {
 
-  // mock creation
-  val mockedList = mock[java.util.List[String]]
+    // mock creation
+    val mockedList = mock[java.util.List[String]]
 
-  // using mock object
-  mockedList.add("one")
-  mockedList.clear()""" snip (it) }
+    // using mock object
+    mockedList.add("one")
+    mockedList.clear()""" snip (it) }
 
-   // <ex>It is possible to check that some calls have been done on the mock with the @called@ matcher</ex>:
+   // <ex>It is possible to check that some methods have been called on the mock with the @called@ matcher</ex>:
 {"""  // verification
-  theMethod(mockedList).add("one") was called
-  theMethod(mockedList).clear() was called
+    theMethod(mockedList).add("one") was called
+    theMethod(mockedList).clear() was called
 } """ addTo (it) } { executeIsNot("error") }
 
 h4. Failures
 
 If one method has not been called on a mock, <ex>the @was called@ matcher must throw a FailureException</ex>:
 {"""object s extends org.specs.Specification with org.specs.mock.Mockito {
-    val m = mock[java.util.List[String]]
-    theMethod(m).clear() was called
-  }
-  s.failures.first.getMessage
+   val m = mock[java.util.List[String]]
+   theMethod(m).clear() was called
+ }
+ s.failures.first.getMessage
   """ snip (it) } { outputIs("The method was not called: list.clear()") }
 
   </wiki> isSus
