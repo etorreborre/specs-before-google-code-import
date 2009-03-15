@@ -63,7 +63,11 @@ trait OutputReporter extends Reporter with Output {
     reportSystems(spec.systems, padding + "  ")
     timer.stop
 
-    if (statistics)  {
+    // if we want final statistics only, we check the padding to know if we're
+    // reporting the first specification. An empty padding means this is the first spec.
+    val isFirstSpecification = padding.isEmpty
+    if (statistics && (!finalStatisticsOnly ||
+                        finalStatisticsOnly && isFirstSpecification))  {
       println(padding + "Total for specification \"" + spec.name + "\":")
       printStats(stats(spec), padding)
     }
@@ -121,7 +125,8 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportSus(sus: Sus, padding: String) = {
     printSus(sus, padding);
-    if (statistics) printStats(sus, padding)
+    if (statistics && !finalStatisticsOnly) 
+      printStats(sus, padding)
   }
 
   /**
