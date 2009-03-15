@@ -11,31 +11,36 @@ Mockito is a Java library for mocking.
 
 h3. Let's verify some behaviour
 
-A mock is created with the @mock@ method:{"""
-object s extends org.specs.Specification with org.specs.mock.Mockito {
+First of all, we need to import some classes and traits for our examples: {"""
+import org.specs.Specification
+import org.specs.mock.Mockito
+import java.util.List""" prelude it }
+
+A mock is created with the @mock@ method{"""
+object s extends Specification with Mockito {
 
     // mock creation
-    val mockedList = mock[java.util.List[String]]
+    val mockedList = mock[List[String]]
 
     // using mock object
     mockedList.add("one")
-    mockedList.clear()""" snip (it) }
+    mockedList.clear()""" snip it }
 
    // <ex>It is possible to check that some methods have been called on the mock with the @called@ matcher</ex>:
 {"""  // verification
     theMethod(mockedList).add("one") was called
     theMethod(mockedList).clear() was called
-} """ addTo (it) } { executeIsNot("error") }
+} """ addTo it } { executeIsNot("error") }
 
 h4. Failures
 
 If one method has not been called on a mock, <ex>the @was called@ matcher must throw a FailureException</ex>:
-{"""object s extends org.specs.Specification with org.specs.mock.Mockito {
-   val m = mock[java.util.List[String]]
+{"""object s extends Specification with Mockito {
+   val m = mock[List[String]]
    theMethod(m).clear() was called
  }
  s.failures.first.getMessage
-  """ snip (it) } { outputIs("The method was not called: list.clear()") }
+  """ snip it } { outputIs("The method was not called: list.clear()") }
 
   </wiki> isSus
 }
