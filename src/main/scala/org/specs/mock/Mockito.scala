@@ -1,17 +1,32 @@
 package org.specs.mock
 import org.specs.specification._
-
+import org.mockito.MockitoMocker
 trait Mockito extends ExpectableFactory {
-  def mock[T](implicit m: scala.reflect.Manifest[T]): T = org.mockito.Mockito.mock(m.erasure).asInstanceOf[T]
-  def theMethod[T](m: T) = org.mockito.Mockito.verify(m)
+
+  private val mocker = new MockitoMocker
+
+  def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
+
   implicit def theCall(c: =>Any) = new CalledMock(c)
   class CalledMock(c: =>Any) {
-    def was(callMatcher: CallMatcher) = theValue(c) must callMatcher
+    def was(callMatcher: CallMatcher) = {
+      theValue(c) must callMatcher
+    }
   }
+
+  implicit def theStubbed[T](c: =>T) = new Stubbed(c)
+  class Stubbed[T](c: =>T) {
+    def returns(t: T) = mocker.when(c).thenReturn(t)
+    def throws[E <: Throwable](e: E) = mocker.when(c).thenThrow(e)
+  }
+
+
   import org.specs.matcher._
   import org.specs.matcher.MatcherUtils._
-  def called = new CallMatcher
-  class CallMatcher extends Matcher[Any] {
+  def called = new CalledMatcher
+  abstract class CallMatcher extends Matcher[Any]
+  class CalledMatcher extends CallMatcher {
+    this.once
     def apply(v: =>Any) = {
       var result = (true, "The method was called", "The method was not called")
       try { v } catch {
@@ -21,6 +36,10 @@ trait Mockito extends ExpectableFactory {
                                                                          replace("Wanted but not invoked:", ""))
       }
       result
+    }
+    def once = {
+      mocker.mockingProgress.verificationStarted(mocker.times(1))
+      this
     }
   }
 }

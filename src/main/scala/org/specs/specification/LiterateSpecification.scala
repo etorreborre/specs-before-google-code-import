@@ -132,10 +132,11 @@ trait Wiki extends Properties {
    * being displayed as question marks.
    */
   def wikiPre(stringToFormat: String) = <pre>stringToFormat</pre>
-  def wikiCode(stringToFormat: String) = stringToFormat.replace("\r\n", "\n").replace("\n\r", "\n").
-          split("\n").foldLeft("") { (res: String, s: String) =>
-    res + "\n==<code class=\"prettyprint\">" + s + "</code>=="
-  }
+  def wikiCode(stringToFormat: String) = stringToFormat.replace("\r\n", "\n").
+                                                        replace("\n\r", "\n").
+          split("\n").map(htmlize(_)).mkString("==<code class=\"prettyprint\">", "</code>==\n==<code class=\"prettyprint\">", "</code>==")
+
+  private def htmlize(s: String) = s.replace("<", "&lt;").replace(">", "&gt;")
   /**
    * Alias for wikiCode
    */

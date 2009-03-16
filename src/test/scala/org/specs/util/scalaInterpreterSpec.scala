@@ -30,5 +30,8 @@ class scalaInterpreterSpec extends Specification with JUnit with ScalaInterprete
                                 include(" 1 + me") and
                                 include("^"))
     }
+    "print the whole stacktrace in case of an exception" in {
+      interpret("throw new Exception") must include("at RequestResult")
+    }
   }
 }

@@ -38,8 +38,8 @@ trait ScalaInterpreter {
       output.append("\n" + writer.toString)
       clear(writer)
     }
-    if (output.toString.contains("error")) output.toString
-    else output.toString.split("\n").last
+    if (output.toString.contains("error") || output.toString.contains("at RequestResult")) output.toString.trim
+    else output.toString.split("\n").last.trim
   }
 }
 object ScalaInterpreter extends ScalaInterpreter
