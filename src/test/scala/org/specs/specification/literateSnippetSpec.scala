@@ -49,7 +49,7 @@ h3. Prelude
 
 </wiki> isSus
 }
-trait Examples extends Snippets with Expectations {
+trait Examples extends SnipIt with Expectations {
   def executeAndExpect(expected: String) = {
     val result = execute(it)
     result must include(expected)

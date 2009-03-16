@@ -1,7 +1,7 @@
 package org.specs.specification
 import org.specs.util._
 
-trait Snippets extends ScalaInterpreter with Wiki {
+trait Snippets extends ScalaInterpreter {
 
   case class Snippet(snippet: String) {
     val prelude: Property[String] = Property("")
@@ -10,19 +10,20 @@ trait Snippets extends ScalaInterpreter with Wiki {
       newSnippet.prelude(this.prelude() + "\n" + other.prelude())
       newSnippet
     }
+    def format(code: String) = code
     def addTo(prop: Property[Snippet]): String = {
       prop(prop() ++ this)
-      this.snippet >@
+      format(this.snippet)
     }
     def prelude(prop: Property[Snippet]): String = {
       prop().prelude(this.snippet)
-      this.snippet >@
+      format(this.snippet)
     }
     def snip(prop: Property[Snippet]): String = {
       val newSnippet = Snippet(this.snippet)
       newSnippet.prelude(prop().prelude())
       prop(newSnippet) 
-      this.snippet >@
+      format(this.snippet)
     }
     def code = prelude() + "\n" + snippet
   }
@@ -30,6 +31,9 @@ trait Snippets extends ScalaInterpreter with Wiki {
 
   def execute(it: Property[Snippet]) = interpret(it().code).replace("<console>:", "res")
 
-  val it: Property[Snippet] = new Property[Snippet](Snippet(""))
 }
 object Snippets extends Snippets
+trait SnipIt extends Snippets with Wiki {
+  val it: Property[Snippet] = new Property[Snippet](Snippet(""))
+  override def format(code: String) = code >@
+}

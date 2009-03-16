@@ -44,7 +44,7 @@ If one method has not been called on a mock, <ex>the @was called@ matcher must t
 
   </wiki> isSus
 }
-class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with Snippets  with Wiki with Html with JUnit {
+class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with SnipIt with Wiki with Html with JUnit {
   override def htmlDir = "target"
   def executeIs(s: String) = { execute(it) must include(s) }
   def outputIs(s: String) = {
