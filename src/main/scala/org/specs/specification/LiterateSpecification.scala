@@ -15,7 +15,7 @@ import org.specs.runner._
  * <li>xmlRunnerSpec
  * </ul>
  */
-class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties {
+class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties with Links {
   setSequential()
 
   def this(n: String) = { this(); name = n; description = n; this }
@@ -115,11 +115,20 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
 
   def includeSus(susName: String) = "include " + susName + " not implemented yet"
+
+  private var parentLinks = List[Specification]()
+  def addParentLink(s: Specification): this.type = { parentLinks = s :: parentLinks; this }
+  def hasParentLink(s: Specification) = parentLinks.contains(s)
+
+  def linkTo(subSpec: LiterateSpecification with Html) = {
+    subSpec.addParentLink(this)
+    pathLink(subSpec.description, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
+  }
 }
 /**
  * This trait provides functions which can be used to ease the use of wiki markup
  */
-trait Wiki extends Properties {
+trait Wiki extends Properties with Links {
   implicit def toWikiString(a: Any) = new WikiString(a.toString)
   class WikiString(s: String) {
     def code = wikiCode(s)
@@ -143,4 +152,10 @@ trait Wiki extends Properties {
   def >@(stringToFormat: String) = wikiCode(stringToFormat)
 
   def linkTo(susName: String) = "link to " + susName + " not implemented yet"
+  override def pathLink(desc: String, path: String) = {
+    "\"" + desc + "\":file:///" + path
+  }
+}
+trait Links {
+  def pathLink(desc: String, path: String) = desc + " (See: " + path + ")"
 }

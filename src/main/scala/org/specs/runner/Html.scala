@@ -142,7 +142,14 @@ trait Html extends File {
 
   /** create a table for one specification. */
   def specificationTable(spec: Specification) = {
-    <h2>{spec.description}</h2> ++ subspecsTables(spec.subSpecifications) ++ susTables(spec)
+    val subSpecsToDisplay = new scala.collection.mutable.ListBuffer[Specification]
+    spec.subSpecifications.foldLeft(subSpecsToDisplay) { (res, cur) =>
+      cur match {
+        case literate: LiterateSpecification if (literate.hasParentLink(spec)) => { literate.reportSpecs; res }  
+        case other => { res.append(other); res }
+      }
+    }
+    <h2>{spec.description}</h2> ++ subspecsTables(subSpecsToDisplay.toList) ++ susTables(spec)
   }
 
   /** create tables for systems. */

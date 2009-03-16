@@ -12,10 +12,11 @@ Mockito is a Java library for mocking.
 h3. Let's verify some behaviour
 
 First of all, we need to import some classes and traits for our examples: {"""
-import org.specs.Specification
-import org.specs.mock.Mockito
-import java.util.List
-import java.util.LinkedList""" prelude it }
+
+  import org.specs.Specification
+  import org.specs.mock.Mockito
+  import java.util.List
+  import java.util.LinkedList""" prelude it }
 
 A mock is created with the @mock@ method: {"""
 
@@ -47,6 +48,10 @@ If one method has not been called on a mock, <ex>the @was called@ matcher must t
   """ snip it }
   { outputIs("The method was not called: list.clear()") }
 
+h4. Argument matchers
+
+{ linkTo(argumentMatchers) } allow flexible verification or stubbing.
+
 h3. How about some stubbing?
 
 <ex>You can mock concrete classes, not only interfaces</ex> {"""
@@ -62,23 +67,24 @@ h3. How about some stubbing?
 
 <ex>Calling a stubbed method with @willReturn@ returns the expected value</ex>. For example, the following prints "first":
 
-  {"s.mockedList.get(0)" snip it }
-  { outputIs("first") }
+{"s.mockedList.get(0)" snip it }
+{ outputIs("first") }
 
 <ex>Calling a stubbed method with @willThrow@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
-  {"s.mockedList.get(1)" snip it }
-  { outputIs("RuntimeException") }
+{"s.mockedList.get(1)" snip it }
+{ outputIs("RuntimeException") }
 
 <ex>Calling a non-stubbed method should return a default value</ex>. For example, the following returns @null@ because @get(999)@ was not stubbed:
   
-  {"s.mockedList.get(999)" snip it }
-  { outputIs("null") }
+{"s.mockedList.get(999)" snip it }
+{ outputIs("null") }
   
   </wiki> isSus
+
+  include(argumentMatchers)
 }
 class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with SnipIt with Wiki with Html with JUnit {
-  override def htmlDir = "target"
   def executeIs(s: String) = { execute(it) must include(s) }
   def outputIs(s: String) = {
     val result = execute(it)
@@ -89,4 +95,10 @@ class mockitoRules extends LiterateSpecification("Mockito Specification") with M
   }
   def executeIsNot(s: String) = execute(it) mustNot include(s)
 }
+object argumentMatchers extends LiterateSpecification("Argument Matchers") with Mockito with SnipIt with Wiki with Html with JUnit {
+  <wiki>
+  Argument matchers allow flexible verification or stubbing.
+  Click "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Matchers.html
 
+  </wiki> isSus
+}
