@@ -1,6 +1,7 @@
 package org.specs.mock
 import org.specs.specification._
 import org.mockito.MockitoMocker
+
 trait Mockito extends ExpectableFactory {
 
   private val mocker = new MockitoMocker
