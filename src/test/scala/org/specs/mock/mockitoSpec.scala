@@ -61,7 +61,7 @@ h3. How about some stubbing?
 
     // stubbing
     mockedList.get(0) returns "first"
-    mockedList.get(1) throws new RuntimeException
+    mockedList.clear() throws new RuntimeException
   }
 """ prelude it }{ executeIsNot("error") }
 
@@ -72,7 +72,7 @@ h3. How about some stubbing?
 
 <ex>Calling a stubbed method with @willThrow@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
-{ "s3.mockedList.get(1)" snip it }
+{ "s3.mockedList.clear()" snip it }
 { outputIs("RuntimeException") }
 
 <ex>Calling a non-stubbed method should return a default value</ex>. For example, the following returns @null@ because @get(999)@ was not stubbed:
