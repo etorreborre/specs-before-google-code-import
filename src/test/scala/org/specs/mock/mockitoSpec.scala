@@ -40,13 +40,13 @@ h4. Failures
 
 If one method has not been called on a mock, <ex>the @was called@ matcher must throw a FailureException</ex>: {"""
 
-  object s extends Specification with Mockito {
+  object s2 extends Specification with Mockito {
     val m = mock[List[String]]
     m.clear() was called
   }
-  s.failures.first.getMessage
+  s2.failures
   """ snip it }
-  { outputIs("The method was not called: list.clear()") }
+  { outputIs("The method was not called as expected: Wanted but not invoked: list.clear()") }
 
 h4. Argument matchers
 
@@ -56,7 +56,7 @@ h3. How about some stubbing?
 
 <ex>You can mock concrete classes, not only interfaces</ex> {"""
 
-  object s extends Specification with Mockito {
+  object s3 extends Specification with Mockito {
     val mockedList = mock[LinkedList[String]]
 
     // stubbing
@@ -67,19 +67,48 @@ h3. How about some stubbing?
 
 <ex>Calling a stubbed method with @willReturn@ returns the expected value</ex>. For example, the following prints "first":
 
-{ "s.mockedList.get(0)" snip it }
+{ "s3.mockedList.get(0)" snip it }
 { outputIs("first") }
 
 <ex>Calling a stubbed method with @willThrow@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
-{ "s.mockedList.get(1)" snip it }
+{ "s3.mockedList.get(1)" snip it }
 { outputIs("RuntimeException") }
 
 <ex>Calling a non-stubbed method should return a default value</ex>. For example, the following returns @null@ because @get(999)@ was not stubbed:
   
-{ "s.mockedList.get(999)" snip it }
+{ "s3.mockedList.get(999)" snip it }
 { outputIs("null") }
+
+h3. Verifying the number of invocations
+
+The number of invocations can be checked with different methods on the @called@ matcher: {"""
+
+  class s4 extends Specification with Mockito {
+    val mockedList = mock[List[String]]
+
+    mockedList.add("one")
+
+    2.times { i => mockedList.add("two") } 
+    3.times { i => mockedList.add("three") } 
+  } 
+""" prelude it }
+
+<ex>@was called.once@ is the same as @was called@</ex>:
+
+{ """new s4 { mockedList.add("one") was called.once }.successes""" snip it }
+{ outputIs("example 1") }
+
+<ex>@was called.twice@ checks if the method was called twice</ex>:
+
+{ """new s4 { mockedList.add("two") was called.twice }.successes""" snip it }
+{ outputIs("example 1") }
+
+<ex>If the method wasn't called the expected number of times, there must be a FailureException</ex>:
   
+{ """new s4 { mockedList.add("one") was called.twice }.failures""" snip it }
+{ outputIs("The method was not called as expected: list.add(\"one\"); Wanted 2 times but was 1") }
+
   </wiki> isSus
 
   include(argumentMatchers)

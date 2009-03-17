@@ -24,7 +24,10 @@ trait Snippets extends ScalaInterpreter {
   def execute(it: Property[Snippet]) = interpret(it().code)
 
 }
-case class Snippet(snippet: String) {
+object Snippet {
+  def apply(s: String) = new Snippet(Property(s))
+}
+case class Snippet(snippetCode: Property[String]) {
   private val preludeCode: Property[String] = Property("")
   def ++(other: Snippet): Snippet = {
     val newSnippet = Snippet(append(this.snippet, other.snippet))
@@ -33,6 +36,7 @@ case class Snippet(snippet: String) {
   }
   def prelude(p: String) = { preludeCode(append(preludeCode(), p)); this }
   def prelude = preludeCode()
+  def snippet = snippetCode()
   def code = append(prelude, snippet)
   private def append(a: String, b: String) = {
     if (a.isEmpty)
@@ -44,6 +48,7 @@ case class Snippet(snippet: String) {
     else 
       a + "\n" + b
   }
+  def reset = snippetCode("")
 }
 object Snippets extends Snippets
 trait SnipIt extends Snippets with Wiki {

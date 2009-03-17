@@ -38,10 +38,18 @@ trait ScalaInterpreter {
       output.append("\n" + writer.toString)
       clear(writer)
     }
-    if (output.toString.contains("error") || output.toString.contains("at RequestResult")) 
+    if (output.toString.contains("error") || output.toString.contains("at ")) 
       removeEmptyLines(output.toString.trim)
     else 
-      output.toString.split("\n").last.trim
+      lastBlock(output.toString)
+  }
+  private def lastBlock(s: String) = {
+	s.split("\n").foldLeft("") { (res, cur) => 
+	  if (cur.trim.isEmpty)
+	    ""
+	  else if (!res.isEmpty) res + "\n" + cur.trim
+	  else cur.trim
+    }
   }
   private def removeEmptyLines(result: String) = result.split("\n").foldLeft("") { (res, cur) =>
     if (cur.isEmpty)

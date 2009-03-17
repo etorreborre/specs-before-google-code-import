@@ -1,8 +1,9 @@
 package org.specs.mock
 import org.specs.specification._
+import org.specs.NumberOfTimes
 import org.mockito.MockitoMocker
 
-trait Mockito extends ExpectableFactory {
+trait Mockito extends ExpectableFactory with NumberOfTimes {
 
   private val mocker = new MockitoMocker
 
@@ -27,20 +28,21 @@ trait Mockito extends ExpectableFactory {
   def called = new CalledMatcher
   abstract class CallMatcher extends Matcher[Any]
   class CalledMatcher extends CallMatcher {
-    this.once
+    var numberOfTimes = 1
     def apply(v: =>Any) = {
+      mocker.mockingProgress.verificationStarted(mocker.times(numberOfTimes))
       var result = (true, "The method was called", "The method was not called")
       try { v } catch {
-        case e => result = (false, "The method was called", "The method was not called: " +
-                                                            e.getMessage.replace("\n", "").
-                                                                         replace("\r", "").
-                                                                         replace("Wanted but not invoked:", ""))
+        case e => result = (false, "The method was called", "The method was not called as expected:" + e.getMessage.replace("\n", " "))
       }
       result
     }
-    def once = {
-      mocker.mockingProgress.verificationStarted(mocker.times(1))
+    def once = this
+    def twice = times(2)
+    def times(i: Int) = {
+      numberOfTimes = i
       this
     }
   }
+  def called(r: RangeInt) = new CalledMatcher().times(r.n)
 }
