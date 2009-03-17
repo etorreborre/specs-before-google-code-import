@@ -3,6 +3,7 @@ import org.specs.specification._
 import org.specs.NumberOfTimes
 import org.mockito.MockitoMocker
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.internal.progress.NewOngoingStubbing
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
   
@@ -42,8 +43,14 @@ trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle
   def noMoreCalls[T <: AnyRef] = new NoMoreCalls[T]
   implicit def theStubbed[T](c: =>T) = new Stubbed(c)
   class Stubbed	[T](c: =>T) {
-    def returns(t: T) = mocker.when(c).thenReturn(t)
-    def throws[E <: Throwable](e: E) = mocker.when(c).thenThrow(e)
+    def returns(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
+    def returns(t: T, t2: T*): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t, t2:_*)
+    def throws[E <: Throwable](e: E*): NewOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
+  }
+  implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
+  class OngoingStubbing[T](stub: =>NewOngoingStubbing[T]) {
+    def thenReturns(t: T) = stub.thenReturn(t)
+    def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
   }
 
   def called = new CalledMatcher

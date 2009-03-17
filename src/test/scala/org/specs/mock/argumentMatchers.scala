@@ -35,12 +35,12 @@ And create a specification with mocks: {"""
 Then, <ex>calling the mocked list with any argument must return "element"</ex>: 
   
 { "s.mockedList.get(999)" snip it } 
-{ outputIs("element")}
+{ >("element")}
 
 and <ex>calling the mocked list @contains@ method with a valid argument must return "true" if the passed argument is null</ex>:
   
 { "s.mockedList.contains(null)" snip it } 
-{ outputIs("true")}
+{ >("true")}
 
 <ex>It is also possible to verify that a mock was called with an argument matcher</ex>: {"""
 
@@ -49,7 +49,7 @@ and <ex>calling the mocked list @contains@ method with a valid argument must ret
     s.mockedList.get(isEq(999)) was called
   }
   s2.successes""" snip it }
-  { outputIs("example 1")}
+  { >("example 1")}
 
   </wiki> isSus
 }

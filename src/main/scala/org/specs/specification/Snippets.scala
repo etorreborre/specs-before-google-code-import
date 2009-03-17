@@ -5,6 +5,7 @@ trait Snippets extends ScalaInterpreter {
   def format(code: String): String = code
   implicit def asSnippet(s: java.lang.String) = new SnippetAdder(Snippet(s))
   class SnippetAdder(snippet: Snippet) {
+	def add(prop: Property[Snippet]): String = addTo(prop)
 	def addTo(prop: Property[Snippet]): String = {
 	  prop(prop() ++ snippet)
 	  format(snippet.snippet)
@@ -43,7 +44,7 @@ case class Snippet(snippetCode: Property[String]) {
       b
     else if (b.isEmpty)
       a
-    else if (!a.endsWith("\n"))
+    else if (a.endsWith("\n"))
       a + b
     else 
       a + "\n" + b
