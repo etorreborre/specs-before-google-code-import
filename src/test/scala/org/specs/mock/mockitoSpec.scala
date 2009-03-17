@@ -65,12 +65,12 @@ h3. How about some stubbing?
   }
 """ prelude it }{ executeIsNot("error") }
 
-<ex>Calling a stubbed method with @willReturn@ returns the expected value</ex>. For example, the following prints "first":
+<ex>Calling a stubbed method with @returns@ returns the expected value</ex>. For example, the following prints "first":
 
 { "s3.mockedList.get(0)" snip it }
 { outputIs("first") }
 
-<ex>Calling a stubbed method with @willThrow@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
+<ex>Calling a stubbed method with @throws@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
 { "s3.mockedList.clear()" snip it }
 { outputIs("RuntimeException") }
@@ -118,6 +118,14 @@ The number of invocations can be checked with different methods on the @called@ 
   
 { """new s4 { mockedList.add("one") wasnt called }.failures""" snip it }
 { outputIs("The method was not called as expected: list.add(\"one\"); Never wanted but invoked!") }
+
+<ex>It is also possible to check that there is no unexpected calls on a mock</ex>:
+  
+{ """  new s4 { 
+    mockedList.add("one") was called
+    mockedList had noMoreCalls
+  }.failures.first""" snip it }
+{ outputIs("The mock was called: No interactions wanted") }
 
 
 </wiki> isSus
