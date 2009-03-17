@@ -109,7 +109,13 @@ The number of invocations can be checked with different methods on the @called@ 
 { """new s4 { mockedList.add("one") was called.twice }.failures""" snip it }
 { outputIs("The method was not called as expected: list.add(\"one\"); Wanted 2 times but was 1") }
 
-  </wiki> isSus
+<ex>@wasnt called@ checks that the method wasn't called at all (never in Mockito)</ex>:
+  
+{ """new s4 { mockedList.add("one") wasnt called }.failures""" snip it }
+{ outputIs("The method was not called as expected: list.add(\"one\"); Never wanted but invoked!") }
+
+
+</wiki> isSus
 
   include(argumentMatchers)
 }

@@ -11,8 +11,11 @@ trait Mockito extends ExpectableFactory with NumberOfTimes {
 
   implicit def theCall(c: =>Any) = new CalledMock(c)
   class CalledMock(c: =>Any) {
-    def was(callMatcher: CallMatcher) = {
+    def was(callMatcher: CalledMatcher) = {
       theValue(c) must callMatcher
+    }
+    def wasnt(callMatcher: CalledMatcher) = {
+      theValue(c) must (callMatcher.times(0))
     }
   }
 
@@ -26,8 +29,7 @@ trait Mockito extends ExpectableFactory with NumberOfTimes {
   import org.specs.matcher._
   import org.specs.matcher.MatcherUtils._
   def called = new CalledMatcher
-  abstract class CallMatcher extends Matcher[Any]
-  class CalledMatcher extends CallMatcher {
+  class CalledMatcher extends Matcher[Any] {
     var numberOfTimes = 1
     def apply(v: =>Any) = {
       mocker.mockingProgress.verificationStarted(mocker.times(numberOfTimes))
