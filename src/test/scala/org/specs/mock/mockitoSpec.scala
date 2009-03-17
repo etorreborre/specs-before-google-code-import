@@ -141,6 +141,7 @@ h3. Annotations
     }
   }
 """ snip it }
+
 { "s5.isOk" add it }
 { >("true") } 
 
@@ -151,10 +152,8 @@ In rare scenarios stubbing consecutive calls could be useful, though: {"""
 
   object s6 extends Specification with Mockito {
     val mockedList = mock[List[String]]
-
     mockedList.get(0) returns "hello" thenReturns "world"
-  }
-""" snip it }
+  } """ snip it }
 
 <ex>The first call returns the first value</ex>:
 
@@ -180,7 +179,7 @@ When several values need to be stubbed this version of returns would also work: 
 
 <ex>The second value is "world"</ex>:
 { "s7.mockedList.get(0)" add it }
-{ >("hello") }
+{ >("world") }
 
 when(mock.someMethod("some arg"))
    .thenThrow(new RuntimeException())
