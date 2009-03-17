@@ -7,7 +7,7 @@ class mockitoSpec extends LiterateSpecification("Mockito Specification") with Mo
   <wiki>
 Mockito is a Java library for mocking.
 
-  The following samples are taken from the main documentation which can be found "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Mockito.html
+The following samples are taken from the main documentation which can be found "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Mockito.html
 
 h3. Let's verify some behaviour
 
@@ -15,6 +15,7 @@ First of all, we need to import some classes and traits for our examples: {"""
 
   import org.specs.Specification
   import org.specs.mock.Mockito
+  import org.mockito.Mock
   import java.util.List
   import java.util.LinkedList""" prelude it }
 
@@ -38,7 +39,7 @@ A mock is created with the @mock@ method: {"""
 
 h4. Failures
 
-If one method has not been called on a mock, <ex>the @was called@ matcher must throw a FailureException</ex>: {"""
+If one method has not been called on a mock, <ex>the @was called@ matcher must throw a @FailureException@</ex>: {"""
 
   object s2 extends Specification with Mockito {
     val m = mock[List[String]]
@@ -109,7 +110,7 @@ The number of invocations can be checked with different methods on the @called@ 
 { """new s4 { mockedList.add("two") was called.atLeastOnce }.isOk""" snip it }
 { outputIs("true") }
 
-<ex>If the method wasn't called the expected number of times, there must be a FailureException</ex>:
+<ex>If the method wasn't called the expected number of times, there must be a @FailureException@</ex>:
   
 { """new s4 { mockedList.add("one") was called.twice }.failures""" snip it }
 { outputIs("The method was not called as expected: list.add(\"one\"); Wanted 2 times but was 1") }
@@ -119,7 +120,7 @@ The number of invocations can be checked with different methods on the @called@ 
 { """new s4 { mockedList.add("one") wasnt called }.failures""" snip it }
 { outputIs("The method was not called as expected: list.add(\"one\"); Never wanted but invoked!") }
 
-<ex>It is also possible to check that there is no unexpected calls on a mock</ex>:
+<ex>It is also possible to check that there are no unexpected calls on a mock</ex>:
   
 { """  new s4 { 
     mockedList.add("one") was called
@@ -127,6 +128,21 @@ The number of invocations can be checked with different methods on the @called@ 
   }.failures.first""" snip it }
 { outputIs("The mock was called: No interactions wanted") }
 
+h3. Annotations
+
+<ex>It is possible to use annotations to declare mocks</ex> {"""
+
+  object s5 extends Specification with Mockito {
+    @Mock 
+    val mockedList: List[String] = null
+    "this needs to be inside an example because otherwise a NPE is thrown" in {
+      mockedList.clear()
+      mockedList.clear() was called
+    }
+  }
+""" snip it }
+{ "s5.isOk" addTo it }
+{ outputIs("true") }
 
 </wiki> isSus
 

@@ -6,7 +6,7 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
   
-trait Mockito extends ExpectableFactory with NumberOfTimes {
+trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle {
 
   private val mocker = new MockitoMocker
 
@@ -79,4 +79,13 @@ trait Mockito extends ExpectableFactory with NumberOfTimes {
   }
   def called(r: RangeInt) = new CalledMatcher().times(r.n)
   val once = new RangeInt(1)
+
+  /** 
+   * before any example, setup the mock variables
+   */
+  override def beforeExample(ex: Example) = {
+    super.beforeExample(ex)
+    org.mockito.MockitoAnnotations.initMocks(this)
+  }
+
 }
