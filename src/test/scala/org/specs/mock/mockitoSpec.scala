@@ -3,7 +3,7 @@ import org.specs._
 import org.specs.specification._
 import org.specs.runner._
 
-class mockitoSpec extends mockitoRules {
+class mockitoSpec extends LiterateSpecification("Mockito Specification") with MockitoSpecification {
   <wiki>
 Mockito is a Java library for mocking.
 
@@ -67,24 +67,24 @@ h3. How about some stubbing?
 
 <ex>Calling a stubbed method with @willReturn@ returns the expected value</ex>. For example, the following prints "first":
 
-{"s.mockedList.get(0)" snip it }
+{ "s.mockedList.get(0)" snip it }
 { outputIs("first") }
 
 <ex>Calling a stubbed method with @willThrow@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
-{"s.mockedList.get(1)" snip it }
+{ "s.mockedList.get(1)" snip it }
 { outputIs("RuntimeException") }
 
 <ex>Calling a non-stubbed method should return a default value</ex>. For example, the following returns @null@ because @get(999)@ was not stubbed:
   
-{"s.mockedList.get(999)" snip it }
+{ "s.mockedList.get(999)" snip it }
 { outputIs("null") }
   
   </wiki> isSus
 
   include(argumentMatchers)
 }
-class mockitoRules extends LiterateSpecification("Mockito Specification") with Mockito with SnipIt with Wiki with Html with JUnit {
+trait MockitoSpecification extends Mockito with Expectations with SnipIt with Wiki with Html with JUnit {
   def executeIs(s: String) = { execute(it) must include(s) }
   def outputIs(s: String) = {
     val result = execute(it)
@@ -94,11 +94,4 @@ class mockitoRules extends LiterateSpecification("Mockito Specification") with M
     out
   }
   def executeIsNot(s: String) = execute(it) mustNot include(s)
-}
-object argumentMatchers extends LiterateSpecification("Argument Matchers") with Mockito with SnipIt with Wiki with Html with JUnit {
-  <wiki>
-  Argument matchers allow flexible verification or stubbing.
-  Click "here":http://mockito.googlecode.com/svn/branches/1.7/javadoc/org/mockito/Matchers.html
-
-  </wiki> isSus
 }

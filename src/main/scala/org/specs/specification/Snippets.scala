@@ -3,42 +3,47 @@ import org.specs.util._
 
 trait Snippets extends ScalaInterpreter {
   def format(code: String): String = code
-
-  case class Snippet(snippet: String) {
-    val prelude: Property[String] = Property("")
-    def ++(other: Snippet): Snippet = {
-      val newSnippet = Snippet(append(this.snippet, other.snippet))
-      newSnippet.prelude(append(this.prelude(), other.prelude()))
-      newSnippet
-    }
-    def addTo(prop: Property[Snippet]): String = {
-      prop(prop() ++ this)
-      format(this.snippet)
-    }
-    def prelude(prop: Property[Snippet]): String = {
-      prop().prelude(this.snippet)
-      format(this.snippet)
-    }
-    def snip(prop: Property[Snippet]): String = {
-      val newSnippet = Snippet(this.snippet)
-      newSnippet.prelude(prop().prelude())
-      prop(newSnippet) 
-      format(this.snippet)
-    }
-    def code = append(prelude(), snippet)
-    private def append(a: String, b: String) = {
-      if (a.isEmpty)
-        b
-      else if (b.isEmpty)
-        a
-      else
-        a + "\n" + b
-    }
+  implicit def asSnippet(s: java.lang.String) = new SnippetAdder(Snippet(s))
+  class SnippetAdder(snippet: Snippet) {
+	def addTo(prop: Property[Snippet]): String = {
+	  prop(prop() ++ snippet)
+	  format(snippet.snippet)
+	}
+	def prelude(prop: Property[Snippet]): String = {
+	  prop().prelude(snippet.snippet)
+	  format(snippet.snippet)
+	}
+	def snip(prop: Property[Snippet]): String = {
+	  val newSnippet = Snippet(snippet.snippet)
+	  newSnippet.prelude(prop().prelude)
+	  prop(newSnippet) 
+	  format(snippet.snippet)
+	}
   }
-  implicit def asSnippet(s: java.lang.String) = new Snippet(s)
 
   def execute(it: Property[Snippet]) = interpret(it().code)
 
+}
+case class Snippet(snippet: String) {
+  private val preludeCode: Property[String] = Property("")
+  def ++(other: Snippet): Snippet = {
+    val newSnippet = Snippet(append(this.snippet, other.snippet))
+    newSnippet.prelude(append(prelude, other.prelude))
+    newSnippet
+  }
+  def prelude(p: String) = { preludeCode(append(preludeCode(), p)); this }
+  def prelude = preludeCode()
+  def code = append(prelude, snippet)
+  private def append(a: String, b: String) = {
+    if (a.isEmpty)
+      b
+    else if (b.isEmpty)
+      a
+    else if (!a.endsWith("\n"))
+      a + b
+    else 
+      a + "\n" + b
+  }
 }
 object Snippets extends Snippets
 trait SnipIt extends Snippets with Wiki {
