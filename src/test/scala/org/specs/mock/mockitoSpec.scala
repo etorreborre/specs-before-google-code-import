@@ -96,13 +96,18 @@ The number of invocations can be checked with different methods on the @called@ 
 
 <ex>@was called.once@ is the same as @was called@</ex>:
 
-{ """new s4 { mockedList.add("one") was called.once }.successes""" snip it }
-{ outputIs("example 1") }
+{ """new s4 { mockedList.add("one") was called.once }.isOk""" snip it }
+{ outputIs("true") }
 
 <ex>@was called.twice@ checks if the method was called twice</ex>:
 
-{ """new s4 { mockedList.add("two") was called.twice }.successes""" snip it }
-{ outputIs("example 1") }
+{ """new s4 { mockedList.add("two") was called.twice }.isOk""" snip it }
+{ outputIs("true") }
+
+<ex>It is also possible to check that a method was called at least a number of times</ex>:
+
+{ """new s4 { mockedList.add("two") was called.atLeastOnce }.isOk""" snip it }
+{ outputIs("true") }
 
 <ex>If the method wasn't called the expected number of times, there must be a FailureException</ex>:
   

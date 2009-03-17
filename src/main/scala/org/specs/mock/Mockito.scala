@@ -2,7 +2,8 @@ package org.specs.mock
 import org.specs.specification._
 import org.specs.NumberOfTimes
 import org.mockito.MockitoMocker
-
+import org.mockito.internal.verification.VerificationModeFactory
+  
 trait Mockito extends ExpectableFactory with NumberOfTimes {
 
   private val mocker = new MockitoMocker
@@ -30,9 +31,9 @@ trait Mockito extends ExpectableFactory with NumberOfTimes {
   import org.specs.matcher.MatcherUtils._
   def called = new CalledMatcher
   class CalledMatcher extends Matcher[Any] {
-    var numberOfTimes = 1
+    var verificationMode = mocker.times(1)
     def apply(v: =>Any) = {
-      mocker.mockingProgress.verificationStarted(mocker.times(numberOfTimes))
+      mocker.mockingProgress.verificationStarted(verificationMode)
       var result = (true, "The method was called", "The method was not called")
       try { v } catch {
         case e => result = (false, "The method was called", "The method was not called as expected:" + e.getMessage.replace("\n", " "))
@@ -42,9 +43,22 @@ trait Mockito extends ExpectableFactory with NumberOfTimes {
     def once = this
     def twice = times(2)
     def times(i: Int) = {
-      numberOfTimes = i
+      verificationMode = mocker.times(i)
       this
     }
+    def atLeastOnce = atLeast(1) 
+    def atLeastTwice = atLeast(2)
+    def atLeast(r: RangeInt) = { 
+      verificationMode = VerificationModeFactory.atLeast(r.n)
+      this
+    }
+    def atMost(r: RangeInt) = { 
+      verificationMode = VerificationModeFactory.atMost(r.n)
+      this
+    }
+    def atMostOnce = atMost(1) 
+    def atMostTwice = atMost(2)
   }
   def called(r: RangeInt) = new CalledMatcher().times(r.n)
+  val once = new RangeInt(1)
 }
