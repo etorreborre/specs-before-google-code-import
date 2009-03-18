@@ -2,13 +2,22 @@ package org.specs.mock
 import org.specs.specification._
 import org.specs.NumberOfTimes
 import org.mockito.MockitoMocker
+import org.mockito.stubbing.Answer
+import org.mockito.invocation.InvocationOnMock
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.internal.progress.NewOngoingStubbing
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
   
-trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle {
-
+trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle { 
+  private var initialized = false
+  override def beforeTest(e: Example) = {
+	super.beforeTest(e)
+	if (!initialized) {
+	  initialized = true
+      org.mockito.MockitoAnnotations.initMocks(this)
+    }  
+  }
   private val mocker = new MockitoMocker
 
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
@@ -45,6 +54,24 @@ trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle
   class Stubbed	[T](c: =>T) {
     def returns(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
     def returns(t: T, t2: T*): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t, t2:_*)
+    def answers(function: Any => T) = mocker.when(c).thenAnswer(new Answer[T]() {
+     def answer(invocation: InvocationOnMock): T = {
+       val args = invocation.getArguments
+       val mock = invocation.getMock
+       if (args.size == 0) {
+         function match {
+           case f: Function0[_] => f(mock)
+           case f => f(args)
+         }
+       } else if (args.size == 1) {
+         function match {
+           case f: Function1[_, _] => f(args(0))
+           case f: Function2[_, _, _] => f(args(0), mock)
+         }
+       }
+       else
+         function(args)
+     }})
     def throws[E <: Throwable](e: E*): NewOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
   }
   implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
@@ -86,13 +113,4 @@ trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle
   }
   def called(r: RangeInt) = new CalledMatcher().times(r.n)
   val once = new RangeInt(1)
-
-  /** 
-   * before any example, setup the mock variables
-   */
-  override def beforeExample(ex: Example) = {
-    super.beforeExample(ex)
-    org.mockito.MockitoAnnotations.initMocks(this)
-  }
-
 }

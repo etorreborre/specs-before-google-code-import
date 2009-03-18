@@ -83,50 +83,11 @@ h3. How about some stubbing?
 
 h3. Verifying the number of invocations
 
-The number of invocations can be checked with different methods on the @called@ matcher: {"""
+The number of invocations (atLeast, atMost) can also be checked: { linkTo(numberOfInvocations) }
 
-  class s4 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
+h3. Callbacks
 
-    mockedList.add("one")
-
-    2.times { i => mockedList.add("two") } 
-    3.times { i => mockedList.add("three") } 
-  } 
-""" prelude it }
-
-<ex>@was called.once@ is the same as @was called@</ex>:
-
-{ """new s4 { mockedList.add("one") was called.once }.isOk""" snip it }
-{ >("true") }
-
-<ex>@was called.twice@ checks if the method was called twice</ex>:
-
-{ """new s4 { mockedList.add("two") was called.twice }.isOk""" snip it }
-{ >("true") }
-
-<ex>It is also possible to check that a method was called at least a number of times</ex>:
-
-{ """new s4 { mockedList.add("two") was called.atLeastOnce }.isOk""" snip it }
-{ >("true") }
-
-<ex>If the method wasn't called the expected number of times, there must be a @FailureException@</ex>:
-  
-{ """new s4 { mockedList.add("one") was called.twice }.failures""" snip it }
-{ >("The method was not called as expected: list.add(\"one\"); Wanted 2 times but was 1") }
-
-<ex>@wasnt called@ checks that the method wasn't called at all (never in Mockito)</ex>:
-  
-{ """new s4 { mockedList.add("one") wasnt called }.failures""" snip it }
-{ >("The method was not called as expected: list.add(\"one\"); Never wanted but invoked!") }
-
-<ex>It is also possible to check that there are no unexpected calls on a mock</ex>:
-  
-{ """  new s4 { 
-    mockedList.add("one") was called
-    mockedList had noMoreCalls
-  }.failures.first""" snip it }
-{ >("The mock was called: No interactions wanted") }
+In some rare case, you want the stubbed return values to be a function of the input method parameters: { linkTo(callbacks) }
 
 h3. Annotations
 
@@ -144,6 +105,7 @@ h3. Annotations
 
 { "s5.isOk" add it }
 { >("true") } 
+{ "s5.issues" add_> }
 
 h3. Stubbing consecutive calls (iterator-style stubbing)
 
@@ -181,29 +143,23 @@ When several values need to be stubbed this version of returns would also work: 
 { "s7.mockedList.get(0)" add it }
 { >("world") }
 
-when(mock.someMethod("some arg"))
-   .thenThrow(new RuntimeException())
-   .thenReturn("foo");
  
- //First call: throws runtime exception:
- mock.someMethod("some arg");
- 
- //Second call: prints "foo"
- System.out.println(mock.someMethod("some arg"));
- 
- //Any consecutive call: prints "foo" as well (last stubbing wins). 
- System.out.println(mock.someMethod("some arg"));
- 
-Alternative, shorter version of consecutive stubbing:
- when(mock.someMethod("some arg"))
-   .thenReturn("one", "two", "three");
 
 </wiki> isSus
 
   include(argumentMatchers)
+  include(callbacks)
+  include(numberOfInvocations)
 }
 trait MockitoSpecification extends Mockito with Expectations with SnipIt with Wiki with Html with JUnit {
   def executeIs(s: String) = { execute(it) must include(s) }
+  implicit def toOutputSnippet(s: String) = OutputSnippet(s)
+  case class OutputSnippet(s: String) {
+    def add_> = {
+      s add it
+      "> " + execute(it)
+    } 
+  }
   def >(s: String) = outputIs(s)
   def outputIs(s: String) = {
     val result = execute(it)
