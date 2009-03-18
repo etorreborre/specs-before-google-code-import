@@ -3,7 +3,7 @@ import org.specs._
 import org.specs.util._
 import org.specs.runner._
 
-class literateSnippetSpec extends LiterateSpecification("Literate snippet") with JUnit with Html with Examples { <wiki>
+class literateSnippetSpec extends LiterateSpecification("Literate snippet") with Html with Examples with JUnit { <wiki>
 
 h3. Declaration
 

@@ -1,6 +1,12 @@
 package org.mockito
 import org.mockito.stubbing.Answer
 
+/**
+ * This class is created to get an access to the MOCKING_PROGRESS Mockito package variable which is package protected.
+ * Then it delegates all the methods to the Mockito static methods.
+ * 
+ * @see org.specs.mock.Mockito
+ */
 class MockitoMocker {
   def mockingProgress = Mockito.MOCKING_PROGRESS
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure).asInstanceOf[T]

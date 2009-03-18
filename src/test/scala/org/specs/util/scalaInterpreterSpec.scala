@@ -17,14 +17,6 @@ class scalaInterpreterSpec extends Specification with JUnit with ScalaInterprete
                     "a + b"
       interpret(snippet) must include("2")
     }
-    "interpret a specification with traits" in {
-      val snippet = """
-      object s extends org.specs.Specification with org.specs.mock.Mockito {
-        val l = mock[List[String]]
-      }
-      """
-      interpret(snippet) must notInclude("error")
-    }
     "return the error if any" in {
       interpret("1 + me") must (include("error: not found: value me") and
                                 include(" 1 + me") and
