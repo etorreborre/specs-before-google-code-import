@@ -143,13 +143,17 @@ When several values need to be stubbed this version of returns would also work: 
 { "s7.mockedList.get(0)" add it }
 { >("world") }
 
- 
+h3. Spies
+
+You can create { linkTo(spies) } of real objects. When you use a spy then the real methods are called (unless a method was stubbed).
+   
 
 </wiki> isSus
 
   include(argumentMatchers)
   include(callbacks)
   include(numberOfInvocations)
+  include(spies)
 }
 trait MockitoSpecification extends Mockito with Expectations with SnipIt with Wiki with Html with JUnit {
   def executeIs(s: String) = { execute(it) must include(s) }
