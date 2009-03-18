@@ -4,6 +4,8 @@ import org.mockito.stubbing.Answer
 class MockitoMocker {
   def mockingProgress = Mockito.MOCKING_PROGRESS
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure).asInstanceOf[T]
+  def mock[T](implicit m: scala.reflect.Manifest[T], v: org.mockito.ReturnValues): T = Mockito.mock(m.erasure, v).asInstanceOf[T]
+  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure, Mockito.RETURNS_SMART_NULLS).asInstanceOf[T]
   def spy[T](m: T): T = Mockito.spy(m)
   def when[V](v: V) = Mockito.when(v)
   def times(i: Int) = Mockito.times(i)

@@ -147,13 +147,17 @@ h3. Spies
 
 You can create { linkTo(spies) } of real objects. When you use a spy then the real methods are called (unless a method was stubbed).
    
+h3. Return values
 
+Speficic { linkTo(returnValues) } can be returned on unstubbed methods.
+  
 </wiki> isSus
 
   include(argumentMatchers)
   include(callbacks)
   include(numberOfInvocations)
   include(spies)
+  include(returnValues)
 }
 trait MockitoSpecification extends Mockito with Expectations with SnipIt with Wiki with Html with JUnit {
   def executeIs(s: String) = { execute(it) must include(s) }

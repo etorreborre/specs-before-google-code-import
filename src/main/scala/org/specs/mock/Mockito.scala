@@ -22,6 +22,7 @@ trait Mockito extends ExpectableFactory with NumberOfTimes with ExampleLifeCycle
   private val mocker = new MockitoMocker
 
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
+  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.smartMock(m)
   def spy[T](m: T): T = mocker.spy(m)
 
   implicit def theCall(c: =>Any) = new CalledMock(c)
