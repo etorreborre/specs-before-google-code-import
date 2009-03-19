@@ -209,22 +209,6 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
   /** shortcut for expectations.`with`(new IsSame[T](value)) */
   def same[T](value: T)  = {expectations.`with`(new IsSame[T](value)); value}
   
-  /** Adapter class to use specs matchers as Hamcrest matchers */
-  case class HamcrestMatcherAdapter[T](m: org.specs.matcher.Matcher[T]) extends org.hamcrest.TypeSafeMatcher[T] {
-     var resultMessage: String = ""
-     def matchesSafely(item: T) = {
-       val result = m.apply(item)
-       if (result._1)
-         resultMessage = result._2
-       else
-         resultMessage = result._3
-       result._1
-     }
-     def describeTo(description: Description ) = {
-       new org.hamcrest.StringDescription(new StringBuffer(resultMessage))
-     }
-  }
-
   /** @returns a specs matcher adapted into Hamcrest matcher */
   implicit def will[T](m: org.specs.matcher.Matcher[T]): T = {
     expectations.`with`(new HamcrestMatcherAdapter[T](m))
@@ -497,6 +481,21 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     def neverExpects(f: T => Any)(implicit m: Manifest[T]) = block((m:T) => f(outer.never(m)))(m)
 
   }
+}
+/** Adapter class to use specs matchers as Hamcrest matchers */
+case class HamcrestMatcherAdapter[T](m: org.specs.matcher.Matcher[T]) extends org.hamcrest.TypeSafeMatcher[T] {
+   var resultMessage: String = ""
+   def matchesSafely(item: T) = {
+     val result = m.apply(item)
+     if (result._1)
+       resultMessage = result._2
+     else
+       resultMessage = result._3
+     result._1
+   }
+   def describeTo(description: Description ) = {
+     new org.hamcrest.StringDescription(new StringBuffer(resultMessage))
+   }
 }
 
 /**

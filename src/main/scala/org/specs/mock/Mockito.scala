@@ -1,3 +1,4 @@
+
 package org.specs.mock
 import org.specs.specification._
 import org.specs.NumberOfTimes
@@ -197,7 +198,7 @@ trait InteractionMatchers extends ExpectableFactory {
       m must interactionMatcher
     }
   }
-//  /** @return a NoMoreCallsMatcher. */
+  /** @return a NoMoreCallsMatcher. */
   def noMoreCalls[T <: AnyRef] = new NoMoreCalls[T]
   /** This class allows the expecations to potentially use other ways of checking the interactions on a mock.*/
   abstract class InteractionMatcher[T <: AnyRef] extends Matcher[T] 
@@ -296,4 +297,6 @@ trait Stubs {
     def thenReturns(t: T) = stub.thenReturn(t)
     def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
   }
+  /** allows to use a specs matcher to match parameters by encapsulating it as a Hamcrest matcher. */
+  implicit def argThat[T](m: org.specs.matcher.Matcher[T]): T = org.mockito.Matchers.argThat(new org.specs.mock.HamcrestMatcherAdapter(m))
 }

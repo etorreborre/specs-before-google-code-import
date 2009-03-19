@@ -1,3 +1,4 @@
+
 package org.specs.mock
 import org.specs.specification._
 import org.specs.runner._
@@ -21,7 +22,7 @@ Let's import some definitions first: {"""
 
 And create a specification with mocks: {"""
 
-  object s extends Specification with Mockito {
+  object args1 extends Specification with Mockito {
     val mockedList = mock[List[String]]
     
     // stubbing using built-in anyInt() argument matcher
@@ -34,22 +35,31 @@ And create a specification with mocks: {"""
 
 Then, <ex>calling the mocked list with any argument must return "element"</ex>: 
   
-{ "s.mockedList.get(999)" snip it } 
+{ "args1.mockedList.get(999)" snip it } 
 { >("element")}
 
 and <ex>calling the mocked list @contains@ method with a valid argument must return "true" if the passed argument is null</ex>:
   
-{ "s.mockedList.contains(null)" snip it } 
+{ "args1.mockedList.contains(null)" snip it } 
 { >("true")}
 
 <ex>It is also possible to verify that a mock was called with an argument matcher</ex>: {"""
 
-  object s2 extends Specification with Mockito {
-    s.mockedList.get(999)
-    s.mockedList.get(isEq(999)) was called
+  object args2 extends Specification with Mockito {
+    args1.mockedList.get(999)
+    args1.mockedList.get(isEq(999)) was called
   }
-  s2.successes""" snip it }
+  args2.successes""" snip it }
   { >("example 1")}
 
+<ex>Instead of Hamcrest matchers, a specs matcher can be used</ex>:{"""
+  object args3 extends Specification with Mockito {
+    val mockedList = mock[List[String]]
+    mockedList.get(==(123)) returns "one"
+  }
+  args3.mockedList.get(123)
+  """ snip it } 
+  { >("one")}
+  
   </wiki> isSus
 }
