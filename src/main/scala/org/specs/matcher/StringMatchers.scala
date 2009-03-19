@@ -167,4 +167,10 @@ trait StringMatchers {
        )
     } 
   }
+  /**
+   * Matches if the length is n
+   */
+  def haveLength(n: Int) = new Matcher[String](){
+    def apply(v: => String) = {val string = v; (string.length == n, d(string) + " has length " + n, d(string) + " doesn't have length " + n)}
+  }
 }
