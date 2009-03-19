@@ -31,7 +31,6 @@ trait AnyMatchers {
    * Matches if !(a eq b)
    */
   def notBe(a: =>Any) = be(a).not
-
   /**
    * Matches if (a == b)
    * @deprecated use beEqualTo instead
@@ -68,11 +67,14 @@ trait AnyMatchers {
       ((x == y), d(y) + " is equal to " + q(x), failureMessage)
     }
   }
-
   /**
    * Alias of is_==
    */
   def be_==(a: =>Any)(implicit d: Detailed) = is_==(a)(d)
+  /**
+   * Alias of is_==
+   */
+  def ==(a: =>Any)(implicit d: Detailed) = is_==(a)(d)
 
   /**
    * Matches if (a neq b)
@@ -83,19 +85,24 @@ trait AnyMatchers {
    * Matches if (a != b)
    */
   def is_!=(a: =>Any)(implicit d: Detailed) = (is_==(a)(d)).not
-
+  /**
+   * Matches if (a != b)
+   */
+  def !=(a: =>Any)(implicit d: Detailed) = is_!=(a)(d)
   /**
    * Matches if (a != b)
    */
   def be_!=(a: =>Any)(implicit d: Detailed) = (is_==(a)(d)).not
-
   /**
    * Matches if b is null
    */
   def beNull[T] = new Matcher[T](){
     def apply(v: =>T) = { val b = v; (b == null, description.getOrElse("the value") + " is null", d(b) + " is not null") }
   }
-
+  /**
+   * Alias for beNull
+   */
+  def isNull[T] = beNull[T]
   /**
    * @deprecated use beAsNullAs
    */
@@ -111,26 +118,38 @@ trait AnyMatchers {
        if (x == null) d(y) + " is not null" else q(x) + " is not null" + description.map(" but " + _ + " is null").getOrElse(""))
     }
   }
-
+  /**
+   * Alias for beAsNullAs
+   */
+  def isAsNullAs[T](a: =>T) = beAsNullAs(a)
   /**
    * Matches if b is not null
    */
   def notBeNull[T] = beNull[T].not
-
+  /**
+   * Alias for notBeNull
+   */
+  def isNotNull[T] = notBeNull[T]
   /**
    * Matches if b is true
    */
   def beTrue = new Matcher[Boolean](){
     def apply(v: =>Boolean) = { val b = v; (b == true, description.getOrElse("the value") + " is true", description.getOrElse("the value") + " is false") }
   }
-
+  /**
+   * Alias for beTrue
+   */
+  def isTrue = beTrue
   /**
    * Matches if b is false
    */
   def beFalse[Boolean] = new Matcher[Boolean](){
     def apply(v: =>Boolean) = { val b = v; (b == false, description.getOrElse("the value") + " is false", description.getOrElse("the value") + " is true") }
   }
-
+  /**
+   * Alias for beFalse
+   */
+  def isFalse = beFalse
   /**
    * Matches if iterable.exists(_ == a)
    */
@@ -140,12 +159,26 @@ trait AnyMatchers {
       (x.exists(_ == y), d(y) + " is in " + q(x), d(y) + " is not in " + q(x))
     }
   }
-
+  /**
+   * Alias for beIn
+   */
+  def isIn[T](iterable: =>Iterable[T]): Matcher[T] = beIn(iterable)
+  /**
+   * Alias for beIn
+   */
+  def in[T](iterable: =>Iterable[T]): Matcher[T] = beIn(iterable)
   /**
    * Matches if not(iterable.exists(_ == a))
    */
   def notBeIn[T](iterable: =>Iterable[T]): Matcher[T] = beIn[T](iterable).not
-
+  /**
+   * Alias for notBeIn
+   */
+  def isNotIn[T](iterable: =>Iterable[T]): Matcher[T] = notBeIn(iterable)
+  /**
+   * Alias for notBeIn
+   */
+  def notIn[T](iterable: =>Iterable[T]): Matcher[T] = notBeIn(iterable)
   /**
    * Matches if t.toSeq.exists(_ == v)
    */
@@ -155,11 +188,26 @@ trait AnyMatchers {
       (x.exists(_ == y), d(y) + " is one of " + q(x.mkString(", ")), d(y) + " is not one of " + q(x.mkString(", ")))
     }
   }
-
+  /**
+   * Matches beOneOf
+   */
+  def isOneOf[T](t: T*): Matcher[T] = beOneOf(t:_*)
+  /**
+   * Matches beOneOf
+   */
+  def oneOf[T](t: T*): Matcher[T] = beOneOf(t:_*)
   /**
    * Matches if not(t.toSeq.exists(_ == v))
    */
   def notBeOneOf[T](t: T*): Matcher[T] = beOneOf(t:_*).not
+  /**
+   * Matches notBeOneOf
+   */
+  def isNotOneOf[T](t: T*): Matcher[T] = notBeOneOf(t:_*)
+  /**
+   * Matches notBeOneOf
+   */
+  def notOneOf[T](t: T*): Matcher[T] = notBeOneOf(t:_*)
 
   type T1 = Any { def isEmpty: Boolean }
   /**
@@ -171,22 +219,26 @@ trait AnyMatchers {
       (iterable.isEmpty, dUnquoted(iterable) + " is empty", dUnquoted(iterable) + " is not empty")
     }
   }
-
   /**
    * Matches if not(beEmpty(a))
    */
   def notBeEmpty[S <: T1] = beEmpty[S].not
-
   /**
    * Alias of notBeEmpty
    */
   def isNotEmpty[S <: T1] = notBeEmpty[S]
-
+  /**
+   * Alias of notBeEmpty
+   */
+  def notEmpty[S <: T1] = notBeEmpty[S]
   /**
    * Alias of beEmpty
    */
   def isEmpty[S <: T1] = beEmpty[S]
-
+  /**
+   * Alias of beEmpty
+   */
+  def empty[S <: T1] = beEmpty[S]
   /**
    * Matches if the function f returns true
    */

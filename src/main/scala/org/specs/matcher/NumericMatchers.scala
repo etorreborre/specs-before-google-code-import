@@ -19,6 +19,10 @@ trait NumericMatchers {
    * Alias for beLessThan.
    */   
   def be_<[S <% Double](n: S) = beLessThan(n)
+  /**
+   * Alias for beLessThan.
+   */   
+  def <[S <% Double](n: S) = beLessThan(n)
 
   /**
    * Matches if x <= n.
@@ -36,6 +40,10 @@ trait NumericMatchers {
    */   
   def be_<=[S <% Double](n: S) = beLessThanOrEqualTo(n)
   /**
+   * Alias for beLessThanOrEqualTo.
+   */   
+  def <=[S <% Double](n: S) = beLessThanOrEqualTo(n)
+  /**
    * Matches if x >= n.
    */   
   def beGreaterThanOrEqualTo[S <% Double](n: S) = beLessThan(n).not
@@ -43,6 +51,10 @@ trait NumericMatchers {
    * Alias for beGreaterThanOrEqualTo.
    */   
   def be_>=[S <% Double](n: S) = beGreaterThanOrEqualTo(n)
+  /**
+   * Alias for beGreaterThanOrEqualTo.
+   */   
+  def >=[S <% Double](n: S) = beGreaterThanOrEqualTo(n)
   /**
    * Matches if x > n.
    */   
@@ -52,6 +64,10 @@ trait NumericMatchers {
    */   
   def be_>[S <% Double](n: S) = beGreaterThan(n)
   /**
+   * Alias for beGreaterThan.
+   */   
+  def >[S <% Double](n: S) = beGreaterThan(n)
+  /**
    * Matches if x = n +/- delta.
    */   
   def beCloseTo[S <% Double](n: S, delta: S) = new Matcher[S](){ 
@@ -59,4 +75,8 @@ trait NumericMatchers {
                                       dUnquoted(f(x)) + " is close to " + f(n) + " +/- " + delta, 
                                       dUnquoted(f(x)) + " is not close to " + f(n) + " +/- " + delta)}
   }
+  /**
+   * Alias for beCloseTo.
+   */   
+  def ~[S <% Double](n: S, delta: S) = beCloseTo(n, delta)
 }
