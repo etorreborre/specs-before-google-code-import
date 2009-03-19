@@ -33,9 +33,9 @@ trait ObjectGraph {
 trait ObjectGraphMatchers extends ObjectGraph with Matchers {
   case class matchFoo(foo: Foo) extends Matcher[Foo] {
     def apply(other: => Foo) = {
-      ((beEqualTo(_:String)) ^^^ ((f:Foo) => f.name) and
-       (matchBar(_)) ^^^ ((f: Foo) => foo.solobar) and
-       (matchBar(_)).toSet ^^^ ((f: Foo) => foo.bars))(foo)(other)
+      ((beEqualTo(_:String)) ^^^ ((_: Foo).name) and
+       (matchBar(_)) ^^^ ((_: Foo).solobar) and
+       (matchBar(_)).toSet ^^^ ((_: Foo).bars))(foo)(other)
     }
   }
   case class matchBar(bar: Bar) extends Matcher[Bar] {
