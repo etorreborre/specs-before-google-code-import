@@ -12,7 +12,7 @@ import org.specs.io._
 class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExamples {
   "A 'pass' matcher" should {
     "be ok if a property is true for all generated values" in {
-      alwaysTrue must pass(isTrue)
+      alwaysTrue must pass(trueFunction)
     }
     "be ok with a true property" in {
       alwaysTrueProp must pass
@@ -21,19 +21,19 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
       expectation(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d+ tr(y|ies)\\)")
     }
     "be ko if a property is false for a generated value" in {
-      expectation(alwaysTrue must pass(isFalse)) must failWithMatch("A counter-example is 'true' \\(after \\d+ tr(y|ies)\\)")
+      expectation(alwaysTrue must pass(falseFunction)) must failWithMatch("A counter-example is 'true' \\(after \\d+ tr(y|ies)\\)")
     }
     "be ko if a expectation is false for a generated value. The failure message should be the assert ko message" in {
       expectation(random must pass(identityAssert)) must failWithMatch("A counter-example is 'false': 'false' is not the same as 'true' \\(after \\d tr(y|ies)\\)")
     }
     "be ko if checking the values generation yields an exception" in {
-      expectation(exceptionValues must pass(isTrue)) must failWithMatch("Exception raised on argument generation")
+      expectation(exceptionValues must pass(trueFunction)) must failWithMatch("Exception raised on argument generation")
     }
     "be ko if checking the property yields an exception during its evaluation" in {
       expectation(alwaysTrue must pass(exceptionProperty)) must failWithMatch("Exception raised on property evaluation")
     }
     "be ko if all values have been exhausted before the min number of ok tests is reached" in {
-      expectation(Gen.fail[Boolean] must pass(isTrue)(set(maxDiscarded->10))) must failWith("Gave up after only 0 passed tests. 10 tests were discarded.")
+      expectation(Gen.fail[Boolean] must pass(trueFunction)(set(maxDiscarded->10))) must failWith("Gave up after only 0 passed tests. 10 tests were discarded.")
     }
     "accept properties based on scalacheck commands" in  {
       expectation(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
@@ -83,8 +83,8 @@ trait ScalaCheckExamples extends Specification with ScalaCheck {
   val alwaysFalse = elements(false)
   val random = elements(true, false)
   val exceptionValues = Gen(p => throw new Exception("e"))
-  val isTrue = ((x: Boolean) => true)
-  val isFalse = ((x: Boolean) => false)
+  val trueFunction = ((x: Boolean) => true)
+  val falseFunction = ((x: Boolean) => false)
   val identityAssert: Boolean => Boolean = ((x: Boolean) => x mustBe true)
   val exceptionProperty = ((x: Boolean) => throw new Exception("e"))
 }
