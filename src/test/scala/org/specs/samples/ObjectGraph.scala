@@ -23,25 +23,29 @@ trait ObjectGraph {
   import scala.collection.mutable
 
   case class Foo(val name:String) {
-    var solobar: Bar = _
+    var solobar: Bar = null
     val bars = mutable.Set[Bar]()
   }
-
   case class Bar(val id: Long)
 }
 
 trait ObjectGraphMatchers extends ObjectGraph with Matchers {
   case class matchFoo(foo: Foo) extends Matcher[Foo] {
     def apply(other: => Foo) = {
-      ((beEqualTo(_:String)) ^^^ ((f:Foo) => f.name) and
-       (matchBar(_)) ^^^ ((f: Foo) => foo.solobar) and
-       (matchBar(_)).toSet ^^^ ((f: Foo) => foo.bars))(foo)(other)
+      ((beEqualTo(_:String)) ^^^ ((_:Foo).name) and
+       (matchOptionalBar(_)) ^^^ ((_:Foo).solobar) and
+       (matchBar(_)).toSet ^^^ ((_:Foo).bars))(foo)(other)
+    }
+  }
+  case class matchOptionalBar(bar: Bar) extends Matcher[Bar] {
+    def apply(other: => Bar) = {
+      ((beAsNullAs(_:Bar)) or
+      ((matchBar(_))))(bar)(other)
     }
   }
   case class matchBar(bar: Bar) extends Matcher[Bar] {
     def apply(other: => Bar) = {
-      ((beAsNullAs(_:Bar)) or
-      ((beEqualTo(_:Long)) ^^^ ((b: Bar) => b.id)))(bar)(other)
+      ((beEqualTo(_:Long)) ^^^ ((_: Bar).id))(bar)(other)
     }
   }
 }
