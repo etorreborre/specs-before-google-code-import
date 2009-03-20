@@ -211,7 +211,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-		  <argLine>-Xmx256m</argLine>
+		  <argLine>-Xmx512m</argLine>
 		  <includes>
             <include>**/*Unit.java</include>
             <include>**/*Spec.java</include>

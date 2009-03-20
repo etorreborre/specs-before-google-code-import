@@ -23,7 +23,7 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
   }
 
   /** implicit transformation of a String into an object supporting String matchers */
-  implicit def theString[A >: String](value: =>A) = {
+  implicit def theString(value: =>String) = {
     val a = new StringExpectable(value.toString)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)

@@ -9,7 +9,7 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 
-class consoleReporterSpec extends Specification with MockOutput with JUnit {
+class consoleReporterSpec extends Specification with JUnit {
   "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
@@ -117,6 +117,12 @@ class consoleReporterSpec extends Specification with MockOutput with JUnit {
     "not display the sus at all if all examples are ok with the -xOnly flag" in {
       runWith("-acc", "in", "-xOnly") must notContainMatch("this sus")
     }
+    "not display the statistics with the -finalstats or --finalstatistics flag" in {
+      run2SystemsWith("-finalstats") must notContainMatch("for SUT")
+    }
+    "not display the statistics with the -nostats or --nostatistics flag" in {
+      runWith("-nostats") must notContainMatch("Total time")
+    }
     "print a help message with the options description if passed the -h or --help flag" in {
       mainWith("--help") must containMatch("--help")
     }
@@ -153,14 +159,22 @@ class consoleReporterSpec extends Specification with MockOutput with JUnit {
     specRunner.reportSpecs
     specRunner.messages.toList
   }
+  def run2SystemsWith(args: String*): List[String] = {
+    specTwoSystemsRunner.args = args.toArray
+    specTwoSystemsRunner.reportSpecs
+    specTwoSystemsRunner.messages.toList
+  }
   def mainWith(args: String*): List[String] = {
     specRunner.main(args.toArray)
     specRunner.messages.toList
   }
   def clean = {
-    specRunner.resetOptions()
+    specTwoSystemsRunner.resetOptions()
+    specRunner.resetOptions
     spec.acceptAnyTag
     spec.resetForExecution
+    specTwoSystems.acceptAnyTag
+    specTwoSystems.resetForExecution
     specRunner.messages.clear
   }
   object spec extends Specification {
@@ -173,10 +187,14 @@ class consoleReporterSpec extends Specification with MockOutput with JUnit {
     }
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput
-
+  object specTwoSystems extends Specification {
+    "this is system one" should { "do nothing" in {} }
+    "this is system two" should { "do nothing" in {} }
+  }
+  object specTwoSystemsRunner extends ConsoleRunner(specTwoSystems) with MockOutput
+  def specWithTwoSystems = new SpecWithTwoSystems().run
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
-  def specWithTwoSystems = new SpecWithTwoSystems().run
 }
 abstract class TestSpecification extends LiterateSpecification with Console with MockOutput {
   override val specs = List(this)

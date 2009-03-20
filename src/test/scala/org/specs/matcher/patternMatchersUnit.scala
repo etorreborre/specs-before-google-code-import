@@ -4,7 +4,7 @@ import org.specs.Sugar._
 class patternMatchersUnit extends MatchersSpecification {
   "A 'beLike' pattern matcher" should {
     "be ok even with a null pattern" in {
-      val pattern : (Any => Boolean) = null
+      val pattern : (String => Boolean) = null
       expectation("name" must beLike(pattern)) must failWith("'name' doesn't match the expected pattern")
     }
     "be ok even with a null value" in {
@@ -13,7 +13,7 @@ class patternMatchersUnit extends MatchersSpecification {
     }
     "not evaluate the expressions twice" in {
       val anyValue: Any = 1
-      beLike { case 1 => ok } must evalOnce(exp(anyValue))
+      beLike { (s:Any) => s match { case _ => ok } } must evalOnce(exp(anyValue))
     }
   }
   "A 'beSome' option matcher" should {

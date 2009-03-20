@@ -11,5 +11,16 @@ class varianceSpec extends MatchersSpecification {
       map must (haveKey ("two") or contain ("two" -> 2))
       map must (haveKey ("seven") xor contain ("two" -> 2))
     }
+    "allow matchers to be and-ed even with structural types" in {
+      "hello" must haveSize(5)
+      // "hello" is a { def size: Int }
+      // however it is not possible to write
+      // "hello" must (haveSize(5) and include("h")) because include needs a string 
+      "hello" must (include("h") and haveSize(5)) 
+      
+      // in that case we case use haveLength which works on java.lang.String
+      "hello" must (haveLength(5) and include("h"))
+      "hello" must (include("h") and haveLength(5))
+    }
   }
 }

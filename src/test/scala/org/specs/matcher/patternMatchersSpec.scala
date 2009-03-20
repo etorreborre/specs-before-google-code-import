@@ -8,10 +8,10 @@ class patternMatchersSpec extends MatchersSpecification {
       "a" must beLike { case "a" => ok }
       ("a", "b") must beLike { case ("a", _) => ok }
       ("a", "b", "c") must beLike { case ("a", _, _) => ok }
-      expectation(("a", "b", "c") must beLike { case ("a", _) => ok }) must
+      expectation(("a", "b", "c") must beLike { case ("a", "c", _) => ok }) must
                        failWith ("'(a,b,c)' doesn't match the expected pattern")
 
-      expectation(("a", "b", "c") aka "the triplet" must beLike { case ("a", _) => ok }) must
+      expectation(("a", "b", "c") aka "the triplet" must beLike { case ("a", "c", _) => ok }) must
                        failWith ("the triplet '(a,b,c)' doesn't match the expected pattern")
 
       expectation(("a", "b", "c") must not(beLike { case ("a", _, _) => ok })) must

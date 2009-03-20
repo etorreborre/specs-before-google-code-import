@@ -6,13 +6,16 @@ trait ScalaInterpreter {
   private val writer = new StringWriter
   private val interpreter = createInterpreter
   private def createInterpreter = {
-    val settings = new Settings(null)
+    val settings = new Settings()
     settings.classpath.value = List(
      settings.classpath.value,
-     new File(classOf[ScalaObject].getProtectionDomain.getCodeSource.getLocation.toURI).getAbsolutePath).mkString(File.pathSeparator)
+     new File(classOf[org.mockito.Mockito].getProtectionDomain.getCodeSource.getLocation.toURI).getAbsolutePath,
+     new File(classOf[ScalaInterpreter].getProtectionDomain.getCodeSource.getLocation.toURI).getAbsolutePath,
+     new File(classOf[ScalaObject].getProtectionDomain.getCodeSource.getLocation.toURI).getAbsolutePath
+    ).mkString(File.pathSeparator)
     
     new Interpreter(settings, new PrintWriter(writer)){
-      override def parentClassLoader = Thread.currentThread.getContextClassLoader 
+ //     override def parentClassLoader = Thread.currentThread.getContextClassLoader 
     }
   }
   private def clear(writer: StringWriter) = {

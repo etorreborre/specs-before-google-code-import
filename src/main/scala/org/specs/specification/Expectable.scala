@@ -48,7 +48,7 @@ trait Expectable[T] {
    * The expectation listener gets notified of a new expectation with a fresh copy of this expectable.
    * The matcher gets
    */
-  def applyMatcher[U >: T](m: => Matcher[U], value: => T): SuccessValue = {
+  def applyMatcher(m: => Matcher[T], value: => T): SuccessValue = {
     expectationsListener.map(_.addExpectation(Some(this)))
 
     val failureTemplate = FailureException("")
@@ -107,15 +107,15 @@ class Expectation[T](value: => T) extends Expectable[T] {
   /**
    * applies a matcher to the current value and throw a failure is the result is not true
    */
-  def must[S >: T](m: => Matcher[S]) = applyMatcher[S](m, value)
+  def must(m: => Matcher[T]) = applyMatcher(m, value)
 
   /**
    * applies the negation of a matcher
    */
-  def mustNot[S >: T](m: => Matcher[S]) =  must(m.not)
+  def mustNot(m: => Matcher[T]) =  must(m.not)
 
   /** alias for <code>must verify(f)</code>  */
-  def mustVerify[S >: T](f: S => Boolean) = must(verify(f))
+  def mustVerify(f: T => Boolean) = must(verify(f))
 
   /** alias for <code>mustVerify(f)</code>  */
   def verifies(f: T => Boolean) = mustVerify(f)

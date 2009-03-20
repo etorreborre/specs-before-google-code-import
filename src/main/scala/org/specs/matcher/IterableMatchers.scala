@@ -143,8 +143,8 @@ trait IterableMatchers {
   /**
    * Matches if the size is n
    */
-  def haveSize(n: Int) = new Matcher[Collection[Any]](){
-    def apply(v: => Collection[Any]) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
+  def haveSize[T <% {def size: Int}](n: Int) = new Matcher[T](){
+    def apply(v: => T) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
   }
 }
 class HaveTheSameElementsAs[T] (l: Iterable[T]) extends Matcher[Iterable[T]] {
