@@ -29,7 +29,7 @@ And create a specification with mocks: {"""
     mockedList.get(anyInt()) returns "element"
 
     // stubbing using hamcrest (let's say IsNull returns your own hamcrest matcher):
-    mockedList.contains(argThat(new IsNull)) returns true
+    mockedList.contains(argThat(new IsNull[String])) returns true
   }
 """ prelude it }
 

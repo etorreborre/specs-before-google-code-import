@@ -299,4 +299,6 @@ trait Stubs {
   }
   /** allows to use a specs matcher to match parameters by encapsulating it as a Hamcrest matcher. */
   implicit def argThat[T](m: org.specs.matcher.Matcher[T]): T = org.mockito.Matchers.argThat(new org.specs.mock.HamcrestMatcherAdapter(m))
+  /** allows to use a hamcrest matchers to match parameters. */
+  def argThat[T](m: org.hamcrest.Matcher[T]): T = org.mockito.Matchers.argThat(m)
 }
