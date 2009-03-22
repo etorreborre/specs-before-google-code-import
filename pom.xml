@@ -191,7 +191,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </execution>
         </executions>
         <configuration>
-          <scalaVersion>${scala.version}</scalaVersion>
+          <args><arg>-unchecked</arg></args>
           <jvmArgs>
             <jvmArg>-Xmx512m</jvmArg>
             <jvmArg>-Xms64m</jvmArg>
