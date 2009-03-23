@@ -121,8 +121,8 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
   /** delegate to Mockito. */
   protected val mocker: org.mockito.MockitoMocker
   
-  /** transforms a call to an expectation accepting a CalledMatcher. */
-  implicit def theCall(c: =>Any) = new CalledMock(c)
+  /** create a CalledMock object for a method call. */
+  implicit def theMethod(c: =>Any) = new CalledMock(c)
 
   /** provides methods creating calls expectations. */
   class CalledMock(c: =>Any) {
@@ -132,6 +132,7 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
     def wasnt(callMatcher: CalledMatcher) = {
       theValue(c) must (callMatcher.times(0))
     }
+    def on(m: AnyRef) = MockCall(Some(m), () => c)
   }
   /** @return a new CalledMatcher. */
   def called = new CalledMatcher
@@ -139,6 +140,8 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
   def called(r: RangeInt): CalledMatcher = new CalledMatcher().times(r.n)
   /** @return a CalledMatcher with times(0). */
   def notCalled = new CalledMatcher().times(0)
+  /** @return a new CalledInOrder */
+  def calledInOrder: CalledInOrderMatcher = called.inOrder
   /** this value can be used in mock.method was called.atLeast(once). */
   val once = new RangeInt(1)
 
@@ -152,6 +155,7 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
       }
       result
     }
+    /** create a CalledInOrderMatcher. Alias for calledInOrder. */
     def inOrder = new CalledInOrderMatcher
   }
 }
@@ -212,15 +216,11 @@ trait CalledInOrderMatchers extends ExpectableFactory with NumberOfTimes {
   /** delegate to Mockito. */
   protected val mocker: org.mockito.MockitoMocker
   
-  /** transforms a call to an expectation accepting a CalledMatcher. */
-  implicit def theMethod(c: => Any) = new MockCall(() => c)
-
   /** provides methods creating in order calls expectations. */
   case class MockCall(mock: Option[AnyRef], result: () => Any) extends HasInOrderVerificationMode { 
     def this(result: () => Any) = this(None, result)
     def verifInOrderMode = verificationMode.asInstanceOf[VerificationInOrderMode]
     def then(other: MockCall): MockCallsList = MockCallsList(List(this)).then(other)
-    def on(m: AnyRef) = MockCall(Some(m), result).setVerificationMode(verificationMode)
   }
   /** represent a sequence of in order calls. */
   case class MockCallsList(calls: List[MockCall]) {
