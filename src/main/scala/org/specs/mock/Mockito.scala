@@ -5,7 +5,8 @@ import org.specs.NumberOfTimes
 import org.mockito.stubbing.Answer
 import org.mockito.internal.stubbing.StubberImpl
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
+import org.mockito.internal.verification.api.{ VerificationInOrderMode, VerificationMode }
 import org.mockito.internal.progress.NewOngoingStubbing
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
@@ -33,7 +34,7 @@ import org.specs.matcher.MatcherUtils._
  * 
  * See the method descriptions for more usage examples.  
  */
-trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with Stubs { 
+trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with Stubs { 
   
   /** delegate to Mockito static methods. */
   protected val mocker = new org.mockito.MockitoMocker
@@ -116,7 +117,7 @@ trait MockitoLifeCycle extends ExampleLifeCycle {
  * 
  * </code>
  */
-trait CalledMatchers extends ExpectableFactory with NumberOfTimes {
+trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInOrderMatchers {
   /** delegate to Mockito. */
   protected val mocker: org.mockito.MockitoMocker
   
@@ -135,15 +136,14 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes {
   /** @return a new CalledMatcher. */
   def called = new CalledMatcher
   /** @return a new CalledMatcher().times(range.n) */
-  def called(r: RangeInt) = new CalledMatcher().times(r.n)
-  /** this value can be used in mock.method was called.atLeast(once). */
-  val once = new RangeInt(1)
+  def called(r: RangeInt): CalledMatcher = new CalledMatcher().times(r.n)
   /** @return a CalledMatcher with times(0). */
   def notCalled = new CalledMatcher().times(0)
+  /** this value can be used in mock.method was called.atLeast(once). */
+  val once = new RangeInt(1)
 
-  /** Matcher accepting a call and checking if the method was called according to the verification mode: once, times(2), atLeast(oncee,...) */
-  class CalledMatcher extends Matcher[Any] {
-    private var verificationMode = mocker.times(1)
+  /** Matcher accepting a call and checking if the method was called according to the verification mode: once, times(2), atLeast(once,...) */
+  class CalledMatcher extends Matcher[Any] with HasVerificationMode {
     def apply(v: =>Any) = {
       mocker.mockingProgress.verificationStarted(verificationMode)
       var result = (true, "The method was called", "The method was not called")
@@ -152,35 +152,103 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes {
       }
       result
     }
-    /** verification mode = times(1). This is the default. */
-    def once = this
-    /** verification mode = times(2). */
-    def twice = times(2)
-    /** verification mode = times(i). */
-    def times(i: Int) = {
-      verificationMode = mocker.times(i)
-      this
-    }
-    /** verification mode = atLeast(1). */
-    def atLeastOnce = atLeast(1) 
-    /** verification mode = atLeast(2). */
-    def atLeastTwice = atLeast(2)
-    /** verification mode = atLeast(range.n). */
-    def atLeast(r: RangeInt) = { 
-      verificationMode = VerificationModeFactory.atLeast(r.n)
-      this
-    }
-    /** verification mode = atMost(1). */
-    def atMostOnce = atMost(1) 
-    /** verification mode = atMost(2). */
-    def atMostTwice = atMost(2)
-    /** verification mode = atMost(range.n). */
-    def atMost(r: RangeInt) = { 
-      verificationMode = VerificationModeFactory.atMost(r.n)
-      this
+    def inOrder = new CalledInOrderMatcher
+  }
+}
+/**
+ * This trait provides functions to set the verification mode for InOrder verifications.
+ * This means that it only supports AtLeast and Times verification modes.
+ */
+trait HasInOrderVerificationMode extends Sugar {
+  
+  protected var verificationMode = org.mockito.Mockito.times(1)
+  /** verification mode = times(1). This is the default. */
+  def once: this.type = this
+  /** verification mode = times(2). */
+  def twice: this.type = this.times(2)
+  /** verification mode = times(i). */
+  def times(i: Int): this.type = setVerificationMode(org.mockito.Mockito.times(i))
+  /** verification mode = atLeast(1). */
+  def atLeastOnce: this.type = this.atLeast(1) 
+  /** verification mode = atLeast(2). */
+  def atLeastTwice: this.type = this.atLeast(2)
+  /** verification mode = atLeast(range.n). */
+  def atLeast(r: RangeInt): this.type = setVerificationMode(VerificationModeFactory.atLeast(r.n))
+  /** sets the verification mode. */
+  def setVerificationMode(v: VerificationMode): this.type = {
+    verificationMode = v
+    this
+  }
+}
+/**
+ * This trait provides functions to set the verification mode
+ */
+trait HasVerificationMode extends HasInOrderVerificationMode {
+  
+  /** verification mode = atMost(1). */
+  def atMostOnce: this.type = atMost(1) 
+  /** verification mode = atMost(2). */
+  def atMostTwice: this.type = atMost(2)
+  /** verification mode = atMost(range.n). */
+  def atMost(r: RangeInt): this.type = { 
+    verificationMode = VerificationModeFactory.atMost(r.n)
+    this
+  }
+}
+/**
+ * This trait provides an additional matcher to check if some methods methods have been called in the right order on mocks:<code>
+ *    theMethod(m1.get(0)).on(m1).atLeastOnce then
+ *    theMethod(m2.get(0)).on(m2)             were called.inOrder
+ * 
+ *    // the implicit definition can also be removed but additional parenthesis are needed
+ * 
+ *    (m1.get(0) on m1).atLeastOnce then
+ *    (m2.get(0) on m2)             were called.inOrder
+ * 
+ * </code>
+ */
+trait CalledInOrderMatchers extends ExpectableFactory with NumberOfTimes {
+  
+  /** delegate to Mockito. */
+  protected val mocker: org.mockito.MockitoMocker
+  
+  /** transforms a call to an expectation accepting a CalledMatcher. */
+  implicit def theMethod(c: => Any) = new MockCall(() => c)
+
+  /** provides methods creating in order calls expectations. */
+  case class MockCall(mock: Option[AnyRef], result: () => Any) extends HasInOrderVerificationMode { 
+    def this(result: () => Any) = this(None, result)
+    def verifInOrderMode = verificationMode.asInstanceOf[VerificationInOrderMode]
+    def then(other: MockCall): MockCallsList = MockCallsList(List(this)).then(other)
+    def on(m: AnyRef) = MockCall(Some(m), result).setVerificationMode(verificationMode)
+  }
+  /** represent a sequence of in order calls. */
+  case class MockCallsList(calls: List[MockCall]) {
+    def then(call: MockCall): MockCallsList = MockCallsList(calls ::: List(call))
+    def were(matcher: CalledInOrderMatcher) = calls must matcher
+  }
+  /** Matcher accepting a list of call and checking if they happened in the specified order. */
+  class CalledInOrderMatcher extends Matcher[List[MockCall]] {
+    def apply(calls: =>List[MockCall]) = {
+      var result = (true, "The methods were called in the right order", "The methods were not called in the right order")
+      try { 
+        val mocksToBeVerifiedInOrder = java.util.Arrays.asList(calls.flatMap(_.mock).toArray: _*)  
+        calls.foreach { call =>
+           call.mock.map(mocker.verify(_, new InOrderWrapper(call.verifInOrderMode, 
+                                                             mocksToBeVerifiedInOrder)))
+           call.result()
+        }    
+      } catch {
+        case e => result = (false, "The methods were called in the right order", "The methods were not called in the right order:" + 
+                              e.getMessage.replace("Verification in order failure", "").
+                              replace("\n", " ").replace("  ", " "))
+      }
+      result
     }
   }
 }
+
+
 /**
  * This trait provides an additional matcher to check if no more methods have been called on a mock:<code>
  *   mock had noMoreCalls

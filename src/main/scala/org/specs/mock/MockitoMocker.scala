@@ -1,6 +1,7 @@
 
 package org.mockito
 import org.mockito.stubbing.Answer
+import org.mockito.internal.verification.api.VerificationMode
 
 /**
  * This class is created to get an access to the MOCKING_PROGRESS Mockito package variable which is package protected.
@@ -15,7 +16,8 @@ class MockitoMocker {
   def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure, Mockito.RETURNS_SMART_NULLS).asInstanceOf[T]
   def spy[T](m: T): T = Mockito.spy(m)
   def when[V](v: V) = Mockito.when(v)
-  def times(i: Int) = Mockito.times(i)
+  def times(i: Int): org.mockito.internal.verification.Times = Mockito.times(i).asInstanceOf[org.mockito.internal.verification.Times]
+  def verify[M](m: M, v: VerificationMode) = Mockito.verify(m, v)
   def doReturn[T](t: T) = Mockito.doReturn(t)
   def doAnswer[T](a: Answer[T]) = Mockito.doAnswer(a)
   def doThrow[E <: Throwable](e: E) = Mockito.doThrow(e)

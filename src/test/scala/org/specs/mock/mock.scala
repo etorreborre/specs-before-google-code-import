@@ -13,6 +13,7 @@ object mockUnits extends Specification {
   "Mock unit tests" areSpecifiedBy (new inAnyOrderUnit,
                                     new inSequenceUnit,
                                     new numberOfMessagesUnit,
-                                    new mockerUnit)
+                                    new mockerUnit,
+                                    new mockitoUnit)
 }
 

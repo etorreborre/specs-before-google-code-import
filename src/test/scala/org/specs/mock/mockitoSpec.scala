@@ -85,6 +85,10 @@ h3. Verifying the number of invocations
 
 The number of invocations (atLeast, atMost) can also be checked: { linkTo(numberOfInvocations) }
 
+h3. Verifying that invocations occur in order
+
+When calls have to happen in a given order of invocations, this can be also checked { linkTo(inOrder) }
+
 h3. Callbacks
 
 In some rare case, you want the stubbed return values to be a function of the input method parameters: { linkTo(callbacks) }
@@ -155,6 +159,7 @@ Speficic { linkTo(returnValues) } can be returned on unstubbed methods.
 
   include(argumentMatchers)
   include(callbacks)
+  include(inOrder)
   include(numberOfInvocations)
   include(spies)
   include(returnValues)
