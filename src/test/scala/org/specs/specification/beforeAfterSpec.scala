@@ -129,7 +129,7 @@ class beforeAfterSpec extends Specification with JUnit {
   }
 }
 
-trait beforeAfterSpecification extends Specification with Console with MockOutput {
+trait beforeAfterSpecification extends Specification with Console with MockOutput with Contexts {
   def execute = { systems = Nil; executeSpec }
   def executeSpec
   override val specs = List(this)

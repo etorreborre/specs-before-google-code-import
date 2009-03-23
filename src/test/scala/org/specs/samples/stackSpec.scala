@@ -2,7 +2,7 @@ package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
 
-class stackSpec extends StackSpecification with JUnit {
+class stackSpec extends StackSpecification with JUnit with SystemContexts {
   "An empty stack" definedAs(empty) should {
     "throw an exception when sent #top" in { stack: LimitedStack[Int] =>
       stack.top must throwA[NoSuchElementException]

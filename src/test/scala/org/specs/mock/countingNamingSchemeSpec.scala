@@ -3,7 +3,7 @@ import org.specs._
 import org.specs.runner._
 import org.specs.specification._
 
-object countingNamingSchemeSpecification extends Specification {
+object countingNamingSchemeSpecification extends Specification with SystemContexts {
   "A counting naming scheme".when(initialized) should {
     "use the CamelCase scheme for a single mock. 'JMocker' -> 'jMocker'" in { scheme: CountingNamingScheme =>
       scheme.defaultNameFor(classOf[JMocker]) must_== "jMocker"

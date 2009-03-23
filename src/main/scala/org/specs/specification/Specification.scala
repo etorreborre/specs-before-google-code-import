@@ -62,7 +62,8 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
     }
     def like(susName: String): Example = outer.systems.find(_.description == susName) match {
       case Some(sus) => this.like(sus)
-      case None => throw new Exception(q(susName) + " is not specified in " + outer.name)
+      case None => throw new Exception(q(susName) + " is not specified in " + outer.name + 
+                                         outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
     }
   }
 

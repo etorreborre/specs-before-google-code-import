@@ -3,7 +3,7 @@ import org.specs._
 import org.specs.specification._
 import org.specs.runner._
 
-class dataRowUnit extends Specification with DataTables with JUnit {
+class dataRowUnit extends Specification with DataTables with JUnit with SystemContexts {
   type DR = DataRow3[Int, Int, Int]
   val newRow = new SystemContext[DR]() {
     def newSystem = DataRow3[Int, Int, Int](1, 2, 3)

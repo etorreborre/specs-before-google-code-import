@@ -91,7 +91,7 @@ use the system and its as parameters in { (s: System, c: Context) =>
     executedContexts(1) must_== "context1"
   }
 }
-trait ContextDefinitions {
+trait ContextDefinitions extends SystemContexts {
   case class SpecificationWithSharedContext() extends Specification {
     var sharedCounter = 0
     val sharedContext = beforeContext { sharedCounter = sharedCounter + 1 }
@@ -103,7 +103,7 @@ trait ContextDefinitions {
   def shared = new SystemContext[SpecificationWithSharedContext] {
     def newSystem = SpecificationWithSharedContext()
   }
-  case class SpecificationWithSystemContext() extends Specification {
+  case class SpecificationWithSystemContext() extends Specification with SystemContexts {
     var system1: System = _
     case class System() {
       var counter = 0
@@ -136,7 +136,7 @@ trait ContextDefinitions {
   }
 
   var executedContexts: List [String] = Nil
-  case class SpecificationWithSystemContextAndSharedExamples() extends Specification {
+  case class SpecificationWithSystemContextAndSharedExamples() extends Specification with SystemContexts {
     case class System()
     case class NamedContext(name: String) extends SystemContext[System] {
       def newSystem = System()
