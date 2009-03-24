@@ -4,7 +4,7 @@ import org.specs.Sugar._
 class patternMatchersUnit extends MatchersSpecification {
   "A 'beLike' pattern matcher" should {
     "be ok even with a null pattern" in {
-      val pattern : (String => Boolean) = null
+      val pattern: PartialFunction[String, Boolean] = { case a => false }
       expectation("name" must beLike(pattern)) must failWith("'name' doesn't match the expected pattern")
     }
     "be ok even with a null value" in {

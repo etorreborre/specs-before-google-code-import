@@ -19,12 +19,14 @@ trait PatternMatchers {
    * @return false if there is no match
    * @return the value inside the mapped option if there is a match, which should be <code>true</code>
    */
-  def beLike[T](pattern: => (T => Boolean)) = new Matcher[T]() {
+  def beLike[T](pattern: => PartialFunction[T, Boolean]) = new Matcher[T]() {
     def apply(v: => T) = {
       val value = v
-      (try {
-        if (value == null) false else Some(value).map(pattern).get
-       } catch { case e: scala.MatchError => false },
+      (if (value == null || !pattern.isDefinedAt(value)) 
+          false 
+        else 
+          pattern.apply(value)
+       ,
        d(value) + " matches the given pattern",
        d(value) + " doesn't match the expected pattern")
     }
@@ -32,7 +34,7 @@ trait PatternMatchers {
   /**
    * Alias for beLike
    */
-  def beLikeA[T](pattern: => (T => Boolean)) = beLike(pattern)
+  def beLikeA[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
 
   /**
    * Matches if the value <code>v</code> is None
