@@ -86,6 +86,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <id>powermock-repo</id>
       <url>http://powermock.googlecode.com/svn/repo/</url>
     </repository>
+    <repository>
+      <id>specs-repo</id>
+      <name>specs repository</name>
+      <layout>default</layout>
+      <url>http://specs.googlecode.com/svn/maven2/</url>
+      <releases>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+      <snapshots>
+        <checksumPolicy>ignore</checksumPolicy>
+      </snapshots>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -104,13 +116,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
-	  <scope>provided</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
       <version>${scala.version}</version>
-	  <scope>provided</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -121,6 +133,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <groupId>net.java</groupId>
       <artifactId>textile-j</artifactId>
       <version>2.2</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>core</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>textile</artifactId>
+      <version>1.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -191,7 +215,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </execution>
         </executions>
         <configuration>
-          <args><arg>-unchecked</arg></args>
+          <args>
+            <arg>-unchecked</arg>
+          </args>
           <jvmArgs>
             <jvmArg>-Xmx512m</jvmArg>
             <jvmArg>-Xms64m</jvmArg>
@@ -213,7 +239,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <argLine>-Xmx512m</argLine>
-		  <includes>
+          <includes>
             <include>**/*Unit.java</include>
             <include>**/*Spec.java</include>
           </includes>

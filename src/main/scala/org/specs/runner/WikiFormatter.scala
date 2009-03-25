@@ -2,9 +2,10 @@ package org.specs.runner
 import org.specs.log.ConsoleLog
 import org.specs.specification._
 import scala.xml._
-import net.java.textilej.parser._
-import net.java.textilej.parser.markup.textile._
-import net.java.textilej.parser.markup.confluence._
+//import net.java.textilej.parser._
+//import net.java.textilej.parser.markup.textile._
+import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
+import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
 import org.specs.util.ExtendedString._
 
 class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
@@ -32,7 +33,8 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
   }
   private def parseToHtml(s: String) = {
     debug("before is \n" + s)
-    val parser = new MarkupParser(new TextileDialect())
+    val parser = new MarkupParser()
+    parser.setMarkupLanguage(new TextileLanguage())
     val parsed = parser.parseToHtml(s)
     debug("parsed is \n" + parsed)
     val replaced = parsed.
