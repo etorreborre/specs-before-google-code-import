@@ -3,13 +3,26 @@ import org.specs._
 import org.specs.runner._
 import org.specs.util.ExtendedString._
 
-class extendedStringSpec extends Specification with JUnit{
+class extendedStringSpec extends Specification with JUnit with DataTables {
   "the uncapitalize function" should {
     "lower-case only the first letter of a string" in {
       "Hello".uncapitalize must_== "hello"
     }
     "lower-case only the first letter of a one letter string" in {
       "H".uncapitalize must_== "h"
+    }
+  }
+  "the uncamel function" should {
+    "uncapitalize words except the first one and insert spaces in a camel word" in {
+      "source"      | "target"          |>
+      ""            ! ""                |  
+      "my"          ! "my"              |  
+      "My"          ! "My"              |  
+      "MyClass"     ! "My class"        |  
+      "myClass"     ! "my class"        |  
+      "MyClassName" ! "My class name"   | { (source, target) => 
+        source.uncamel must_== target 
+      }
     }
   }
   "the removeAll function" should {

@@ -33,10 +33,21 @@ trait Layoutable extends ToHtml {
     values.foreach{(x: Int) => if (x > m) m = x}
     m
   }
+  /** empty string property which can be used to display blank lines. */
+  protected val empty = Prop[String]("")
+  def p(values: ToHtml*): this.type = { tr(empty); tr(values:_*) }
+  def title(s: String): this.type = { tr(new ToHtml { 
+    override def toEmbeddedHtml = <td class="value">{toHtml}</td>
+    override def toHtml = {
+      updateLastTd(<table class="dataTable"><tr><th>{s}</th></tr></table>)
+    }
+    }) 
+  }
 
-  def tr(values: ToHtml*) = {
+  def tr(values: ToHtml*): this.type = {
     columnsNumber = max(columnsNumber, values.size)
     rows.append(() => toRow(values: _*))
+    this
   }
 
   def span = columnsNumber * 3
@@ -59,8 +70,8 @@ trait Layoutable extends ToHtml {
 }
 
 trait ToHtml {
-  def toEmbeddedHtml: NodeSeq = <td> {toHtml} </td>
+  def toEmbeddedHtml: NodeSeq = <td class="value">{toHtml}</td>
   def toEmbeddedHtmlWithSpan(s: Int): NodeSeq = <td colspan= {s.toString}> {toHtml} </td>
   def toHtml: NodeSeq = NodeSeq.Empty
-  def toHtmlWithSpan(s: Int): NodeSeq = NodeSeq.Empty
+  def toHtmlWithSpan(s: Int): NodeSeq = toHtml
 }

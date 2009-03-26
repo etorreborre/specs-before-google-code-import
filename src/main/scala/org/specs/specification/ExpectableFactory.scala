@@ -56,3 +56,8 @@ class DelegatedExpectableFactory(delegate: ExpectableFactory) extends Expectable
   def forExample: Example = delegate.forExample
   def lastExample: Option[Example] = delegate.lastExample
 }
+class DefaultExpectableFactory extends ExpectableFactory {
+  private val defaultExample = new Example("", DefaultLifeCycle)
+  def forExample: Example = defaultExample
+  def lastExample: Option[Example] = Some(forExample)
+}

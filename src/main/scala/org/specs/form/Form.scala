@@ -7,6 +7,8 @@ import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
 import org.specs.specification._
 import org.specs._
+import org.specs.util.ExtendedString._
+import org.specs.util.Classes._
 /**
  * This trait defines Forms which are used to group and display Props properties together.
  *
@@ -21,8 +23,12 @@ import org.specs._
  *
  */
 trait Forms {
-  case class Form(title: String, factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
+  class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
         with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
+    def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory)
+    def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
+    def this(factory: ExpectableFactory) = this(None, factory)
+    lazy val title = titleString.getOrElse(className(this.getClass.getName).uncamel)
     type FormProperty = Executable with Linkable[_] with HasResults with ToHtml
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
 
@@ -38,7 +44,7 @@ trait Forms {
      * factory method for creating a property linked to an actual value.
      * Using this method adds the property to the Form
      */
-    def prop[T](label: String, actual: T): MatcherProp[T] = {
+    def prop[T](label: String, actual: =>T): MatcherProp[T] = {
       val p = Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
       add(p)
       p
@@ -50,7 +56,7 @@ trait Forms {
      * The default matcher for an iterable properties is "haveTheSameElementsAs"
      * Using this method adds the property to the Form.
      */
-    def propIterable[T](label: String, actual: Iterable[T]): MatcherPropIterable[T] = {
+    def propIterable[T](label: String, actual: =>Iterable[T]): MatcherPropIterable[T] = {
       val matcherConstraint: MatcherConstraint[Iterable[T]] = new MatcherConstraint[Iterable[T]](m => actual must m)
       val p = PropIterable(label, actual, matcherConstraint)
       p.matchesWith(new HaveTheSameElementsAs(_))
@@ -77,9 +83,9 @@ trait Forms {
       title +
       properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
     }
-    override def toEmbeddedHtml = <td>{toHtml}</td>
     override def toHtml = {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
+    def toHtml_! = execute.toHtml.toString
   }
 }

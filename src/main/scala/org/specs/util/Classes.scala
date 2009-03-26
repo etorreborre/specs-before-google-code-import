@@ -1,3 +1,4 @@
+
 package org.specs.util
 
 /**
@@ -20,6 +21,14 @@ object Classes {
       case e => if (printStackTrace) e.printStackTrace()
     }
     return None
+  }
+  /**
+   * @return the class name without the package name
+   */
+  def className(fullName: String) = {
+    val remainingDollarNames = fullName.split("\\.").last.split("\\$")
+    if (remainingDollarNames.size > 1) remainingDollarNames(remainingDollarNames.size - 2)
+    else remainingDollarNames(0)
   }
 }
 

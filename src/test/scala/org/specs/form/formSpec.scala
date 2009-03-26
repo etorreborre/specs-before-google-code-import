@@ -15,6 +15,10 @@ class formSpec extends LiterateSpecification with Forms with Persons with JUnit 
       val form = PersonForm("person", person)
       form.title must_== "person"
     }
+    "have a default title built from the class name" in {
+      class MyFormClass extends Form(this)
+      new MyFormClass().title must_== "My form class"
+    }
     "have a toString method returning the title of the form and the list of properties" in {
       val form = new PersonForm("Person", person) {
         firstName("Eric")

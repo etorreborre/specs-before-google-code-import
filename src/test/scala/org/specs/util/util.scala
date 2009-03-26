@@ -3,8 +3,9 @@ import org.specs._
 
 object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
+        new classSpec,
         new editDistanceSpec,
-		    new extendedStringSpec,
+		new extendedStringSpec,
         new scalaInterpreterSpec,
         new timerSpec
     )
@@ -15,6 +16,6 @@ object utilUnits extends Specification {
       new dataRowUnit,
       new dataTableHeaderUnit,
       new dataTableUnit,
-	    new extendedThrowableUnit)
+	  new extendedThrowableUnit)
 }
 

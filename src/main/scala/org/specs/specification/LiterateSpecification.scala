@@ -52,11 +52,12 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
     }
     def inForm(form: =>org.specs.form.Forms#Form) = {
       lazy val formToExecute = form
-      forExample(desc) in {
-        formToExecute.execute
-        if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
+      val description = if (desc.isEmpty) form.title else desc
+      forExample(description) in {
+          formToExecute.execute
+          if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
       }
-      desc + "\n" + formToExecute.toHtml.toString
+      description + "\n" + formToExecute.toHtml.toString
     }
   }
 
@@ -120,9 +121,11 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   def addParentLink(s: Specification): this.type = { parentLinks = s :: parentLinks; this }
   def hasParentLink(s: Specification) = parentLinks.contains(s)
 
-  def linkTo(subSpec: LiterateSpecification with Html) = {
+  def linkTo(subSpec: LiterateSpecification with Html): String = linkTo(subSpec.description, subSpec)
+  def linkTo(desc: String, subSpec: LiterateSpecification with Html): String = {
+    if (!this.subSpecifications.contains(subSpec)) include(subSpec)
     subSpec.addParentLink(this)
-    pathLink(subSpec.description, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
+    pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
   }
 }
 /**

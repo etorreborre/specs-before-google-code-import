@@ -48,7 +48,7 @@ import util.Property
  */
 class Prop[T](val label: String,
               var expected: Option[T],
-              val actual: Option[T], val constraint: Option[Constraint[T]])
+              actual: =>Option[T], val constraint: Option[Constraint[T]])
         extends Property(expected) with DefaultExecutable with Linkable[Prop[T]] with ToHtml {
 
   /**
@@ -89,10 +89,10 @@ class Prop[T](val label: String,
   override def toHtml = {
     <td>{label}</td> ++ (
             if (executed)
-              <td class={statusClass}>{this().getOrElse("")}</td> ++
+              <td class={statusClass}>{this().getOrElse(actual.getOrElse(""))}</td> ++
               (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
             else
-              <td class="value">{this().getOrElse("")}</td>)
+              <td class="value">{this().getOrElse(actual.getOrElse(""))}</td>)
   }
   /**
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.
@@ -103,19 +103,21 @@ class Prop[T](val label: String,
  * Companion object containing default factory methods
  */
 case object Prop {
-  def apply[T](label: String, value: T, toCheck: => Any): Prop[T] = new Prop(label, None, Some(value), Some(AnyConstraint(() => toCheck)))
-  def apply[T](label: String, value: T, f: (T, T) => Any): Prop[T] = new Prop(label, None, Some(value), Some(FunctionConstraint(value, f)))
-  def apply[T](label: String, value: T, c: Constraint[T]): Prop[T] = new Prop(label, None, Some(value), Some(c))
-  def apply[T](label: String, value: T, c: MatcherConstraint[T]): MatcherProp[T] = new MatcherProp(label, None, Some(value), Some(c))
-  def apply[T](label: String, value: T): MatcherProp[T] = new MatcherProp(label, None, Some(value), None)
+  def apply[T](label: String, value: =>T, toCheck: => Any): Prop[T] = new Prop(label, None, Some(value), Some(AnyConstraint(() => toCheck)))
+  def apply[T](label: String, value: =>T, f: (T, T) => Any): Prop[T] = new Prop(label, None, Some(value), Some(FunctionConstraint(value, f)))
+  def apply[T](label: String, value: =>T, c: Constraint[T]): Prop[T] = new Prop(label, None, Some(value), Some(c))
+  def apply[T](label: String, value: =>T, c: MatcherConstraint[T]): MatcherProp[T] = new MatcherProp(label, None, Some(value), Some(c))
+  def apply[T](label: String, value: =>T): MatcherProp[T] = new MatcherProp(label, None, Some(value), None)
+  def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, None, None, None)
 }
 
 /**
  * A MatcherProp contains a MatcherConstraint which matcher can be changed from the default BeEqualTo matcher
  */
-case class MatcherProp[T](
+class MatcherProp[T](
   override val label: String,
-  expectedValue: Option[T], override val actual: Option[T], override val constraint: Option[MatcherConstraint[T]]) extends Prop(label, expectedValue, actual, constraint) {
+  expectedValue: Option[T], 
+  actual: =>Option[T], override val constraint: Option[MatcherConstraint[T]]) extends Prop(label, expectedValue, actual, constraint) {
 
   /**
    * changes the matcher on the constraint
