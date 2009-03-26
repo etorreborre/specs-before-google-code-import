@@ -2,8 +2,9 @@ package org.specs.form
 
 import specification.{SkippedException, FailureException}
 import org.specs._
+import org.specs.util.Resettable
 
-trait DefaultExecutable extends DefaultResults with Executable with Commentable {
+trait DefaultExecutable extends DefaultResults with Executable with Commentable with Resettable {
   protected var executed = false
   override def reset() = {
     super.reset()
