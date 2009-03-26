@@ -25,10 +25,11 @@ import org.specs.util.Classes._
 trait Forms {
   class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
         with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
+    def this() = this(None, new DefaultExpectableFactory)
     def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory)
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
-    lazy val title = titleString.getOrElse(className(this.getClass.getName).uncamel)
+    lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
     type FormProperty = Executable with Linkable[_] with HasResults with ToHtml
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
 

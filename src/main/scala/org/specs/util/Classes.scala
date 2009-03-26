@@ -25,11 +25,30 @@ object Classes {
   /**
    * @return the class name without the package name
    */
-  def className(fullName: String) = {
+  def className(fullName: String): String = {
     val remainingDollarNames = fullName.split("\\.").last.split("\\$")
-    if (remainingDollarNames.size > 1) remainingDollarNames(remainingDollarNames.size - 2)
+    if (remainingDollarNames.size > 1) {
+      if (remainingDollarNames(remainingDollarNames.size - 1).matches("\\d"))
+        remainingDollarNames(remainingDollarNames.size - 2)
+      else
+        remainingDollarNames(remainingDollarNames.size - 1)
+    }
     else remainingDollarNames(0)
   }
+  /**
+   * @return the class name without the package name
+   */
+  def className(klass: Class[_]): String = {
+    val result = className(klass.getName)
+    if (result.contains("anon") && klass.getSuperclass != null)
+      className(klass.getSuperclass)
+    else
+      result
+  }
+  /**
+   refdata.bondDefinition$$anonfun$1$$anon$1
+refdata.BondDescriptionForm$FixedCoupon
+   */
 }
 
 /**
