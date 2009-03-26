@@ -4,6 +4,7 @@ import scala.xml._
 import scala.collection.mutable._
 import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
+import org.specs.util.IncludeExclude
 
 trait Linkable[T] {
   val next: ListBuffer[Linkable[_]] = new ListBuffer()
@@ -15,15 +16,14 @@ trait Linkable[T] {
     this
   }
 }
-trait Layoutable extends ToHtml {
+trait Layoutable extends ToHtml with IncludeExclude[ToHtml] {
   private var rows: ListBuffer[() => NodeSeq] = new ListBuffer
-
+  
   def xml = reduce(rows, {(f: () => NodeSeq) => f.apply()})
 
   var columnsNumber = 1
 
-  def toRow(values: ToHtml*) = <tr> {reduce(values, {(x: ToHtml) => x.toEmbeddedHtml})} </tr>
-
+  def toRow(values: ToHtml*) = <tr> {reduce(filter(values), {(x: ToHtml) => x.toEmbeddedHtml})} </tr>
   def inRow(value: ToHtml) = <tr> {value.toEmbeddedHtml} </tr>
 
   private def max(a: Int, b: Int) = if (a < b) b else a

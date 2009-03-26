@@ -6,6 +6,7 @@ object utilSpecifications extends Specification {
         new classSpec,
         new editDistanceSpec,
 		new extendedStringSpec,
+        new includeExcludeSpec,
         new scalaInterpreterSpec,
         new timerSpec
     )
