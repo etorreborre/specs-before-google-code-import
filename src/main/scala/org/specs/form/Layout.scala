@@ -62,6 +62,9 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
       }
     }
   }
+  /**
+   * adding several rows coming from another form
+   */
   def trs(rows: List[Seq[ToHtml]]): this.type = {
     rows.foreach { v => tr(v:_*) }
     this

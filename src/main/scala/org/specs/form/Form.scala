@@ -88,5 +88,12 @@ trait Forms {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
     def toHtml_! = execute.toHtml.toString
+    
+    override def reset() = {
+      resetExecution()
+      resetIncludeExclude()
+    }
+    def resetExecution() = super[DefaultExecutable].reset()
+    def resetIncludeExclude() = super[Layoutable].reset()
   }
 }

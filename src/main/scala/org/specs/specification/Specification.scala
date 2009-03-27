@@ -164,12 +164,11 @@ trait HasResults {
 /**
  * Default implementation for the HasResults trait using lists.
  */
-trait DefaultResults extends HasResults with Resettable {
+trait DefaultResults extends HasResults {
   private val thisFailures: ListBuffer[FailureException] = new ListBuffer()
   private val thisErrors: ListBuffer[Throwable] = new ListBuffer()
   private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer()
-  override def reset() = { 
-    super.reset()
+  def reset() = { 
     thisFailures.clear
     thisErrors.clear
     thisSkipped.clear 

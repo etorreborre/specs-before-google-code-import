@@ -4,7 +4,7 @@ import specification.{SkippedException, FailureException}
 import org.specs._
 import org.specs.util.Resettable
 
-trait DefaultExecutable extends DefaultResults with Executable with Commentable with Resettable {
+trait DefaultExecutable extends DefaultResults with Executable with Commentable {
   protected var executed = false
   override def reset() = {
     super.reset()
