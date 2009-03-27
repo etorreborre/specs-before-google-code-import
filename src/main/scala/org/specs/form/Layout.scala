@@ -21,9 +21,6 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   private var rowValues: ListBuffer[Seq[ToHtml]] = new ListBuffer
   
   def xml = reduce(rowsHtml, {(f: () => NodeSeq) => f.apply()})
-
-  var columnsNumber = 1
-
   def toRow(values: ToHtml*) = <tr> {reduce(filter(values), {(x: ToHtml) => x.toEmbeddedHtml})} </tr>
   def inRow(value: ToHtml) = <tr> {value.toEmbeddedHtml} </tr>
 
@@ -70,29 +67,40 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
     this
   }
   def tr(values: ToHtml*): this.type = {
-    columnsNumber = max(columnsNumber, values.size)
     rowsHtml.append(() => toRow(values: _*))
     rowValues.append(values)
     this
   }
   def rows = rowValues.toList
 
-  def span = columnsNumber * 3
-
-  def updateLastTd(nodes: NodeSeq): NodeSeq = updateLastTd(nodes, span)
+  def updateLastTd(nodes: NodeSeq): NodeSeq = updateLastTd(nodes, maxSize(nodes))
 
   def updateLastTd(nodes: NodeSeq, spanSize: Int): NodeSeq = {
     nodes.toList match {
       case List(<th>{ b }</th>) => <th colspan={spanSize.toString}>{b}</th> % nodes.toList.first.attributes
       case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
       case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
-      /* don't update the cell if it is bigger than the span size */
-      case <th>{ b }</th> :: otherThs if (nodes.toList.size < columnsNumber * 2) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
-      case <td>{ b }</td> :: otherTds if (nodes.toList.size < columnsNumber * 2) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
+      /** don't set a colspan on the last cell of the biggest row */
+      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
+      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
       case List(<table>{ x @ _*}</table>) => <table class="dataTable">{updateLastTd(x, spanSize)}</table>
       case <tr>{ y @ _*}</tr> :: otherRows => <tr>{updateLastTd(y, spanSize)}</tr> ++ updateLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ updateLastTd(other, spanSize)
       case other => other
+    }
+  }
+  def maxSize(nodes: NodeSeq): Int = maxSize(nodes, 0)
+  def maxSize(nodes: NodeSeq, maximum: Int): Int = {
+    nodes.toList match {
+      case List(<th>{ b }</th>) => maximum + 1
+      case List(<td>{ b }</td>) => maximum + 1
+      case List(<td>{ b }</td>, Text(x)) => maximum + 1
+      case <th>{ b }</th> :: otherThs => maxSize(otherThs, maximum + 1)
+      case <td>{ b }</td> :: otherTds => maxSize(otherTds, maximum + 1)
+      case List(<table>{ x @ _*}</table>) => maxSize(x, maximum)
+      case <tr>{ y @ _*}</tr> :: otherRows => max(maxSize(y, maximum), maxSize(otherRows, maximum))
+      case Text(x) :: other => maxSize(other, maximum)
+      case other => maximum
     }
   }
 }
