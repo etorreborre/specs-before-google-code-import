@@ -21,9 +21,9 @@ class MatcherPropIterable[T](override val label: String,
   override def toHtml = {
     <td>{label}</td> ++ (
       if (executed)
-        <td class={statusClass}>{expected.getOrElse(Nil: Iterable[T]).mkString(", ")}</td> ++ (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
+        <td class={statusClass}>{expected.getOrElse(actual.getOrElse(Nil: Iterable[T])).mkString(", ")}</td> ++ (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
       else
-        <td class="value">{expected.getOrElse(Nil: Iterable[T]).mkString(", ")}</td>
+        <td class="value">{expected.getOrElse(actual.getOrElse(Nil: Iterable[T])).mkString(", ")}</td>
     )
   }
 
@@ -32,5 +32,6 @@ class MatcherPropIterable[T](override val label: String,
  * Companion object containing default factory methods
  */
 case object PropIterable {
-  def apply[T](label: String, value: Iterable[T], c: MatcherConstraint[Iterable[T]]): MatcherPropIterable[T] = new MatcherPropIterable(label, None, Some(value), Some(c))
+  def apply[T](label: String, value: =>Iterable[T]): MatcherPropIterable[T] = new MatcherPropIterable(label, None, Some(value), None)
+  def apply[T](label: String, value: =>Iterable[T], c: MatcherConstraint[Iterable[T]]): MatcherPropIterable[T] = new MatcherPropIterable(label, None, Some(value), Some(c))
 }

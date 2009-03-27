@@ -16,10 +16,11 @@ trait Linkable[T] {
     this
   }
 }
-trait Layoutable extends ToHtml with IncludeExclude[ToHtml] {
-  private var rows: ListBuffer[() => NodeSeq] = new ListBuffer
+trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
+  private var rowsHtml: ListBuffer[() => NodeSeq] = new ListBuffer
+  private var rowValues: ListBuffer[Seq[ToHtml]] = new ListBuffer
   
-  def xml = reduce(rows, {(f: () => NodeSeq) => f.apply()})
+  def xml = reduce(rowsHtml, {(f: () => NodeSeq) => f.apply()})
 
   var columnsNumber = 1
 
@@ -36,19 +37,42 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] {
   /** empty string property which can be used to display blank lines. */
   protected val empty = Prop[String]("")
   def p(values: ToHtml*): this.type = { tr(empty); tr(values:_*) }
-  def title(s: String): this.type = { tr(new ToHtml { 
+  def th1(s: String): this.type = newRow(<table class="dataTable"><tr><th>{s}</th></tr></table>) 
+  def th2(s: String): this.type = newRow(<tr><th>{s}</th></tr>)
+  def th3(s: String): this.type = newRow(<tr><th align="left">{s}</th></tr>)
+  private def newRow(nodes: NodeSeq): this.type = {
+    tr(new ToHtml { 
     override def toEmbeddedHtml = <td class="value">{toHtml}</td>
     override def toHtml = {
-      updateLastTd(<table class="dataTable"><tr><th>{s}</th></tr></table>)
+      updateLastTd(nodes)
     }
     }) 
   }
-
-  def tr(values: ToHtml*): this.type = {
-    columnsNumber = max(columnsNumber, values.size)
-    rows.append(() => toRow(values: _*))
+  case class tabs() extends Layoutable {
+    outerLayoutable.tr(this)
+    var tabValues: List[tab] = Nil
+    override def toHtml = {
+      <div class="tabber">{reduce(tabValues.reverse, ((_:ToHtml).toHtml))}</div>
+    }
+    def addTab(t: tab) = { tabValues = t :: tabValues; this }
+    case class tab(title: String) extends Layoutable {
+      addTab(this)
+      override def toHtml = {
+        <div class="tabbertab" title={title}><table class="dataTable">{updateLastTd(super.xml)}</table></div>
+      }
+    }
+  }
+  def trs(rows: List[Seq[ToHtml]]): this.type = {
+    rows.foreach { v => tr(v:_*) }
     this
   }
+  def tr(values: ToHtml*): this.type = {
+    columnsNumber = max(columnsNumber, values.size)
+    rowsHtml.append(() => toRow(values: _*))
+    rowValues.append(values)
+    this
+  }
+  def rows = rowValues.toList
 
   def span = columnsNumber * 3
 
