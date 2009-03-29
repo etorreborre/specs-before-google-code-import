@@ -3,12 +3,14 @@ package org.specs.form
 import org.specs.util._
 import matcher.Matcher
 import org.specs._
-import org.specs.runner.JUnit
+import org.specs.runner.{JUnitSuiteRunner, JUnit}
 import samples.Persons
 import scala.xml._
 import org.specs.Sugar._
-import specification.LiterateSpecification
+import org.specs.specification.LiterateSpecification
+import org.junit.runner.RunWith
 
+//@RunWith(classOf[JUnitSuiteRunner])
 class formSpec extends LiterateSpecification with Forms with Persons with JUnit { persons =>
   "A form" should {
     "have a title" in {
