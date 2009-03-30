@@ -66,6 +66,9 @@ abstract class Specification extends Matchers with ExpectableFactory with Specif
     }
   }
 
+  /** @return the examples number without executing the specification (i.e. without subexamples) */
+  def examplesNb: Int = subSpecifications.foldLeft(0)(_+_.examplesNb) + systems.foldLeft(0)(_+_.examples.size)
+
   /** @return the failures of each sus */
   def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures)
 

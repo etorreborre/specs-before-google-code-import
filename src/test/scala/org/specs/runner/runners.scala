@@ -6,6 +6,7 @@ object runnerSpecifications extends Specification {
         new descriptionFormatterSpec,
         new htmlRunnerSpec,
         new junitTestSuiteSpec,
+        new notifierSpec,
         new scalaTestSpec,
         new specsFinderSpec,
         new specsRunnerSpec,

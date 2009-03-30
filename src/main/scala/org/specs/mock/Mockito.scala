@@ -356,7 +356,7 @@ trait Stubs {
            case f: Function2[_, _, _] => f(args, mock)
          }
        }
-     }
+     } 
   }
   /** @return an object allowing the chaining of stub values. */
   implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
