@@ -50,7 +50,12 @@ trait Forms {
       add(p)
       p
     }
-
+    /**
+     * factory method for creating a property linked to an actual value == to the expected value
+     * Using this method adds the property to the Form
+     */
+    def field[T](label: String, value: =>T) = Field(label, value)
+    def field[T](label: String, values: Prop[T]*) = Field(label, values)
     /**
      * factory method for creating an iterable property linked to an actual value.
      *
@@ -84,10 +89,10 @@ trait Forms {
       title +
       properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
     }
-    override def toHtml = {
+    override def toXhtml = {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
-    def toHtml_! = execute.toHtml.toString
+    def toHtml_! = execute.toHtml
     
     override def reset() = {
       resetExecution()

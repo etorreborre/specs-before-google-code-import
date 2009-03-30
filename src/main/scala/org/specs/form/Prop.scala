@@ -86,18 +86,25 @@ class Prop[T](val label: String,
    * depending if it hasn't been executed (white), has failed (yellow),
    * isOk (green, yes!)
    */
-  override def toHtml = {
-    <td>{label}</td> ++ (
-            if (executed)
-              <td class={statusClass}>{this().getOrElse(actual.getOrElse(""))}</td> ++
-              (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)
-            else
-              <td class="value">{this().getOrElse(actual.getOrElse(""))}</td>)
+  override def toXhtml = {
+    val valueCell = if (executed) {
+       <td class={statusClass}>{this().getOrElse(actual.getOrElse(""))}</td> ++ (
+         if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty
+       ) 
+     }
+     else
+       <td class="value">{this().getOrElse(actual.getOrElse(""))}</td>
+    
+    if (label.isEmpty) 
+      valueCell
+    else
+      <td>{label}</td> ++ valueCell
   }
   /**
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.
    */
-  override def toEmbeddedHtml = toHtml
+  override def toEmbeddedXhtml = toXhtml
+  
 }
 /**
  * Companion object containing default factory methods
@@ -127,5 +134,31 @@ class MatcherProp[T](
     this
   }
 }
+class Field[T](label: String, value: =>T) extends Property(() => value) with Linkable[Prop[T]] with ToHtml {
+  def apply(value: =>T): Field[T] = {
+    super.apply(() => value)
+    this
+  }
 
+  /** shortcut method for this().apply() returning the contained value. */
+  def get: T = this()()
+
+  override def toString = {
+    label + ": " + this.get +
+            (if (next.isEmpty) "" else ", ") +
+            next.toList.mkString(", ")
+  }
+  override def toXhtml = {
+    val valueCell = <td class="value">{this.get}</td>
+    if (label.isEmpty) 
+      valueCell
+    else
+      <td>{label}</td> ++ valueCell
+  }
+  override def toEmbeddedXhtml = toXhtml
+}
+case object Field {
+  def apply[T](label: String, values: Field[T]*): Field[String] = new Field(label, values.map(_.get).mkString("/"))
+  def apply[T](label: String, value: =>T): Field[T] = new Field(label, value)
+}
 

@@ -10,7 +10,6 @@ import org.specs.Sugar._
 import org.specs.specification.LiterateSpecification
 import org.junit.runner.RunWith
 
-//@RunWith(classOf[JUnitSuiteRunner])
 class formSpec extends LiterateSpecification with Forms with Persons with JUnit { persons =>
   "A form" should {
     "have a title" in {
@@ -50,16 +49,16 @@ class formSpec extends LiterateSpecification with Forms with Persons with JUnit 
         firstName("Eric"); lastName("Torreborre")
         initials("TE")
       }
-      form.execute.toHtml must \\(<td>TE</td>, Map("class"->"failure"))
-      form.execute.toHtml must \\(<td>'ET' is not equal ignoring case to 'TE'</td>)
+      form.execute.toXhtml must \\(<td>TE</td>, Map("class"->"failure"))
+      form.execute.toXhtml must \\(<td>'ET' is not equal ignoring case to 'TE'</td>)
     }
-    "have an updateLastTd function setting a colspan on each last td of a row" in {
+    "have an updateLastTd function setting a colspan on each last td of a row, except the last row" in {
       val updated = new PersonForm("person", person).updateLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
         </table>, 4)
-      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
+      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")).not)
     }
   }
   "A form property" should {
@@ -79,8 +78,8 @@ class formSpec extends LiterateSpecification with Forms with Persons with JUnit 
     }
     "display its status in xml when executed" in {
       val adder: Prop[Int] = Prop("Result", 1, 1 must_== 2)(2)
-      adder.execute.toHtml must \\(<td>2</td>, Map("class"->"failure"))
-      adder.execute.toHtml must \\(<td>'1' is not equal to '2'</td>)
+      adder.execute.toXhtml must \\(<td>2</td>, Map("class"->"failure"))
+      adder.execute.toXhtml must \\(<td>'1' is not equal to '2'</td>)
     }
   }
   "A form" can {
@@ -123,33 +122,33 @@ class formSpec extends LiterateSpecification with Forms with Persons with JUnit 
   "A form when translated to xml" should {
     "translate its title to a row with a header" in {
       val form = new PersonForm("Customer", person)
-      form.toHtml must \\(<th/>) \(Text("Customer"))
+      form.toXhtml must \\(<th/>) \(Text("Customer"))
     }
     "translate a property to a row" in {
       val form = new PersonForm("Customer", person) { firstName("Eric") }
-      form.toHtml must \\(<tr/>)
-      form.toHtml must \\(<td>First Name</td>)
-      form.toHtml must \\(<td colspan="3">Eric</td>)
+      form.toXhtml must \\(<tr/>)
+      form.toXhtml must \\(<td>First Name</td>)
+      form.toXhtml must \\(<td colspan="3">Eric</td>)
     }
     "translate an embedded form to a nested table" in {
       val form = new PersonForm("Customer", person) { tr { new AddressForm(persons.address) { number(37) } } }
-      form.toHtml must \\(<table/>) \\(<table/>)
-      form.toHtml must \\(<tr/>) \\(<td>Number</td>)
-      form.toHtml must \\(<tr/>) \\(<td colspan="3">37</td>)
+      form.toXhtml must \\(<table/>) \\(<table/>)
+      form.toXhtml must \\(<tr/>) \\(<td>Number</td>)
+      form.toXhtml must \\(<tr/>) \\(<td colspan="2">37</td>)
     }
     "have its title spanning all columns" in {
       val form = new PersonForm("Customer", person) { firstName("Eric") }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"3"))
+      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"2"))
     }
     "have its title spanning all columns - one column, 2 properties" in {
       val form = new PersonForm("Customer", person) { firstName("Eric"); lastName("T") }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"3"))
+      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"2"))
     }
     "have its title spanning all columns - 2 columns, 2 properties" in {
       val form = new PersonForm("Customer", person) { tr(firstName("Eric"), lastName("T")) }
-      form.toHtml must \\(<th>Customer</th>, Map("colspan"->"6"))
+      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"4"))
     }
-    "have the last cell of the row spanning the maximum of all the row sizes" in {
+    "have the last cell of the row with no span" in {
       class MyForm extends Form("my form", this) {
         val f1 = Prop("f1", "")
         val f2 = Prop("f2", "")
@@ -161,7 +160,24 @@ class formSpec extends LiterateSpecification with Forms with Persons with JUnit 
         tr(f1("1"), f2("2"))
         tr(f3("3"), f4("4"), f5("5"))
       }
-      form.toHtml must \\(<td>5</td>, Map("colspan"->"9", "class"->"value"))
+      form.toXhtml must \\(<td>5</td>, Map("class"->"value"))
+    }
+  }
+  "A layout" should {
+    "find the maximum number of cells on a row in a table" in {
+      new Layoutable {}.maxSize(<table>
+                           <tr><td>p</td><td>v</td></tr>
+                           <tr><td>p</td><td>v</td><td>v2</td></tr>
+                           </table>) must_== 3
+    }
+    "find the maximum number of cells on a row in a table" in {
+      val table = <table class="dataTable">
+                           <tr><th>p</th></tr>
+                           <tr><td>p</td><td class="value">v</td></tr>
+                           <tr><td>p</td><td class="value">v</td></tr>
+                           <tr><td>p</td><td class="value">v</td><td class="value">v2</td></tr>
+                           </table>
+      println(new Layoutable {}.updateLastTd(table, new Layoutable {}.maxSize(table))) 
     }
   }
 }

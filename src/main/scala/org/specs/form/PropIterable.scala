@@ -16,9 +16,9 @@ class MatcherPropIterable[T](override val label: String,
   }
 
   /**
-   * This toHtml method currently displays values on one line.
+   * This toXhtml method currently displays values on one line.
    */
-  override def toHtml = {
+  override def toXhtml = {
     <td>{label}</td> ++ (
       if (executed)
         <td class={statusClass}>{expected.getOrElse(actual.getOrElse(Nil: Iterable[T])).mkString(", ")}</td> ++ (if (!isOk) <td class={statusClass}>{issueMessages}</td> else NodeSeq.Empty)

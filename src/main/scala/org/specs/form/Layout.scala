@@ -21,8 +21,8 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   private var rowValues: ListBuffer[Seq[ToHtml]] = new ListBuffer
   
   def xml = reduce(rowsHtml, {(f: () => NodeSeq) => f.apply()})
-  def toRow(values: ToHtml*) = <tr> {reduce(filter(values), {(x: ToHtml) => x.toEmbeddedHtml})} </tr>
-  def inRow(value: ToHtml) = <tr> {value.toEmbeddedHtml} </tr>
+  def toRow(values: ToHtml*) = <tr> {reduce(filter(values), {(x: ToHtml) => x.toEmbeddedXhtml})} </tr>
+  def inRow(value: ToHtml) = <tr> {value.toEmbeddedXhtml} </tr>
 
   private def max(a: Int, b: Int) = if (a < b) b else a
 
@@ -39,8 +39,8 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   def th3(s: String): this.type = newRow(<tr><th align="left">{s}</th></tr>)
   private def newRow(nodes: NodeSeq): this.type = {
     tr(new ToHtml { 
-    override def toEmbeddedHtml = <td class="value">{toHtml}</td>
-    override def toHtml = {
+    override def toEmbeddedXhtml = <td class="value">{toHtml}</td>
+    override def toXhtml = {
       updateLastTd(nodes)
     }
     }) 
@@ -48,13 +48,13 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   case class tabs() extends Layoutable {
     outerLayoutable.tr(this)
     var tabValues: List[tab] = Nil
-    override def toHtml = {
-      <div class="tabber">{reduce(tabValues.reverse, ((_:ToHtml).toHtml))}</div>
+    override def toXhtml = {
+      <div class="tabber">{reduce(tabValues.reverse, ((_:ToHtml).toXhtml))}</div>
     }
     def addTab(t: tab) = { tabValues = t :: tabValues; this }
     case class tab(title: String) extends Layoutable {
       addTab(this)
-      override def toHtml = {
+      override def toXhtml = {
         <div class="tabbertab" title={title}><table class="dataTable">{updateLastTd(super.xml)}</table></div>
       }
     }
@@ -72,7 +72,7 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
     this
   }
   def rows = rowValues.toList
-
+  
   def updateLastTd(nodes: NodeSeq): NodeSeq = updateLastTd(nodes, maxSize(nodes))
 
   def updateLastTd(nodes: NodeSeq, spanSize: Int): NodeSeq = {
@@ -81,8 +81,8 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
       case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
       case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
       /** don't set a colspan on the last cell of the biggest row */
-      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
-      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
+      case <th>{ b }</th> :: otherThs if (nodes.toList.size <= spanSize) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
+      case <td>{ b }</td> :: otherTds if (nodes.toList.size <= spanSize) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
       case List(<table>{ x @ _*}</table>) => <table class="dataTable">{updateLastTd(x, spanSize)}</table>
       case <tr>{ y @ _*}</tr> :: otherRows => <tr>{updateLastTd(y, spanSize)}</tr> ++ updateLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ updateLastTd(other, spanSize)
@@ -106,8 +106,9 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
 }
 
 trait ToHtml {
-  def toEmbeddedHtml: NodeSeq = <td class="value">{toHtml}</td>
-  def toEmbeddedHtmlWithSpan(s: Int): NodeSeq = <td colspan= {s.toString}> {toHtml} </td>
-  def toHtml: NodeSeq = NodeSeq.Empty
-  def toHtmlWithSpan(s: Int): NodeSeq = toHtml
+  def toEmbeddedXhtml: NodeSeq = <td class="value" valign="top">{toXhtml}</td>
+  def toEmbeddedXhtmlWithSpan(s: Int): NodeSeq = <td colspan= {s.toString} valign="top"> {toXhtml} </td>
+  def toXhtml: NodeSeq = NodeSeq.Empty
+  def toXHtmlWithSpan(s: Int): NodeSeq = toXhtml
+  def toHtml: String = toXhtml.toString
 }
