@@ -9,7 +9,6 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-import _root_.org.junit.runner._
 
 /**
  * This class is the main class for declaring a new specification<br>
@@ -23,7 +22,6 @@ import _root_.org.junit.runner._
  * be collected with the corresponding methods
  *
  */
-@RunWith(classOf[JUnitSuiteRunner])
 abstract class Specification extends Matchers with ExpectableFactory with SpecificationStructure
                with DetailedFailures with FailOrSkip with Console
                with Contexts with SuccessValues with HasResults with SpecsFilter { outer =>

@@ -84,7 +84,7 @@ class junitTestSuiteSpec extends Specification with JUnit {
     }
   }
   "A test description" should {
-    "append the hashcode of the test to its description if not run from Maven" in {
+    "append the hashcode of the test to its description if not run from Maven or Intellij" in {
       val description = new TestDescription() {
         override lazy val isExecutedFromMaven = false
       }

@@ -21,36 +21,45 @@ import org.specs.util.Classes
  * This JUnitSuite trait encapsulates a JUnit3 TestSuite to allow it being seen as a trait and not a class
  * The suite is initialized once whenever some information is required, like getName, or countTestCases
  */
+@RunWith(classOf[JUnitSuiteRunner])
 trait JUnitSuite extends Test {
-  /**embedded JUnit3 TestSuite object */
+  /** embedded JUnit3 TestSuite object */
   val testSuite = new TestSuite
 
   /**this variable is set to true if the suite has been initialized */
   private var initialized = false
 
   /**the init method is called before any "getter" method is called. Then it initializes the object if it hasn't been done before */
-  def init = if (!initialized) {initialize; initialized = true}
+  def init = if (!initialized) { initialize; initialized = true }
 
   /**the initialize method should be provided to build the testSuite object by adding nested suites and test cases */
   def initialize
 
   /**run the embedded suite */
-  def run(result: TestResult) = {init; testSuite.run(result)}
-
+  def run(result: TestResult) = {
+    init
+    testSuite.run(result)
+  }
   /**@return the name of the embedded suite */
-  def getName = {init; testSuite.getName}
+  def getName = {
+    init
+    testSuite.getName
+  }
 
   /**set the name of the embedded suite */
   def setName(n: java.lang.String) = testSuite.setName(n)
 
-  /**add a new test to the embedded suite */
+  /** add a new test to the embedded suite */
   def addTest(t: Test) = testSuite.addTest(t)
 
-  /**@return the tests of the embedded suite (suites and test cases) */
-  def tests: List[Test] = {init; enumerationToList(testSuite.tests)}
-
-  /**@return the number of tests of the embedded suite (suites and test cases) */
-  def countTestCases: Int = {init; tests.size}
+  /** @return the tests of the embedded suite (suites and test cases) */
+  def tests: List[Test] = { init
+    enumerationToList(testSuite.tests)
+  }
+  /** @return the number of tests of the embedded suite (suites and test cases) */
+  def countTestCases: Int = { init
+    tests.size
+  }
 
   /**@return the test cases of the embedded suite */
   def testCases: List[Test] = {

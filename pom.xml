@@ -127,7 +127,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.4</version>
+      <version>4.5</version>
     </dependency>
     <dependency>
       <groupId>net.java</groupId>

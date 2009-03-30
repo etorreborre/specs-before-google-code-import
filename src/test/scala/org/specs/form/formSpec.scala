@@ -9,6 +9,7 @@ import scala.xml._
 import org.specs.Sugar._
 import specification.LiterateSpecification
 
+@org.junit.runner.RunWith(classOf[org.specs.runner.JUnitSuiteRunner])
 class formSpec extends LiterateSpecification with Forms with Persons with JUnit { persons =>
   "A form" should {
     "have a title" in {

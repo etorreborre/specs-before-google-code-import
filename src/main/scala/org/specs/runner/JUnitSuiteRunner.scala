@@ -17,13 +17,13 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
   /**
    * aggregated test representing the whole test suite
    */
-  var testSuite: Test = klass.newInstance
+  lazy val testSuite: Test = klass.newInstance
 
   /**
    * runs the test suite by passing a JUnit4 RunNotifier which is wrapped in a JUnit3 TestListener to be able to run JUnit3 tests
    */
   override def run(notifier: RunNotifier) = {
-	  val result = new TestResult();
+	  val result = new TestResult
 	  result.addListener(createAdaptingListener(notifier));
 	  testSuite.run(result);
   }
@@ -36,7 +36,9 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
   /**
    * @return the description of the suite with the nested suites and tests
    */
-  override def getDescription(): Description = makeDescription(testSuite)
+  override def getDescription(): Description = {
+    makeDescription(testSuite)
+  }
 
   /**
    * nothing to filter
@@ -57,6 +59,8 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
 trait TestDescription extends Classes {
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
+  /** return true if the current test is executed with Intellij */
+  lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt.junit4")
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
@@ -75,7 +79,15 @@ trait TestDescription extends Classes {
       else
          test.toString
     }
-    def testcode(test: Test) = if (!isExecutedFromMaven) "("+test.hashCode.toString +")" else ""
+    def testcode(test: Test) = {
+      if (isExecutedFromMaven)
+        ""
+      else if (isExecutedFromIntellij) 
+       "("+test.getClass.getName+")"
+      else
+       "("+test.hashCode+")"
+
+    }
 
     createSuiteDescription(getName(test) + testcode(test), null)
   }
@@ -83,7 +95,9 @@ trait TestDescription extends Classes {
   /**
    * @return the description of the suite based on its name
    */
-  def asDescription(ts: JUnitSuite) = createSuiteDescription(if (ts.getName == null) "" else ts.getName, null)
+  def asDescription(ts: JUnitSuite) = {
+    createSuiteDescription(if (ts.getName == null) "" else ts.getName, null)
+  }
 
   /**
    * create a Description from a TestCase or a JUnitSuite object
@@ -101,7 +115,7 @@ trait TestDescription extends Classes {
     else if (test.isInstanceOf[TestCase])
 	    asDescription(test.asInstanceOf[TestCase])
     else
-	    createSuiteDescription(test.getClass());
+	    createSuiteDescription(test.getClass())
   }
 }
 
