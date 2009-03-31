@@ -168,10 +168,11 @@ trait DefaultResults extends HasResults {
   private val thisFailures: ListBuffer[FailureException] = new ListBuffer()
   private val thisErrors: ListBuffer[Throwable] = new ListBuffer()
   private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer()
-  def reset() = { 
+  def reset(): this.type = { 
     thisFailures.clear
     thisErrors.clear
     thisSkipped.clear 
+    this
   }
   def addFailure(f: FailureException) = thisFailures.append(f)
   def addError(t: Throwable) = thisErrors.append(t)

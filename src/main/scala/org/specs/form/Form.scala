@@ -32,7 +32,7 @@ object Forms extends Forms
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
     lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
-    type FormProperty = Executable with Linkable[_] with HasResults with ToHtml
+    type FormProperty = Executable with Linkable[_] with DefaultExecutable with HasResults with ToHtml
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
 
     /**
@@ -96,11 +96,15 @@ object Forms extends Forms
     }
     def toHtml_! = execute.toHtml
     
-    override def reset() = {
+    override def reset(): this.type = {
       resetExecution()
       resetIncludeExclude()
+      this
     }
-    def resetExecution() = super[DefaultExecutable].reset()
+    def resetExecution() = {
+      properties.foreach(_.reset())
+      super[DefaultExecutable].reset()
+    }
     def resetIncludeExclude() = super[Layoutable].reset()
 
   }

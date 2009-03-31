@@ -6,10 +6,11 @@ import org.specs._
 trait DefaultExecutable extends DefaultResults with Executable with Commentable {
   protected var executed = false
   protected var executionStarted = false
-  override def reset() = {
+  override def reset(): this.type = {
     super.reset()
     executed = false
     executionStarted = false
+    this
   }
 
   def executeThis: Any

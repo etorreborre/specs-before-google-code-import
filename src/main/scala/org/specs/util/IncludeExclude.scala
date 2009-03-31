@@ -17,9 +17,10 @@ trait IncludeExclude[T] {
   private var included: List[T] = Nil
   def exclude(ex: T*) = excluded = excluded ::: ex.toList
   def include(in: T*) = included = included ::: in.toList
-  def reset() = { 
+  def reset(): this.type = { 
     included = Nil 
     excluded = Nil 
+    this
   }
   def filter(values: Seq[T]): Seq[T] = values.filter { v => includeCheck(included, v) && excludeCheck(excluded, v) }
   protected def includeCheck(includedValues: List[T], value: T) = includedValues.isEmpty || includedValues.contains(value) 

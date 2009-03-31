@@ -313,6 +313,7 @@ trait Stubs {
    * Internally it calls Mockito.when(mock call).thenReturn(returnValue)
    */
   class Stubbed	[T](c: =>T) {
+    def returnValues(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
     def returns(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
     def returns(t: T, t2: T*): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t, t2:_*)
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
