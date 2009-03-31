@@ -50,7 +50,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
       desc + "\n" + tableToExecute.toHtml.toString
     }
-    def inForm(form: =>org.specs.form.Forms#Form) = {
+    def inForm(form: =>org.specs.form.Form) = {
       lazy val formToExecute = form
       val description = if (desc.isEmpty) form.title else desc
       forExample(description) in {

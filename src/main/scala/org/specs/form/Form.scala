@@ -23,6 +23,8 @@ import org.specs.util.Classes._
  *
  */
 trait Forms {
+}
+object Forms extends Forms
   class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
         with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
     def this() = this(None, new DefaultExpectableFactory)
@@ -100,5 +102,11 @@ trait Forms {
     }
     def resetExecution() = super[DefaultExecutable].reset()
     def resetIncludeExclude() = super[Layoutable].reset()
+
   }
+  trait Builder[T] {
+    def build: T
+  }
+trait Conversions {
+  implicit def stringToDouble(s: String) = java.lang.Double.parseDouble(s)
 }

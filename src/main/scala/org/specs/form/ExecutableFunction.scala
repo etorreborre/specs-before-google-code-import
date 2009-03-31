@@ -5,9 +5,11 @@ import org.specs._
 
 trait DefaultExecutable extends DefaultResults with Executable with Commentable {
   protected var executed = false
+  protected var executionStarted = false
   override def reset() = {
     super.reset()
     executed = false
+    executionStarted = false
   }
 
   def executeThis: Any
@@ -15,12 +17,16 @@ trait DefaultExecutable extends DefaultResults with Executable with Commentable 
     reset()
     if (!isCommented) {
       try {
+        executionStarted = true
         executeThis
       } catch {
         case f: FailureException => addFailure(f)
         case s: SkippedException => addSkipped(s)
         case e => addError(e)
-      } finally { executed = true }
+      } finally { 
+        executed = true
+        executionStarted = false
+      }
     }
     this
   }

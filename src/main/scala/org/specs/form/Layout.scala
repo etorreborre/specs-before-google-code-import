@@ -35,15 +35,22 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   protected val empty = Prop[String]("")
   def p(values: ToHtml*): this.type = { tr(empty); tr(values:_*) }
   def th1(s: String): this.type = newRow(<table class="dataTable"><tr><th>{s}</th></tr></table>) 
-  def th2(s: String): this.type = newRow(<tr><th>{s}</th></tr>)
-  def th3(s: String): this.type = newRow(<tr><th align="left">{s}</th></tr>)
-  private def newRow(nodes: NodeSeq): this.type = {
+  def th2(s: String): this.type = newUnembeddedRow(<th>{s}</th>)
+  def th3(s: String): this.type = newUnembeddedRow(<th align="left">{s}</th>)
+  def th3(s: String, status: String): this.type = newUnembeddedRow(<th align="left" class={status}>{s}</th>)
+  protected def newRow(nodes: NodeSeq): this.type = {
     tr(new ToHtml { 
-    override def toEmbeddedXhtml = <td class="value">{toHtml}</td>
-    override def toXhtml = {
-      updateLastTd(nodes)
-    }
-    }) 
+         override def toEmbeddedXhtml = <td valign={valignment()} class={statusCode()}>{toXhtml}</td>
+         override def toXhtml = updateLastTd(nodes)
+       }
+    ) 
+  }
+  protected def newUnembeddedRow(nodes: NodeSeq): this.type = {
+    tr(new ToHtml { 
+         override def toEmbeddedXhtml = toXhtml
+         override def toXhtml = updateLastTd(nodes)
+       }
+    ) 
   }
   case class tabs() extends Layoutable {
     outerLayoutable.tr(this)
@@ -106,8 +113,13 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
 }
 
 trait ToHtml {
-  def toEmbeddedXhtml: NodeSeq = <td class="value" valign="top">{toXhtml}</td>
-  def toEmbeddedXhtmlWithSpan(s: Int): NodeSeq = <td colspan= {s.toString} valign="top"> {toXhtml} </td>
+  protected val valignment = new org.specs.util.Property("top")
+  def valign(s: String): this.type = { valignment(s); this }
+  protected val statusCode = new org.specs.util.Property("value")
+  def statusClass(s: String): this.type = { statusCode(s); this }
+ 
+  def toEmbeddedXhtml: NodeSeq = <td valign={valignment()} class={statusCode()}>{toXhtml}</td>
+  def toEmbeddedXhtmlWithSpan(s: Int): NodeSeq = <td colspan= {s.toString} valign={valignment()} class={statusCode()}> {toXhtml} </td>
   def toXhtml: NodeSeq = NodeSeq.Empty
   def toXHtmlWithSpan(s: Int): NodeSeq = toXhtml
   def toHtml: String = toXhtml.toString
