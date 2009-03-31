@@ -177,9 +177,9 @@ trait DefaultResults extends HasResults {
   def addFailure(f: FailureException) = thisFailures.append(f)
   def addError(t: Throwable) = thisErrors.append(t)
   def addSkipped(s: SkippedException) = thisSkipped.append(s)
-  def failures: Seq[FailureException] = thisFailures.toList
-  def errors: Seq[Throwable] = thisErrors.toList
-  def skipped: Seq[SkippedException] = thisSkipped.toList
+  def failures: List[FailureException] = thisFailures.toList
+  def errors: List[Throwable] = thisErrors.toList
+  def skipped: List[SkippedException] = thisSkipped.toList
 }
 
 

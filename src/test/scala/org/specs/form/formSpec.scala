@@ -10,7 +10,7 @@ import org.specs.Sugar._
 import org.specs.specification.LiterateSpecification
 import org.junit.runner.RunWith
 
-class formSpec extends LiterateSpecification with Forms with Persons with JUnit { persons =>
+class formSpec extends LiterateSpecification with Persons with JUnit { persons =>
   "A form" should {
     "have a title" in {
       val form = PersonForm("person", person)

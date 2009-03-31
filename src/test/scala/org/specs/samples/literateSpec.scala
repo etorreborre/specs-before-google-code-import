@@ -23,7 +23,7 @@ You can notice that the fields of the form are displayed so that the address is 
 
   </wiki>
 }
-trait Persons extends LiterateSpecification with Forms {
+trait Persons extends LiterateSpecification {
   case class Address(number: Int, street: String)
   case class Person(firstName: String, lastName: String, address: Address, friends: List[String]) {
     def initials = firstName(0).toString + lastName(0)

@@ -95,15 +95,20 @@ class Prop[T](val label: String,
   def valueCell = {
     if (executed) {
       if (isOk)
-        <td class={statusClass}>{this().getOrElse(actual.getOrElse(""))}</td>
+        <td class={statusClass}>{getValue}</td>
       else {
-        <td class={statusClass} valign="top"><b>{this().getOrElse(actual.getOrElse(""))}</b>
+        <td class={statusClass} valign="top"><b>{getValue}</b>
         {issueMessages}
         </td>
       } 
      }
      else
        <td class="value">{this().getOrElse(actual.getOrElse(""))}</td>
+  }
+  def getValue = format(this().getOrElse(actual.getOrElse("")))
+  def format(s: Any) = s match {
+    case d: Double => new java.text.DecimalFormat("#.##############").format(d)
+    case _: Any => s.toString 
   }
   /**
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.

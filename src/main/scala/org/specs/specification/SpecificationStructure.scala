@@ -193,4 +193,8 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
       afterSpec.map(_.apply)
     super.afterExample(ex)
   }
+  /**
+   * add examples coming from another specification
+   */
+  def addExamples(examples: List[Example]) = currentSus.examples = currentSus.examples ::: examples
 }

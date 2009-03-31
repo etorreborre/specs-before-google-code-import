@@ -22,13 +22,10 @@ import org.specs.util.Classes._
  * inside an Html table, like aligning them on a row.
  *
  */
-trait Forms {
-}
-object Forms extends Forms
-  class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
+class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
         with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
-    def this() = this(None, new DefaultExpectableFactory)
-    def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory)
+    def this() = this(None, new Specification {})
+    def this(titleString: String) = this(Some(titleString), new Specification(titleString) {})
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
     lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
@@ -76,6 +73,7 @@ object Forms extends Forms
      */
     def form[F <: Form](f: F): F = {
       add(f)
+      f.delegate = this.factory
       f
     }
 
@@ -83,9 +81,9 @@ object Forms extends Forms
     def executeThis = properties.foreach(_.execute)
 
     /** the Form failures is the executing the Form is done by executing all of its properties. */
-    override def failures = properties.flatMap(_.failures)
-    override def skipped = properties.flatMap(_.skipped)
-    override def errors = properties.flatMap(_.errors)
+    override def failures = properties.toList.flatMap(_.failures)
+    override def skipped = properties.toList.flatMap(_.skipped)
+    override def errors = properties.toList.flatMap(_.errors)
 
     override def toString = {
       title +
@@ -95,7 +93,12 @@ object Forms extends Forms
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
     def toHtml_! = execute.toHtml
-    
+    def report(s: Specification) = {
+      val spec = factory.asInstanceOf[Specification]
+      execute
+      s.addExamples(spec.examples)
+      toHtml_!
+    }
     override def reset(): this.type = {
       resetExecution()
       resetIncludeExclude()

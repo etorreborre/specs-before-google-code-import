@@ -2,7 +2,6 @@ package org.specs.form
 import scala.collection.mutable._
 import scala.xml._
 
-import Forms._
 class SeqForm[T](set: Seq[T]) extends Form {
   var unexpectedLines = new ListBuffer[LineForm]
   var i = 0
@@ -17,7 +16,7 @@ class SeqForm[T](set: Seq[T]) extends Form {
       currentLine = l(Some(set(i)))
       addHeader
       trs(currentLine.rows)
-      add(currentLine)
+      form(currentLine)
     }
     i += 1
   }

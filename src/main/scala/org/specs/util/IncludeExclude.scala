@@ -15,8 +15,8 @@ package org.specs.util
 trait IncludeExclude[T] {
   private var excluded: List[T] = Nil
   private var included: List[T] = Nil
-  def exclude(ex: T*) = excluded = excluded ::: ex.toList
-  def include(in: T*) = included = included ::: in.toList
+  def exclude(ex: T*): this.type = { excluded = excluded ::: ex.toList; this }
+  def include(in: T*): this.type = { included = included ::: in.toList; this }
   def reset(): this.type = { 
     included = Nil 
     excluded = Nil 
