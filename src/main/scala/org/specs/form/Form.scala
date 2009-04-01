@@ -99,7 +99,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
     def report(s: Specification) = {
       execute
       properties.foreach { p => 
-        s.forExample(title + " example " + p.label) in {
+        s.forExample(title + " - " + p.label + " example") in {
           p.issues.foreach(throw _)
         }
       }

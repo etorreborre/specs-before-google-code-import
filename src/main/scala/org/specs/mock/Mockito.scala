@@ -276,8 +276,12 @@ trait MockitoStubs extends MocksCreation {
    */
   class Stubbed	[T](c: =>T) {
     def returnValues(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
-    def returns(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
-    def returns(t: T, t2: T*): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t, t2:_*)
+    def returns(t: T, t2: T*): NewOngoingStubbing[T] = {
+      if (t2.isEmpty) 
+        mocker.when(c).thenReturn(t)
+      else
+        mocker.when(c).thenReturn(t, t2:_*)
+    }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
     def throws[E <: Throwable](e: E*): NewOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
   }
