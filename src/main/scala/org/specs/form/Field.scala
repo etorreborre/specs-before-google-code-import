@@ -1,7 +1,7 @@
 package org.specs.form
 import org.specs.util.Property
 
-class Field[T](label: String, value: =>T) extends Property(() => value) with Linkable[Prop[T]] with ToHtml {
+class Field[T](val label: String, value: =>T) extends Property(() => value) with Linkable[Prop[T]] with ToHtml with HasLabel {
   def apply[S <% T](value: =>S): Field[T] = {
     super.apply(() => value)
     this
@@ -15,8 +15,8 @@ class Field[T](label: String, value: =>T) extends Property(() => value) with Lin
             (if (next.isEmpty) "" else ", ") +
             next.toList.mkString(", ")
   }
+  protected def valueCell = <td class="value">{this.get}</td>
   override def toXhtml = {
-    val valueCell = <td class="value">{this.get}</td>
     if (label.isEmpty) 
       valueCell
     else

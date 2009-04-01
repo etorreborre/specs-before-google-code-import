@@ -48,8 +48,8 @@ import util.Property
  */
 class Prop[T](val label: String,
               var expected: Option[T],
-              actual: =>Option[T], val constraint: Option[Constraint[T]])
-        extends Property(expected) with DefaultExecutable with Linkable[Prop[T]] with ToHtml {
+              actual: =>Option[T], constraint: Option[Constraint[T]])
+        extends Property(expected) with DefaultExecutable with Linkable[Prop[T]] with ToHtml with HasLabel {
 
   /**
    * The apply method sets the expected value and returns the Prop
@@ -64,7 +64,9 @@ class Prop[T](val label: String,
   def get: T = this().get
 
   /** this function will be executed if the property is executed via its execute method. */
-  def executeThis = constraint.map(c => c.execute(expected))
+  def executeThis = constraint.map { c => 
+    c.execute(expected)
+  }
 
   /**
    * Display the property and possibly its followers as a Linkable object:
@@ -128,19 +130,6 @@ case object Prop {
   def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, None, None, None)
 }
 
-/**
- * A MatcherProp contains a MatcherConstraint which matcher can be changed from the default BeEqualTo matcher
- */
-class MatcherProp[T](
-  override val label: String,
-  expectedValue: Option[T], 
-  actual: =>Option[T], override val constraint: Option[MatcherConstraint[T]]) extends Prop(label, expectedValue, actual, constraint) {
-
-  /**
-   * changes the matcher on the constraint
-   */
-  def matchesWith(m: T => Matcher[T]) = {
-    constraint.map(_.matchesWith(m))
-    this
-  }
+trait HasLabel {
+  val label: String
 }

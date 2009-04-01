@@ -7,7 +7,7 @@ import scala.xml.NodeSeq
  */
 class MatcherPropIterable[T](override val label: String,
                              expectedIt: Option[Iterable[T]],
-                             actual: =>Option[Iterable[T]], override val constraint: Option[MatcherConstraint[Iterable[T]]]) extends
+                             actual: =>Option[Iterable[T]], constraint: Option[MatcherConstraint[Iterable[T]]]) extends
   MatcherProp[Iterable[T]](label, expectedIt, actual, constraint) {
   /** apply method with multiple args for better readability */
   def apply(v: T*): this.type = {

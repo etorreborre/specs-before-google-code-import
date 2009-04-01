@@ -11,7 +11,7 @@ class SeqForm[T](set: Seq[T]) extends Form {
     if (i >= set.size) {
       currentLine = l(None)
       addHeader
-      unexpectedLines.append(currentLine)
+      unexpectedLines.append(currentLine.comment)
     } else {
       currentLine = l(Some(set(i)))
       addHeader

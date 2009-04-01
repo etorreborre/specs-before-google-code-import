@@ -23,13 +23,15 @@ import org.specs.util.Classes._
  *
  */
 class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
-    def this() = this(None, new Specification {})
-    def this(titleString: String) = this(Some(titleString), new Specification(titleString) {})
+        with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable with HasLabel {
+    def this() = this(None, new DefaultExpectableFactory {})
+    def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory {})
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
     lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
-    type FormProperty = Executable with Linkable[_] with DefaultExecutable with HasResults with ToHtml
+    type FormProperty = Executable with Linkable[_] with DefaultExecutable with HasResults with ToHtml with HasLabel
+    
+    lazy val label = title
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
 
     /**
@@ -55,6 +57,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
      */
     def field[T](label: String, value: =>T) = Field(label, value)
     def field[T](label: String, values: Prop[T]*) = Field(label, values)
+    implicit def fieldToValue[T](f: Field[T]): T = f.get
     /**
      * factory method for creating an iterable property linked to an actual value.
      *
@@ -94,10 +97,13 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
     }
     def toHtml_! = execute.toHtml
     def report(s: Specification) = {
-      val spec = factory.asInstanceOf[Specification]
       execute
-      s.addExamples(spec.examples)
-      toHtml_!
+      properties.foreach { p => 
+        s.forExample(title + " example " + p.label) in {
+          p.issues.foreach(throw _)
+        }
+      }
+      toHtml
     }
     override def reset(): this.type = {
       resetExecution()
