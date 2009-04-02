@@ -49,15 +49,14 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
         firstName("Eric"); lastName("Torreborre")
         initials("TE")
       }
-      form.execute.toXhtml must \\(<td>TE</td>, Map("class"->"failure"))
-      form.execute.toXhtml must \\(<td>'ET' is not equal ignoring case to 'TE'</td>)
+      (form.execute.toXhtml \\("td"))(5) must ==/(<td class="failure" valign="top"><b>TE</b>'ET' is not equal ignoring case to 'TE'</td>)
     }
     "have an updateLastTd function setting a colspan on each last td of a row, except the last row" in {
       val updated = new PersonForm("person", person).updateLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
-        </table>, 4)
+        </table>)
       updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")).not)
     }
   }
@@ -78,8 +77,7 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
     }
     "display its status in xml when executed" in {
       val adder: Prop[Int] = Prop("Result", 1, 1 must_== 2)(2)
-      adder.execute.toXhtml must ==/(<td>Result</td><td class="failure" valign="top"><b>2</b>'1' is not equal to '2'</td>)
-//      adder.execute.toXhtml must \\(<td>'1' is not equal to '2'</td>)
+      adder.execute.toXhtml(1) must ==/(<td class="failure" valign="top"><b>2</b>'1' is not equal to '2'</td>)
     }
   }
   "A form" can {
