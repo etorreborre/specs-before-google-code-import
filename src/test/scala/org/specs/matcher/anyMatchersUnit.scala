@@ -36,6 +36,9 @@ class anyMatchersUnit extends MatchersSpecification {
       val (o1, o2) = (MyObject(1), MyObject(1))
       o1 must be_==(o2)
     }
+    "be ok when using the short form ==" in {
+      1 must ==(1)
+    }
     "be ok when comparing a list of ints" in {
       List(1) must be_==(List(1))
     }
