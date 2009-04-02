@@ -6,6 +6,8 @@ import org.specs.util._
 import org.specs.Sugar._
 import org.specs.matcher._
 import org.specs.runner._
+import org.specs.execute._
+
 /**
  * This trait is experimental. It is supposed to help writing some literate specifications
  * using the xml capabilities of Scala.

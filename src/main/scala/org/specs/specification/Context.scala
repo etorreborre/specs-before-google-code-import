@@ -10,6 +10,8 @@ import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import scala.reflect.Manifest
+import org.specs.execute._
+
 /**
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
  * each system under test being specified.

@@ -4,6 +4,7 @@ import org.specs.util._
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
+import org.specs.execute._
 
 class htmlRunnerUnit extends Specification with DataTables with JUnit {
   val table = "a"    | "b"  | "result" |

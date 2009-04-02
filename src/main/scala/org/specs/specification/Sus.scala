@@ -10,6 +10,8 @@ import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import scala.reflect.Manifest
+import org.specs.execute._
+
 /**
  * The <code>Sus</code> class represents a system under specification<br>
  * It has:<ul>

@@ -6,6 +6,7 @@ import org.specs.util._
 import org.specs._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
+import org.specs.execute._
 
 /**
  * This trait reports the result of a specification on a simple <code>Output</code>
@@ -214,7 +215,7 @@ trait OutputReporter extends Reporter with Output {
   /** @return true if the results should be printed
    */
   private def canReport(hasResults: HasResults) = {
-    !failedAndErrorsOnly || failedAndErrorsOnly && hasResults.hasFailureAndErrors
+    !failedAndErrorsOnly || failedAndErrorsOnly && hasResults.hasFailureOrErrors
   }
 }
 

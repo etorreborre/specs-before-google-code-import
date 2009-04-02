@@ -3,6 +3,8 @@ import org.specs.matcher._
 import org.specs.matcher.Matchers._
 import org.specs.ExtendedThrowable._
 import org.specs.Sugar._
+import org.specs.execute._
+
 /**
  * An expectable is an object supporting the execution of expectations through matchers.<pre>
  *   thisExpectable must passMatcher
@@ -142,15 +144,6 @@ class Expectation[T](value: => T) extends Expectable[T] {
 
   /** alias for <code>must is_==(other)</code>  */
   def mustEqual(otherValue: Any)(implicit details: Detailed) = must(is_==(otherValue)(details))
-}
-/** RuntimeException carrying a matcher ko message */
-case class FailureException(var message: String) extends RuntimeException(message) {
-  override def getMessage = message
-}
-
-/** RuntimeException carrying a matcher skip message */
-case class SkippedException(var message: String) extends RuntimeException(message) {
-  override def getMessage = message
 }
 
 /** Specialized expectable class with string matchers aliases */

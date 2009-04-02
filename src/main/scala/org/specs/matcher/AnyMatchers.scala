@@ -9,6 +9,7 @@ import org.specs.collection.ExtendedIterable._
 import scala.collection.immutable.{Set => Removed}
 import scala.collection.Set
 import scala.reflect.Manifest
+import org.specs.execute._
 
 /**
  * The <code>AnyMatchers</code> object allows the import of matchers from the AnyMatchers trait.

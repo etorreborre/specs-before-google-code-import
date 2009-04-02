@@ -5,6 +5,7 @@ import scala.xml._
 import scala.collection.mutable._
 import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
+import org.specs.execute._
 import org.specs.specification._
 import org.specs._
 import org.specs.util.ExtendedString._

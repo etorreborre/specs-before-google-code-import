@@ -9,7 +9,7 @@ import scala.collection.immutable.HashMap
 import org.specs.io.ConsoleOutput
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils.q
-import org.specs.specification.FailureException
+import org.specs.execute._
 import org.specs.specification._
 /**
  * The <code>ScalaCheckMatchers</code> trait provides matchers which allow to

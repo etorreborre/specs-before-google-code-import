@@ -7,6 +7,7 @@ import scala.xml.{Elem, PrettyPrinter}
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import scala.xml.{Elem, PrettyPrinter}
+import org.specs.execute._
 
 /**
  * Concrete class for the Xml trait. It allows to select a specification to run and an output path

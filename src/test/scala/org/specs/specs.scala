@@ -10,28 +10,30 @@ import org.specs.io._
 import org.specs.collection._
 import org.specs.util._
 import org.specs.xml._
+import org.specs.execute._
 
 object allSpecifications extends Specification {
-    "The specifications" areSpecifiedBy (
-        ioSpecifications,
-        formSpecifications,
-        utilSpecifications,
-        matcherSpecifications,
-		    specificationSpecifications,
-		    runnerSpecifications,
-        samplesSpecifications)
+  "The specifications" areSpecifiedBy (
+    executeSpecifications,
+    formSpecifications,
+    ioSpecifications,
+    matcherSpecifications,
+    samplesSpecifications,
+	specificationSpecifications,
+    runnerSpecifications,
+    utilSpecifications)
 }
 
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
-		collectionUnits,
-		ioUnits,
-		matcherUnits,
-		mockUnits,
-		runnerUnits,
-		specificationUnits,
-		utilUnits,
-		xmlUnits)
+	collectionUnits,
+	ioUnits,
+	matcherUnits,
+	mockUnits,
+	runnerUnits,
+	specificationUnits,
+	utilUnits,
+	xmlUnits)
 }
 
 object allSpecsAndUnits extends Specification {

@@ -5,6 +5,7 @@ import org.specs.io._
 import org.specs.util._
 import org.specs.ExtendedThrowable._
 import org.specs.xml.NodeFunctions._
+import org.specs.execute._
 
 /**
  * The Html trait outputs the results of a specification execution as an html

@@ -8,6 +8,7 @@ import org.specs.io.mock.MockOutput
 import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
+import org.specs.execute._
 
 class consoleReporterSpec extends Specification with JUnit {
   "A console reporter" should {
@@ -181,8 +182,8 @@ class consoleReporterSpec extends Specification with JUnit {
     "this sus" should {
       ("excluded" in {}).tag("out")
       ("included" in {}).tag("in")
-      "failed" in {throw new FailureException("failed")}
-      "error" in {throw new Error("error")}
+      "failed" in { throw new FailureException("failed") }
+      "error" in { throw new Error("error") }
       "skipped" in { skip("skipped") }
     }
   }

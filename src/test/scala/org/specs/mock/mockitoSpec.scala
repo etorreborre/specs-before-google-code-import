@@ -2,6 +2,7 @@ package org.specs.mock
 import org.specs._
 import org.specs.specification._
 import org.specs.runner._
+import org.specs.execute._
 
 class mockitoSpec extends LiterateSpecification("Mockito Specification") with MockitoSpecification {
   <wiki>

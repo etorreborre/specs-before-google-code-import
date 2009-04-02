@@ -3,6 +3,7 @@ import org.specs._
 import org.specs.specification._
 import org.specs.runner._
 import org.specs.mock.Mockito
+import org.specs.execute._
 
 class notifierSpec extends Specification with JUnit with Mockito {
   var notifier = mock[Notifier]

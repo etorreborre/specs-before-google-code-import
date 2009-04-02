@@ -5,6 +5,7 @@ import org.specs.specification._
 import org.specs.collection.ExtendedIterable._
 import org.specs.ExtendedThrowable._
 import org.specs.matcher.MatcherUtils._
+import org.specs.execute._
 
 /**
  * <p>The <code>Matchers</code> object allows to import the functions from the <code>Matchers</code> trait. 

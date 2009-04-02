@@ -16,6 +16,8 @@ import org.specs.ExtendedThrowable._
 import org.jmock.internal.matcher.MethodNameMatcher
 import org.specs.collection.JavaCollectionsConversion._
 import scala.reflect.Manifest
+import org.specs.execute._
+
 
 /** 
  * This object can be used to import and rename some functions in case of a conflict with some other trait.

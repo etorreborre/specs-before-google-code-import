@@ -8,6 +8,7 @@ import org.specs.io._
 import org.specs.specification._
 import scala.collection.immutable
 import scala.collection.Set
+import org.specs.execute._
 
 class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock with ScalaCheck {
   "The ScalaCheckParameters object" should {

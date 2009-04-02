@@ -3,6 +3,7 @@ import org.specs._
 import org.specs.mock._
 import org.specs.Sugar._
 import org.specs.specification._
+import org.specs.execute._
 
 class anyMatchersUnit extends MatchersSpecification {
   "A 'be' matcher" should {

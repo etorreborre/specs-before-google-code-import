@@ -3,6 +3,7 @@ import scala.collection.mutable.Queue
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
+import org.specs.execute._
 
 class MatchersSpecification extends Specification with JUnit {
   var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sus("", this))

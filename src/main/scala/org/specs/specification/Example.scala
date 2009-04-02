@@ -11,6 +11,8 @@ import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import scala.reflect.Manifest
+import org.specs.execute._
+
 /**
  * The <code>Example</code> class specifies one example of a system behaviour<br>
  * It has:<ul>

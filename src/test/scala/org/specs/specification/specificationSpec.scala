@@ -4,6 +4,7 @@ import org.specs.matcher._
 import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.specification._
+import org.specs.execute._
 
 class specificationSpec extends Specification with JUnit {
   "A specification" isSpecifiedBy (basicFeatures, advancedFeatures)

@@ -2,6 +2,7 @@ package org.specs.util
 import org.specs._
 import org.specs.specification._
 import org.specs.runner._
+import org.specs.execute._
 
 class dataTableUnit extends Specification with DataTables with JUnit {
   "a data table" should {

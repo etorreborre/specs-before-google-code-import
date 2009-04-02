@@ -3,6 +3,7 @@ import org.specs.Products._
 import scala._
 import org.specs.specification._
 import scala.xml.NodeSeq
+import org.specs.execute._
 /**
  * The Datatables trait provides implicit methods to start table headers
  * and DataRows.<p>

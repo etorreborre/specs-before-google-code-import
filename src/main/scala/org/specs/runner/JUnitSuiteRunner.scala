@@ -5,7 +5,7 @@ import org.junit.runner.Description
 import org.junit.runner.Description._
 import org.junit.runner.manipulation._
 import org.junit.runner.notification._
-import org.specs.specification.FailureException
+import org.specs.execute._
 import org.specs.util.Classes
 
 /**

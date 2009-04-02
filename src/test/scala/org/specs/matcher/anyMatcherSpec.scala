@@ -1,5 +1,6 @@
 package org.specs.matcher
 import org.specs.specification._
+import org.specs.execute._
 
 class anyMatcherSpec extends MatchersSpecification {
   "A matcher" can {
