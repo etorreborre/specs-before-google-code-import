@@ -34,7 +34,7 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) with Xml
   def subExamples = run must (beMatching("subex1")^^((_: Iterable[Node]).toString)
                               and \\(<h4>this example has sub-examples</h4>))
   def systemsList = run must (\\(<div id="leftColumn"/>) and \\(<td>{specification.name}</td>))
-  def noSystemsListForOneOnly = runSmall.toString must include("onLoad=\"prettyPrint();noNavBar()\"")
+  def noSystemsListForOneOnly = runSmall.toString must include("<script language=\"javascript\">window.onLoad=prettyPrint();noNavBar()</script>")
   def collapsibleColumn = run must \\(<img src="images/expanded.gif" onclick="toggleNavBar(this)"/>)
   def greenHighlight = 1 must_== 1
 
