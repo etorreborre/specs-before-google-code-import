@@ -62,14 +62,14 @@ use the system and its as parameters in { (s: System, c: Context) =>
 
 <ex>When examples are shared between SUS, each example should be executed with the SUS context it is executed in</ex>: {
 """
-    "the first sut".definedAs(context1) should {
+    "the first sus".definedAs(context1) should {
       "use context 1 in its examples" in { (system: System, context: NamedContext) =>
         context.name must_== expectedCurrentContextName
       }
       doAfter { expectedCurrentContextName = "context2"}
     }
-    "this sut".definedAs(context2) should {
-      behave like "the first sut" // but with context2 instead of context1
+    "this sus".definedAs(context2) should {
+      behave like "the first sus" // but with context2 instead of context1
     }
 """ >@
 }{ sharedExamplesMustHaveProperContexts }
@@ -144,13 +144,13 @@ trait ContextDefinitions extends SystemContexts {
     def context1 = NamedContext("context1")
     def context2 = NamedContext("context2")
 
-    "the first sut".definedAs(context1) should {
+    "the first sus".definedAs(context1) should {
       "use context 1 in its examples" in { (system: System, context: NamedContext) =>
         executedContexts = context.name :: executedContexts
       }
     }
-    "the second sut".definedAs(context2) should {
-      behave like "the first sut"
+    "the second sus".definedAs(context2) should {
+      behave like "the first sus"
     }
   }
   def sharedExamples = new SystemContext[SpecificationWithSystemContextAndSharedExamples] {

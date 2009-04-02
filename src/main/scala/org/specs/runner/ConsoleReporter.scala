@@ -142,7 +142,7 @@ trait OutputReporter extends Reporter with Output {
    * prints the statistics for a sus
    */
   def printStats(sus: Sus, padding: String): Unit = {
-    println(padding + "Total for SUT \"" + sus.description + "\":")
+    println(padding + "Total for SUS \"" + sus.description + "\":")
     printStats(stats(sus), padding)
   }
 

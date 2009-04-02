@@ -118,7 +118,7 @@ class consoleReporterSpec extends Specification with JUnit {
       runWith("-acc", "in", "-xOnly") must notContainMatch("this sus")
     }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
-      run2SystemsWith("-finalstats") must notContainMatch("for SUT")
+      run2SystemsWith("-finalstats") must notContainMatch("for SUS")
     }
     "not display the statistics with the -nostats or --nostatistics flag" in {
       runWith("-nostats") must notContainMatch("Total time")
