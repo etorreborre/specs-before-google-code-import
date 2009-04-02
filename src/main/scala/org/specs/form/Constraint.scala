@@ -10,7 +10,9 @@ case class MatcherConstraint[T](executor: (Matcher[T]) => Any) extends Constrain
     matcher = m
     this
   }
-  def execute(expected: Option[T]) = expected.map(exp => executor(matcher(exp)))
+  def execute(expected: Option[T]) = expected.map { exp => 
+    executor(matcher(exp)) 
+  }
 }
 case class FunctionConstraint[T](actual: T, executor: (T, T) => Any) extends Constraint[T]  {
   def execute(expected: Option[T]) = expected.map(executor(actual, _))

@@ -31,5 +31,10 @@ class mockitoUnit extends Specification with Mockito with JUnit {
    (m1.add("1") on m1).times(2) then 
    (m2.add("2") on m2)        were called.inOrder
    
-  }  
+  }
+  "Allow multiple return values" in {
+    val mockedList = mock[scala.List[String]]
+    mockedList.take(1) returns scala.List("hello")
+    mockedList(0) returns ("hello", "world")
+  }
 }

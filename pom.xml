@@ -86,18 +86,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <id>powermock-repo</id>
       <url>http://powermock.googlecode.com/svn/repo/</url>
     </repository>
-    <repository>
-      <id>specs-repo</id>
-      <name>specs repository</name>
-      <layout>default</layout>
-      <url>http://specs.googlecode.com/svn/maven2/</url>
-      <releases>
-        <checksumPolicy>ignore</checksumPolicy>
-      </releases>
-      <snapshots>
-        <checksumPolicy>ignore</checksumPolicy>
-      </snapshots>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -137,14 +125,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
     <dependency>
       <groupId>org.eclipse.mylyn.wikitext</groupId>
-      <artifactId>core</artifactId>
-      <version>1.0</version>
+      <artifactId>wikitext</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.eclipse.mylyn.wikitext</groupId>
-      <artifactId>textile</artifactId>
-      <version>1.0</version>
+      <artifactId>wikitext.textile</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
       <optional>true</optional>
     </dependency>
     <dependency>

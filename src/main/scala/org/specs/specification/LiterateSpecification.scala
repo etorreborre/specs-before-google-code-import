@@ -50,20 +50,23 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
       desc + "\n" + tableToExecute.toHtml.toString
     }
-    def inForm(form: =>org.specs.form.Forms#Form) = {
+    def inForm(form: =>org.specs.form.Form) = {
       lazy val formToExecute = form
-      forExample(desc) in {
-        formToExecute.execute
-        if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
+      val description = if (desc.isEmpty) form.title else desc
+      forExample(description) in {
+          formToExecute.execute
+          if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
       }
-      desc + "\n" + formToExecute.toHtml.toString
+      description + "\n" + formToExecute.toHtml.toString
     }
   }
 
   /** create an anonymous example which will be skipped until it is implemented */
   def notImplemented = forExample in { skip ("not implemented yet")}
-  implicit def toSus(e: => Elem) = new Object { def isSus = toLiterateSus("") ->> e }
-
+  implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
+  class ToLiterateSus(e: => Elem) {
+    def isSus = toLiterateSus("") ->> e
+  }
   implicit def toLiterateSusWithDesc(string: String) = new LiterateSus(specify(string))
   implicit def toLiterateSus(sus: Sus) = new LiterateSus(sus)
 
@@ -73,29 +76,32 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       sus.verb = ""
       format(e)
     }
+    /** specifies the system with a literate description and embedded expectations */
+    def is(e: => Elem)= {
+      sus.verb = "specifies"
+      format(e)
+    }
     /** associates every <ex> tag to an anonymous example */
     private def format(e: => Elem) = {
-      val content = e
-      val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
-      val exNodes = content.\("ex")
-      exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
-        val (node, example) = pair
-        example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text)
-        List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
+      try {      
+        val content = e
+        val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
+        val exNodes = content.\("ex")
+        exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
+          val (node, example) = pair
+          example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text)
+          List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
+        }
+        sus.literateDescription = Some(content)
+      } catch {
+        case t => forExample("The system could not be evaluated").addError(t)
       }
-      sus.literateDescription = Some(content)
     }
     private def addTag(node: Node, example: Example, tagName: String) = {
       node.attribute(tagName) match {
         case None => ()
         case Some(a) => a.toString.split(",").foreach(t => example.addTag(t.trim))
       }
-   }
-
-    /** specifies the system with a literate description and embedded expectations */
-    def is(e: => Elem)= {
-      sus.verb = "specifies"
-      format(e)
     }
   }
 
@@ -120,9 +126,11 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
   def addParentLink(s: Specification): this.type = { parentLinks = s :: parentLinks; this }
   def hasParentLink(s: Specification) = parentLinks.contains(s)
 
-  def linkTo(subSpec: LiterateSpecification with Html) = {
+  def linkTo(subSpec: LiterateSpecification with Html): String = linkTo(subSpec.description, subSpec)
+  def linkTo(desc: String, subSpec: LiterateSpecification with Html): String = {
+    if (!this.subSpecifications.contains(subSpec)) include(subSpec)
     subSpec.addParentLink(this)
-    pathLink(subSpec.description, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
+    pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
   }
 }
 /**

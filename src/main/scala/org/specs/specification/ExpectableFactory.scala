@@ -52,7 +52,12 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     a.setExpectationsListener(this)
   }
 }
-class DelegatedExpectableFactory(delegate: ExpectableFactory) extends ExpectableFactory {
+class DelegatedExpectableFactory(var delegate: ExpectableFactory) extends ExpectableFactory {
   def forExample: Example = delegate.forExample
   def lastExample: Option[Example] = delegate.lastExample
+}
+class DefaultExpectableFactory extends ExpectableFactory {
+  private val defaultExample = new Example("", DefaultLifeCycle)
+  def forExample: Example = defaultExample
+  def lastExample: Option[Example] = Some(forExample)
 }

@@ -7,6 +7,8 @@ import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
 import org.specs.specification._
 import org.specs._
+import org.specs.util.ExtendedString._
+import org.specs.util.Classes._
 /**
  * This trait defines Forms which are used to group and display Props properties together.
  *
@@ -20,10 +22,16 @@ import org.specs._
  * inside an Html table, like aligning them on a row.
  *
  */
-trait Forms {
-  case class Form(title: String, factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable {
-    type FormProperty = Executable with Linkable[_] with HasResults with ToHtml
+class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
+        with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable with HasLabel {
+    def this() = this(None, new DefaultExpectableFactory {})
+    def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory {})
+    def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
+    def this(factory: ExpectableFactory) = this(None, factory)
+    lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
+    type FormProperty = Executable with Linkable[_] with DefaultExecutable with HasResults with ToHtml with HasLabel
+    
+    lazy val label = title
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
 
     /**
@@ -38,19 +46,25 @@ trait Forms {
      * factory method for creating a property linked to an actual value.
      * Using this method adds the property to the Form
      */
-    def prop[T](label: String, actual: T): MatcherProp[T] = {
+    def prop[T](label: String, actual: =>T): MatcherProp[T] = {
       val p = Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
       add(p)
       p
     }
-
+    /**
+     * factory method for creating a property linked to an actual value == to the expected value
+     * Using this method adds the property to the Form
+     */
+    def field[T](label: String, value: =>T) = Field(label, value)
+    def field[T](label: String, values: Prop[T]*) = Field(label, values)
+    implicit def fieldToValue[T](f: Field[T]): T = f.get
     /**
      * factory method for creating an iterable property linked to an actual value.
      *
      * The default matcher for an iterable properties is "haveTheSameElementsAs"
      * Using this method adds the property to the Form.
      */
-    def propIterable[T](label: String, actual: Iterable[T]): MatcherPropIterable[T] = {
+    def propIterable[T](label: String, actual: =>Iterable[T]): MatcherPropIterable[T] = {
       val matcherConstraint: MatcherConstraint[Iterable[T]] = new MatcherConstraint[Iterable[T]](m => actual must m)
       val p = PropIterable(label, actual, matcherConstraint)
       p.matchesWith(new HaveTheSameElementsAs(_))
@@ -62,6 +76,7 @@ trait Forms {
      */
     def form[F <: Form](f: F): F = {
       add(f)
+      f.delegate = this.factory
       f
     }
 
@@ -69,17 +84,42 @@ trait Forms {
     def executeThis = properties.foreach(_.execute)
 
     /** the Form failures is the executing the Form is done by executing all of its properties. */
-    override def failures = properties.flatMap(_.failures)
-    override def skipped = properties.flatMap(_.skipped)
-    override def errors = properties.flatMap(_.errors)
+    override def failures = properties.toList.flatMap(_.failures)
+    override def skipped = properties.toList.flatMap(_.skipped)
+    override def errors = properties.toList.flatMap(_.errors)
 
     override def toString = {
       title +
       properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
     }
-    override def toEmbeddedHtml = <td>{toHtml}</td>
-    override def toHtml = {
+    override def toXhtml = {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
     }
+    def toHtml_! = execute.toHtml
+    def report(s: Specification) = {
+      execute
+      properties.foreach { p => 
+        s.forExample(title + " - " + p.label + " example") in {
+          p.issues.foreach(throw _)
+        }
+      }
+      toHtml
+    }
+    override def reset(): this.type = {
+      resetExecution()
+      resetIncludeExclude()
+      this
+    }
+    def resetExecution() = {
+      properties.foreach(_.reset())
+      super[DefaultExecutable].reset()
+    }
+    def resetIncludeExclude() = super[Layoutable].reset()
+
   }
+  trait Builder[T] {
+    def build: T
+  }
+trait Conversions {
+  implicit def stringToDouble(s: String) = java.lang.Double.parseDouble(s)
 }

@@ -34,45 +34,7 @@ import org.specs.matcher.MatcherUtils._
  * 
  * See the method descriptions for more usage examples.  
  */
-trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with Stubs { 
-  
-  /** delegate to Mockito static methods. */
-  protected val mocker = new org.mockito.MockitoMocker
-
-  /**
-   * create a mock object: val m = mock[java.util.List[Stringg]]
-   */
-  def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
-  /**
-   * create a mock object with smart return values: val m = smartMock[java.util.List[Stringg]]
-   * 
-   * This is the equivalent of Mockito.mock(List.class, SMART_NULLVALUES) but testing shows that it is not working well with Scala.
-   */
-  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.smartMock(m)
-  /**
-   * create a spy on an object. 
-   * 
-   * A spy is a real object but can still have some of its methods stubbed. However the syntax for stubbing a spy is a bit different than 
-   * with a mock:<code>
-   * 
-   * val s = spy(new LinkedList[String])
-   * doReturn("one").when(s).get(0) // instead of s.get(0) returns "one" which would throw an exception
-   * 
-   * </code>
-   */
-  def spy[T](m: T): T = mocker.spy(m)
-  
-  /** delegate to MockitoMocker doReturn. */
-  def doReturn[T](t: T) = mocker.doReturn(t)
-  /** delegate to MockitoMocker doAnswer with a MockAnswer object using the function f. */
-  def doAnswer[T](f: Any => T) = mocker.doAnswer(new MockAnswer(f))
-  /** delegate to MockitoMocker doAnswer. */
-  def doAnswer[T](a: Answer[T]) = mocker.doAnswer(a)
-  /** delegate to MockitoMocker doThrow. */
-  def doThrow[E <: Throwable](e: E) = mocker.doThrow(e)
-  /** delegate to MockitoMocker doNothing. */
-  def doNothing = mocker.doNothing
-}
+trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with MockitoStubs
 /**
  * This trait allows the initialization of mocks when defined with an annotation:
  * @Mock val l: List[String] = null
@@ -302,7 +264,7 @@ trait InteractionMatchers extends ExpectableFactory {
  * mockedList.get(0) returns "one" thenThrows new Exception("unexpected now")
  * </code>
  */
-trait Stubs {
+trait MockitoStubs extends MocksCreation {
   /** delegate to Mockito. */
   protected val mocker: org.mockito.MockitoMocker
   /** @return an object supporting the stub methods. */
@@ -313,11 +275,64 @@ trait Stubs {
    * Internally it calls Mockito.when(mock call).thenReturn(returnValue)
    */
   class Stubbed	[T](c: =>T) {
-    def returns(t: T): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t)
-    def returns(t: T, t2: T*): NewOngoingStubbing[T] = mocker.when(c).thenReturn(t, t2:_*)
+    def returns(t: T, t2: T*): NewOngoingStubbing[T] = {
+      if (t2.isEmpty) 
+        mocker.when(c).thenReturn(t)
+      else
+        mocker.when(c).thenReturn(t, t2:_*)
+    }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
     def throws[E <: Throwable](e: E*): NewOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
   }
+  /** @return an object allowing the chaining of stub values. */
+  implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
+  /** provide stub chain methods. */
+  class OngoingStubbing[T](stub: =>NewOngoingStubbing[T]) {
+    def thenReturns(t: T) = stub.thenReturn(t)
+    def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
+  }
+  /** allows to use a specs matcher to match parameters by encapsulating it as a Hamcrest matcher. */
+  implicit def argThat[T](m: org.specs.matcher.Matcher[T]): T = org.mockito.Matchers.argThat(new org.specs.mock.HamcrestMatcherAdapter(m))
+  /** allows to use a hamcrest matchers to match parameters. */
+  def argThat[T](m: org.hamcrest.Matcher[T]): T = org.mockito.Matchers.argThat(m)
+}
+trait MocksCreation {
+  /** delegate to Mockito static methods. */
+  protected val mocker = new org.mockito.MockitoMocker
+
+  /**
+   * create a mock object: val m = mock[java.util.List[Stringg]]
+   */
+  def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
+  /**
+   * create a mock object with smart return values: val m = smartMock[java.util.List[Stringg]]
+   * 
+   * This is the equivalent of Mockito.mock(List.class, SMART_NULLVALUES) but testing shows that it is not working well with Scala.
+   */
+  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.smartMock(m)
+  /**
+   * create a spy on an object. 
+   * 
+   * A spy is a real object but can still have some of its methods stubbed. However the syntax for stubbing a spy is a bit different than 
+   * with a mock:<code>
+   * 
+   * val s = spy(new LinkedList[String])
+   * doReturn("one").when(s).get(0) // instead of s.get(0) returns "one" which would throw an exception
+   * 
+   * </code>
+   */
+  def spy[T](m: T): T = mocker.spy(m)
+  
+  /** delegate to MockitoMocker doReturn. */
+  def doReturn[T](t: T) = mocker.doReturn(t)
+  /** delegate to MockitoMocker doAnswer with a MockAnswer object using the function f. */
+  def doAnswer[T](f: Any => T) = mocker.doAnswer(new MockAnswer(f))
+  /** delegate to MockitoMocker doAnswer. */
+  def doAnswer[T](a: Answer[T]) = mocker.doAnswer(a)
+  /** delegate to MockitoMocker doThrow. */
+  def doThrow[E <: Throwable](e: E) = mocker.doThrow(e)
+  /** delegate to MockitoMocker doNothing. */
+  def doNothing = mocker.doNothing
   /** 
    * This class is an implementation of the Answer interface allowing to pass functions as an answer.
    * 
@@ -358,15 +373,4 @@ trait Stubs {
        }
      } 
   }
-  /** @return an object allowing the chaining of stub values. */
-  implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
-  /** provide stub chain methods. */
-  class OngoingStubbing[T](stub: =>NewOngoingStubbing[T]) {
-    def thenReturns(t: T) = stub.thenReturn(t)
-    def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
-  }
-  /** allows to use a specs matcher to match parameters by encapsulating it as a Hamcrest matcher. */
-  implicit def argThat[T](m: org.specs.matcher.Matcher[T]): T = org.mockito.Matchers.argThat(new org.specs.mock.HamcrestMatcherAdapter(m))
-  /** allows to use a hamcrest matchers to match parameters. */
-  def argThat[T](m: org.hamcrest.Matcher[T]): T = org.mockito.Matchers.argThat(m)
 }

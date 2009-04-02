@@ -47,5 +47,18 @@ object ExtendedString {
      * @return a list with every group found
      */
     def findAll(group: String): List[String] = groups("(" + group + ")")
+    
+    /**
+     * @return the uncamel-ed string: MyCamelString ->  My camel string
+     */
+    def uncamel = {
+      def uncamelChars(chars : List[Char]): List[Char] = chars match {
+        case c :: rest if (Character.isUpperCase(c)) => ' ' :: Character.toLowerCase(c) :: uncamelChars(rest)
+        case c :: rest => c :: uncamelChars(rest)
+        case Nil => Nil
+      }
+      if (s.isEmpty) ""
+      else List.toString(s.charAt(0) :: uncamelChars(s.substring(1).toList))
+    }
   }
 }
