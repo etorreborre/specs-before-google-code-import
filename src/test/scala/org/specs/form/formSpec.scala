@@ -78,8 +78,8 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
     }
     "display its status in xml when executed" in {
       val adder: Prop[Int] = Prop("Result", 1, 1 must_== 2)(2)
-      adder.execute.toXhtml must \\(<td>2</td>, Map("class"->"failure"))
-      adder.execute.toXhtml must \\(<td>'1' is not equal to '2'</td>)
+      adder.execute.toXhtml must ==/(<td>Result</td><td class="failure" valign="top"><b>2</b>'1' is not equal to '2'</td>)
+//      adder.execute.toXhtml must \\(<td>'1' is not equal to '2'</td>)
     }
   }
   "A form" can {
@@ -161,23 +161,6 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
         tr(f3("3"), f4("4"), f5("5"))
       }
       form.toXhtml must \\(<td>5</td>, Map("class"->"value"))
-    }
-  }
-  "A layout" should {
-    "find the maximum number of cells on a row in a table" in {
-      new Layoutable {}.maxSize(<table>
-                           <tr><td>p</td><td>v</td></tr>
-                           <tr><td>p</td><td>v</td><td>v2</td></tr>
-                           </table>) must_== 3
-    }
-    "find the maximum number of cells on a row in a table" in {
-      val table = <table class="dataTable">
-                           <tr><th>p</th></tr>
-                           <tr><td>p</td><td class="value">v</td></tr>
-                           <tr><td>p</td><td class="value">v</td></tr>
-                           <tr><td>p</td><td class="value">v</td><td class="value">v2</td></tr>
-                           </table>
-      println(new Layoutable {}.updateLastTd(table, new Layoutable {}.maxSize(table))) 
     }
   }
 }
