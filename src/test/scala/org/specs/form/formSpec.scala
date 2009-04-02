@@ -51,13 +51,13 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
       }
       (form.execute.toXhtml \\("td"))(5) must ==/(<td class="failure" valign="top"><b>TE</b>'ET' is not equal ignoring case to 'TE'</td>)
     }
-    "have an updateLastTd function setting a colspan on each last td of a row, except the last row" in {
+    "have an updateLastTd function setting a colspan on each last td of a row" in {
       val updated = new PersonForm("person", person).updateLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
         </table>)
-      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")).not)
+      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
   }
   "A form property" should {

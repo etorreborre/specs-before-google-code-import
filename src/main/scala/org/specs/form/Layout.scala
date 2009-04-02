@@ -88,8 +88,8 @@ trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
       case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
       case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
       /** don't set a colspan on the last cell of the biggest row */
-      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
-      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
+      case <th>{ b }</th> :: otherThs if (nodes.toList.size <= spanSize) => nodes.toList.first ++ updateLastTd(otherThs, spanSize)
+      case <td>{ b }</td> :: otherTds if (nodes.toList.size <= spanSize) => nodes.toList.first ++ updateLastTd(otherTds, spanSize)
       case List(<table>{ x @ _*}</table>) => <table class="dataTable">{updateLastTd(x, spanSize)}</table>
       case <tr>{ y @ _*}</tr> :: otherRows => <tr>{updateLastTd(y, spanSize)}</tr> ++ updateLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ updateLastTd(other, spanSize)
