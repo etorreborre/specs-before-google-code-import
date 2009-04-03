@@ -8,7 +8,7 @@ import org.specs.util.Property
  * 
  * Note that the value is not evaluated until explicitely queried
  */
-class Field[T](val label: String, value: =>T) extends Property(() => value) with ToHtml with HasLabel with ValueFormatter[T] {
+class Field[T](val label: String, value: =>T) extends Property(() => value) with ToXhtml with HasLabel with ValueFormatter[T] {
   
   /**
    * set a new value on the field. 
@@ -39,15 +39,15 @@ class Field[T](val label: String, value: =>T) extends Property(() => value) with
   def toStringField = new Field(label, value.toString)
 }
 /**
- * Factory methods for creating Fields. Fields values can also be concaneted to produce "summary" fields.
+ * Factory methods for creating Fields. Fields values can also be concatenated to produce "summary" fields.
  * 
  * val f1 = Field(label, "hello")
  * val f2 = Field(label, "world")
  * val concatenatedFields = Field(label, f1, f2)
- * concanatedFields.toString == label: hello/world
+ * concatenatedFields.toString == label: hello/world
  * 
- * val concanatedFields2 = Field(label, ", ", f1, f2)
- * concanatedFields2.toString == label: hello, world
+ * val concatenatedFields2 = Field(label, ", ", f1, f2)
+ * concatenatedFields2.toString == label: hello, world
  */
 case object Field {
   def apply[T](label: String, value: =>T): Field[T] = new Field(label, value)

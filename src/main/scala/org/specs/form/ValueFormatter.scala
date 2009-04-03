@@ -5,7 +5,7 @@ package org.specs.form
  */
 trait ValueFormatter[T] {
   /** value formatter. By default formats Doubles with all decimals */
-  private[form] var valueFormatter = (t:Option[T]) => t match {
+  private[form] var formatter = (t:Option[T]) => t match {
     case Some(d: Double) => new java.text.DecimalFormat("#.###############").format(d)
     case Some(x: Any) => x.toString
     case None => ""
@@ -13,22 +13,22 @@ trait ValueFormatter[T] {
   /**
    * format the value. If it is a Double, use a DecimalFormat("#.###############") to display the value
    */
-  def format(s: Option[T]): String = valueFormatter(s)
+  def format(s: Option[T]): String = formatter(s)
   /**
    * format the value. If it is a Double, use a DecimalFormat("#.###############") to display the value
    */
-  def format(s: T): String = valueFormatter(Some(s))
+  def format(s: T): String = format(Some(s))
   /**
    * change the value formatter to display the value differentely
    */
-  def formatWith(function: Option[T] => String): this.type = { valueFormatter = function; this }
+  def formatWith(function: Option[T] => String): this.type = { formatter = function; this }
 }
 /**
  * Formatter for an Iterable
  */
 trait ValuesFormatter[T] {
   /** value formatter. Format decimals properly */
-  private var valueFormatter = new ValueFormatter[T] {}.valueFormatter  
+  private var valueFormatter = new ValueFormatter[T] {}.formatter  
   /** values formatter. By default formats lists by inserting commas */
   protected var valuesFormatter = (t:Option[Iterable[T]]) => t match {
     case None => ""

@@ -25,14 +25,14 @@ trait Sugar extends Products with ConsoleOutput with NumberOfTimes { outer =>
    */
   implicit def anyPrintable[T](a: T) = new Printable(a)
   class Printable[T](a: T){
-      def println = outer.println(a)
-      def pln = println
+    def println = outer.println(a)
+    def pln = println
 
-      /** print and pass: print the value and return it */ 
-      def pp = { outer.println(a); a }
+    /** print and pass: print the value and return it */ 
+    def pp = { outer.println(a); a }
       
-      /** alias for print and pass */ 
-      def >| = pp
+    /** alias for print and pass */ 
+    def >| = pp
   }
   /** 
    * This implicit definition allows to print any iterable to the console with:<br/>

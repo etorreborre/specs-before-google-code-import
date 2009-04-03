@@ -21,7 +21,8 @@ object allSpecifications extends Specification {
     samplesSpecifications,
 	specificationSpecifications,
     runnerSpecifications,
-    utilSpecifications)
+    utilSpecifications,
+    xmlSpecifications)
 }
 
 object allUnits extends Specification {

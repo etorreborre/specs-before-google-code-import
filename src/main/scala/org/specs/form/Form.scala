@@ -8,6 +8,7 @@ import org.specs.xml.NodeFunctions._
 import org.specs.execute._
 import org.specs.specification._
 import org.specs._
+import org.specs.xml.Xhtml._
 import org.specs.util.ExtendedString._
 import org.specs.util.Classes._
 /**
@@ -24,13 +25,13 @@ import org.specs.util.Classes._
  *
  */
 class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with ToHtml with Layoutable with HasLabel {
+        with DefaultExecutable with ToXhtml with Layoutable with HasLabel {
     def this() = this(None, new DefaultExpectableFactory {})
     def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory {})
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
     lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
-    type FormProperty = DefaultExecutable with ToHtml with HasLabel
+    type FormProperty = DefaultExecutable with ToXhtml with HasLabel
     
     lazy val label = title
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
@@ -94,7 +95,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
       properties.mkString("\n  ", "\n  ", "")
     }
     override def toXhtml = {
-      updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)
+      spanLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xhtml.isEmpty) xhtml else properties.map(toRow(_)) }</table>)
     }
     def toHtml_! = execute.toHtml
     def report(s: Specification) = {

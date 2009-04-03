@@ -3,7 +3,7 @@ import scala.collection.mutable._
 import scala.xml._
 
 class LineForm extends Form {
-  type LabelledHtml = HasLabel with ToHtml
+  type LabelledHtml = HasLabel with ToXhtml
   protected val lineProperties: ListBuffer[LabelledHtml] = new ListBuffer
 
   override def field[T](label: String, actual: =>T) = {
