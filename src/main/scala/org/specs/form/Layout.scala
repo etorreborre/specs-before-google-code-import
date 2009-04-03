@@ -59,6 +59,8 @@ trait Layout extends IncludeExclude[ToXhtml] {
   }
   /** @return all rows as a List */
   def rows = rowValues.toList
+  /** @return the number of rows */
+  def rowsNb = rowValues.size
   /** concatenate all rows as Xhtml */
   def xhtml = reduce(rowValues, { (x:Seq[ToXhtml]) => toRow(x:_*) })
   /** 

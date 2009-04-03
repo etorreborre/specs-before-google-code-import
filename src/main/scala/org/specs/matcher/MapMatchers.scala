@@ -1,5 +1,6 @@
 package org.specs.matcher
 import org.specs.matcher.MatcherUtils._
+import org.specs.util.Plural._
 
 /**
  * The <code>MapMatchers</code> trait provides matchers which are applicable to Map objects<br>
@@ -82,8 +83,8 @@ trait MapMatchers {
       val isDefined = values map {v => (v, f.isDefinedAt(v))}
       val undefined = isDefined filter { !_._2 } map { _._1 }
       (isDefined map {_._2} forall {_ == true}, 
-       description.getOrElse("the function") + " is defined for " + plural("values", values.size) + " " + q(values.mkString(", ")), 
-       description.getOrElse("the function") + " is not defined for " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
+       description.getOrElse("the function") + " is defined for the value".plural(values.size) + " " + q(values.mkString(", ")), 
+       description.getOrElse("the function") + " is not defined for the value".plural(undefined.size) + " " + q(undefined.mkString(", ")))
     }
   }
   
@@ -95,8 +96,8 @@ trait MapMatchers {
       val isDefined = values map {v => (v, f.isDefinedAt(v._1) && f(v._1) == v._2)}
       val undefined = isDefined filter { !_._2 } map { _._1 }
       (isDefined map {_._2} forall {_ == true}, 
-       description.getOrElse("the function") + " is defined by " + plural("values", values.size) + " " + q(values.mkString(", ")), 
-       description.getOrElse("the function") + " is not defined by " + plural("value", undefined.size) + " " + q(undefined.mkString(", ")))
+       description.getOrElse("the function") + " is defined by the value".plural(values.size) + " " + q(values.mkString(", ")), 
+       description.getOrElse("the function") + " is not defined by the value".plural(undefined.size) + " " + q(undefined.mkString(", ")))
     }
    }
 }

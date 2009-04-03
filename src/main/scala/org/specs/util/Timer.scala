@@ -1,6 +1,7 @@
 package org.specs.util
 import java.util.Calendar
 import scala.collection.mutable.Stack
+import org.specs.util.Plural._
 /**
  * This trait provides Timer functionalities based on the Java Calendar milliseconds
  */
@@ -61,11 +62,10 @@ trait HmsTimer extends Timer {
    */
   def hms: String = {
     val (hours, minutes, seconds, millis) = hourMinutesSecondsMillis
-    def plural(v: Long) = if (v > 1) "s" else ""
     var result = ""
-    if (hours > 0) { result += hours + " hour" + plural(hours) + " " }
-    if (minutes > 0) { result += minutes + " minute" + plural(minutes) + " " }
-    result += (seconds + " second" + plural(seconds))
+    if (hours > 0) { result += hours + " hour".plural(hours) + " " }
+    if (minutes > 0) { result += minutes + " minute".plural(minutes) + " " }
+    result += (seconds + " second".plural(seconds))
     result
   }
 

@@ -28,9 +28,4 @@ object MatcherUtils {
    * @return an object.toString() without quotes (used in messages creation)
    */
   def unq(a: Any)  = if (a == null) "null" else a.toString
-
-  /**
-   * @return an s if i is > 1
-   */
-  def plural(word: String, i: Int) = if (i > 1) (word + "s") else word
 }
