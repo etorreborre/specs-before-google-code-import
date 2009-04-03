@@ -6,16 +6,6 @@ import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
 import org.specs.util.IncludeExclude
 
-trait Linkable[T] {
-  val next: ListBuffer[Linkable[_]] = new ListBuffer()
-  var previous: Option[Linkable[_]] = None
-
-  def -->[X](others: Linkable[X]*): this.type = {
-    next.appendAll(others)
-    others.foreach { _.previous = Some(this) }
-    this
-  }
-}
 trait Layoutable extends ToHtml with IncludeExclude[ToHtml] { outerLayoutable =>
   private var rowsHtml: ListBuffer[() => NodeSeq] = new ListBuffer
   private var rowValues: ListBuffer[Seq[ToHtml]] = new ListBuffer

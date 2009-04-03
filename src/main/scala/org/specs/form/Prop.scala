@@ -53,7 +53,7 @@ import util.Property
 class Prop[T](val label: String,
               var expected: Option[T],
               actual: =>Option[T], constraint: Option[Constraint[T]]) extends Property(expected) 
-              with DefaultExecutable with Linkable[Prop[T]] with ToHtml with HasLabel {
+              with DefaultExecutable with ToHtml with HasLabel with ValueFormatter[T] {
 
   /**
    * The apply method sets the expected value and returns the Prop
@@ -64,29 +64,29 @@ class Prop[T](val label: String,
     this
   }
 
-  /** shortcut method for this().get returning the contained expected value. */
+  /** 
+   * shortcut method for this().get returning the contained expected value.
+   * @return the expected value if set and throws an exception otherwise
+   */
   def get: T = this().get
 
-  /** this function will be executed if the property is executed via its execute method. */
+  /** execute the constraint set on this property, with the expected value */
   protected def executeThis = constraint.map { c => 
     c.execute(expected)
   }
 
   /**
-   * Display the property and possibly its followers as a Linkable object:
-   * val firstName = Prop("First Name", person.firstName)
-   * val lastName = Prop("Last Name", person.lastName)
-   * (firstName("Eric") --> lastName("Torreborre")).toString
-   * // First Name: Eric, Last Name: Torreborre
+   * Display the property:
+   * 
+   * label: "this" (expected: "that")
    */
   override def toString = {
-    label + ": " + this().getOrElse("_") +
-            (if (next.isEmpty) "" else ", ") +
-            next.toList.mkString(", ")
+    label + ": " + this.actual.map(format(_)).getOrElse("_") + " (expected: " + expected.map(format(_)).getOrElse("_") + ")"
   }
+  /** format the expected value if set or else the actual value. */
+  private[form] def formattedValue = format(this().orElse(actual))
   /** @return the status of the execution or value if the cell hasn't been executed. */
   protected def statusClass = if (executed) status else "value"
-
   /**
    * Display the Property expected value with a different class attribute
    * depending if it hasn't been executed (white), has failed (yellow),
@@ -98,24 +98,28 @@ class Prop[T](val label: String,
     else
       <td>{label}</td> ++ valueCell
   }
-  def valueCell = {
+  /**
+   * execute the Prop and return the Xhtml
+   */
+  def toXhtml_! = execute.toXhtml
+  
+  /**
+   * @return the formatted value with its status and error messages if any
+   */
+  private[form] def valueCell = {
     if (executed) {
       if (isOk)
-        <td class={statusClass}>{getValue}</td>
+        <td class={statusClass}>{ formattedValue }</td>
       else {
-        <td class={statusClass} valign="top"><b>{getValue}</b>
+        <td class={statusClass} valign="top"><b>{ formattedValue }</b>
         {issueMessages}
         </td>
       } 
      }
      else
-       <td class="value">{this().getOrElse(actual.getOrElse(""))}</td>
+       <td class="value">{ formattedValue }</td>
   }
-  def getValue = format(this().getOrElse(actual.getOrElse("")))
-  def format(s: Any) = s match {
-    case d: Double => new java.text.DecimalFormat("#.##############").format(d)
-    case _: Any => s.toString 
-  }
+  
   /**
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.
    */
@@ -134,6 +138,9 @@ case object Prop {
   def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, None, None, None)
 }
 
+/**
+ * generic trait for anything having a label, to unify Props and Forms
+ */
 trait HasLabel {
   val label: String
 }

@@ -24,13 +24,13 @@ import org.specs.util.Classes._
  *
  */
 class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with Linkable[Form] with ToHtml with Layoutable with HasLabel {
+        with DefaultExecutable with ToHtml with Layoutable with HasLabel {
     def this() = this(None, new DefaultExpectableFactory {})
     def this(titleString: String) = this(Some(titleString), new DefaultExpectableFactory {})
     def this(titleString: String, factory: ExpectableFactory) = this(Some(titleString), factory)
     def this(factory: ExpectableFactory) = this(None, factory)
     lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
-    type FormProperty = Executable with Linkable[_] with DefaultExecutable with HasResults with ToHtml with HasLabel
+    type FormProperty = DefaultExecutable with ToHtml with HasLabel
     
     lazy val label = title
     protected val properties: ListBuffer[FormProperty] = new ListBuffer
@@ -91,7 +91,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
 
     override def toString = {
       title +
-      properties.filter(_.previous.isEmpty).mkString("\n  ", "\n  ", "")
+      properties.mkString("\n  ", "\n  ", "")
     }
     override def toXhtml = {
       updateLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xml.isEmpty) xml else properties.map(inRow(_)) }</table>)

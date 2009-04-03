@@ -30,20 +30,6 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
                                  "  First Name: Eric\n" +
                                  "  Last Name: Torreborre")
     }
-    "have a toString method displaying following properties" in {
-      val form = new PersonForm("Person", person) {
-        firstName("Eric") --> lastName("Torreborre")
-      }
-      form.toString must include("Person\n" +
-                                 "  First Name: Eric, Last Name: Torreborre")
-    }
-    "have a toString method printing properties on the same line if they are in sequence" in {
-      val form = new PersonForm("Person", person) {
-        firstName("Eric") --> lastName("Torreborre")
-      }
-      form.toString must include("Person\n" +
-                                 "  First Name: Eric, Last Name: Torreborre")
-    }
     "report its issues in xml when executed" in {
       val form = new PersonForm("Person", person) {
         firstName("Eric"); lastName("Torreborre")
@@ -60,26 +46,6 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
       updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
   }
-  "A form property" should {
-    "have a toString method returning the name and the property value" in {
-      Prop("Name", "")("Eric").toString must_== "Name: Eric"
-    }
-    "have next properties" in {
-      val firstName = Prop("First Name", "")("Eric")
-      firstName --> Prop("Last Name", "")("Torreborre")
-      firstName.toString must_== "First Name: Eric, Last Name: Torreborre"
-    }
-    "have a previous property" in {
-      val firstName = Prop("First Name", "Eric")
-      val lastName = Prop("Last Name", "Torreborre")
-      firstName --> lastName
-      lastName.previous must be_==(Some(firstName))
-    }
-    "display its status in xml when executed" in {
-      val adder: Prop[Int] = Prop("Result", 1, 1 must_== 2)(2)
-      adder.execute.toXhtml(1) must ==/(<td class="failure" valign="top"><b>2</b>'1' is not equal to '2'</td>)
-    }
-  }
   "A form" can {
     "have a labelled property" in {
       val form = new PersonForm(person) {
@@ -90,9 +56,9 @@ class formSpec extends LiterateSpecification with Persons with JUnit { persons =
     }
     "embedded another following form as if it was a property" in {
       val form = new PersonForm("person", person) {
-        firstName("Eric") --> new AddressForm("home", persons.address) {
+        tr(firstName("Eric"), new AddressForm("home", persons.address) {
                                     number(37)
-                                    street("Nando-cho")}
+                                    street("Nando-cho")})
         lastName("Torreborre")
       }
       form.toString must include("person\n" +
