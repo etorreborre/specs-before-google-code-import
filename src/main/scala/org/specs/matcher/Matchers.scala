@@ -99,14 +99,15 @@ abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer
   def and[U <: T](m: => Matcher[U]): Matcher[U] = { 
     new Matcher[U](){
       def apply(a: => U) = {
+        val value = a
         outer.setDescription(this.description)
-        val r1 = outer(a)
+        val r1 = outer(value)
         if (!r1.success)
           (false, r1.okMessage, r1.koMessage)
          else {
            val andMatcher = m
            andMatcher.setDescription(this.description)
-           val r2 = andMatcher(a) 
+           val r2 = andMatcher(value) 
           (r2.success, r1.okMessage + " and " + r2.okMessage, r1.okMessage + " but " + r2.koMessage) 
         }
   }}}
@@ -119,14 +120,15 @@ abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer
   def or[U <: T](m: => Matcher[U]) : Matcher[U] = { 
     new Matcher[U]() {
     def apply(a: =>U) = {
+      val value = a
       outer.setDescription(this.description)
-      val r1 = outer(a)
+      val r1 = outer(value)
       if (r1.success)
         (true, r1.okMessage, r1.koMessage)
       else {
         val orMatcher = m
         orMatcher.setDescription(this.description)
-        val r2 = orMatcher(a)
+        val r2 = orMatcher(value)
         if (r2.success)
           (true, r2.okMessage + " but " + r1.koMessage, r1.koMessage + " and " + r2.koMessage)
         else

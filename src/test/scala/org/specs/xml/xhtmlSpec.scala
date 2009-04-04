@@ -8,7 +8,7 @@ class xhtmlSpec extends spex.Specification {
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
         </table>)
-      updated.pp must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
+      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
   }
 }
