@@ -18,7 +18,7 @@ object Classes {
     try {
      return Some(getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[T])
     } catch {
-      case e => if (printStackTrace) e.printStackTrace()
+      case e => if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
     }
     return None
   }
