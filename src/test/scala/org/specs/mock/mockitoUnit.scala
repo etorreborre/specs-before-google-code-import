@@ -29,12 +29,25 @@ class mockitoUnit extends Specification with Mockito with JUnit {
 //    inOrder.verify(m2).add("2");
     
    (m1.add("1") on m1).times(2) then 
-   (m2.add("2") on m2)        were called.inOrder
-   
+   (m2.add("2") on m2)          were called.inOrder
   }
   "Allow multiple return values" in {
     val mockedList = mock[scala.List[String]]
     mockedList.take(1) returns scala.List("hello")
     mockedList(0) returns ("hello", "world")
+  }
+  "Allow smart return values on traits" in {
+    trait Hello {
+     def get(i:Int): String
+    }
+    mock[Hello].get(0) must beNull
+    smartMock[Hello].get(0) must_== ""
+  }
+  "Allow smart return values on classes" in {
+    class Hello {
+     def get(i:Int): String = "hello"
+    }
+    mock[Hello].get(0) must beNull
+    smartMock[Hello].get(0) must_== ""
   }
 }
