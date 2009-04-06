@@ -10,7 +10,7 @@ trait LayoutFormats extends Layout with Tabs {
   /** empty string property which can be used to display blank lines. */
   protected val empty = Prop[String]("")
   /** display a "paragraph" = an empty row + the values */
-  def p(values: ToXhtml*): this.type = { tr(empty); tr(values:_*) }
+  def p(values: LabeledXhtml*): this.type = { tr(empty); tr(values:_*) }
   /** display a big header as a box inside a row */
   def th1(s: String): this.type = embedInNewRow(<table class="dataTable"><tr><th>{s}</th></tr></table>) 
   /** display a th header */
@@ -22,18 +22,22 @@ trait LayoutFormats extends Layout with Tabs {
 
   /** add a new Xhtml element on a new row */
   protected def embedInNewRow(nodes: NodeSeq): this.type = {
-    tr(new ToXhtml { 
+    rowValues.append(List(new LabeledXhtml { 
+         val label = "none"
          override def toEmbeddedXhtml = <td valign={valignment()} class={statusCode()}>{toXhtml}</td>
          override def toXhtml = spanLastTd(nodes)
        }
-    ) 
+    )) 
+    this
   }
   /** add a new Xhtml element on a new row, with no embedding in a separate <td> */
   protected def inNewRow(nodes: NodeSeq): this.type = {
-    tr(new ToXhtml { 
+    rowValues.append(List(new LabeledXhtml { 
+         val label = "none"
          override def toEmbeddedXhtml = toXhtml
          override def toXhtml = spanLastTd(nodes)
        }
-    ) 
+    ))
+    this
   }
 }

@@ -1,6 +1,8 @@
 package org.specs.form
 import org.specs.xml.Xhtml._
 import org.specs.xml.NodeFunctions._
+import org.specs.util.ExtendedString._
+import org.specs.util.Classes._
 
 /**
  * This trait adds Tabulations to a table
@@ -8,7 +10,8 @@ import org.specs.xml.NodeFunctions._
 trait Tabs extends Layout { outer => 
   
   /** case class for creating a group of tabs */
-  case class tabs() extends Layoutable {
+  case class tabs() extends Layoutable with LabeledXhtml {
+    val label = className(this.getClass).uncamel
     /** adds the group of tabs to the Layout on a new row */
     outer.tr(this)
     var tabValues: List[tab] = Nil

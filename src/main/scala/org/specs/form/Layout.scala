@@ -39,32 +39,38 @@ trait Layoutable extends Layout with ToXhtml with LayoutFormats with Tabs
 /**
  * The Layout trait allows to put ToXhtml values on rows
  */
-trait Layout extends IncludeExclude[ToXhtml] {
+trait Layout extends IncludeExclude[LabeledXhtml] {
   /** store row values */
-  private var rowValues: ListBuffer[Seq[ToXhtml]] = new ListBuffer
+  protected var rowValues: ListBuffer[Seq[LabeledXhtml]] = new ListBuffer
 
   /**
    * adding values on a row
    */
-  def tr(values: ToXhtml*): this.type = {
-    rowValues.append(values)
+  def tr(values: LabeledXhtml*): this.type = {
+    appendValues(values:_*)
     this
+  }
+  protected def appendValues(values: LabeledXhtml*) = {
+    rowValues.append(values)
   }
   /**
    * adding several rows coming from another form
    */
-  def trs(rows: List[Seq[ToXhtml]]): this.type = {
-    rows.foreach { v => tr(v:_*) }
+  def trs(rows: List[Seq[LabeledXhtml]]): this.type = {
+    appendRows(rows)
     this
   }
+  protected def appendRows(rows: List[Seq[LabeledXhtml]]) = rows.foreach { v => appendValues(v:_*) } 
   /** @return all rows as a List */
   def rows = rowValues.toList
   /** @return the number of rows */
   def rowsNb = rowValues.size
   /** concatenate all rows as Xhtml */
-  def xhtml = reduce(rowValues, { (x:Seq[ToXhtml]) => toRow(x:_*) })
+  def xhtml = reduce(rowValues, { (x:Seq[LabeledXhtml]) => toRow(x:_*) })
   /** 
    * create a row with the "embedded" Xhtml values, filtered according to the IncludeExclude trait.
    */
-  protected def toRow(values: ToXhtml*) = <tr>{ reduce(filter(values), { (x: ToXhtml) => x.toEmbeddedXhtml }) }</tr>
+  protected def toRow(values: LabeledXhtml*) = <tr>{ reduce(filter(values), { (x: LabeledXhtml) => x.toEmbeddedXhtml }) }</tr>
 }
+/** alias type */
+trait LabeledXhtml extends HasLabel with ToXhtml

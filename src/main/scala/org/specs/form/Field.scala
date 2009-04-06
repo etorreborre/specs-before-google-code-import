@@ -8,7 +8,7 @@ import org.specs.util.Property
  * 
  * Note that the value is not evaluated until explicitely queried
  */
-class Field[T](val label: String, value: =>T) extends Property(() => value) with ToXhtml with HasLabel with ValueFormatter[T] {
+class Field[T](val label: String, value: =>T) extends Property(() => value) with LabeledXhtml with ValueFormatter[T] {
   
   /**
    * set a new value on the field. 

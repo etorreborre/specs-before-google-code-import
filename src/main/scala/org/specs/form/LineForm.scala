@@ -12,11 +12,9 @@ import org.specs.xml.NodeFunctions._
  *
  */
 class LineForm extends Form {
-  /** alias type */
-  type LabelledHtml = HasLabel with ToXhtml
 
   /** list of the properties to display */
-  protected val lineProperties: ListBuffer[LabelledHtml] = new ListBuffer
+  protected val lineProperties: ListBuffer[LabeledXhtml] = new ListBuffer
 
   /** add a new LineField to that line */
   override def field[T](label: String, actual: =>T) = {
@@ -39,5 +37,5 @@ class LineForm extends Form {
   /** extract a header from all the property labels */
   def header = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
-  override def toXhtml = reduce(lineProperties, { (p: LabelledHtml) => p.toXhtml })
+  override def toXhtml = reduce(lineProperties, { (p: LabeledXhtml) => p.toXhtml })
 }

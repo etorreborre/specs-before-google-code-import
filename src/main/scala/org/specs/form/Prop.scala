@@ -53,7 +53,7 @@ import util.Property
 class Prop[T](val label: String,
               var expected: Option[T],
               actual: =>Option[T], constraint: Option[Constraint[T]]) extends Property(expected) 
-              with DefaultExecutable with ToXhtml with HasLabel with ValueFormatter[T] {
+              with DefaultExecutable with LabeledXhtml with ValueFormatter[T] {
 
   /**
    * The apply method sets the expected value and returns the Prop

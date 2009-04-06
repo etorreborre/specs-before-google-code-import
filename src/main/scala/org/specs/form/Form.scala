@@ -25,7 +25,7 @@ import org.specs.util.Classes._
  *
  */
 class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with ToXhtml with Layoutable with HasLabel {
+        with DefaultExecutable with LabeledXhtml with Layoutable {
           
   /** constructor with no title, this will be set from the class name */
   def this() = this(None, new DefaultExpectableFactory {})
@@ -40,7 +40,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
   /** implementation of the HasLabel trait */
   lazy val label = title
   /** alias for properties or forms held by this Form */
-  type FormProperty = DefaultExecutable with ToXhtml with HasLabel
+  type FormProperty = DefaultExecutable with LabeledXhtml
   /** Props or Forms held by this Form */
   protected val properties: ListBuffer[FormProperty] = new ListBuffer
   /**
@@ -64,11 +64,14 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
     add(p)
     p
   }
+  def prop[T](actual: =>T): MatcherProp[T] = prop("", actual)
   /**
    * factory method for creating a property linked to an actual value == to the expected value
    * Using this method adds the property to the Form
    */
   def field[T](label: String, value: =>T) = Field(label, value)
+  /** create a field with no label */
+  def field[T](value: =>T) = Field("", value)
   /**
    * factory method for creating a field summarizing several properties values
    */

@@ -29,7 +29,7 @@ trait DataTables {
  * A header can be closed using the | method which will return the TableHeader object<p>
  * A header can be followed by data rows which only requirement is to have a <code>def header_=(t: TableHeader)</code> function
  */
-case class TableHeader(val titles: List[String], var isOk: Boolean) {
+case class TableHeader(var titles: List[String], var isOk: Boolean) {
   /** Mutator to indicate a failure in the rest of the table. */
   def setFailed() = isOk = false
 
@@ -39,7 +39,7 @@ case class TableHeader(val titles: List[String], var isOk: Boolean) {
    * Adds a new column to the header
    * @returns the extended header
    */
-  def |(s: String) = TableHeader(titles ::: List(s), isOk)
+  def |(s: String) = { titles = titles ::: List(s); this }
 
   /**
   * Used to close the header
@@ -51,14 +51,14 @@ case class TableHeader(val titles: List[String], var isOk: Boolean) {
    * Accepts any object on which a header can be set. Sets the header on that object and returns it
    * @returns the header-accepting object (usually a DataRow object)
    */
-  def |[T <: Any {def header_=(t: TableHeader)}](d: T) = {d.header_=(this); d}
+  def |[T <: Any {def header_=(t: TableHeader)}](d: T) = { d.header_=(this); d }
 
   /**
    * Accepts any object on which a header can be set and which is executable.
    * Sets the header on the object, marks it as "should be executed" and returns it.
    * @returns the header-accepting object (usually a DataRow object), ready to execute
    */
-  def |>[T <: Any {def header_=(t: TableHeader); def shouldExecute_=(b: Boolean)}](d: T) = {d.header_=(this); d.shouldExecute_=(true); d}
+  def |>[T <: Any {def header_=(t: TableHeader); def shouldExecute_=(b: Boolean)}](d: T) = { d.header_=(this); d.shouldExecute_=(true); d }
 
   /**
    * @returns the header as string: |"a" | "b" | "c = a + b"|
@@ -182,7 +182,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   def | = this
 
   /**
-   * executes the function on each table row  if the function exists
+   * executes the function on each table row if the function exists
    */
   def execute = {
     reset()
@@ -225,7 +225,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
     catch {
       case f: FailureException => row.addFailure(f)
       case s: SkippedException => row.addSkipped(s)
-      case e: Throwable => row.addError(e)
+      case e: Throwable => { e.printStackTrace; row.addError(e) }
     }
   }
   /**
