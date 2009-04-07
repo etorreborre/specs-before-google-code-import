@@ -155,7 +155,7 @@ trait Wiki extends Properties with Links {
                                                         replace("\n\r", "\n").
           split("\n").map(htmlize(_)).mkString("==<code class=\"prettyprint\">", "</code>==\n==<code class=\"prettyprint\">", "</code>==")
 
-  private def htmlize(s: String) = s.replace("<", "&lt;").replace(">", "&gt;")
+  protected def htmlize(s: String) = s.replace("<", "&lt;").replace(">", "&gt;")
   /**
    * Alias for wikiCode
    */
@@ -164,6 +164,18 @@ trait Wiki extends Properties with Links {
   def linkTo(susName: String) = "link to " + susName + " not implemented yet"
   override def pathLink(desc: String, path: String) = {
     "\"" + desc + "\":file:///" + path
+  }
+}
+trait Textile extends Wiki
+trait Markdown extends Wiki {
+  override def wikiCode(stringToFormat: String) = stringToFormat.replace("\r\n", "\n").
+                                                        replace("\n\r", "\n").
+          split("\n").map(htmlize(_)).mkString("<code class=\"prettyprint\">", "</code\n<code class=\"prettyprint\">", "</code>")
+  override def pathLink(desc: String, path: String) = {
+    "[" + desc + "](file:///" + path + ")"
+  }
+  def pathLink(desc: String, path: String, title: String) = {
+    "[" + desc + "](file:///" + path + " " + title + ")"
   }
 }
 trait Links {

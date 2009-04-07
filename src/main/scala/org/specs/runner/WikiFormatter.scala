@@ -2,8 +2,6 @@ package org.specs.runner
 import org.specs.log.ConsoleLog
 import org.specs.specification._
 import scala.xml._
-//import net.java.textilej.parser._
-//import net.java.textilej.parser.markup.textile._
 import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
 import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
 import org.specs.util.ExtendedString._
@@ -31,7 +29,7 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     } else
       parsed
   }
-  private def parseToHtml(s: String) = {
+  protected def parseToHtml(s: String) = {
     debug("before is \n" + s)
     val parser = new MarkupParser()
     parser.setMarkupLanguage(new TextileLanguage())
@@ -56,7 +54,7 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     try {
       XML.loadString(parsed)
     } catch {
-      case e => Text(e.getMessage + "\\n" + parsed)
+      case e => {println(parsed);Text(e.getMessage + "\\n" + parsed)}
     }
   }
   override def formatDesc(ex: Example) = {
@@ -64,4 +62,5 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     text
   }
 }
+class TextileFormatter extends WikiFormatter
 case class WikiExampleDescription(override val desc: String) extends ExampleDescription(desc)
