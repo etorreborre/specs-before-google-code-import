@@ -25,7 +25,7 @@ trait LayoutFormats extends Layout with Tabs {
     rowValues.append(List(new LabeledXhtml { 
          val label = "none"
          override def toEmbeddedXhtml = <td valign={valignment()} class={statusCode()}>{toXhtml}</td>
-         override def toXhtml = spanLastTd(nodes)
+         override def toXhtml = nodes
        }
     )) 
     this
@@ -35,7 +35,7 @@ trait LayoutFormats extends Layout with Tabs {
     rowValues.append(List(new LabeledXhtml { 
          val label = "none"
          override def toEmbeddedXhtml = toXhtml
-         override def toXhtml = spanLastTd(nodes)
+         override def toXhtml = nodes
        }
     ))
     this

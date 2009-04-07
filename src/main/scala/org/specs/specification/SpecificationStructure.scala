@@ -197,4 +197,9 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * add examples coming from another specification
    */
   def addExamples(examples: List[Example]) = currentSus.examples = currentSus.examples ::: examples
+  
+  /** @return true if it contains the specification recursively */
+  def contains(s: Specification): Boolean = {
+    subSpecifications.contains(s) || subSpecifications.exists(_.contains(s))
+  }
 }

@@ -130,7 +130,9 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
 
   def linkTo(subSpec: LiterateSpecification with Html): String = linkTo(subSpec.description, subSpec)
   def linkTo(desc: String, subSpec: LiterateSpecification with Html): String = {
-    if (!this.subSpecifications.contains(subSpec)) include(subSpec)
+    if (!contains(subSpec)) include(subSpec)
+    // execute the subSpec
+    subSpec.failures
     subSpec.addParentLink(this)
     pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
   }
