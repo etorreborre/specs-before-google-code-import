@@ -34,20 +34,20 @@ class scalaTestSpec extends Specification with ScalaTestMocks with JUnit {
         2.of(reporter).testFailed(a[Report])
         1.of(reporter).testIgnored(a[Report])
         1.of(reporter).testSucceeded(a[Report])
-        allowOtherMethods
+        allowOtherMethods.isExpectation
       }
       sampleSuite.execute(None, reporter, stopper, Set(), Set(), Map(), None)
     }
     "use the tags defined on the examples when executing included groups only" in {
       expect {
-        1.of(reporter).testSucceeded(a[Report])
+        1.of(reporter).testSucceeded(a[Report]).isExpectation
         allowOtherMethods
       }
       suiteWithGroups.execute(None, reporter, stopper, Set("unit"), Set(), Map(), None)
     }
     "use the tags defined on the examples, and not executing excluded groups" in {
       expect {
-        2.of(reporter).testSucceeded(a[Report])
+        2.of(reporter).testSucceeded(a[Report]).isExpectation
         allowOtherMethods
       }
       suiteWithGroups.execute(None, reporter, stopper, Set(), Set("functional"), Map(), None)
@@ -58,7 +58,7 @@ class scalaTestSpec extends Specification with ScalaTestMocks with JUnit {
   object sampleSpecification extends Specification {
     "the first system" should {
       "skip one example" in { skip("skipped") }
-      "have one example ok" in {}
+      "have one example ok" in {  1 must_== 1 }
       "have one example ko" in { 1 mustBe 2 }
       "have one example in error" in { throw new Error("error") }
     }

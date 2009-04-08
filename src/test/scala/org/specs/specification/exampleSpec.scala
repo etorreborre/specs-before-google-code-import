@@ -1,5 +1,6 @@
 package org.specs.specification
 import org.specs._
+import org.specs.execute._
 import org.specs.runner._
 
 class exampleSpec extends Specification with JUnit {
@@ -44,6 +45,10 @@ class exampleSpec extends Specification with JUnit {
       e2.description must_== e1.description
       e2.cycle mustBe e1.cycle
       e2.context mustBe e1.context
+    }
+    "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
+      object s extends Specification { "this is a pending example" in {} }
+      s.skipped must_== List(new SkippedException("PENDING: not yet implemented"))
     }
   }
 }

@@ -43,9 +43,9 @@ trait RunnerTestData {
 object sp1 extends Specification {
     override def toString = name
     "the sus" should {
-      "have one ok example" in {1 mustBe 1}
-      "have one ko example" in {1 mustBe 2}
-      "have an example with an exception" in {throw new Error("error message")}
-      "have one sub-example" in { "a sub-example" in {1 mustBe 1}}
+      "have one ok example" in { 1 mustBe 1 }
+      "have one ko example" in { 1 mustBe 2 }
+      "have an example with an exception" in { throw new Error("error message") }
+      "have one sub-example" in { "a sub-example" in { 1 mustBe 1 } }
     }
   }

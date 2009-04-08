@@ -13,7 +13,7 @@ class wikiFormatterSpec extends Specification with JUnit {
       formatString("a description") must_== "a description"
     }
     "format the description of example as some xml text" in {
-      val example = new Example("", null)
+      val example = new Example("", this).in { 1 must_== 1 }
       example.exampleDescription = new WikiExampleDescription("a description")
       new WikiFormatter().formatDesc(example) must_== <t>a description</t>
     }
@@ -26,7 +26,7 @@ class wikiFormatterSpec extends Specification with JUnit {
   }
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"
-    val example = new Example("a description", this)
+    val example = new Example("a description", this).in { 1 must_== 1 }
     val descWithStatus = new WikiFormatter().setStatus(exampleDesc, List(example))
 
     "set the example status as an xml attribute" in {

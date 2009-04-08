@@ -20,7 +20,7 @@ class beforeAfterSpec extends Specification with JUnit {
       object badSpec extends Specification {
         doBefore {}
       }
-      badSpec
+      badSpec.isOk must beTrue
     }
     "deprecated - have each example using the usingBefore method before being executed" in {
       beforeEx.execute
@@ -48,7 +48,7 @@ class beforeAfterSpec extends Specification with JUnit {
       object badSpec extends Specification {
         doAfter {}
       }
-      badSpec
+      badSpec.isOk must beTrue
     }
     "deprecated - have each example using the usingAfter method after being executed" in {
       afterEx.execute

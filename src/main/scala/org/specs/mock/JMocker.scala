@@ -85,8 +85,8 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
    * be exercised
    */
   def expect(block: => Any) = {
-    val result = block;
-    context.checking(expectations);
+    val result = block.isExpectation
+    context.checking(expectations)
     result
   }
   
