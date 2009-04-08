@@ -12,14 +12,15 @@ trait LayoutFormats extends Layout with Tabs {
   /** display a "paragraph" = an empty row + the values */
   def p(values: LabeledXhtml*): this.type = { tr(empty); tr(values:_*) }
   /** display a big header as a box inside a row */
-  def th1(s: String): this.type = embedInNewRow(<table class="dataTable"><tr><th>{s}</th></tr></table>) 
+  def th1(s: String): this.type = embedInNewRow(<table class="dataTable"><tr><th>{ removeUnnecessaryNewlines(s) }</th></tr></table>) 
   /** display a th header */
-  def th2(s: String): this.type = inNewRow(<th>{s}</th>)
+  def th2(s: String): this.type = inNewRow(<th>{ removeUnnecessaryNewlines(s) }</th>)
   /** display a th header, left aligned */
-  def th3(s: String): this.type = inNewRow(<th align="left">{s}</th>)
+  def th3(s: String): this.type = inNewRow(<th align="left">{ removeUnnecessaryNewlines(s) }</th>)
   /** display a th header, left aligned, with a given class attribute */
-  def th3(s: String, status: String): this.type = inNewRow(<th align="left" class={status}>{s.replace("\n\n", "\n")}</th>)
-
+  def th3(s: String, status: String): this.type = inNewRow(<th align="left" class={status}>{ removeUnnecessaryNewlines(s) }</th>)
+  /** remove unnecessary newlines which will cause <p/> to be inserted by markup languages */
+  private def removeUnnecessaryNewlines(s: String) = s.replace("\n\n", "\n")
   /** add a new Xhtml element on a new row */
   protected def embedInNewRow(nodes: NodeSeq): this.type = {
     rowValues.append(List(new LabeledXhtml { 
