@@ -18,7 +18,7 @@ trait LayoutFormats extends Layout with Tabs {
   /** display a th header, left aligned */
   def th3(s: String): this.type = inNewRow(<th align="left">{s}</th>)
   /** display a th header, left aligned, with a given class attribute */
-  def th3(s: String, status: String): this.type = inNewRow(<th align="left" class={status}>{s}</th>)
+  def th3(s: String, status: String): this.type = inNewRow(<th align="left" class={status}>{s.replace("\n\n", "\n")}</th>)
 
   /** add a new Xhtml element on a new row */
   protected def embedInNewRow(nodes: NodeSeq): this.type = {

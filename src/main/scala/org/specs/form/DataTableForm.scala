@@ -3,6 +3,7 @@ import org.specs.util._
 import org.specs.xml.NodeFunctions._
 
 class DataTableForm extends TableForm with DataTables {
+
   /** header retrieved from the DataTable header */
   private var tableHeader: Option[TableHeader] = None
   /** store a reference to the DataTable header */

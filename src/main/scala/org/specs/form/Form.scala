@@ -125,6 +125,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
     execute
     properties.foreach { p => 
       s.forExample(title + " - " + p.label + " example") in {
+        s.addExpectation
         p.issues.foreach(throw _)
       }
     }

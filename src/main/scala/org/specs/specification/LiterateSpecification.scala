@@ -6,6 +6,7 @@ import org.specs.util._
 import org.specs.Sugar._
 import org.specs.matcher._
 import org.specs.runner._
+import org.specs.form._
 import org.specs.execute._
 
 /**
@@ -48,7 +49,9 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
     def inTable(table: =>ExecutableDataTable) = {
       lazy val tableToExecute = table
       forExample(desc) in {
-        tableToExecute.execute
+        isExpectation(tableToExecute.execute)
+        if (!tableToExecute.isOk)
+          throw new DataTableFailureException(tableToExecute)
       }
       desc + "\n" + tableToExecute.toHtml.toString
     }
@@ -56,7 +59,7 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       lazy val formToExecute = form
       val description = if (desc.isEmpty) form.title else desc
       forExample(description) in {
-          formToExecute.execute
+          isExpectation(formToExecute.execute)
           if (!formToExecute.isOk) throw new FailureException("The form '" +  formToExecute.title + "' failed")
       }
       description + "\n" + formToExecute.toHtml.toString
@@ -135,6 +138,12 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
     subSpec.failures
     subSpec.addParentLink(this)
     pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
+  }
+  def prop[T](label: String, actual: =>T): MatcherProp[T] = {
+    Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
+  }
+  def displayProp[T](label: String, actual: =>T)(expected: T) = {
+    prop(label, actual)(expected).display_!
   }
 }
 /**

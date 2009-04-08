@@ -102,6 +102,10 @@ class Prop[T](val label: String,
    * execute the Prop and return the Xhtml
    */
   def toXhtml_! = execute.toXhtml
+  /**
+   * execute the Prop and return the Xhtml
+   */
+  def display_! = <table class="dataTable"><tr>{ toXhtml_! }</tr></table>.toString
   
   /**
    * @return the formatted value with its status and error messages if any
