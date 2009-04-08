@@ -84,7 +84,7 @@ use the system and its as parameters in { (s: System, c: Context) =>
     exampleIsOk(s.examples(i))
   }
   def exampleIsOk(e: Example) = e.isOk aka e.description.toString must beTrue
-  def executeSpec(s: Specification) = s.examples.map(_.failures) // execute all examples
+  def executeSpec(s: Specification) = s.failures // execute all examples
   def sharedExamplesMustHaveProperContexts = eg { (s: SpecificationWithSystemContextAndSharedExamples) =>
     executeSpec(s)
     executedContexts(0) must_== "context2"
@@ -117,18 +117,20 @@ trait ContextDefinitions extends SystemContexts {
       }
     }
     def initializedWithASystem = new SampleSystemContext
-    "the system has be passed to the example and initialized" in { system: System =>
-      system1 = system
-      system.counter must_== 1
-    }
-    "the passed system was a fresh copy" in { system: System =>
-      system1 mustNotEq system
-      system.counter must_== 1
-    }
-    "the system and its context can be passed" in { (system: System, context: SampleSystemContext) =>
-      system must haveClass[System]
-      context must haveClass[SystemContext[System]]
-      context.count must_== 0
+    "In those example, the system is".definedAs(initializedWithASystem) should {
+      "the system has be passed to the example and initialized" in { system: System =>
+        system1 = system
+        system.counter must_== 1
+      }
+      "the passed system was a fresh copy" in { system: System =>
+        system1 mustNotEq system
+        system.counter must_== 1
+      }
+      "the system and its context can be passed" in { (system: System, context: SampleSystemContext) =>
+        system must haveClass[System]
+        context must haveClass[SampleSystemContext]
+        context.count must_== 0
+      }
     }
   }
   def systemContexts = new SystemContext[SpecificationWithSystemContext] {
@@ -147,6 +149,7 @@ trait ContextDefinitions extends SystemContexts {
     "the first sus".definedAs(context1) should {
       "use context 1 in its examples" in { (system: System, context: NamedContext) =>
         executedContexts = context.name :: executedContexts
+        1 must_== 1
       }
     }
     "the second sus".definedAs(context2) should {

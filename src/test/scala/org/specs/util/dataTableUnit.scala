@@ -61,8 +61,8 @@ class dataTableUnit extends Specification with DataTables with JUnit {
     "allow type inference on cell types" in {
       val row1 = true ! true
       val row2 = 1    ! true
-      val t = row1 | row2; ()
-
+      val t = row1 | row2
+      t.isExpectation
     }
     "have a whenFailing method to replace the failing method called when the table fails" in {
        var theNewFunctionIsCalled = false

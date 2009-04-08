@@ -13,7 +13,7 @@ class sugarSpec extends Specification with Sugar with MockOutput with JUnit {
       j mustBe 6
     }
     "have a printEach method printing each element of an iterable" in {
-      List(1, 2, 3) printEach
+      List(1, 2, 3).isExpectation printEach
     }
   }
 

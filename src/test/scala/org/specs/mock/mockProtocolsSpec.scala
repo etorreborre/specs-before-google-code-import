@@ -42,7 +42,7 @@ class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock wi
       protocol.clear
     }
    "provide an 'expect anyOf' protocol authorizing any of a set of calls to be made" in {
-     var protocol = expect(anyOf) { mock.destroy }
+     var protocol = expect(anyOf) { mock.destroy.isExpectation }
      button.pound
    }
   "provide an 'expect n.of' protocol checking if exactly n calls have been made" in {

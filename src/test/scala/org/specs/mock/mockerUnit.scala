@@ -4,7 +4,7 @@ import org.specs.Sugar._
 import org.specs.mock._
 
 class mockerUnit extends Specification with Sugar with ProtocolTypes with JUnit {
-  object mocker extends Mocker
+  object mocker extends Mocker { def addExpectation = null }
   class MockedClass { def method = (); def a = (); def b = (); def c = () }
   "A mocker" should {
     usingBefore {() => mocker.protocol.clear}

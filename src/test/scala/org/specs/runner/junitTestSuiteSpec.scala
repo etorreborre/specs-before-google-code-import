@@ -22,8 +22,8 @@ class junitTestSuiteSpec extends Specification with JUnit {
     }
     "create one test suite per sus" in {
       object S1 extends Specification {
-        "sus1" should { "ex" in {} }
-        "sus2" should { "ex" in {} }
+        "sus1" should { "ex" in { 1 must_== 1 } }
+        "sus2" should { "ex" in { 1 must_== 1 } }
       }
       makeRunners(S1) foreach { r =>
         r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("sus1 should", "sus2 should")
@@ -31,7 +31,7 @@ class junitTestSuiteSpec extends Specification with JUnit {
     }
     "create one test case per example" in {
       object S1 extends Specification {
-        "sus1" should { "ex1" in {}; "ex2" in {}}
+        "sus1" should { "ex1" in { 1 must_== 1 }; "ex2" in { 1 must_== 1 }}
       }
       makeRunners(S1) foreach { r =>
         val test1 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).first

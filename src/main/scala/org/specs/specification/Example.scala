@@ -42,12 +42,14 @@ case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc:
   }
   override def execute(t: => Any) = {
     val test = t
-    test match {
+    var result: Any = test match {
       case function: Function0[Any] => function()
       case function: Function1[S, Any] => function(context.system)
       case function: Function2[S, Context, Any] => function(context.system, context)
       case _ => test
     }
+    skipIfNoExpectations()
+    result
   }
   /** clone method to create a new example from this one. */
   override def clone: ExampleWithContext[S] = {
@@ -118,7 +120,15 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
 
   def before = {}
   def after = {}
-  def execute(t: => Any) = t
+  def execute(t: => Any): Any = {
+    val executed = t
+    skipIfNoExpectations()
+    executed
+  }
+  protected def skipIfNoExpectations() = {
+    if (this.expectationsNumber == 0 && this.subExs.isEmpty)
+      throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("org.specs.specification.Example")
+  }
 
   /** creates and adds a new error from an exception t */
   def addError(t: Throwable) = thisErrors += t

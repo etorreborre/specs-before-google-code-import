@@ -39,11 +39,11 @@ class notifierSpec extends Specification with JUnit with Mockito {
   }
   val s = new Specification {
     "system1"  should {
-      "ex1-1" in {}
+      "ex1-1" in { 1 must_== 1 }
       "ex1-2" in { fail("wrong") }
     }
     "system2"  should {
-      "ex2-1" in {}
+      "ex2-1" in { 1 must_== 1 }
       "ex2-2" in { throw new Exception("bad") }
       "ex2-3" in { skip("skip this one") }
     }

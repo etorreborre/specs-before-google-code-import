@@ -14,7 +14,7 @@ import org.specs.specification._
  * <li>every expectation will be automatically checked at the end of the example (see the implementation of the
  *  <code>ExampleLifeCycle</code> trait)</ul>
  */
-trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers {
+trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers with ExpectationsListener {
   /** protocol storing mocks expectations */
   val protocol = new Protocol
 
@@ -34,7 +34,7 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers {
     expectingMode += 1
     if (e == exclusively) 
       protocol.exclusive = true
-    protocol.expect(t)(v); 
+    protocol.expect(t)(v).isExpectation
     expectingMode -= 1 
     protocol
   }

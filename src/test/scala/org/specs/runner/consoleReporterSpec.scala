@@ -180,8 +180,8 @@ class consoleReporterSpec extends Specification with JUnit {
   }
   object spec extends Specification {
     "this sus" should {
-      ("excluded" in {}).tag("out")
-      ("included" in {}).tag("in")
+      ("excluded" in { 1 must_== 1 }).tag("out")
+      ("included" in { 1 must_== 1 }).tag("in")
       "failed" in { throw new FailureException("failed") }
       "error" in { throw new Error("error") }
       "skipped" in { skip("skipped") }
@@ -189,8 +189,8 @@ class consoleReporterSpec extends Specification with JUnit {
   }
   object specRunner extends ConsoleRunner(spec) with MockOutput
   object specTwoSystems extends Specification {
-    "this is system one" should { "do nothing" in {} }
-    "this is system two" should { "do nothing" in {} }
+    "this is system one" should { "do nothing" in { 1 must_== 1 } }
+    "this is system two" should { "do nothing" in { 1 must_== 1 } }
   }
   object specTwoSystemsRunner extends ConsoleRunner(specTwoSystems) with MockOutput
   def specWithTwoSystems = new SpecWithTwoSystems().run
