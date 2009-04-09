@@ -12,13 +12,20 @@ object Classes {
   def createObject[T](className: String): Option[T] = createObject[T](className, false)
   
   /**
-   * Create an instance of a given class and optionally print the stacktrace if the class can't be loaded.
+   * Create an instance of a given class and optionally print message if the class can't be loaded.
    */
-  def createObject[T](className: String, printStackTrace: Boolean): Option[T] = {
+  def createObject[T](className: String, printMessage: Boolean): Option[T] = createObject(className, printMessage, false)
+  /**
+   * Create an instance of a given class and optionally print message and/or the stacktrace if the class can't be loaded.
+   */
+  def createObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
     try {
      return Some(getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[T])
     } catch {
-      case e => if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
+      case e => {
+        if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not load class " + className)
+        if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
+      }
     }
     return None
   }

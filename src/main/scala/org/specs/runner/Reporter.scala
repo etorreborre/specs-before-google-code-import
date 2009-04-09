@@ -85,17 +85,38 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     if (arguments != null)
       args = args ++ arguments
     if (argsContain("-h", "--help")) {
-      println("""
-usage java <classpath> package.mySpecification [-h|--help]
-                                               [-ns|--nostacktrace]
-                                               [-nostats|--nostatistics]
-                                               [-finalstats|--finalstatistics]
-                                               [-xonly | -failedonly]
-                                               [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
-                                               [-sus | --system]
-                                               [-ex | --example]
-                                               [-c | --color]
-
+      displayHelp    
+    } else {
+      reportSpecs
+      if (filteredSpecs.exists(_.isFailing)) System.exit(1) else System.exit(0)
+    }
+  }
+  /** display all help options. */
+  protected def displayHelp = {
+    displayUsage
+    displayOptions
+    displayOptionsDescription
+  }
+  /** display the usage. */
+  protected def displayUsage = {
+    println("usage java <classpath> package.mySpecification")
+  }
+  /** display the options summary. */
+  protected def displayOptions = {
+    println("""
+    [-h|--help]
+    [-ns|--nostacktrace]
+    [-nostats|--nostatistics]
+    [-finalstats|--finalstatistics]
+    [-xonly | -failedonly]
+    [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
+    [-sus | --system]
+    [-ex | --example]
+    [-c | --color]""".stripMargin)
+  }
+  /** display the options description. */
+  protected def displayOptionsDescription = {
+    println("""
 -h, --help                      print this message and doesn't execute the specification
 -ns, --nostacktrace             remove the stacktraces from the reporting
 -nostats, --nostatistics        remove the statistics from the reporting
@@ -105,12 +126,7 @@ usage java <classpath> package.mySpecification [-h|--help]
 -rej, --reject tags             reject the specified tags (comma-separated names)
 -sus, --system                  only the systems under specifications matching this regular expression will be executed
 -ex, --example                  only the examples matching this regular expression will be executed
--c, --color                     report with color
-""".stripMargin)
-    } else {
-      reportSpecs
-      if (filteredSpecs.exists(_.isFailing)) System.exit(1) else System.exit(0)
-    }
+-c, --color                     report with color""".stripMargin)
   }
   /** regexp for filtering systems. */
   override def susFilterPattern = argValue(args, List("-sus", "--system")).getOrElse(".*")
@@ -170,7 +186,7 @@ usage java <classpath> package.mySpecification [-h|--help]
    * @return the argument value in a list of arguments for a given flag in the argumentNames list.
    * for example: argValue(Array("-ex", ".*ex.*"), List("-ex", "--example")) = Some(".*ex.*")
    */
-  private def argValue(arguments: Array[String], argumentNames: List[String]): Option[String] = {
+  protected def argValue(arguments: Array[String], argumentNames: List[String]): Option[String] = {
     arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
       case -1 => None
       case i if (i < arguments.length - 1) => Some(arguments(i + 1))

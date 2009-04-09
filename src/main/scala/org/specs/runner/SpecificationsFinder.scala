@@ -25,10 +25,7 @@ case class SpecsFinder(path: String, pattern: String, asOneSpecification: Boolea
     val collected = new scala.collection.mutable.ListBuffer[Specification]
     val specNames = specificationNames(path, pattern)
     specNames foreach { className =>
-      createSpecification(className) match {
-        case Some(s) => collected.append(s)
-        case None => scala.Console.println("Could not load " + className)
-      }
+      createSpecification(className).foreach { collected.append(_) }
     }
     if (asOneSpecification) {
 	    object totalSpecification extends Specification {
