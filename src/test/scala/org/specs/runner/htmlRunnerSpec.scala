@@ -1,6 +1,6 @@
 package org.specs.runner
 
-class htmlRunnerSpec extends htmlRunnerRules("Html Runner") { "Html Runner Specification" ->> <wiki>
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with Html { "Html Runner Specification" ->> <wiki>
 
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:

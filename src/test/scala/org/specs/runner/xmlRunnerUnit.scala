@@ -1,3 +1,4 @@
+
 package org.specs.runner
 import org.specs.specification._
 import org.specs.util.DataTables
