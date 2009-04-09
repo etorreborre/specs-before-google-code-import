@@ -2,6 +2,11 @@ package org.specs.matcher
 import org.specs.specification._
   
 class beMatcherSpec extends org.specs.Specification {  outer =>
+  implicit def toAnyResultMatcher[T](result: Result[T]) = new AnyResultMatcher(result)
+  class AnyResultMatcher[T](result: Result[T]) {
+    def equalTo(o: T) = result.matchWith(beEqualTo(o))
+  }
+  def equalTo[T](o: T) = beEqualTo(o)
   implicit def toStringResultMatcher(result: Result[String]) = new StringResultMatcher(result)
   class StringResultMatcher(result: Result[String]) {
     def matching(s: String) = result.matchWith(beMatching(s))
@@ -19,6 +24,12 @@ class beMatcherSpec extends org.specs.Specification {  outer =>
   
   "A matcher starting with 'be' can be used with 'be' as a separated word" in {
     "hello" must be matching("h.*") 
+  }
+  "A matcher starting with 'be' can be used with 'be' as a separated word" in {
+    "hello" must be equalTo("hello") 
+  }
+  "A matcher starting with 'notBe' can be used with 'not be' as a separated word" in {
+    "hello" must not be equalTo("world") 
   }
   "A matcher starting with 'notBe' can be used with 'not be' as separated words" in {
     "hello" must not be(matching("z.*"))
