@@ -8,6 +8,7 @@ class beMatcherSpec extends MatchersSpecification { outer =>
   }
   "A matcher can be 'and-ed' with another 'not be' matcher" in {
     "hello" must be equalTo("hello") and not be equalTo("hello2")
+    "hello" must not be equalTo("world") and be equalTo("hello")
     expectation("hello" must be equalTo("hello") and not be equalTo("hello")) must failWithMatch("hello")
     expectation("hello" must be equalTo("world") and not be equalTo("hello")) must failWithMatch("world")
    }

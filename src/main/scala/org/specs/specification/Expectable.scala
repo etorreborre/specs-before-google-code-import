@@ -62,8 +62,10 @@ class Expectable[T](value: => T) {
     def executeMatch = {
       matcher.setDescription(description)
       val (result, _, koMessage) = {
-        if (not) 
-          matcher.not.apply(value) 
+        if (not) {
+          not = false
+          matcher.not.apply(value)
+        } 
         else 
           matcher.apply(value)
       }
