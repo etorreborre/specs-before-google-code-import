@@ -225,7 +225,7 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with SpecificationStruc
                                                           s5: Shrink[A5], 
                                                           s6: Shrink[A6],
                                                           s7: Shrink[A7],
-                                                          s8: Shrink[A8]) = forExample(e) in { Prop.forAll(f) must pass }
+                                                          s8: Shrink[A8]) = forExample(e) in { theValue(Prop.forAll(f)).must(pass) }
      def verifies[A1, A2, A3, A4, A5, A6, A7, A8, P](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6, A7, A8) => Boolean])(implicit 
                                                              p: P => Prop,
                                                              a1: Arbitrary[A1], 
@@ -243,7 +243,7 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with SpecificationStruc
                                                              s5: Shrink[A5], 
                                                              s6: Shrink[A6],
                                                              s7: Shrink[A7],
-                                                             s8: Shrink[A8]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
+                                                             s8: Shrink[A8]) = forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
    }
 
 }

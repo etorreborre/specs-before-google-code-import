@@ -28,7 +28,7 @@ import org.specs.execute._
  * }
  * </pre>
  */
-trait Expectable[T] {
+class Expectable[T](value: => T) {
   /** related example. */
   private var example: Option[Example] = None
   /** function used to display success values as a result of a match. By default nothing is displayed. */
@@ -40,7 +40,7 @@ trait Expectable[T] {
    * This description is meant to be passed to the matcher for better failure reporting.
    */
   protected var description: Option[String] = None
-
+  private var not = false
   /**
    * Apply a matcher for this expectable value.
    *
@@ -50,25 +50,29 @@ trait Expectable[T] {
    * The expectation listener gets notified of a new expectation with a fresh copy of this expectable.
    * The matcher gets
    */
-  def applyMatcher(m: => Matcher[T], value: => T): SuccessValue = {
-    expectationsListener.map(_.addExpectation(Some(this)))
-
+  def applyMatcher(m: => Matcher[T]): Result[T] = {
     val failureTemplate = FailureException("")
+    val matcher = m
+    matcher match {
+      case okMatcher: org.specs.matcher.OkWordMatcher[_] => return new Result(this, successValueToString)
+      case notMatcher: org.specs.matcher.NotMatcher[_] => { not = true; return new Result(this, successValueToString) }
+      case _ => expectationsListener.map(_.addExpectation(Some(this)))
+    }
+
     def executeMatch = {
-      val matcher = m
       matcher.setDescription(description)
-      val (result, _, koMessage) = matcher.apply(value)
+      val (result, _, koMessage) = if (not) matcher.not.apply(value) else matcher.apply(value)
       result match {
         case false => {
           new FailureException(koMessage).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("Expectable"))
         }
-        case _ => SuccessValue(successValueToString)
+        case _ => new Result(this, successValueToString)
       }
     }
     example match {
       case None => executeMatch
       case Some(e) => {
-        var res = SuccessValue(successValueToString)
+        var res = new Result(this, successValueToString)
         e in { res = executeMatch }
         res
       }
@@ -90,11 +94,6 @@ trait Expectable[T] {
    */
   def setSuccessValueToString(f: SuccessValue =>String) = successValueToString = f
 }
-class BeVerb[T] extends Matcher[T] {
-  private var expectation: Option[Expectation[T]] = None 
-  def must(m: => Matcher[T]) = expectation.map(e => e.must(m))
-  def setExpectation(e: => Expectation[T]) = { expectation = Some(e); this }
-}
 /**
  * The Expect class adds matcher methods to objects which are being specified<br>
  * Usage: <code>new Expect(value, example) must beMatching(otherValue)</code><p>
@@ -103,7 +102,7 @@ class BeVerb[T] extends Matcher[T] {
  * and errors if a matcher is not ok
  *
  */
-class Expectation[T](value: => T) extends Expectable[T] {
+class Expectation[T](value: => T) extends Expectable[T](value) {
 
   override def toString() = value.toString
   def createClone = new Expectation(value)
@@ -114,12 +113,7 @@ class Expectation[T](value: => T) extends Expectable[T] {
   /**
    * applies a matcher to the current value and throw a failure is the result is not true
    */
-  def must(m: => Matcher[T]) = {
-    m match {
-      case b: BeVerb[T] => b.setExpectation(this)
-      case matcher => applyMatcher(matcher, value)
-    }
-  }
+  def must(m: => Matcher[T]) = applyMatcher(m)
   /**
    * applies the negation of a matcher
    */
@@ -156,30 +150,30 @@ class Expectation[T](value: => T) extends Expectable[T] {
 }
 
 /** Specialized expectable class with string matchers aliases */
-class StringExpectable[A <: String](value: => A) extends Expectable[A] {
+class StringExpectable[A <: String](value: => A) extends Expectable[A](value) {
 
   def createClone = new StringExpectable(value)
   /** alias for <code>must(beMatching(a))</code> */
-  def mustMatch(a: String) = applyMatcher(beMatching(a), value)
+  def mustMatch(a: String) = applyMatcher(beMatching(a))
 
   /** alias for <code>must(not(beMatching(a)))</code> */
-  def mustNotMatch(a: String) = applyMatcher(not(beMatching(a)), value)
+  def mustNotMatch(a: String) = applyMatcher(not(beMatching(a)))
 
   /** alias for <code>must(beEqualToIgnoringCase(a))</code> */
-  def must_==/(a: String) = applyMatcher(beEqualToIgnoringCase(a), value)
+  def must_==/(a: String) = applyMatcher(beEqualToIgnoringCase(a))
 
   /** alias for <code>must(notBeEqualToIgnoringCase(a))</code> */
-  def must_!=/(a: String) = applyMatcher(notBeEqualToIgnoringCase(a), value)
+  def must_!=/(a: String) = applyMatcher(notBeEqualToIgnoringCase(a))
 }
 /** Specialized expectable class with iterable matchers aliases */
-class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[Iterable[I]] {
+class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[Iterable[I]](value) {
   def createClone = new IterableExpectable(value)
 
   /** alias for <code>must(exist(function(_))</code> */
-  def mustHave(function: I => Boolean) = applyMatcher(have(function((_:I))), value)
+  def mustHave(function: I => Boolean) = applyMatcher(have(function((_:I))))
 
   /** alias for <code>must(notExist(function(_))</code> */
-  def mustNotHave(function: I => Boolean) = applyMatcher(notHave(function((_:I))), value)
+  def mustNotHave(function: I => Boolean) = applyMatcher(notHave(function((_:I))))
 
   /**
    * alias for <code>must(exist(function(_))</code>
@@ -194,38 +188,38 @@ class IterableExpectable[I <: AnyRef](value: =>Iterable[I]) extends Expectable[I
   def mustNotExist(function: I => Boolean) = mustNotHave(function)
 
   /** alias for <code>must(contain(a))</code> */
-  def mustContain(elem: I) = applyMatcher(contain(elem), value)
+  def mustContain(elem: I) = applyMatcher(contain(elem))
 
   /** alias for <code>must(notContain(a))</code> */
-  def mustNotContain(elem: I) = applyMatcher(notContain(elem), value)
+  def mustNotContain(elem: I) = applyMatcher(notContain(elem))
 }
 /** Specialized expectable class with iterable[String] matchers aliases */
-class IterableStringExpectable(value: =>Iterable[String]) extends Expectable[Iterable[String]] {
+class IterableStringExpectable(value: =>Iterable[String]) extends Expectable[Iterable[String]](value) {
   def createClone = new IterableStringExpectable(value)
 
   /** alias for <code>must(containMatch(pattern))</code> */
-  def mustContainMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
+  def mustContainMatch(pattern: String) = applyMatcher(containMatch(pattern))
 
   /** alias for <code>must(notContainMatch(pattern))</code> */
-  def mustNotContainMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
+  def mustNotContainMatch(pattern: String) = applyMatcher(notContainMatch(pattern))
 
   /** alias for <code>must(containMatch(pattern))</code> */
-  def mustHaveMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
+  def mustHaveMatch(pattern: String) = applyMatcher(containMatch(pattern))
 
   /** alias for <code>must(notContainMatch(pattern))</code> */
-  def mustNotHaveMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
+  def mustNotHaveMatch(pattern: String) = applyMatcher(notContainMatch(pattern))
 
   /**
    * alias for <code>must(containMatch(pattern))</code>
    * @deprecated: use mustContainMatch or mustHaveMatch instead
    */
-  def mustExistMatch(pattern: String) = applyMatcher(containMatch(pattern), value)
+  def mustExistMatch(pattern: String) = applyMatcher(containMatch(pattern))
 
   /**
    * alias for <code>must(notContainMatch(pattern))</code>
    * @deprecated: use mustNotContainMatch or mustNotHaveMatch instead
    */
-  def mustNotExistMatch(pattern: String) = applyMatcher(notContainMatch(pattern), value)
+  def mustNotExistMatch(pattern: String) = applyMatcher(notContainMatch(pattern))
 }
 /**
  * By default the result value of an expectable expression doesn't output anything when
@@ -245,6 +239,11 @@ trait SuccessValues {
 
 }
 /** value returned by an expectable whose string representation can vary. */
-case class SuccessValue(f: SuccessValue => String) {
+trait SuccessValue
+class Result[T](expectable: => Expectable[T], f: SuccessValue => String) extends SuccessValue {
   override def toString = f(this)
+  def matchWith(m: => Matcher[T]) = expectable.applyMatcher(m)
+  def be(m: => Matcher[T]) = expectable.applyMatcher(m)
+  def have(m: => Matcher[T]) = expectable.applyMatcher(m)
+  def apply(m: => Matcher[T]) = expectable.applyMatcher(m)
 }

@@ -230,3 +230,14 @@ trait MatcherResult {
   implicit def toTuple(m: MatcherResult): (Boolean, String, String) = (m.success, m.okMessage, m.koMessage)
 
 }
+abstract class OkWordMatcher[T] extends Matcher[T]
+class NotMatcher[T] extends Matcher[T] { 
+  def apply(v: =>T) = (false, "", "")
+}
+class BeVerbMatcher[T] extends OkWordMatcher[T] { 
+  def apply(v: =>T) = (false, "", "")
+}
+class HaveVerbMatcher[T] extends OkWordMatcher[T] { 
+  def apply(v: =>T) = (false, "", "")
+}
+
