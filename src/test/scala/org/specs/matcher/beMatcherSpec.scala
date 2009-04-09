@@ -1,7 +1,28 @@
 package org.specs.matcher
 import org.specs.specification._
   
-class beMatcherSpec extends MatchersSpecification {  outer =>
+class beMatcherSpec extends MatchersSpecification { outer =>
+  "A matcher can be 'and-ed' with another 'be' matcher" in {
+    "hello" must be equalTo("hello") and be equalTo("hello")
+    expectation("hello" must be equalTo("hello") and be equalTo("hello2")) must failWithMatch("hello2")
+  }
+  "A matcher can be 'and-ed' with another 'not be' matcher" in {
+    "hello" must be equalTo("hello") and not be equalTo("hello2")
+    expectation("hello" must be equalTo("hello") and not be equalTo("hello")) must failWithMatch("hello")
+    expectation("hello" must be equalTo("world") and not be equalTo("hello")) must failWithMatch("world")
+   }
+  "A 'not be' matcher can be 'and-ed' with another 'not be' matcher" in {
+    "hello" must not be equalTo("hello2") and not be equalTo("hello2")
+    expectation("hello" must not be equalTo("hello2") and not be equalTo("hello")) must failWithMatch("hello")
+  }
+  "A matcher can be 'or-ed' with another 'be' matcher" in {
+    "hello" must be equalTo("hello") or be equalTo("hello2")
+    "world" must be equalTo("world2") or be equalTo("world")
+    expectation("hello" must be equalTo("hello2") or be equalTo("hello2")) must failWithMatch("hello2")
+  }
+  "A matcher can be 'or-ed' with another 'not be' matcher" in {
+    "hello" must be equalTo("hello") or not be equalTo("hello2")
+  }
   "A matcher starting with 'be' can be used with 'be' as a separated word" in {
     "hello" must be equalTo("hello") 
     expectation("hello" must be equalTo("hello2")) must failWithMatch(".*")

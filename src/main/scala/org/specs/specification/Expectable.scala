@@ -61,10 +61,15 @@ class Expectable[T](value: => T) {
 
     def executeMatch = {
       matcher.setDescription(description)
-      val (result, _, koMessage) = if (not) matcher.not.apply(value) else matcher.apply(value)
+      val (result, _, koMessage) = {
+        if (not) 
+          matcher.not.apply(value) 
+        else 
+          matcher.apply(value)
+      }
       result match {
         case false => {
-          new FailureException(koMessage).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("Expectable"))
+          new FailureExceptionWithResult(koMessage, new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("Expectable"))
         }
         case _ => new Result(this, successValueToString)
       }
@@ -236,14 +241,31 @@ trait SuccessValues {
 
   /** by default a SuccessValue is "silent" */
   def successValueToString(s: SuccessValue) = ""
-
+  implicit def toOrResult[T](r: =>Result[T]) = new OrResult(r)
+  class OrResult[T](r: =>Result[T]) {
+    def or(m: => Matcher[T]): Result[T] = {
+      var result: Result[T] = null
+      try { 
+        result = r
+        result.setAlreadyOk()
+      } catch {
+        case f: FailureExceptionWithResult[T] => return f.result.be(m)
+        case t => throw t
+      }
+      result
+    }
+  }
 }
+case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends FailureException(m)
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
 class Result[T](expectable: => Expectable[T], f: SuccessValue => String) extends SuccessValue {
+  var isAlreadyOk = false
+  def setAlreadyOk() = { isAlreadyOk = true; this }
   override def toString = f(this)
-  def matchWith[S >: T](m: => Matcher[S]) = expectable.applyMatcher(m)
-  def be(m: => Matcher[T]) = expectable.applyMatcher(m)
-  def have(m: => Matcher[T]) = expectable.applyMatcher(m)
-  def apply(m: => Matcher[T]) = expectable.applyMatcher(m)
+  def matchWith[S >: T](m: => Matcher[S]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
+  def be(m: => Matcher[T]) = matchWith(m)
+  def have(m: => Matcher[T]) = matchWith(m)
+  def apply(m: => Matcher[T]) = matchWith(m)
+  def and(m: => Matcher[T]) = matchWith(m)
 }
