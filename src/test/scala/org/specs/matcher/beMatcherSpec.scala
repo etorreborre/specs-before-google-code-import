@@ -1,19 +1,18 @@
 package org.specs.matcher
 import org.specs.specification._
   
-class beMatcherSpec extends org.specs.Specification { 
+class beMatcherSpec extends org.specs.Specification {  outer =>
   implicit def toStringResultMatcher(result: Result[String]) = new StringResultMatcher(result)
   class StringResultMatcher(result: Result[String]) {
     def matching(s: String) = result.matchWith(beMatching(s))
   }
+  def matching(s: String) = beMatching(s)
+
   class ListResultMatcher[T](result: Result[List[T]]) {
     def size(i: Int) = result.matchWith(haveSize(i))
   }
   implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)
 
-  
-  def size(i: Int): Matcher[AnyRef { def size:Int }] = haveSize(i)
-  def matching(s: String) = beMatching(s)
   def have[T] = new HaveVerbMatcher[T]
   def be[T] = new BeVerbMatcher[T]
   def not[T] = new NotMatcher[T]
