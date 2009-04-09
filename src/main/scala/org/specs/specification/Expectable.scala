@@ -81,14 +81,19 @@ trait Expectable[T] {
 
   /** setter for the expectation listener. */
   def setExpectationsListener(listener: ExampleExpectationsListener): this.type = {
-    expectationsListener = Some(listener);
+    expectationsListener = Some(listener)
     this
   }
 
   /**
    * Set a new function to render success values
    */
-  def setSuccessValueToString(f: SuccessValue =>  String) = successValueToString = f
+  def setSuccessValueToString(f: SuccessValue =>String) = successValueToString = f
+}
+class BeVerb[T] extends Matcher[T] {
+  private var expectation: Option[Expectation[T]] = None 
+  def must(m: => Matcher[T]) = expectation.map(e => e.must(m))
+  def setExpectation(e: => Expectation[T]) = { expectation = Some(e); this }
 }
 /**
  * The Expect class adds matcher methods to objects which are being specified<br>
@@ -109,8 +114,12 @@ class Expectation[T](value: => T) extends Expectable[T] {
   /**
    * applies a matcher to the current value and throw a failure is the result is not true
    */
-  def must(m: => Matcher[T]) = applyMatcher(m, value)
-
+  def must(m: => Matcher[T]) = {
+    m match {
+      case b: BeVerb[T] => b.setExpectation(this)
+      case matcher => applyMatcher(matcher, value)
+    }
+  }
   /**
    * applies the negation of a matcher
    */
