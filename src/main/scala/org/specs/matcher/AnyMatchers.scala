@@ -72,10 +72,6 @@ trait AnyMatchers {
    * Alias of is_==
    */
   def be_==(a: =>Any)(implicit d: Detailed) = is_==(a)(d)
-  /**
-   * Alias of is_==
-   */
-  def ==(a: =>Any)(implicit d: Detailed) = is_==(a)(d)
 
   /**
    * Matches if (a neq b)
@@ -86,10 +82,6 @@ trait AnyMatchers {
    * Matches if (a != b)
    */
   def is_!=(a: =>Any)(implicit d: Detailed) = (is_==(a)(d)).not
-  /**
-   * Matches if (a != b)
-   */
-  def !=(a: =>Any)(implicit d: Detailed) = is_!=(a)(d)
   /**
    * Matches if (a != b)
    */
@@ -165,10 +157,6 @@ trait AnyMatchers {
    */
   def isIn[T](iterable: =>Iterable[T]): Matcher[T] = beIn(iterable)
   /**
-   * Alias for beIn
-   */
-  def in[T](iterable: =>Iterable[T]): Matcher[T] = beIn(iterable)
-  /**
    * Matches if not(iterable.exists(_ == a))
    */
   def notBeIn[T](iterable: =>Iterable[T]): Matcher[T] = beIn[T](iterable).not
@@ -193,10 +181,6 @@ trait AnyMatchers {
    * Matches beOneOf
    */
   def isOneOf[T](t: T*): Matcher[T] = beOneOf(t:_*)
-  /**
-   * Matches beOneOf
-   */
-  def oneOf[T](t: T*): Matcher[T] = beOneOf(t:_*)
   /**
    * Matches if not(t.toSeq.exists(_ == v))
    */
@@ -236,10 +220,6 @@ trait AnyMatchers {
    * Alias of beEmpty
    */
   def isEmpty[S <: T1] = beEmpty[S]
-  /**
-   * Alias of beEmpty
-   */
-  def empty[S <: T1] = beEmpty[S]
   /**
    * Matches if the function f returns true
    */
@@ -546,6 +526,59 @@ trait AnyMatchers {
       }
     }
   }
+  /** dummy matcher to allow be + matcher syntax */
+  def be[T] = new BeVerbMatcher[T]
+  /** dummy matcher to allow not + be + matcher syntax */
+  def not[T] = new NotMatcher[T]
+  /** dummy matcher to allow have + matcher syntax */
+  def have[T] = new HaveVerbMatcher[T]
+
+  /** implicit definition to add 'be' matchers */
+  implicit def toAnyResultMatcher[T](result: Result[T]) = new AnyResultMatcher(result)
+  /** functions which can be used with 'be' matchers */
+  class AnyResultMatcher[T](result: Result[T]) {
+    def equalTo(o: T)(implicit d: Detailed) = result.matchWith(is_==(o)(d))
+    def ==(a: =>Any)(implicit d: Detailed) = result.matchWith(is_==(a)(d))
+    def !=(a: =>Any)(implicit d: Detailed) = result.matchWith(is_!=(a)(d))
+    def asNullAs(a: =>T) = result.matchWith(beAsNullAs(a))
+    def in(iterable: =>Iterable[T]) = result.matchWith(beIn(iterable))
+    def oneOf(t: T*) = result.matchWith(beOneOf(t:_*))
+  }
+  /** implicit definition to add 'empty' matchers */
+  implicit def toAnyEmptyResultMatcher[S <: T1](result: Result[S]) = new AnyEmptyResultMatcher(result)
+  /** functions which can be used with 'empty' matchers */
+  class AnyEmptyResultMatcher[S <: T1](result: Result[S]) {
+    def empty = result.matchWith(beEmpty[S])
+  }
+  /**
+   * Alias of is_==
+   */
+  def equalTo[T](o: T)(implicit d: Detailed) = is_==(o)(d)
+  /**
+   * Alias of is_==
+   */
+  def ==(a: =>Any)(implicit d: Detailed) = is_==(a)(d)
+  /**
+   * Matches if (a != b)
+   */
+  def !=(a: =>Any)(implicit d: Detailed) = is_!=(a)(d)
+  /**
+   * Alias for beAsNullAs
+   */
+  def asNullAs[T](a: =>T) = beAsNullAs(a)
+  /**
+   * Alias for beIn
+   */
+  def in[T](iterable: =>Iterable[T]): Matcher[T] = beIn(iterable)
+  /**
+   * Matches beOneOf
+   */
+  def oneOf[T](t: T*): Matcher[T] = beOneOf(t:_*)
+  /**
+   * Alias of beEmpty
+   */
+  def empty[S <: T1] = beEmpty[S]
+
 }
 
 /**

@@ -242,7 +242,7 @@ trait SuccessValues {
 trait SuccessValue
 class Result[T](expectable: => Expectable[T], f: SuccessValue => String) extends SuccessValue {
   override def toString = f(this)
-  def matchWith(m: => Matcher[T]) = expectable.applyMatcher(m)
+  def matchWith[S >: T](m: => Matcher[S]) = expectable.applyMatcher(m)
   def be(m: => Matcher[T]) = expectable.applyMatcher(m)
   def have(m: => Matcher[T]) = expectable.applyMatcher(m)
   def apply(m: => Matcher[T]) = expectable.applyMatcher(m)
