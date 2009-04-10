@@ -10,11 +10,7 @@ trait StringMatchers { outer =>
   /**
    * Matches if (a.equalsIgnoreCase(b))
    */   
-  def beEqualToIgnoringCase[T <: String](a: T) = new Matcher[T](){ 
-    def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 
-                                      d(b) + " is equal ignoring case to " + q(a), 
-                                      d(b) + " is not equal ignoring case to " + q(a))} 
-  }
+  def beEqualToIgnoringCase[T <: String](a: T) = new BeEqualToIgnoringCase(a)
   /**
    * Matches if (a.equalsIgnoreCase(b))
    */   
@@ -196,4 +192,9 @@ trait StringMatchers { outer =>
   def equalToIgnoringSpace[T <: String](a: T) = beEqualToIgnoringSpace(a)
   def equalIgnoringCaseTo[T <: String](a: T) = beEqualToIgnoringCase(a)
   def equalIgnoringSpaceTo[T <: String](a: T) = beEqualToIgnoringSpace(a)
+}
+class BeEqualToIgnoringCase[T <: String](a: T) extends Matcher[T] { 
+  def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 
+                                      d(b) + " is equal ignoring case to " + q(a), 
+                                      d(b) + " is not equal ignoring case to " + q(a))} 
 }

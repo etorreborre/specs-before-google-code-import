@@ -86,12 +86,12 @@ class stringMatchersSpec extends MatchersSpecification {
       "hello" must not be equalIgnoringCaseTo("Hello2")
     }
     "be ok with 'be ==/'" in {
-//      "hello" must be ==/("Hello")
- //     "hello" must not be ==/("Hello2")
+      "hello" must be ==/("Hello")
+      "hello" must not be ==/("Hello2")
     }
     "be ok with 'be !=/'" in {
-   //   "hello" must be !=/("Hello2")
-   //   "hello" must not be !=/("Hello")
+      "hello" must be !=/("Hello2")
+      "hello" must not be !=/("Hello")
     }
     "be ok with 'be equalIgnoringSpace'" in {
       "hello" must be equalIgnoringSpaceTo(" hello ")

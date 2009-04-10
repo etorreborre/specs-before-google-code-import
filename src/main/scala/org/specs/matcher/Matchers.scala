@@ -235,9 +235,11 @@ class NotMatcher[T] extends Matcher[T] {
   def apply(v: =>T) = (false, "", "")
 }
 class BeVerbMatcher[T] extends OkWordMatcher[T] { 
-  def apply(v: =>T) = (false, "", "")
+  def apply(v: =>T) = (true, "", "")
+  def ==/(s: String) = new BeEqualToIgnoringCase(s)
+  def !=/(s: String) = new BeEqualToIgnoringCase(s).not
 }
 class HaveVerbMatcher[T] extends OkWordMatcher[T] { 
-  def apply(v: =>T) = (false, "", "")
+  def apply(v: =>T) = (true, "", "")
 }
 
