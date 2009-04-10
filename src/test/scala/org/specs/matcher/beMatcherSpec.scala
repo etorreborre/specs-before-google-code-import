@@ -70,17 +70,4 @@ class beMatcherSpec extends MatchersSpecification { outer =>
     "hello" must not be oneOf("world") 
     expectation("hello" must not be oneOf("hello", "world")) must failWithMatch(".*")
   }
-
-  implicit def toStringResultMatcher(result: Result[String]) = new StringResultMatcher(result)
-  class StringResultMatcher(result: Result[String]) {
-    def matching(s: String) = result.matchWith(beMatching(s))
-  }
-  def matching(s: String) = beMatching(s)
-
-  "A matcher starting with 'be' can be used with 'be' as a separated word" in {
-    "hello" must be matching("h.*") 
-  }
-  "A matcher starting with 'notBe' can be used with 'not be' as separated words" in {
-    "hello" must not be(matching("z.*"))
-  }
 }
