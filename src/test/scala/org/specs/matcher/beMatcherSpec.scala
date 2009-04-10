@@ -24,6 +24,12 @@ class beMatcherSpec extends MatchersSpecification { outer =>
   "A matcher can be 'or-ed' with another 'not be' matcher" in {
     "hello" must be equalTo("hello") or not be equalTo("hello2")
   }
+  "A matcher can be 'xor-ed' with another 'be' matcher" in {
+    "hello" must be equalTo("universe") xor be equalTo("hello")
+    "hello" must be equalTo("hello") xor be equalTo("world")
+    expectation("hello" must be equalTo("hello") xor be equalTo("hello")) must failWithMatch("hello")
+    expectation("hello" must be equalTo("world") xor be equalTo("universe")) must failWithMatch("hello")
+  }
   "A matcher starting with 'be' can be used with 'be' as a separated word" in {
     "hello" must be equalTo("hello") 
     expectation("hello" must be equalTo("hello2")) must failWithMatch(".*")

@@ -40,7 +40,10 @@ class Expectable[T](value: => T) {
    * This description is meant to be passed to the matcher for better failure reporting.
    */
   protected var description: Option[String] = None
-  private var not = false
+  /** state variable storing how the next matcher should be applied, negated or not */
+  private var nextMatcherMustBeNegated = false
+  /** set the state variable declaring that the next match should be negated, in the case of an xor combination to force a fail for example */
+  def nextSignificantMatchMustBeNegated() = { nextMatcherMustBeNegated = true; this }
   /**
    * Apply a matcher for this expectable value.
    *
@@ -55,15 +58,18 @@ class Expectable[T](value: => T) {
     val matcher = m
     matcher match {
       case okMatcher: org.specs.matcher.OkWordMatcher[_] => return new Result(this, successValueToString)
-      case notMatcher: org.specs.matcher.NotMatcher[_] => { not = true; return new Result(this, successValueToString) }
+      case notMatcher: org.specs.matcher.NotMatcher[_] => { 
+        nextMatcherMustBeNegated = true
+        return new Result(this, successValueToString) 
+      }
       case _ => expectationsListener.map(_.addExpectation(Some(this)))
     }
 
     def executeMatch = {
       matcher.setDescription(description)
       val (result, _, koMessage) = {
-        if (not) {
-          not = false
+        if (nextMatcherMustBeNegated) {
+          nextMatcherMustBeNegated = false
           matcher.not.apply(value)
         } 
         else 
@@ -243,7 +249,15 @@ trait SuccessValues {
 
   /** by default a SuccessValue is "silent" */
   def successValueToString(s: SuccessValue) = ""
+
+  /** 
+   * this implicit def allows a result to be or-ed with a matcher.
+   */
   implicit def toOrResult[T](r: =>Result[T]) = new OrResult(r)
+  /** 
+   * this class allows a result to be or-ed with a matcher so that
+   * if the result fails, the next matcher will still be tried 
+   */
   class OrResult[T](r: =>Result[T]) {
     def or(m: => Matcher[T]): Result[T] = {
       var result: Result[T] = null
@@ -251,20 +265,58 @@ trait SuccessValues {
         result = r
         result.setAlreadyOk()
       } catch {
-        case f: FailureExceptionWithResult[T] => return f.result.be(m)
+        case f: FailureExceptionWithResult[T] => return f.result.matchWith(m)
+        case t => throw t
+      }
+      result
+    }
+    def xor(m: => Matcher[T]): Result[T] = {
+      var result: Result[T] = null
+      try { 
+        result = r
+        // if the first result is ok, then the next matcher must fail
+        try { 
+          result.nextSignificantMatchMustFail().matchWith(m)
+        } catch {
+          case f: FailureExceptionWithResult[T] => return result
+          case t => throw t
+        }
+      } catch {
+        case f: FailureExceptionWithResult[T] => return f.result.matchWith(m)
         case t => throw t
       }
       result
     }
   }
 }
+/** 
+ * Special failure exception carrying a Result object, carrying an Expectable.
+ * This Exception is necessary to handle the "OR" case "value must be equalTo(bad) or be equalTo(good)"
+ * where the first match is not ok.
+ */
 case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends FailureException(m)
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
-class Result[T](expectable: => Expectable[T], f: SuccessValue => String) extends SuccessValue {
-  var isAlreadyOk = false
+
+/** 
+ * Result of a match
+ * 
+ * This object carries the Expectable object, in order to apply further matches if necessary.
+ * 
+ * It has a display function which can be used to set the toString function to an empty string,
+ * in the case of Literate specifications where we want to embed expectations without having their
+ * result printed in the specification text.
+ * 
+ * It can also be set to "already ok" in order to court-circuit any further matches in the case of "or-ed"
+ * matchers with a successful first match.
+ * 
+ */
+class Result[T](expectable: => Expectable[T], display: SuccessValue => String) extends SuccessValue {
+  private var isAlreadyOk = false
   def setAlreadyOk() = { isAlreadyOk = true; this }
-  override def toString = f(this)
+  def setNotAlreadyOk() = { isAlreadyOk = false; this }
+  override def toString = display(this)
+  def nextSignificantMatchMustFail() = { expectable.nextSignificantMatchMustBeNegated(); this }
   def matchWith[S >: T](m: => Matcher[S]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
   def be(m: => Matcher[T]) = matchWith(m)
   def have(m: => Matcher[T]) = matchWith(m)
