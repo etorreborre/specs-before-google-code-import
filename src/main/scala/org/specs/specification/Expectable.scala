@@ -318,6 +318,7 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   override def toString = display(this)
   def nextSignificantMatchMustFail() = { expectable.nextSignificantMatchMustBeNegated(); this }
   def matchWith[S >: T](m: => Matcher[S]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
+  def matchWithMatcher(m: => Matcher[T]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
   def be(m: => Matcher[T]) = matchWith(m)
   def have(m: => Matcher[T]) = matchWith(m)
   def contain(m: => Matcher[T]) = matchWith(m)

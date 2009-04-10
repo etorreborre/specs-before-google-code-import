@@ -179,6 +179,7 @@ trait StringMatchers { outer =>
     def equalIgnoringSpaceTo(s: String) = result.matchWith(beEqualToIgnoringSpace(s))
     def ==/(s: String) = result.matchWith(be_==/(s))
     def !=/(s: String) = result.matchWith(be_!=/(s))
+    def size(n: Int) = result.matchWith(haveLength(n))
     def length(n: Int) = result.matchWith(haveLength(n))
     def include(s: String) = result.matchWith(outer.include(s))
     def startWith(s: String) = result.matchWith(outer.startWith(s))

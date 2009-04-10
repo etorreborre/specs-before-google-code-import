@@ -22,5 +22,16 @@ class varianceSpec extends MatchersSpecification {
       "hello" must (haveLength(5) and include("h"))
       "hello" must (include("h") and haveLength(5))
     }
+    "allow matchers to be and-ed even with structural types and separated words" in {
+      "hello" must have size(5)
+      // "hello" is a { def size: Int }
+      // however it is not possible to write
+      "hello" must have size(5) and include("h") 
+      "hello" must include("h") and have size(5) 
+      
+      // in that case we case use haveLength which works on java.lang.String
+      "hello" must have length(5) and include("h")
+      "hello" must include("h") and have length(5)
+    }
   }
 }

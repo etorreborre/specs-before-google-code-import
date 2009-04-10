@@ -247,5 +247,8 @@ class BeVerbMatcher[T] extends OkWordMatcher[T] {
 class HaveVerbMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")
 }
+class ArticleMatcher[T] extends OkWordMatcher[T] { 
+  def apply(v: =>T) = (true, "", "")
+}
 
 

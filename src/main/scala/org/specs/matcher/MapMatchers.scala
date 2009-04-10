@@ -1,7 +1,7 @@
 package org.specs.matcher
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.Plural._
-
+import org.specs.specification.Result
 /**
  * The <code>MapMatchers</code> trait provides matchers which are applicable to Map objects<br>
  * It currently accepts any Iterable[(K, V)] whereas it should only accept Map[K, V]. 
@@ -20,7 +20,6 @@ trait MapMatchers {
        dUnquoted(map) + " has the key " + q(k), dUnquoted(map) + " doesn't have the key " + q(k))
     }
   } 
-
   /**
    * Matches if not(map.contains(k))
    */   
@@ -100,4 +99,31 @@ trait MapMatchers {
        description.getOrElse("the function") + " is not defined by the value".plural(undefined.size) + " " + q(undefined.mkString(", ")))
     }
    }
+  /** 
+   * matcher aliases and implicits to use with BeVerb and HaveVerb 
+   */
+  def toMapKeyResultMatcher[S, T](result: Result[Map[S, T]]) = new MapKeyResultMatcher(result)
+  class MapKeyResultMatcher[S, T](result: Result[Map[S, T]]) {
+    def key(k: S) = result.matchWithMatcher(haveKey(k)) 
+  }
+  implicit def toMapValueResultMatcher[S, T](result: Result[Map[S, T]]) = new MapValueResultMatcher(result)
+  class MapValueResultMatcher[S, T](result: Result[Map[S, T]]) {
+    def value(k: T) = result.matchWithMatcher(haveValue(k)) 
+  }
+  implicit def toMapResultMatcher[S, T](result: Result[Map[S, T]]) = new MapResultMatcher(result)
+  class MapResultMatcher[S, T](result: Result[Map[S, T]]) {
+    def pair(pair: (S, T)) = result.matchWithMatcher(havePair(pair)) 
+    def pairs(pairs: (S, T)*) = result.matchWithMatcher(havePairs(pairs:_*)) 
+  }
+  implicit def toPartialFunctionMatcher[S, T](result: Result[PartialFunction[S, T]]) = new PartialFunctionResultMatcher(result)
+  class PartialFunctionResultMatcher[S, T](result: Result[PartialFunction[S, T]]) {
+    def definedBy(values: (S, T)*) = result.matchWithMatcher(beDefinedBy(values:_*))
+    def definedAt(values: S*) = result.matchWithMatcher(beDefinedAt(values:_*))
+  }
+  def key[S](k: S) = haveKey(k) 
+  def value[S](v: S) = haveValue(v) 
+  def pair[S, T](pair: (S, T)) = havePair(pair) 
+  def pairs[S, T](pairs: (S, T)*) = havePairs(pairs:_*) 
+  def definedBy[S, T](values: (S, T)*) = beDefinedBy(values:_*)
+  def definedAt[T](values: T*) = beDefinedAt(values:_*)
 }

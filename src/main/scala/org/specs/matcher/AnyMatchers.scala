@@ -532,6 +532,8 @@ trait AnyMatchers {
   def not[T] = new NotMatcher[T]
   /** dummy matcher to allow have + matcher syntax */
   def have[T] = new HaveVerbMatcher[T]
+  /** dummy matcher to allow have + the matcher syntax */
+  def the[T] = new ArticleMatcher[T]
 
   /** implicit definition to add 'be' matchers */
   implicit def toAnyResultMatcher[T](result: Result[T]) = new AnyResultMatcher(result)
