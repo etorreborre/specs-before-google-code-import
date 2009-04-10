@@ -46,13 +46,13 @@ class mapMatchersSpec extends MatchersSpecification {
       Map("one" -> 1, "two" -> 2) must have the key("one")
     }
     "provide a 'have key' matcher on maps" in {
-//      Map("one" -> 1, "two" -> 2) must have key("one")
+      Map("one" -> 1, "two" -> 2) must have key("one")
     }
     "provide a 'not have key' matcher on maps" in {
       Map("one" -> 1, "two" -> 2) must not have key("three")
     }
     "provide a 'not have the key' matcher on maps" in {
- //     Map("one" -> 1, "two" -> 2) must not have the key("three")
+      Map("one" -> 1, "two" -> 2) must not have the key("three")
     }
     "provide a 'have value' matcher on maps" in {
       Map("one" -> 1, "two" -> 2) must have value(1)

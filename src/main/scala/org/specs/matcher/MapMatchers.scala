@@ -102,7 +102,7 @@ trait MapMatchers {
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb 
    */
-  def toMapKeyResultMatcher[S, T](result: Result[Map[S, T]]) = new MapKeyResultMatcher(result)
+  implicit def toMapKeyResultMatcher[S, T](result: Result[Map[S, T]]) = new MapKeyResultMatcher(result)
   class MapKeyResultMatcher[S, T](result: Result[Map[S, T]]) {
     def key(k: S) = result.matchWithMatcher(haveKey(k)) 
   }
