@@ -159,6 +159,18 @@ trait IterableMatchers { outer =>
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:List[T]) => t.asInstanceOf[Iterable[T]]))
   }
+  implicit def toSeqResultMatcher[T](result: Result[Seq[T]]) = new SeqResultMatcher(result)
+  class SeqResultMatcher[T](result: Result[Seq[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Seq[T]) => t.asInstanceOf[Iterable[T]]))
+  }
+  implicit def toIterableResultMatcher[T](result: Result[Iterable[T]]) = new IterableResultMatcher(result)
+  class IterableResultMatcher[T](result: Result[Iterable[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f))
+  }
   implicit def toStringListResultMatcher(result: Result[List[String]]) = new StringListResultMatcher(result)
   class StringListResultMatcher(result: Result[List[String]]) {
     def containMatch(s: String) = result.matchWith(outer.containMatch(s))
