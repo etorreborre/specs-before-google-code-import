@@ -322,4 +322,7 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   def have(m: => Matcher[T]) = matchWith(m)
   def apply(m: => Matcher[T]) = matchWith(m)
   def and(m: => Matcher[T]) = matchWith(m)
+  def a(m: => Matcher[T]) = matchWith(m)
+  def an(m: => Matcher[T]) = matchWith(m)
+  def the(m: => Matcher[T]) = matchWith(m)
 }
