@@ -3,7 +3,7 @@ import org.specs._
 import org.specs.specification.fullDetails
 
 class iterableMatchersSpec extends MatchersSpecification {
-  "Iterable matchers" should { doBefore { clearExample }
+  "Iterable matchers" should { clearExample.before
     "provide a 'must beEmpty' matcher on iterables: List() must beEmpty" in {
       List() must beEmpty
       expectation(List("1") must beEmpty) must failWith("List(1) is not empty")
@@ -86,5 +86,23 @@ class iterableMatchersSpec extends MatchersSpecification {
       expectation(List("one", "two") aka "the list" must haveSize(3)) must failWith("the list 'List(one, two)' doesn't have size 3")
     }
 
+    "provide a 'must be empty' matcher on iterables" in {
+      List() must be empty
+    }
+    "provide a 'must not be empty' matcher on iterables" in {
+      List("1") must not be empty
+    }
+    "provide a 'must not contain' matcher on iterables" in {
+      List("one", "two") must not contain("three")
+    }
+    "provide a 'must not containMatch' matcher on iterables" in {
+      List("one", "two") must not containMatch("z.*")
+    }
+    "provide a 'must not have' matcher on iterables" in {
+      List("one", "two") must not have((_:String).contains("z"))
+    }
+    "provide a 'have size' matcher checking the size of a collection" in {
+      List("one", "two") must have size(2)
+    }
   }
 }

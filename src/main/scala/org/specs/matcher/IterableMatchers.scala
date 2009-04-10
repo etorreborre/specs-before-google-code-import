@@ -8,7 +8,7 @@ import org.specs.util.EditDistance._
 /**
  * The <code>IterableMatchers</code> trait provides matchers which are applicable to Iterable objects
  */
-trait IterableMatchers {
+trait IterableMatchers { outer =>
 
   /**
    * Matches if iterable.exists(_ == a)
@@ -148,6 +148,20 @@ trait IterableMatchers {
   }
   def size[T <: Iterable[_]](n: Int) = new Matcher[T](){
     def apply(v: => T) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
+  }
+  /** 
+   * matcher aliases and implicits to use with BeVerb and HaveVerb
+   * unfortunately it cannot be made more generic w.r.t the container because this crashes the compiler
+   */
+  implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)
+  class ListResultMatcher[T](result: Result[List[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:List[T]) => t.asInstanceOf[Iterable[T]]))
+  }
+  implicit def toStringListResultMatcher(result: Result[List[String]]) = new StringListResultMatcher(result)
+  class StringListResultMatcher(result: Result[List[String]]) {
+    def containMatch(s: String) = result.matchWith(outer.containMatch(s))
   }
 }
 class HaveTheSameElementsAs[T] (l: Iterable[T]) extends Matcher[Iterable[T]] {
