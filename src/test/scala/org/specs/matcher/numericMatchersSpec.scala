@@ -55,5 +55,40 @@ class numericMatchersSpec extends MatchersSpecification {
 
       expectation(1.2 must not(beCloseTo(1.0, 0.2))) must failWith("1.2 is close to 1.0 +/- 0.2")
     }
+    "provide a 'be <' matcher" in {
+      1 must be <(2)
+    }
+    "provide a 'be lessThan' matcher" in {
+      1 must be lessThan(2)
+    }
+    "provide a 'be <=' matcher" in {
+      2 must be <=(2)
+    }
+    "provide a 'be lessThanOrEqualTo' matcher" in {
+      2 must be lessThanOrEqualTo(2)
+    }
+    "provide a 'be >(1)' matcher" in {
+      2 must be >(1)
+      expectation(2 must be >(2)) must failWith("2 is equal to 2")
+    }
+    "provide a 'be > 1' matcher" in {
+      2 must be > 1
+      expectation(2 must be > 2) must failWith("2 is equal to 2")
+    }
+    "provide a 'be greaterThan' matcher" in {
+      2 must be greaterThan(1)
+    }
+    "provide a 'be >=' matcher" in {
+      2 must be >=(1)
+    }
+    "provide a 'be greaterThanOrEqualTo' matcher" in {
+      2 must be greaterThanOrEqualTo(1)
+    }
+    "provide a 'must be closeTo' matcher" in {
+      1.2 must be closeTo(1.0, 0.5)
+    }
+    "provide a 'must be ~' matcher" in {
+      1.2 must be ~(1.0, 0.5)
+    }
   }
 }
