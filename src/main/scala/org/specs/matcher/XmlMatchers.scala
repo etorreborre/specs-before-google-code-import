@@ -3,6 +3,7 @@ import scala.xml._
 import scala.xml.NodeSeq._
 import xpath._
 import org.specs.xml.NodeFunctions._
+import org.specs.specification.Result
 
 object StringToElem {
   implicit def toElement(s: String) = new ToElem(s)
@@ -93,21 +94,34 @@ trait XmlMatchers {
    */   
   def ==/(node: Iterable[Node]): EqualIgnoringSpaceMatcher = equalIgnoreSpace(node)
 
-  /**
-   * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
-   */   
-  class EqualIgnoringSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
-    def apply(n: =>Iterable[Node]) = {
-     (isEqualIgnoringSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
-    def ordered = new EqualIgnoringSpaceMatcherOrdered(node)
+  /** 
+   * matcher aliases and implicits to use with BeVerb and HaveVerb
+   */
+  implicit def toNodeIterableResult(result: Result[Iterable[Node]]) = new NodeIterableResultMatcher(result)
+  class NodeIterableResultMatcher(result: Result[Iterable[Node]]) {
+    def equalToIgnoringSpace(node: Iterable[Node]) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
-  /**
-   * Matcher for equalIgnoreSpace comparison, considering the node order
-   */   
-  class EqualIgnoringSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
-    def apply(n: =>Iterable[Node]) = {
-     (isEqualIgnoringSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+  def equalToIgnoringSpace(node: Iterable[Node]) = beEqualToIgnoringSpace(node)
+  implicit def toElemResult(result: Result[Elem]) = new ElemResultMatcher(result)
+  class ElemResultMatcher(result: Result[Elem]) {
+    def equalToIgnoringSpace(node: Elem) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
+  def equalToIgnoringSpace(node: Elem) = beEqualToIgnoringSpace(node)
+}
+/**
+ * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
+ */   
+class EqualIgnoringSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+  def apply(n: =>Iterable[Node]) = {
+   (isEqualIgnoringSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
+  def ordered = new EqualIgnoringSpaceMatcherOrdered(node)
+}
+/**
+ * Matcher for equalIgnoreSpace comparison, considering the node order
+ */   
+class EqualIgnoringSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
+  def apply(n: =>Iterable[Node]) = {
+   (isEqualIgnoringSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
 }
 
 /**

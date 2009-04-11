@@ -24,6 +24,15 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     "provide a way to specify that the comparison should be ordered" in {
       <a><b/><c/></a> must ==/(<a> <c/><b/></a>).ordered
     }
+    "provide a be equalToIgnoringSpace form" in {
+      <a><b/></a> must be equalToIgnoringSpace(<a> <b/></a>)
+    }
+    "provide a be ==/ form" in {
+      <a><b/></a> must be ==/(<a> <b/></a>)
+    }
+    "provide a not be ==/ form" in {
+      <a><b/></a> must not be ==/(<b></b>)
+    }
   }
   "A \\ matcher" should {
     "match a node <b/> contained in the node a with the label 'b'" in {

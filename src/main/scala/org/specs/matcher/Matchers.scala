@@ -6,7 +6,7 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.ExtendedThrowable._
 import org.specs.matcher.MatcherUtils._
 import org.specs.execute._
-
+import scala.xml.Node
 /**
  * <p>The <code>Matchers</code> object allows to import the functions from the <code>Matchers</code> trait. 
  */
@@ -236,6 +236,7 @@ class NotMatcher[T] extends Matcher[T] {
 }
 class BeVerbMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")
+  def ==/(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
   def ==/(s: String) = new BeEqualToIgnoringCase(s)
   def !=/(s: String) = new BeEqualToIgnoringCase(s).not
   def <[T <% Double](n: T) = new BeLessThan(n) 
