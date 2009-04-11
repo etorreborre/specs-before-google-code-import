@@ -1,6 +1,6 @@
 package org.specs.matcher
 import org.specs.matcher.MatcherUtils._
-import org.specs.Specification.Result
+import org.specs.specification.Result
 /**
  * The <code>PatternMatchers</code> trait provides matchers which allow to use pattern matching
  * to match expressions.
@@ -118,9 +118,16 @@ trait PatternMatchers {
    * matcher aliases and implicits to use with BeVerb and HaveVerb
    */
   implicit def toPatternResult[T](result: Result[T]) = new PatternResultMatcher(result)
-  class PatternResultMatcher(result: Result[T]) {
-    def like[T](pattern: => PartialFunction[T, Boolean]) = result.matchWith(beLike(pattern))
-    def asNoneAs[T](a: =>Option[T]) = result.matchWith(beAsNoneAs(a))
+  class PatternResultMatcher[T](result: Result[T]) {
+    def like(pattern: => PartialFunction[T, Boolean]) = result.matchWithMatcher(beLike(pattern))
+  }
+  implicit def toOptionPatternResult[T](result: Result[Option[T]]) = new OptionResultMatcher(result)
+  class OptionResultMatcher[T](result: Result[Option[T]]) {
+    def asNoneAs(a: =>Option[T]) = result.matchWithMatcher(beAsNoneAs(a))
+  }
+  implicit def toSomePatternResult[T](result: Result[Some[T]]) = new SomeResultMatcher(result)
+  class SomeResultMatcher[T](result: Result[Some[T]]) {
+    def asNoneAs(a: =>Some[T]) = result.matchWithMatcher(beAsNoneAs(a))
   }
   def like[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
   def asNoneAs[T](a: =>Option[T]) = beAsNoneAs(a)
