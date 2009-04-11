@@ -1,6 +1,6 @@
 package org.specs.matcher
 import org.specs.matcher.MatcherUtils._
-
+import org.specs.Specification.Result
 /**
  * The <code>PatternMatchers</code> trait provides matchers which allow to use pattern matching
  * to match expressions.
@@ -114,6 +114,16 @@ trait PatternMatchers {
                         description.getOrElse("there") + " is no Some(x) verifying the given property")
        }
   }
+  /** 
+   * matcher aliases and implicits to use with BeVerb and HaveVerb
+   */
+  implicit def toPatternResult[T](result: Result[T]) = new PatternResultMatcher(result)
+  class PatternResultMatcher(result: Result[T]) {
+    def like[T](pattern: => PartialFunction[T, Boolean]) = result.matchWith(beLike(pattern))
+    def asNoneAs[T](a: =>Option[T]) = result.matchWith(beAsNoneAs(a))
+  }
+  def like[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
+  def asNoneAs[T](a: =>Option[T]) = beAsNoneAs(a)
 }
 /**
  * Companion object for PatternMatchers.

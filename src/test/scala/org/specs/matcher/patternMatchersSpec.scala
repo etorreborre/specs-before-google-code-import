@@ -37,6 +37,14 @@ class patternMatchersSpec extends MatchersSpecification {
       List(2).find {_ == 2} must beSomething
       expectation(List().find {_ == 2} must beSomething) must failWith("'None' is not Some(x)")
     }
+    "provide a be like matcher" in {
+      "a" must be like { case "a" => ok }
+    }
+    "provide a be asNoneAs matcher" in {
+      val noneString: Option[String] = None
+      noneString must be asNoneAs(noneString)
+      Some(2) must be asNoneAs(Some(1))
+    }
   }
   "Pattern matchers" can { clearExample.before
     "specify a which clause to check additional properties: List('name').find {_ == 'name'} must beSome[String].which {_.size == 4}" in {
