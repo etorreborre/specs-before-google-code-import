@@ -146,8 +146,8 @@ trait IterableMatchers { outer =>
   def haveSize[T <% {def size: Int}](n: Int) = new Matcher[T](){
     def apply(v: => T) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
   }
-  def size[U, T <: Iterable[U]](n: Int) = new Matcher[T](){
-    def apply(v: => T) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
+  def size[T](n: Int) = new Matcher[Iterable[T]](){
+    def apply(v: => Iterable[T]) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
   }
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb
@@ -164,31 +164,31 @@ trait IterableMatchers { outer =>
   */
   implicit def toArrayResultMatcher[T](result: Result[Array[T]]) = new ArrayResultMatcher(result)
   class ArrayResultMatcher[T](result: Result[Array[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size[T, Iterable[T]](i) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
   }
   implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)
   class ListResultMatcher[T](result: Result[List[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size[T, List[T]](i))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:List[T]) => t.asInstanceOf[Iterable[T]]))
   }
   implicit def toSeqResultMatcher[T](result: Result[Seq[T]]) = new SeqResultMatcher(result)
   class SeqResultMatcher[T](result: Result[Seq[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size[T, Seq[T]](i))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Seq[T]) => t.asInstanceOf[Iterable[T]]))
   }
   implicit def toSetResultMatcher[T](result: Result[Set[T]]) = new SetResultMatcher(result)
   class SetResultMatcher[T](result: Result[Set[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size[T, Set[T]](i))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Set[T]) => t.asInstanceOf[Iterable[T]]))
   }
   implicit def toIterableResultMatcher[T](result: Result[Iterable[T]]) = new IterableResultMatcher(result)
   class IterableResultMatcher[T](result: Result[Iterable[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size[T, Iterable[T]](i))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f))
   }
