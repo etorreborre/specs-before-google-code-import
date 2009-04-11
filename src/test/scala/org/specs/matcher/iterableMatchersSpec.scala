@@ -85,7 +85,6 @@ class iterableMatchersSpec extends MatchersSpecification {
       expectation(List("one", "two") must haveSize(3)) must failWith("'List(one, two)' doesn't have size 3")
       expectation(List("one", "two") aka "the list" must haveSize(3)) must failWith("the list 'List(one, two)' doesn't have size 3")
     }
-
     "provide a 'must be empty' matcher on iterables" in {
       List() must be empty
     }
@@ -103,6 +102,21 @@ class iterableMatchersSpec extends MatchersSpecification {
     }
     "provide a 'have size' matcher checking the size of a collection" in {
       List("one", "two") must have size(2)
+    }
+    "provide a 'must be empty' matcher on any type of iterable" in {
+      (Nil:Iterable[Int]) must be empty
+      val list: List[Int] = Nil
+      list must be empty
+      val collection: Collection[Int] = Nil
+      collection must be empty
+      val seq: Seq[Int] = Nil
+      seq must be empty
+      val map: Map[Int, Int] = Map()
+      map must be empty
+      val set: Set[String] = Set("one")
+      set must not contain("two")
+      val array: Array[String] = List("one").toArray
+      array must not contain("two")
     }
   }
 }

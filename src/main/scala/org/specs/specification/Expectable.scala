@@ -321,7 +321,6 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   def matchWithMatcher(m: => Matcher[T]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
   def be(m: => Matcher[T]) = matchWith(m)
   def have(m: => Matcher[T]) = matchWith(m)
-  def contain(m: => Matcher[T]) = matchWith(m)
   def apply(m: => Matcher[T]) = matchWith(m)
   def and(m: => Matcher[T]) = matchWith(m)
   def a(m: => Matcher[T]) = matchWith(m)

@@ -152,7 +152,22 @@ trait IterableMatchers { outer =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb
    * unfortunately it cannot be made more generic w.r.t the container because this crashes the compiler
+   * see Scala Trace #1864
    */
+  /*
+  implicit def toContainerResultMatcher[T, C[U] <: Iterable[U]](result: Result[C[T]]) = new ContainerResultMatcher[T, C](result)
+  class ContainerResultMatcher[T, C[U] <: Iterable[U]](result: Result[C[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f))
+  }
+  */
+  implicit def toArrayResultMatcher[T](result: Result[Array[T]]) = new ArrayResultMatcher(result)
+  class ArrayResultMatcher[T](result: Result[Array[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Array[T]) => t.asInstanceOf[Iterable[T]]))
+  }
   implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)
   class ListResultMatcher[T](result: Result[List[T]]) {
     def size(i: Int) = result.matchWith(outer.size(i))
@@ -165,12 +180,19 @@ trait IterableMatchers { outer =>
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Seq[T]) => t.asInstanceOf[Iterable[T]]))
   }
+  implicit def toSetResultMatcher[T](result: Result[Set[T]]) = new SetResultMatcher(result)
+  class SetResultMatcher[T](result: Result[Set[T]]) {
+    def size(i: Int) = result.matchWith(outer.size(i))
+    def contain(a: T) = result.matchWith(outer.contain(a))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Set[T]) => t.asInstanceOf[Iterable[T]]))
+  }
   implicit def toIterableResultMatcher[T](result: Result[Iterable[T]]) = new IterableResultMatcher(result)
   class IterableResultMatcher[T](result: Result[Iterable[T]]) {
     def size(i: Int) = result.matchWith(outer.size(i))
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f))
   }
+  
   implicit def toStringListResultMatcher(result: Result[List[String]]) = new StringListResultMatcher(result)
   class StringListResultMatcher(result: Result[List[String]]) {
     def containMatch(s: String) = result.matchWith(outer.containMatch(s))
