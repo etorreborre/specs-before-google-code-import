@@ -77,7 +77,8 @@ class Expectable[T](value: => T) {
       }
       result match {
         case false => {
-          new FailureExceptionWithResult(koMessage, new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("Expectable"))
+          new FailureExceptionWithResult(koMessage, 
+                                         new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("(Expectable|Matchers)"))
         }
         case _ => new Result(this, successValueToString)
       }
