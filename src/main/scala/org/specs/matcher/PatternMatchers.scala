@@ -115,8 +115,6 @@ trait PatternBaseMatchers {
                         description.getOrElse("there") + " is no Some(x) verifying the given property")
        }
   }
-  def like[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
-  def asNoneAs[T](a: =>Option[T]) = beAsNoneAs(a)
 }
 trait PatternBeHaveMatchers { this: PatternBaseMatchers =>
   /** 
@@ -134,6 +132,8 @@ trait PatternBeHaveMatchers { this: PatternBaseMatchers =>
   class SomeResultMatcher[T](result: Result[Some[T]]) {
     def asNoneAs(a: =>Some[T]) = result.matchWithMatcher(beAsNoneAs(a))
   }
+  def like[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
+  def asNoneAs[T](a: =>Option[T]) = beAsNoneAs(a)
 }
 /**
  * Companion object for PatternMatchers.

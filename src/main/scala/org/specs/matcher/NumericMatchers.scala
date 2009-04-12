@@ -64,11 +64,6 @@ trait NumericBaseMatchers {
    * Alias for beCloseTo.
    */   
   def ~[S <% Double](n: S)(delta: S) = beCloseTo(n, delta)
-  def lessThan[S <% Double](n: S) = beLessThan(n) 
-  def lessThanOrEqualTo[S <% Double](n: S) = beLessThanOrEqualTo(n) 
-  def greaterThan[S <% Double](n: S) = beGreaterThan(n) 
-  def greaterThanOrEqualTo[S <% Double](n: S) = beGreaterThanOrEqualTo(n) 
-  def closeTo[S <% Double](n: S, delta: S) = beCloseTo(n, delta) 
 }
 object NumericMatchersUtil {
   /** format a number: 1 must be 1 and not 1.0 if it is an integer. */
@@ -92,6 +87,11 @@ trait NumericBeHaveMatchers { this: NumericBaseMatchers =>
     def closeTo(n: T, delta: T) = result.matchWith(beCloseTo(n, delta))
     def ~(n: T, delta: T) = result.matchWith(beCloseTo(n, delta))
   }
+  def lessThan[S <% Double](n: S) = beLessThan(n) 
+  def lessThanOrEqualTo[S <% Double](n: S) = beLessThanOrEqualTo(n) 
+  def greaterThan[S <% Double](n: S) = beGreaterThan(n) 
+  def greaterThanOrEqualTo[S <% Double](n: S) = beGreaterThanOrEqualTo(n) 
+  def closeTo[S <% Double](n: S, delta: S) = beCloseTo(n, delta) 
 }
 
 

@@ -173,8 +173,6 @@ trait StringBaseMatchers { outer =>
   }
   def ==/(s: String) = be_==/(s)
   def !=/(s: String) = be_!=/(s)
-  def length(n: Int) = haveLength(n)
-  def matching(s: String) = beMatching(s)
   def equalToIgnoringCase[T <: String](a: T) = beEqualToIgnoringCase(a)
   def equalToIgnoringSpace[T <: String](a: T) = beEqualToIgnoringSpace(a)
   def equalIgnoringCaseTo[T <: String](a: T) = beEqualToIgnoringCase(a)
@@ -196,6 +194,8 @@ trait StringBeHaveMatchers { outer: StringBaseMatchers =>
     def startWith(s: String) = result.matchWith(outer.startWith(s))
     def endWith(s: String) = result.matchWith(outer.endWith(s))
   }
+  def length(n: Int) = haveLength(n)
+  def matching(s: String) = beMatching(s)
 }
 class BeEqualToIgnoringCase[T <: String](a: T) extends Matcher[T] { 
   def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 
