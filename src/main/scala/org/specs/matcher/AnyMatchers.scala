@@ -17,8 +17,13 @@ import org.specs.execute._
 object AnyMatchers extends AnyMatchers
 /**
  * The <code>AnyMatchers</code> trait provides matchers which are applicable to any scala reference or value
+ * and can be used with a be/have + matcher syntax
  */
-trait AnyMatchers {
+trait AnyMatchers extends AnyBaseMatchers with AnyBeHaveMatchers 
+/**
+ * The <code>AnyBaseMatchers</code> trait provides matchers which are applicable to any scala reference or value
+ */
+trait AnyBaseMatchers {
 
   /**
    * Matches if (a eq b)
@@ -526,32 +531,6 @@ trait AnyMatchers {
       }
     }
   }
-  /** dummy matcher to allow be + matcher syntax */
-  def be[T] = new BeVerbMatcher[T]
-  /** dummy matcher to allow not + be + matcher syntax */
-  def not[T] = new NotMatcher[T]
-  /** dummy matcher to allow have + matcher syntax */
-  def have[T] = new HaveVerbMatcher[T]
-  /** dummy matcher to allow have + the matcher syntax */
-  def the[T] = new ArticleMatcher[T]
-
-  /** implicit definition to add 'be' matchers */
-  implicit def toAnyResultMatcher[T](result: Result[T]) = new AnyResultMatcher(result)
-  /** functions which can be used with 'be' matchers */
-  class AnyResultMatcher[T](result: Result[T]) {
-    def equalTo(o: T)(implicit d: Detailed) = result.matchWith(is_==(o)(d))
-    def ==(a: =>Any)(implicit d: Detailed) = result.matchWith(is_==(a)(d))
-    def !=(a: =>Any)(implicit d: Detailed) = result.matchWith(is_!=(a)(d))
-    def asNullAs(a: =>T) = result.matchWith(beAsNullAs(a))
-    def in(iterable: =>Iterable[T]) = result.matchWith(beIn(iterable))
-    def oneOf(t: T*) = result.matchWith(beOneOf(t:_*))
-  }
-  /** implicit definition to add 'empty' matchers */
-  implicit def toAnyEmptyResultMatcher[S <: T1](result: Result[S]) = new AnyEmptyResultMatcher(result)
-  /** functions which can be used with 'empty' matchers */
-  class AnyEmptyResultMatcher[S <: T1](result: Result[S]) {
-    def empty = result.matchWith(beEmpty[S])
-  }
   /**
    * Alias of is_==
    */
@@ -581,6 +560,34 @@ trait AnyMatchers {
    */
   def empty[S <: T1] = beEmpty[S]
 
+}
+trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
+  /** dummy matcher to allow be + matcher syntax */
+  def be[T] = new BeVerbMatcher[T]
+  /** dummy matcher to allow not + be + matcher syntax */
+  def not[T] = new NotMatcher[T]
+  /** dummy matcher to allow have + matcher syntax */
+  def have[T] = new HaveVerbMatcher[T]
+  /** dummy matcher to allow have + the matcher syntax */
+  def the[T] = new ArticleMatcher[T]
+
+  /** implicit definition to add 'be' matchers */
+  implicit def toAnyResultMatcher[T](result: Result[T]) = new AnyResultMatcher(result)
+  /** functions which can be used with 'be' matchers */
+  class AnyResultMatcher[T](result: Result[T]) {
+    def equalTo(o: T)(implicit d: Detailed) = result.matchWith(is_==(o)(d))
+    def ==(a: =>Any)(implicit d: Detailed) = result.matchWith(is_==(a)(d))
+    def !=(a: =>Any)(implicit d: Detailed) = result.matchWith(is_!=(a)(d))
+    def asNullAs(a: =>T) = result.matchWith(beAsNullAs(a))
+    def in(iterable: =>Iterable[T]) = result.matchWith(beIn(iterable))
+    def oneOf(t: T*) = result.matchWith(beOneOf(t:_*))
+  }
+  /** implicit definition to add 'empty' matchers */
+  implicit def toAnyEmptyResultMatcher[S <: T1](result: Result[S]) = new AnyEmptyResultMatcher(result)
+  /** functions which can be used with 'empty' matchers */
+  class AnyEmptyResultMatcher[S <: T1](result: Result[S]) {
+    def empty = result.matchWith(beEmpty[S])
+  }
 }
 
 /**

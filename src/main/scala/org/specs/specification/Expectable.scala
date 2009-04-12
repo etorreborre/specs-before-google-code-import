@@ -253,6 +253,8 @@ trait SuccessValues {
   /** 
    * this implicit def allows a result to be or-ed with a matcher.
    */
+}
+trait OrResults {
   implicit def toOrResult[T](r: =>Result[T]) = new OrResult(r)
   /** 
    * this class allows a result to be or-ed with a matcher so that

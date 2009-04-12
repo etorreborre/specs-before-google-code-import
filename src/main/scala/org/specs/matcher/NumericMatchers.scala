@@ -3,7 +3,8 @@ import org.specs.specification.Result
 /**
  * The <code>NumericMatchers</code> trait provides matchers which allow numerical comparisons
  */
-trait NumericMatchers {
+trait NumericMatchers extends NumericBaseMatchers with NumericBeHaveMatchers
+trait NumericBaseMatchers {
   import NumericMatchersUtil._
   /**
    * Matches if x < n.
@@ -63,6 +64,18 @@ trait NumericMatchers {
    * Alias for beCloseTo.
    */   
   def ~[S <% Double](n: S)(delta: S) = beCloseTo(n, delta)
+  def lessThan[S <% Double](n: S) = beLessThan(n) 
+  def lessThanOrEqualTo[S <% Double](n: S) = beLessThanOrEqualTo(n) 
+  def greaterThan[S <% Double](n: S) = beGreaterThan(n) 
+  def greaterThanOrEqualTo[S <% Double](n: S) = beGreaterThanOrEqualTo(n) 
+  def closeTo[S <% Double](n: S, delta: S) = beCloseTo(n, delta) 
+}
+object NumericMatchersUtil {
+  /** format a number: 1 must be 1 and not 1.0 if it is an integer. */
+  def f[D <% Double](x: D): String = x.toString
+}
+trait NumericBeHaveMatchers { this: NumericBaseMatchers => 
+  import NumericMatchersUtil._
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb 
    */
@@ -79,16 +92,9 @@ trait NumericMatchers {
     def closeTo(n: T, delta: T) = result.matchWith(beCloseTo(n, delta))
     def ~(n: T, delta: T) = result.matchWith(beCloseTo(n, delta))
   }
-  def lessThan[S <% Double](n: S) = beLessThan(n) 
-  def lessThanOrEqualTo[S <% Double](n: S) = beLessThanOrEqualTo(n) 
-  def greaterThan[S <% Double](n: S) = beGreaterThan(n) 
-  def greaterThanOrEqualTo[S <% Double](n: S) = beGreaterThanOrEqualTo(n) 
-  def closeTo[S <% Double](n: S, delta: S) = beCloseTo(n, delta) 
 }
-object NumericMatchersUtil {
-  /** format a number: 1 must be 1 and not 1.0 if it is an integer. */
-  def f[D <% Double](x: D): String = x.toString
-}
+
+
 import NumericMatchersUtil._
 class BeLessThanOrEqualTo[S <% Double](n: S) extends Matcher[S] { 
   def apply(v: => S) = {

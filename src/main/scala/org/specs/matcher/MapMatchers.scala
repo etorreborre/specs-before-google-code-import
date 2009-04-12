@@ -8,7 +8,8 @@ import org.specs.specification.Result
  * This is because the implicit defs in the <code>SpecificationStructure</code> trait
  * are picking up iterables in general
  */
-trait MapMatchers {
+trait MapMatchers extends MapBaseMatchers with MapBeHaveMatchers
+trait MapBaseMatchers {
 
   /**
    * Matches if map.contains(k)
@@ -99,6 +100,14 @@ trait MapMatchers {
        description.getOrElse("the function") + " is not defined by the value".plural(undefined.size) + " " + q(undefined.mkString(", ")))
     }
    }
+  def key[S](k: S) = haveKey(k) 
+  def value[S](v: S) = haveValue(v) 
+  def pair[S, T](pair: (S, T)) = havePair(pair) 
+  def pairs[S, T](pairs: (S, T)*) = havePairs(pairs:_*) 
+  def definedBy[S, T](values: (S, T)*) = beDefinedBy(values:_*)
+  def definedAt[T](values: T*) = beDefinedAt(values:_*)
+}
+trait MapBeHaveMatchers { this: MapBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb 
    */
@@ -120,10 +129,5 @@ trait MapMatchers {
     def definedBy(values: (S, T)*) = result.matchWithMatcher(beDefinedBy(values:_*))
     def definedAt(values: S*) = result.matchWithMatcher(beDefinedAt(values:_*))
   }
-  def key[S](k: S) = haveKey(k) 
-  def value[S](v: S) = haveValue(v) 
-  def pair[S, T](pair: (S, T)) = havePair(pair) 
-  def pairs[S, T](pairs: (S, T)*) = havePairs(pairs:_*) 
-  def definedBy[S, T](values: (S, T)*) = beDefinedBy(values:_*)
-  def definedAt[T](values: T*) = beDefinedAt(values:_*)
+
 }

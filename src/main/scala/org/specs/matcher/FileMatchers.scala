@@ -6,7 +6,8 @@ import org.specs.specification.Result
 /**
  * The <code>PathMatchers</code> trait provides matchers which are applicable to strings representing paths
  */
-trait PathMatchers extends FileSystem { outer =>
+trait PathMatchers extends PathBaseMatchers with PathBeHaveMatchers
+trait PathBaseMatchers extends FileSystem { outer =>
   /**
    * Matches if new File(path).exists
    */   
@@ -98,6 +99,21 @@ trait PathMatchers extends FileSystem { outer =>
   /** @return true if the 2 paths are equal, ignoring separators */
   def isEqualIgnoringSep(path: String, other: String) = path != null && other != null&& getCanonicalPath(path).replaceAll("\\\\", "/") == getCanonicalPath(other).replaceAll("\\\\", "/") 
 
+  def existingPath = beAnExistingPath 
+  def hiddenPath = beAHiddenPath 
+  def readablePath = beAReadablePath
+  def writablePath = beAWritablePath
+  def absolutePath = beAnAbsolutePath
+  def filePath = beAFilePath
+  def directoryPath = beADirectoryPath
+  def pathName(name: String) = havePathName(name)
+  def asAbsolutePath(path: String) = haveAsAbsolutePath(path)
+  def asCanonicalPath(path: String) = haveAsCanonicalPath(path)
+  def parentPath(path: String) = haveParentPath(path)
+  def equalIgnoringSepTo(other: String) = beEqualToIgnoringSep(other)
+  def equalToIgnoringSep(other: String) = beEqualToIgnoringSep(other)
+}
+trait PathBeHaveMatchers { outer: PathBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb 
    */
@@ -118,25 +134,12 @@ trait PathMatchers extends FileSystem { outer =>
     def equalIgnoringSepTo(other: String) = result.matchWith(beEqualToIgnoringSep(other))
     def equalToIgnoringSep(other: String) = result.matchWith(beEqualToIgnoringSep(other))
   }
-
-  def existingPath = beAnExistingPath 
-  def hiddenPath = beAHiddenPath 
-  def readablePath = beAReadablePath
-  def writablePath = beAWritablePath
-  def absolutePath = beAnAbsolutePath
-  def filePath = beAFilePath
-  def directoryPath = beADirectoryPath
-  def pathName(name: String) = havePathName(name)
-  def asAbsolutePath(path: String) = haveAsAbsolutePath(path)
-  def asCanonicalPath(path: String) = haveAsCanonicalPath(path)
-  def parentPath(path: String) = haveParentPath(path)
-  def equalIgnoringSepTo(other: String) = beEqualToIgnoringSep(other)
-  def equalToIgnoringSep(other: String) = beEqualToIgnoringSep(other)
 }
 /**
  * The <code>FileMatchers</code> trait provides matchers which are applicable to files
  */
-trait FileMatchers extends PathMatchers {
+trait FileMatchers extends FileBaseMatchers with FileBeHaveMatchers
+trait FileBaseMatchers extends PathMatchers {
   /**
    * Matches if file.exists
    */   
@@ -210,6 +213,20 @@ trait FileMatchers extends PathMatchers {
     def path = this
     def getPath(): String = p
   }
+
+  def hidden[T <: { def getPath(): String }] = beHidden
+  def readable[T <: { def getPath(): String }] = beReadable
+  def writable[T <: { def getPath(): String }] = beWritable
+  def absolute[T <: { def getPath(): String }] = beAbsolute
+  def file[T <: { def getPath(): String }] = beFile
+  def directory[T <: { def getPath(): String }] = beDirectory
+  def name[T <: { def getPath(): String }](name: String) = haveName(name)
+  def paths[T <: { def getPath(): String }](list: String) = haveList(list)
+  def absolutePath[T <: { def getPath(): String }](path: String) = haveAbsolutePath(path)
+  def canonicalPath[T <: { def getPath(): String }](path: String) = haveCanonicalPath(path)
+  def parent[T <: { def getPath(): String }](path: String) = haveParent(path)
+}
+trait FileBeHaveMatchers { this: FileBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb 
    */
@@ -227,16 +244,4 @@ trait FileMatchers extends PathMatchers {
     def canonicalPath(path: String) = result.matchWith(haveCanonicalPath(path))
     def parent(path: String) = result.matchWith(haveParent(path))
   }
-
-  def hidden[T <: { def getPath(): String }] = beHidden
-  def readable[T <: { def getPath(): String }] = beReadable
-  def writable[T <: { def getPath(): String }] = beWritable
-  def absolute[T <: { def getPath(): String }] = beAbsolute
-  def file[T <: { def getPath(): String }] = beFile
-  def directory[T <: { def getPath(): String }] = beDirectory
-  def name[T <: { def getPath(): String }](name: String) = haveName(name)
-  def paths[T <: { def getPath(): String }](list: String) = haveList(list)
-  def absolutePath[T <: { def getPath(): String }](path: String) = haveAbsolutePath(path)
-  def canonicalPath[T <: { def getPath(): String }](path: String) = haveCanonicalPath(path)
-  def parent[T <: { def getPath(): String }](path: String) = haveParent(path)
 }

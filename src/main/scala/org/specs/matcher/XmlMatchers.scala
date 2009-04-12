@@ -13,7 +13,8 @@ import StringToElem._
 /**
  * The <code>XmlMatchers</code> trait provides matchers which are applicable to xml nodes
  */
-trait XmlMatchers {
+trait XmlMatchers extends XmlBaseMatchers with XmlBeHaveMatchers
+trait XmlBaseMatchers {
   
   /**
    * Matches if <code>node</code> is contained anywhere inside the tested node
@@ -94,6 +95,10 @@ trait XmlMatchers {
    */   
   def ==/(node: Iterable[Node]): EqualIgnoringSpaceMatcher = equalIgnoreSpace(node)
 
+  def equalToIgnoringSpace(node: Iterable[Node]) = beEqualToIgnoringSpace(node)
+  def equalToIgnoringSpace(node: Elem) = beEqualToIgnoringSpace(node)
+}
+trait XmlBeHaveMatchers { this: XmlBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb
    */
@@ -101,12 +106,10 @@ trait XmlMatchers {
   class NodeIterableResultMatcher(result: Result[Iterable[Node]]) {
     def equalToIgnoringSpace(node: Iterable[Node]) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
-  def equalToIgnoringSpace(node: Iterable[Node]) = beEqualToIgnoringSpace(node)
   implicit def toElemResult(result: Result[Elem]) = new ElemResultMatcher(result)
   class ElemResultMatcher(result: Result[Elem]) {
     def equalToIgnoringSpace(node: Elem) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
-  def equalToIgnoringSpace(node: Elem) = beEqualToIgnoringSpace(node)
 }
 /**
  * Matcher for equalIgnoreSpace comparison, ignoring the nodes order

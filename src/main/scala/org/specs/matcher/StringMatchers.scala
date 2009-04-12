@@ -5,7 +5,8 @@ import org.specs.specification._
 /**
  * The <code>StringMatchers</code> trait provides matchers which are applicable to String objects
  */
-trait StringMatchers { outer =>
+trait StringMatchers extends StringBaseMatchers with StringBeHaveMatchers 
+trait StringBaseMatchers { outer =>
   
   /**
    * Matches if (a.equalsIgnoreCase(b))
@@ -170,6 +171,16 @@ trait StringMatchers { outer =>
   def haveLength(n: Int) = new Matcher[String](){
     def apply(v: => String) = {val string = v; (string.length == n, d(string) + " has length " + n, d(string) + " doesn't have length " + n)}
   }
+  def ==/(s: String) = be_==/(s)
+  def !=/(s: String) = be_!=/(s)
+  def length(n: Int) = haveLength(n)
+  def matching(s: String) = beMatching(s)
+  def equalToIgnoringCase[T <: String](a: T) = beEqualToIgnoringCase(a)
+  def equalToIgnoringSpace[T <: String](a: T) = beEqualToIgnoringSpace(a)
+  def equalIgnoringCaseTo[T <: String](a: T) = beEqualToIgnoringCase(a)
+  def equalIgnoringSpaceTo[T <: String](a: T) = beEqualToIgnoringSpace(a)
+}
+trait StringBeHaveMatchers { outer: StringBaseMatchers =>
   implicit def toStringResultMatcher(result: Result[String]) = new StringResultMatcher(result)
   class StringResultMatcher(result: Result[String]) {
     def matching(s: String) = result.matchWith(beMatching(s))
@@ -185,14 +196,6 @@ trait StringMatchers { outer =>
     def startWith(s: String) = result.matchWith(outer.startWith(s))
     def endWith(s: String) = result.matchWith(outer.endWith(s))
   }
-  def ==/(s: String) = be_==/(s)
-  def !=/(s: String) = be_!=/(s)
-  def length(n: Int) = haveLength(n)
-  def matching(s: String) = beMatching(s)
-  def equalToIgnoringCase[T <: String](a: T) = beEqualToIgnoringCase(a)
-  def equalToIgnoringSpace[T <: String](a: T) = beEqualToIgnoringSpace(a)
-  def equalIgnoringCaseTo[T <: String](a: T) = beEqualToIgnoringCase(a)
-  def equalIgnoringSpaceTo[T <: String](a: T) = beEqualToIgnoringSpace(a)
 }
 class BeEqualToIgnoringCase[T <: String](a: T) extends Matcher[T] { 
   def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 

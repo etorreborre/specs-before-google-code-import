@@ -118,5 +118,8 @@ class iterableMatchersSpec extends MatchersSpecification {
       val array: Array[String] = List("one").toArray
       array must not contain("two")
     }
+    "provide a 'be the sameSetAs' matcher" in {
+      Set("1") must be the sameSetAs(Set("1"))
+    }
   }
 }

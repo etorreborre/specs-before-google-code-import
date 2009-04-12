@@ -1,8 +1,9 @@
 package org.specs.specification
+import org.specs.util.ExtendedString._
 import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import scala.reflect.Manifest
-
+import org.specs.execute._
 /**
  * This trait provides a structure to a specification.<br>
  * A specification is composed of:<ul>
@@ -36,7 +37,8 @@ import scala.reflect.Manifest
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsListener with Tagged {
+trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsListener with Tagged 
+  with HasResults { outer =>
 
   /** description of the specification */
   var description = createDescription(getClass.getName)
@@ -202,4 +204,61 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   def contains(s: Specification): Boolean = {
     subSpecifications.contains(s) || subSpecifications.exists(_.contains(s))
   }
+    /**
+   * Syntactic sugar for examples sharing between systems under test.<p>
+   * Usage: <code>
+   *   "A stack below full capacity" should {
+   *    behave like "A non-empty stack below full capacity"
+   *    ...
+   * </code>
+   * In this example we suppose that there is a system under test with the same name previously defined.
+   * Otherwise, an Exception would be thrown, causing the specification failure at construction time.
+   */
+  object behave {
+    def like(other: Sus): Example = {
+      val behaveLike = currentSus.createExample("behave like " + other.description.uncapitalize, currentSus)
+
+      other.examples.foreach { example =>
+         behaveLike.addExample(currentSus.cloneExample(example))
+      }
+      behaveLike
+    }
+    def like(susName: String): Example = outer.systems.find(_.description == susName) match {
+      case Some(sus) => this.like(sus)
+      case None => throw new Exception(q(susName) + " is not specified in " + outer.name + 
+                                         outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
+    }
+  }
+  /** @return the examples number without executing the specification (i.e. without subexamples) */
+  def examplesNb: Int = subSpecifications.foldLeft(0)(_+_.examplesNb) + systems.foldLeft(0)(_+_.examples.size)
+
+  /** @return the failures of each sus */
+  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures)
+
+  /** @return the skipped of each sus */
+  def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: systems.flatMap(_.skipped)
+
+  /** @return the errors of each sus */
+  def errors: List[Throwable] = subSpecifications.flatMap(_.errors) ::: systems.flatMap(_.errors)
+
+  /** @return all the examples with no errors, failures or skip messages */
+  def successes: List[Example] = subSpecifications.flatMap(_.successes) ::: systems.flatMap(_.successes)
+
+  /** @return all the examples */
+  def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: systems.flatMap(_.examples)
+
+  /** @return the total number of expectations for each sus */
+  def expectationsNb: Int = subSpecifications.foldLeft(0)(_ + _.expectationsNb) + systems.foldLeft(0)(_ + _.expectationsNb)
+
+  /** @return true if there are failures or errors */
+  def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
+
+  /** reset in order to be able to run the examples again */
+  def resetForExecution: this.type = {
+    subSpecifications.foreach(_.resetForExecution)
+    systems.foreach(_.resetForExecution)
+    this
+  }
+  /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
+  override def taggedComponents = this.subSpecifications ++ this.systems
 }

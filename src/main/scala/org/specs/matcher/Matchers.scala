@@ -14,6 +14,7 @@ object Matchers extends Matchers
 /**
  * <p>The <code>Matchers</code> trait provides all existing Matchers to the 
  * <code>Specification</code> trait</p> 
+ * They can be used with be/have + matcher syntax
  */
 trait Matchers extends AnyMatchers with 
                        LogicalMatchers with
@@ -25,6 +26,21 @@ trait Matchers extends AnyMatchers with
                        XmlMatchers with 
                        FileMatchers with 
                        MatcherResult
+/**
+ * <p>The <code>BaseMatchers</code> trait provides all existing Matchers to the 
+ * <code>Specification</code> trait</p> 
+ * They can't be used with be/have + matcher syntax
+ */
+trait BaseMatchers extends AnyBaseMatchers with 
+                           LogicalMatchers with
+                           StringBaseMatchers with
+                           IterableBaseMatchers with
+                           MapBaseMatchers with
+                           NumericBaseMatchers with
+                           PatternBaseMatchers with 
+                           XmlBaseMatchers with 
+                           FileBaseMatchers with 
+                           MatcherResult
                        
 /**
  * <p>The <code>AbstractMatcher</code> class is the base class for Matchers.
