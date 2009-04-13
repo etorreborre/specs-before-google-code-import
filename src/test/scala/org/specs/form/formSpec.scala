@@ -4,13 +4,16 @@ import org.specs.util._
 import matcher.Matcher
 import org.specs._
 import org.specs.runner.{JUnitSuiteRunner, JUnit}
-import samples.Persons
+import samples.PersonForms
 import scala.xml._
 import org.specs.Sugar._
 import org.specs.specification.LiterateSpecification
 import org.junit.runner.RunWith
 
-class formSpec extends LiterateSpecification with Persons with JUnit { persons =>
+class formSpec extends LiterateSpecification with PersonForms with JUnit { persons =>
+  val address = Address(37, "Nando-cho")
+  val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
+
   "A form" should {
     "have a title" in {
       val form = PersonForm("person", person)
