@@ -75,8 +75,11 @@ class propSpec extends Specification with JUnit with Mockito with SystemContexts
     }
   }
   "A Prop" can {
-    "use a different value formatter" in {
+    "use a different value formatter formatting both missing values and values" in {
       Prop("Result", 1).formatWith((i:Option[Int]) => "["+i.get.toString+"]").toXhtml(1) must ==/(<td class="value">[1]</td>)
+    }
+    "use a different value formatter formatting existing values" in {
+      Prop("Result", 1).formatterIs((i: Int) => "["+i.toString+"]").toXhtml(1) must ==/(<td class="value">[1]</td>)
     }
   }
 

@@ -19,9 +19,19 @@ trait ValueFormatter[T] {
    */
   def format(s: T): String = format(Some(s))
   /**
-   * change the value formatter to display the value differentely
+   * change the value formatter to display the value differently
    */
   def formatWith(function: Option[T] => String): this.type = { formatter = function; this }
+  /**
+   * change the value formatter to display the value differently. This formatter displays "" for a missing value
+   */
+  def formatterIs(function: T => String): this.type = { 
+    formatter = (t: Option[T]) => t match {
+      case None => ""
+      case Some(x) => function(x)
+    }
+    this 
+  }
 }
 /**
  * Formatter for an Iterable
@@ -51,11 +61,31 @@ trait ValuesFormatter[T] {
    */
   def formatIterable(s: Iterable[T]): String = valuesFormatter(Some(s))
   /**
-   * change the values formatter to display the values differentely
+   * change the values formatter to display the values differently
    */
   def formatIterableWith(function: Option[Iterable[T]] => String): this.type = { valuesFormatter = function; this }
   /**
-   * change the value formatter to display the value differentely
+   * change the values formatter to display the values differently, using "" for missing values
+   */
+  def iterableFormatterIs(function: Iterable[T] => String): this.type = { 
+    valuesFormatter = (l: Option[Iterable[T]]) => l match {
+      case None => ""
+      case Some(x) => function(x)
+    }
+    this 
+  }
+  /**
+   * change the value formatter to display the value differently
    */
   def formatValueWith(function: Option[T] => String): this.type = { valueFormatter = function; this }
+  /**
+   * change the value formatter to display the value differently. This formatter displays "" for a missing value
+   */
+  def formatterIs(function: T => String): this.type = { 
+    valueFormatter = (t: Option[T]) => t match {
+      case None => ""
+      case Some(x) => function(x)
+    }
+    this 
+  }
 }
