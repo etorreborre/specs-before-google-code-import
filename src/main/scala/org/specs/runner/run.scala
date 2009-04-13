@@ -8,12 +8,12 @@ class ClassRunner extends OutputReporter {
   val timer = new SimpleTimer
   lazy val specs = getSpecifications
   
-  override def main(args: Array[String]) = {
-    if (args.length == 0)
+  override def main(arguments: Array[String]) = {
+    if (arguments.length == 0)
       println("The first argument should be at least the specification class name")
     else {
-      super.main(args)
-      reportSpecs
+      args = arguments
+      specs.foreach(_.main(args))
     }
   }
   override protected def displayUsage = {
