@@ -31,7 +31,7 @@ Then, other languages, like <ex>French and German should be supported too</ex>
  </textile>
 }
 
-class fieldsFormSpec extends LiterateSpecification with Html {
+class fieldsFormSpec extends LiterateSpecification with Html with JUnit {
  class Person extends Form {
    val firstName = field("First name", "Eric")
    val lastName = field("Last name", "Torreborre")

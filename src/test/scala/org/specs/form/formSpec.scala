@@ -36,7 +36,7 @@ class formSpec extends LiterateSpecification with PersonForms with JUnit { perso
         firstName("Eric"); lastName("Torreborre")
         initials("TE")
       }
-      (form.execute.toXhtml \\("td"))(5) must ==/(<td class="failure" valign="top"><b>TE</b>'ET' is not equal ignoring case to 'TE'</td>)
+      (form.execute.toXhtml \\("td"))(10) must ==/(<td class="failure" valign="top"><b>TE</b>'ET' is not equal ignoring case to 'TE'</td>)
     }
   }
   "A form" can {
@@ -91,11 +91,11 @@ class formSpec extends LiterateSpecification with PersonForms with JUnit { perso
     }
     "have its title spanning all columns" in {
       val form = new PersonForm("Customer", person) { firstName("Eric") }
-      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"4"))
     }
     "have its title spanning all columns - one column, 2 properties" in {
       val form = new PersonForm("Customer", person) { firstName("Eric"); lastName("T") }
-      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"2"))
+      form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"4"))
     }
     "have its title spanning all columns - 2 columns, 2 properties" in {
       val form = new PersonForm("Customer", person) { tr(firstName("Eric"), lastName("T")) }
