@@ -198,7 +198,7 @@ trait LiterateSpecificationLinks extends Links { this: Specification =>
     // execute the subSpec
     subSpec.failures
     subSpec.addParentLink(this)
-    pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
+    relativeLink(desc, subSpec.fileName(subSpec))
   }
 }
 /**
@@ -231,6 +231,9 @@ trait Wiki extends Properties with Links {
   override def pathLink(desc: String, path: String) = {
     "\"" + desc + "\":file:///" + path
   }
+  override def relativeLink(desc: String, path: String) = {
+    "\"" + desc + "\":" + path
+  }
 }
 trait Textile extends Wiki
 trait Markdown extends Wiki {
@@ -243,9 +246,16 @@ trait Markdown extends Wiki {
   def pathLink(desc: String, path: String, title: String) = {
     "[" + desc + "](file:///" + path + " " + title + ")"
   }
+  override def relativeLink(desc: String, path: String) = {
+    "[" + desc + "](" + path + ")"
+  }
+  def relativeLink(desc: String, path: String, title: String) = {
+    "[" + desc + "](" + path + " " + title + ")"
+  }
 }
 trait Links {
   def pathLink(desc: String, path: String) = desc + " (See: " + path + ")"
+  def relativeLink(desc: String, path: String) = desc + " (See: " + path + ")"
 }
 trait LiterateSnippets extends SnipIt with ExpectableFactory with Matchers { 
   def executeIs(s: String) = { execute(it) must include(s) }

@@ -105,7 +105,7 @@ trait XmlProperties { outer =>
   val xml6 = Property[Elem](<e/>)
   implicit def elemToAlpha(value: Elem) = ElemToAlpha(value)
   case class ElemToAlpha(value: Elem) {
-    def abc  = { outer.xml() = value; value }
+    def xml  = { outer.xml() = value; value }
     def xml2 = { outer.xml2() = value; value }
     def xml3 = { outer.xml3() = value; value }
     def xml4 = { outer.xml4() = value; value }
@@ -174,7 +174,7 @@ trait DoubleProperties { outer =>
   } 
 }
 /**
- * This trait one String property for a current value.
+ * This trait sets one String property for a current value.
  */
 trait CurrentProperty { outer => 
   val it = Property[String]("")
@@ -187,5 +187,5 @@ trait CurrentProperty { outer =>
 /**
  * This trait adds all properties.
  */
-trait AllProperties extends StringProperties with IntProperties with DoubleProperties with BooleanProperties with CurrentProperty
+trait AllProperties extends StringProperties with IntProperties with DoubleProperties with BooleanProperties with XmlProperties with CurrentProperty 
 object AllProperties extends AllProperties
