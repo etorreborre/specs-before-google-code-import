@@ -17,9 +17,6 @@ On the other hand system contexts provide a way to specify a @SystemContext@ obj
 * the set of data the example is operating on is clearly defined as a "System"
 * examples can be executed in parallel because they don't share the same variables
 
-{includeSus("Shared contexts")}
-{includeSus("System contexts")}
-
 </wiki>
 
 "Shared contexts".definedAs(shared) ->> <wiki>

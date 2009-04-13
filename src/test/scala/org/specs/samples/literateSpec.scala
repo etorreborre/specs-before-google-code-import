@@ -5,8 +5,46 @@ import org.specs.util._
 import org.specs.form._
 import org.specs.runner._
 
-class formSampleSpec extends Persons  with JUnit {
-  "Forms can be used in a Literate specifications" ->> <wiki>
+class helloWorld extends LiterateSpecification("Hello World") with Html {
+  def greet = "hello"
+  def greet(s: String) = s match {
+    case "French" => "bonjour"
+    case "German" => "hallo"
+  }
+  
+"The greeting application" is <textile>
+h3. Presentation
+
+This new application should say "hello" in different languages.
+
+For example,<ex>by default, saying hello by default should use English</ex> { greet must_== "hello"}
+ 
+Then, other languages, like <ex>French and German should be supported too</ex> 
+{ eg {
+    greet("French") must_== "bonjour"
+    greet("German") must_== "hallo"
+  } 
+}
+
+<ex>Japanese should be supported also</ex> { notImplemented }
+
+ </textile>
+}
+
+class fieldsFormSpec extends LiterateSpecification with Html {
+ class Person extends Form {
+   val firstName = field("First name", "Eric")
+   val lastName = field("Last name", "Torreborre")
+   tr(firstName)
+   tr(lastName)
+ }
+ "A form with fields" is <textile>
+   { new Person().toHtml }  
+  </textile>
+}
+
+class formSampleSpec extends Persons  with Html {
+  "Forms can be used in a Literate specificatins" is <textile>
 
 This is a Person form, checking that the initials are set properly on a Person object.
 
@@ -21,7 +59,7 @@ You can notice that the fields of the form are displayed so that the address is 
    }
 }
 
-  </wiki>
+  </textile>
 }
 trait Persons extends LiterateSpecification {
   case class Address(number: Int, street: String)

@@ -18,7 +18,6 @@ import java.io.Writer
  * Concrete implementations of that trait can be found in HtmlRunner and XmlRunner.
  */
 trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
-  
   /** @return the file name which should be created */
   def fileName(spec: Specification): String
   

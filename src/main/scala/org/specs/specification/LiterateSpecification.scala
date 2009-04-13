@@ -10,37 +10,46 @@ import org.specs.form._
 import org.specs.execute._
 
 /**
- * This trait is experimental. It is supposed to help writing some literate specifications
- * using the xml capabilities of Scala.
- * Several "toy" specifications have been written using this style:<ul>
- * <li>bizSpecificationSpec
- * <li>calculatorBizSpec
- * <li>xmlRunnerSpec
- * </ul>
+ * This trait supports writing literate specifications for acceptance testing.
+ * 
+ * The basic idea is to define Systems under specification as some text, enclosed in xml tags:
+ * <code>
+ * "my system" is <text>
+ *   some text for my Specification
+ * 
+ * </text>
+ * </code>
+ * 
+ * Then, it is possible to "tag" parts of this text with the <ex></ex> xml nodes, to denote an example description and make it immediately
+ * followed by an expectation in Scala code: <code>
+ * "my system" is <text>
+ *   <ex>This is an ok example</ex> { 1 must be equalTo(1) }
+ * 
+ *   <ex>This is an ok example with several expectations which must be enclosed in an 'eg' function</ex> 
+ *   { eg { 
+ *       1 must be equalTo(1) 
+ *       2 must be equalTo(2) 
+ *     }
+ *   }
+ *   <ex>This is a example but missing its implementation yet</ex> { notImplemented }
+ * 
+ * </text>
+ * </code>
+ * 
  */
-class LiterateSpecification extends Specification with ExpectableFactory with DataTables with Properties with Links {
+class LiterateSpecification extends Specification with LiterateSpecificationStructure with LiterateSpecificationLinks 
+      with LiterateDataTables with LiterateForms with LiterateProperties with LiterateShortcuts {
   setSequential()
 
   def this(n: String) = { this(); name = n; description = n; this }
 
-  /**
-   * This method is used to silence the result of a call in an action. For example: <pre>
-   * The timer should be stopped {timer.stop.shh}
-   * </pre>. This will not output the result of the stop method
-   */
-  implicit def anyToShh(a: Any) = new Silenced
-
   /** allow empty sus to be reported. */
   override def filterEmptySus = false
-  class Silenced {
-    def shh = ()
-
-    /** the pipe bar must be interpreted visually as a stop and the < sign as a pike. */
-    def <| = shh
-  }
-  /** This silence function allows to silence calls with this style: shh { a call } */
-  def shh(a: =>Any) = { a; () }
-
+}
+/**
+ * This trait helps declaring datatables inside the Literate Specification
+ */
+trait LiterateDataTables extends DataTables with ExpectableFactory with SpecificationStructure {
   /**
    * This method allows to embbed a DataTable in a literate specification and display the results of its execution
    */
@@ -55,6 +64,34 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
       desc + "\n" + tableToExecute.toHtml.toString
     }
+  }
+}
+/**
+ * This trait adds shortcut to declare properties in the specification text
+ */
+trait LiterateProperties extends Properties with ExpectableFactory {
+  def field[T](label: String, value: =>T): Field[T] = {
+    Field(label, value)
+  }
+  def displayField[T](label: String, value: =>T) = {
+    field(label, value).toHtml
+  }
+  def prop[T](label: String, actual: =>T): MatcherProp[T] = {
+    Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
+  }
+  def displayProp[T](label: String, actual: =>T)(expected: T) = {
+    prop(label, actual)(expected).display_!
+  }
+}
+/**
+ * This trait adds shortcut to declare forms in the specification text
+ */
+trait LiterateForms extends ExpectableFactory with SpecificationStructure { 
+  /**
+   * This method allows to embbed a Form in a literate specification and display the results of its execution
+   */
+  implicit def makeForm(s: String) = new LiterateForm(s)
+  case class LiterateForm(desc: String) {
     def inForm(form: =>org.specs.form.Form) = {
       lazy val formToExecute = form
       val description = if (desc.isEmpty) form.title else desc
@@ -65,9 +102,41 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       description + "\n" + formToExecute.toHtml.toString
     }
   }
+}
+/**
+ * This trait adds shortcut methods to define expectations, to silence expressions
+ */
+trait LiterateShortcuts extends ExpectableFactory with SpecificationStructure { 
+  /**
+   * This method is used to silence the result of a call in an action. For example: <pre>
+   * The timer should be stopped {timer.stop.shh}
+   * </pre>. This will not output the result of the stop method
+   */
+  implicit def anyToShh(a: Any) = new Silenced
+  class Silenced {
+    def shh = ()
 
+    /** the pipe bar must be interpreted visually as a stop and the < sign as a pike. */
+    def <| = shh
+  }
+  /** This silence function allows to silence calls with this style: shh { a call } */
+  def shh(a: =>Any) = { a; () }
+  /**
+   * Create an anonymous example with a function on a System,
+   * giving it a number depending on the existing created examples
+   */
+  def eg[S](function: S => Any): Unit = (forExample in function).shh
+
+  /** embeddeds a test into a new example and silence the result */
+  def eg(test: =>Any): Unit = (forExample in test).shh
   /** create an anonymous example which will be skipped until it is implemented */
-  def notImplemented = forExample in { skip ("not implemented yet")}
+  def notImplemented = forExample in { }
+  /** return a String containing the output messages from the console with a given padding such as a newline for instance */
+  def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
+  /** return a String containing the output messages from the console */
+  def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
+}
+trait LiterateSpecificationStructure extends ExpectableFactory with SpecificationStructure {
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e
@@ -109,24 +178,16 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
       }
     }
   }
-
-  /**
-   * Create an anonymous example with a function on a System,
-   * giving it a number depending on the existing created examples/
-   */
-  def eg[S](function: S => Any): Unit = (forExample in function).shh
-
-  /** embeddeds a test into a new example and silence the result */
-  def eg(test: =>Any): Unit = (forExample in test).shh
-
-  /** return a String containing the output messages from the console with a given padding such as a newline for instance */
-  def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
-
-  /** return a String containing the output messages from the console */
-  def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
-
-  def includeSus(susName: String) = "include " + susName + " not implemented yet"
-
+}
+/**
+ * This trait allows to add links to other specifications inside a literate specification.
+ * The link will be displayed as a Html link
+ * 
+ * The "parent/child" relationship is kept in that trait to allow the Html runner
+ * to be reported when reporting the parent.
+ */
+trait LiterateSpecificationLinks extends Links { this: Specification => 
+  /** storing the parent links of this specification */
   private var parentLinks = List[Specification]()
   def addParentLink(s: Specification): this.type = { parentLinks = s :: parentLinks; this }
   def hasParentLink(s: Specification) = parentLinks.contains(s)
@@ -138,12 +199,6 @@ class LiterateSpecification extends Specification with ExpectableFactory with Da
     subSpec.failures
     subSpec.addParentLink(this)
     pathLink(desc, new java.io.File(subSpec.filePath(subSpec)).getAbsolutePath)
-  }
-  def prop[T](label: String, actual: =>T): MatcherProp[T] = {
-    Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
-  }
-  def displayProp[T](label: String, actual: =>T)(expected: T) = {
-    prop(label, actual)(expected).display_!
   }
 }
 /**
@@ -191,4 +246,23 @@ trait Markdown extends Wiki {
 }
 trait Links {
   def pathLink(desc: String, path: String) = desc + " (See: " + path + ")"
+}
+trait LiterateSnippets extends SnipIt with ExpectableFactory with Matchers { 
+  def executeIs(s: String) = { execute(it) must include(s) }
+  def executeIsNot(s: String) = execute(it) mustNot include(s)
+  implicit def toOutputSnippet(s: String) = OutputSnippet(s)
+  case class OutputSnippet(s: String) {
+    def add_> = {
+      s add it
+      "> " + execute(it)
+    } 
+  }
+  def >(s: String) = outputIs(s)
+  def outputIs(s: String) = {
+    val result = execute(it)
+    var out = "> " + result
+    try  { result must include(s) }
+    catch { case e => out = "> " + e.getMessage }
+    out
+  }
 }

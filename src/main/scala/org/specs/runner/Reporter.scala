@@ -36,7 +36,6 @@ trait SpecsHolder {
  * object runner extends Runner(spec) with Html with Xml for example
  */
 trait Reporter extends SpecsFilter with ConsoleLog {
-
   /** this variable controls if stacktraces should be printed. */
   protected var stacktrace = true
   /** this variable controls if ok examples should be printed. */
@@ -150,13 +149,12 @@ trait Reporter extends SpecsFilter with ConsoleLog {
    * to allow the chaining of several reporters as traits.
    */
   def report(specs: Seq[Specification]): this.type = {
-    if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
+     if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
     if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
     if (argsContain("-finalstats", "-finalstatistics")) setFinalStatisticsOnly()
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
     if (argsContain("-c", "--color")) setColorize()
     setTags(specs, args)
-
     debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
     this
   }
