@@ -43,33 +43,37 @@ class fieldsFormSpec extends LiterateSpecification with Html {
   </textile>
 }
 
-class formSampleSpec extends Persons  with Html {
+class formSampleSpec extends PersonForms with Html {
   "Forms can be used in a Literate specificatins" is <textile>
 
-This is a Person form, checking that the initials are set properly on a Person object.
+This is a Person form, checking that the initials are set properly on a Person object:
+{ 
+  val address = Address(37, "Nando-cho")
+  val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
 
-You can notice that the fields of the form are displayed so that the address is in a column, on the same row as the first name.
-{ "Initials are automatically populated" inForm
+  "Initials are automatically populated" inForm
    new PersonForm(person) {
-    tr(firstName("Eric"),       address.set { a =>
-                                    a.number(37)
-                                    a.street("Nando-cho")})
-    tr(lastName("Torreborre"),  initials("et"))
-    tr(friends("Jerome", "Olivier"))
+    firstName("Eric")       
+    initials("et")
+    friends("Jerome", "Olivier")
+    address.set { a =>
+                  a.number(37)
+                  a.street("Nando-cho")}
+    lastName("Torreborre")
    }
 }
 
   </textile>
 }
-trait Persons extends LiterateSpecification {
-  case class Address(number: Int, street: String)
+trait PersonBusinessEntities {
   case class Person(firstName: String, lastName: String, address: Address, friends: List[String]) {
     def initials = firstName(0).toString + lastName(0)
   }
-  val address = Address(37, "Nando-cho")
-  val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
+  case class Address(number: Int, street: String)
+}
+trait PersonForms extends LiterateSpecification with PersonBusinessEntities {
 
-  case class PersonForm(t: String, p: Person) extends Form(t, this) with Properties {
+  case class PersonForm(t: String, p: Person) extends Form(t) {
     def this(p: Person) = this("Customer", p)
     val firstName = prop("First Name", p.firstName)
     val lastName = prop("Last Name", p.lastName)
@@ -77,10 +81,15 @@ trait Persons extends LiterateSpecification {
     val friends =  propIterable("Friends", p.friends)
     val address = form(AddressForm("Home", p.address))
 
-    case class AddressForm(t: String, address: Address) extends Form(t, this) with Properties {
-      def this(a: Address) = this("Home", a)
-      val number = prop("Number", address.number)
-      val street = prop("Street", address.street)
-    }
+    tr(firstName, address)
+    tr(lastName, initials)
+    tr(friends)
+  }
+  case class AddressForm(t: String, address: Address) extends Form(t) {
+    def this(a: Address) = this("Home", a)
+    val number = prop("Number", address.number)
+    val street = prop("Street", address.street)
+    tr(number)
+    tr(street)
   }
 }
