@@ -560,6 +560,10 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
     def asNullAs(a: =>T) = result.matchWith(beAsNullAs(a))
     def in(iterable: =>Iterable[T]) = result.matchWith(beIn(iterable))
     def oneOf(t: T*) = result.matchWith(beOneOf(t:_*))
+    def throwA[E <: Throwable](implicit m: Manifest[E]) = result.matchWith(throwAnException[E](m))
+    def throwA[E <: Throwable](e: E) = result.matchWith(throwException(e))
+    def throwAn[E <: Throwable](implicit m: Manifest[E]) = result.matchWith(throwAnException[E](m))
+    def throwAn[E <: Throwable](e: E) = result.matchWith(throwException(e))
   }
   /** implicit definition to add 'empty' matchers */
   implicit def toAnyEmptyResultMatcher[S <: T1](result: Result[S]) = new AnyEmptyResultMatcher(result)
