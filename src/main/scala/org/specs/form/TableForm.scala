@@ -1,11 +1,14 @@
 package org.specs.form
 import scala.collection.mutable.ListBuffer
+import org.specs.specification.DefaultExpectableFactory
 /**
  * A Table form is a set of forms, one form per row.
  * 
  * Each time, the set is passed set of line forms, the first line is used to add a header
  */
-class TableForm(title: String) extends Form(title) {
+class TableForm(title: Option[String]) extends Form(title, new DefaultExpectableFactory {}) {
+  def this() = this(None)
+  def this(t: String) = this(Some(t))
   /** this variable becomes false when there is no more need to insert a header row in the table */
   protected var unsetHeader = true
   /** automatically transform a value into a Field for easier declaration of tr(...) lines */

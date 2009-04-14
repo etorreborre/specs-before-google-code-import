@@ -2,7 +2,10 @@ package org.specs.form
 import org.specs.util._
 import org.specs.xml.NodeFunctions._
 
-class DataTableForm(title: String) extends TableForm(title) with DataTables {
+class DataTableForm(title: Option[String]) extends TableForm(title) with DataTables {
+  def this() = this(None)
+  def this(t: String) = this(Some(t))
+
   /** header retrieved from the DataTable header */
   protected var tableHeader: Option[TableHeader] = None
   /** store a reference to the DataTable header */
