@@ -13,6 +13,8 @@ trait LayoutFormats extends Layout with Tabs {
   def p(values: LabeledXhtml*): this.type = { tr(empty); tr(values:_*) }
   /** display a big header as a box inside a row */
   def th1(s: String): this.type = embedInNewRow(<table class="dataTable"><tr><th>{ removeUnnecessaryNewlines(s) }</th></tr></table>) 
+  /** display a big header as a box inside a row */
+  def th1(toXhtml: LabeledXhtml): this.type = embedInNewRow(<table class="dataTable"><tr><th>{ toXhtml.toXhtml }</th></tr></table>) 
   /** display a th header */
   def th2(s: String): this.type = inNewRow(<th>{ removeUnnecessaryNewlines(s) }</th>)
   /** display a th header, left aligned */
