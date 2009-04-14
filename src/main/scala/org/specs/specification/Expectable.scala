@@ -44,6 +44,10 @@ class Expectable[T](value: => T) {
   private var nextMatcherMustBeNegated = false
   /** set the state variable declaring that the next match should be negated, in the case of an xor combination to force a fail for example */
   def nextSignificantMatchMustBeNegated() = { nextMatcherMustBeNegated = true; this }
+  /** previous previous messages in the case of or-ed matchers*/
+  private var previousMessages: List[String] = Nil
+  /** add a previous message in the case of or-ed matchers*/
+  protected def addPreviousMessage(m: String): this.type = { previousMessages = previousMessages ::: List(m); this }
   /**
    * Apply a matcher for this expectable value.
    *
@@ -67,7 +71,7 @@ class Expectable[T](value: => T) {
 
     def executeMatch = {
       matcher.setDescription(description)
-      val (result, _, koMessage) = {
+      val (result, okMessage, koMessage) = {
         if (nextMatcherMustBeNegated) {
           nextMatcherMustBeNegated = false
           matcher.not.apply(value)
@@ -77,10 +81,14 @@ class Expectable[T](value: => T) {
       }
       result match {
         case false => {
-          new FailureExceptionWithResult(koMessage, 
+          addPreviousMessage(koMessage)
+          new FailureExceptionWithResult(makeMessages, 
                                          new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("(Expectable|Matchers)"))
         }
-        case _ => new Result(this, successValueToString)
+        case _ => {
+          addPreviousMessage(koMessage)
+          new Result(this, successValueToString)
+        }
       }
     }
     example match {
@@ -91,6 +99,11 @@ class Expectable[T](value: => T) {
         res
       }
     }
+  }
+  private def makeMessages: String = {
+    if (previousMessages.size == 0) ""
+    else if (previousMessages.size == 1) previousMessages(0)
+    else previousMessages.mkString(" and ")
   }
   /**
    * Set a specific example to hold the results of this matcher
