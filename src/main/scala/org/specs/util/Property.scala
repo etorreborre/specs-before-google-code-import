@@ -8,7 +8,7 @@ case class Property[T](init: T) {
   /**
    * raw value of the property
    */
-  private var value: T = init
+  private var value: () => T = () => init
 
   /**
    * setter function used to set the property value. The default is the identity function
@@ -28,13 +28,13 @@ case class Property[T](init: T) {
   /**
    * @returns a value using the getter function
    */
-  def apply(): T = getter(value)
-  def apply(newValue: T) = {value = setter(newValue); this}
+  def apply(): T = getter(value())
+  def apply(newValue: =>T) = update(newValue)
 
   /**
    * updates the value using the setter function
    */
-  def update(newValue: T) = {value = setter(newValue); this}
+  def update(newValue: =>T) = {value = () => setter(newValue); this}
 
   /**
    * sets a new getter function
@@ -54,7 +54,7 @@ case class Property[T](init: T) {
   /**
    * @returns the string value using the stringer function
    */
-  override def toString = toStringer(value)
+  override def toString = toStringer(value())
 }
 object Properties extends Properties
 trait Properties {
