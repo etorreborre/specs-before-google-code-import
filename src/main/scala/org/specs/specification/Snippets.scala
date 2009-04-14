@@ -7,7 +7,7 @@ trait Snippets extends ScalaInterpreter {
   class SnippetAdder(snippet: Snippet) {
 	def add(prop: Property[Snippet]): String = addTo(prop)
 	def addTo(prop: Property[Snippet]): String = {
-	  prop(prop() ++ snippet)
+	  prop.forceUpdate(prop() ++ snippet)
 	  format(snippet.snippet)
 	}
 	def prelude(prop: Property[Snippet]): String = {
@@ -35,7 +35,7 @@ case class Snippet(snippetCode: Property[String]) {
     newSnippet.prelude(append(prelude, other.prelude))
     newSnippet
   }
-  def prelude(p: String) = { preludeCode(append(preludeCode(), p)); this }
+  def prelude(p: String) = { preludeCode.forceUpdate(append(preludeCode(), p)); this }
   def prelude = preludeCode()
   def snippet = snippetCode()
   def code = append(prelude, snippet)

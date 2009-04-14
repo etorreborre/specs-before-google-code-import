@@ -34,6 +34,11 @@ class Property[T](init: =>Option[T]) {
    * updates the value using the setter function
    */
   def update[S <% T](newValue: =>T): this.type = { value = () => setter(newValue); this }
+  /**
+   * updates the value using the setter function, forcing the new value to be evaluated.
+   * This avoids stack overflow errors when doing property(property() + 1) for example
+   */
+  def forceUpdate[S <% T](newValue: T): this.type = { value = () => setter(newValue); this }
 
   /**
    * sets a new getter function
