@@ -84,7 +84,7 @@ class Prop[T](val label: String,
     label + ": " + this.actual.map(format(_)).getOrElse("_") + " (expected: " + expected.map(format(_)).getOrElse("_") + ")"
   }
   /** format the expected value if set or else the actual value. */
-  private[form] def formattedValue = format(this().orElse(actual))
+  private[form] def formattedValue = valuesDecorator(format(this().orElse(actual)))
   /** @return the status of the execution or value if the cell hasn't been executed. */
   protected def statusClass = if (executed) status else "value"
   /**
@@ -96,7 +96,7 @@ class Prop[T](val label: String,
     if (label.isEmpty) 
       valueCell
     else
-      <td>{label}</td> ++ valueCell
+      <td>{ labelsDecorator(label) }</td> ++ valueCell
   }
   /**
    * execute the Prop and return the Xhtml

@@ -25,13 +25,13 @@ class Field[T](val label: String, value: =>T) extends Property(Some(value)) with
   override def toString = label + ": " + this.get
   
   /** return the value <td> cell */
-  protected def valueCell = <td class="value">{ format(this.get) }</td>
+  protected def valueCell = <td class="value">{ valuesDecorator(format(this.get)) }</td>
   /** return the value <td> cell */
   override def toXhtml = {
     if (label.isEmpty) 
       valueCell
     else
-      <td>{label}</td> ++ valueCell
+      <td>{labelsDecorator(label)}</td> ++ valueCell
   }
   /** don't add a supplementary <td> when embbedding the xhtml */
   override def toEmbeddedXhtml = toXhtml
