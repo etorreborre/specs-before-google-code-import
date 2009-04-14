@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
  * 
  * Each time, the set is passed set of line forms, the first line is used to add a header
  */
-class TableForm extends Form {
+class TableForm(title: String) extends Form(title) {
   /** this variable becomes false when there is no more need to insert a header row in the table */
   protected var unsetHeader = true
   /** automatically transform a value into a Field for easier declaration of tr(...) lines */
