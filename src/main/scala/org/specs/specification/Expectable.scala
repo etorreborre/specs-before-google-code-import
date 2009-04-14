@@ -45,9 +45,9 @@ class Expectable[T](value: => T) {
   /** set the state variable declaring that the next match should be negated, in the case of an xor combination to force a fail for example */
   def nextSignificantMatchMustBeNegated() = { nextMatcherMustBeNegated = true; this }
   /** previous previous messages in the case of or-ed matchers*/
-  private var previousMessages: List[String] = Nil
+  private var matchMessages: List[String] = Nil
   /** add a previous message in the case of or-ed matchers*/
-  protected def addPreviousMessage(m: String): this.type = { previousMessages = previousMessages ::: List(m); this }
+  protected def addMatchMessage(m: String): this.type = { matchMessages = matchMessages ::: List(m); this }
   /**
    * Apply a matcher for this expectable value.
    *
@@ -81,12 +81,12 @@ class Expectable[T](value: => T) {
       }
       result match {
         case false => {
-          addPreviousMessage(koMessage)
-          new FailureExceptionWithResult(makeMessages, 
+          addMatchMessage(koMessage)
+          new FailureExceptionWithResult(makeFailureMessage, 
                                          new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("(Expectable|Matchers)"))
         }
         case _ => {
-          addPreviousMessage(koMessage)
+          addMatchMessage(koMessage)
           new Result(this, successValueToString)
         }
       }
@@ -100,10 +100,11 @@ class Expectable[T](value: => T) {
       }
     }
   }
-  private def makeMessages: String = {
-    if (previousMessages.size == 0) ""
-    else if (previousMessages.size == 1) previousMessages(0)
-    else previousMessages.mkString(" and ")
+  /** create the failure message from all previous match messages */
+  private def makeFailureMessage: String = {
+    if (matchMessages.size == 0) ""
+    else if (matchMessages.size == 1) matchMessages(0)
+    else matchMessages.mkString(" and ")
   }
   /**
    * Set a specific example to hold the results of this matcher
