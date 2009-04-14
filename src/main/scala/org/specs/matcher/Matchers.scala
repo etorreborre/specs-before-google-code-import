@@ -263,6 +263,22 @@ class BeVerbMatcher[T] extends OkWordMatcher[T] {
 }
 class HaveVerbMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")
+  def \\(node: Node) = XmlBaseMatchers.\\(node)
+  def \\(label: String) = XmlBaseMatchers.\\(label)
+  def \\(node: Node, attributes: List[String]) = XmlBaseMatchers.\\(node, attributes)
+  def \\(label: String, attributes: List[String]) = XmlBaseMatchers.\\(label, attributes)
+  def \\(node: Node, attributeValues: Map[String, String]) = XmlBaseMatchers.\\(node, attributeValues)
+  def \\(label: String, attributeValues: Map[String, String]) = XmlBaseMatchers.\\(label, attributeValues)
+  def \\(node: Node, attributeValues: Pair[String, String]*) = XmlBaseMatchers.\\(node, attributeValues:_*)
+  def \\(label: String, attributeValues: Pair[String, String]*) = XmlBaseMatchers.\\(label, attributeValues:_*)
+  def \(node: Node) = XmlBaseMatchers.\(node)
+  def \(label: String) = XmlBaseMatchers.\(label)
+  def \(node: Node, attributes: List[String]) = XmlBaseMatchers.\(node, attributes)
+  def \(label: String, attributes: List[String]) = XmlBaseMatchers.\(label, attributes)
+  def \(node: Node, attributeValues: Map[String, String]) = XmlBaseMatchers.\(node, attributeValues)
+  def \(label: String, attributeValues: Map[String, String]) = XmlBaseMatchers.\(label, attributeValues)
+  def \(node: Node, attributeValues: Pair[String, String]*) = XmlBaseMatchers.\(node, attributeValues:_*)
+  def \(label: String, attributeValues: Pair[String, String]*) = XmlBaseMatchers.\(label, attributeValues:_*)
 }
 class ArticleMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")

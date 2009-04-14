@@ -14,6 +14,7 @@ import StringToElem._
  * The <code>XmlMatchers</code> trait provides matchers which are applicable to xml nodes
  */
 trait XmlMatchers extends XmlBaseMatchers with XmlBeHaveMatchers
+object XmlBaseMatchers extends XmlBaseMatchers
 trait XmlBaseMatchers {
   
   /**
@@ -36,18 +37,25 @@ trait XmlBaseMatchers {
    * Alias for <code>\\(node, attributes)</code> with the node label only
    */   
   def \\(label: String, attributes: List[String]): XmlMatcher = \\(label.toElem, attributes)
-
   /**
    * Matches if <code>node</code> is contained anywhere inside the tested node and has exactly the <code>attributeValues</code> 
    * as names and values for its attributes
    */   
   def \\(node: Node, attributeValues: Map[String, String]): XmlMatcher = new XmlMatcher(List(new PathFunction(node, attributeValues, nodeSearch _)))
-
+  /**
+   * Matches if <code>node</code> is contained anywhere inside the tested node and has exactly the <code>attributeValues</code> 
+   * as names and values for its attributes
+   */   
+  def \\(node: Node, attributeValues: Pair[String, String]*): XmlMatcher = \\(node, Map(attributeValues:_*))
   /**
    * Alias for <code>\\(node, attributeValues)</code> with the node label only
    */   
   def \\(label: String, attributeValues: Map[String, String]): XmlMatcher = \\(label.toElem, attributeValues)
-
+  /**
+   * Matches if <code>node</code> is contained anywhere inside the tested node and has exactly the <code>attributeValues</code> 
+   * as names and values for its attributes
+   */   
+  def \\(label: String, attributeValues: Pair[String, String]*): XmlMatcher = \\(label.toElem, Map(attributeValues:_*))
   /**
    * Matches if <code>node</code> is a direct child of the tested node
    */   
@@ -74,11 +82,21 @@ trait XmlBaseMatchers {
    * as names and values for its attributes
    */   
   def \(node: Node, attributeValues: Map[String, String]): XmlMatcher = new XmlMatcher(List(new PathFunction(node, attributeValues, subNodeSearch _)))
+  /**
+   * Matches if <code>node</code> is a direct child of the tested node and has exactly the <code>attributeValues</code> 
+   * as names and values for its attributes
+   */   
+  def \(node: Node, attributeValues: Pair[String, String]*): XmlMatcher = \(node, Map(attributeValues:_*))
 
   /**
    * Alias for <code>\(node, attributeValues)</code> with the node label only
    */   
   def \(label: String, attributeValues: Map[String, String]): XmlMatcher = \(label.toElem, attributeValues)
+  /**
+   * Matches if <code>node</code> is a direct child of the tested node and has exactly the <code>attributeValues</code> 
+   * as names and values for its attributes
+   */   
+  def \(label: String, attributeValues: Pair[String, String]*): XmlMatcher = \(label.toElem, Map(attributeValues:_*))
   
   /**
    * Matches if <code>node</code> is equal to the tested node without testing empty text
