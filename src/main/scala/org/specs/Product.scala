@@ -41,3 +41,14 @@ trait Products {
   implicit def productToList19[T](t: Product19[T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T]) = List(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12, t._13, t._14, t._15, t._16, t._17, t._18, t._19)
 
 }
+trait ListsToTuples {
+  implicit def listToProduct2[T](l: List[T]): Product2[T, T] = (l(0), l(1))
+  implicit def listToProduct3[T](l: List[T]): Product3[T, T, T] = (l(0), l(1), l(2))
+  implicit def listToProduct4[T](l: List[T]): Product4[T, T, T, T] = (l(0), l(1), l(2), l(3))
+  implicit def listToProduct5[T](l: List[T]): Product5[T, T, T, T, T] = (l(0), l(1), l(2), l(3), l(4))
+  implicit def listToProduct6[T](l: List[T]): Product6[T, T, T, T, T, T] = (l(0), l(1), l(2), l(3), l(4), l(5))
+  implicit def listToProduct7[T](l: List[T]): Product7[T, T, T, T, T, T, T] = (l(0), l(1), l(2), l(3), l(4), l(5), l(6))
+  implicit def listToProduct8[T](l: List[T]): Product8[T, T, T, T, T, T, T, T] = (l(0), l(1), l(2), l(3), l(4), l(5), l(6), l(7))
+  implicit def listToProduct9[T](l: List[T]): Product9[T, T, T, T, T, T, T, T, T] = (l(0), l(1), l(2), l(3), l(4), l(5), l(6), l(7), l(8))
+  implicit def listToProduct10[T](l: List[T]): Product10[T, T, T, T, T, T, T, T, T, T] =(l(0), l(1), l(2), l(3), l(4), l(5), l(6), l(7), l(8), l(9))
+}

@@ -53,7 +53,7 @@ case class Snippet(snippetCode: Property[String]) {
 }
 object Snippets extends Snippets
 trait SnipIt extends Snippets with Wiki {
-  val it: Property[Snippet] = new Property[Snippet](Snippet(""))
+  val it: Property[Snippet] = Property(Snippet(""))
   override def format(code: String) = code >@
   override def execute(it: Property[Snippet]) = super[Snippets].execute(it) >@
 }

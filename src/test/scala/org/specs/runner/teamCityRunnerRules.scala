@@ -7,8 +7,8 @@ class teamCityRunnerRules extends LiterateSpecification("Team city runner") with
   override def htmlDir = "target"
   detailedDiffs()
   def clearDetails(messages: Seq[String]) = messages.map(_.replaceAll("details='.*'", "details='exception stacktrace'"))
-  val message: Property[String] = new Property[String]("")
-  val messages: Property[List[String]] = new Property[List[String]](Nil)
+  val message: Property[String] = Property("")
+  val messages: Property[List[String]] = Property[List[String]](Nil)
   def messageMustBeCreated = clearDetails(runSpec.messages) must contain(message())
   def messagesMustBeCreated = clearDetails(runSpec.messages) must containInOrder(messages())
 

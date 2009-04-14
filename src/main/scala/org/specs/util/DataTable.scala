@@ -73,6 +73,27 @@ case class TableHeader(var titles: List[String], var isOk: Boolean) {
        if (!isOk) <th><img src="images/icon_failure_sml.gif"/></th> else NodeSeq.Empty
      }</tr>
    }
+   /** 
+    * store a reference to the following table. 
+    * This is a convenient way to grab the whole table from the header when the implicit creating the header
+    * stores the header in a local variable. @see org.specs.form.DataTableForm for the use of this feature.
+    */
+   var table: Option[ExecutableDataTable] = None
+   def setTable(table: ExecutableDataTable) = { this.table = Some(table); this }
+   /** execute the table with no failure function */
+   def executeWithNoFailureFunction = executeWithFailureFunction((t: ExecutableDataTable) => ())
+   /** execute the table with a specific failure function */
+   def executeWithFailureFunction(f: ExecutableDataTable => Unit) = {
+     table map { (t:ExecutableDataTable) =>
+       t.whenFailing(f).execute
+     }
+     this
+   }
+   /** execute the table */
+   def execute = {
+     table.map(_.execute)
+     this
+   }
 }
 
 /**
@@ -88,10 +109,18 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
   def | = this
   def |[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9,
         S10 >: T10, S11 >: T11, S12 >: T12, S13 >: T13, S14 >: T14,
-        S15 >: T15, S16 >: T16, S17 >: T17, S18 >: T18, S19 >: T19](row: DataRow[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19]): DataTable[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19] = DataTable(header, List(this, {row.header_=(header); row}), shouldExecute)
+        S15 >: T15, S16 >: T16, S17 >: T17, S18 >: T18, S19 >: T19](row: DataRow[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19]): DataTable[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19] = {
+    val table = DataTable(header, List(this, {row.header_=(header); row}), shouldExecute)
+    header.setTable(table)
+    table
+  }
   def |>[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9,
         S10 >: T10, S11 >: T11, S12 >: T12, S13 >: T13, S14 >: T14,
-        S15 >: T15, S16 >: T16, S17 >: T17, S18 >: T18, S19 >: T19](row: DataRow[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19]): DataTable[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19] = DataTable(header, List(this, {row.header_=(header); row}), true)
+        S15 >: T15, S16 >: T16, S17 >: T17, S18 >: T18, S19 >: T19](row: DataRow[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19]): DataTable[S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19] = {
+    val table = DataTable(header, List(this, {row.header_=(header); row}), true)
+    header.setTable(table)
+    table
+  }
   def valuesList = {
     var l: List[Any] = Nil
     for (i <- new Range(0, values.productArity, 1);
@@ -117,6 +146,7 @@ trait ExecutableDataTable extends HasResults {
   def errors: Seq[Throwable] = rows.flatMap(_.errors)
   def skipped: Seq[SkippedException] = rows.flatMap(_.skipped)
   def reset() = { rows.foreach { r => r.reset() }}
+  def whenFailing(f: ExecutableDataTable => Unit): this.type
 }
 
 /**
@@ -143,18 +173,18 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * This function can be overriden to provide another behaviour upon table failure
    */
-  def failureFunction(table: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) : Unit = {
+  def failureFunction(table: ExecutableDataTable) : Unit = {
     header.setFailed()
     tableFailureFunction(table)
   }
   /**
    * This sets a failing function to use when the table fails
    */
-  def whenFailing(f: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] => Unit) = {
+  def whenFailing(f: ExecutableDataTable => Unit) = {
     tableFailureFunction = f
     this
   }
-  protected var tableFailureFunction: DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] => Unit = { t => throw new DataTableFailureException(this) }
+  protected var tableFailureFunction: ExecutableDataTable => Unit = { t => throw new DataTableFailureException(this) }
 
   /**
    * function to execute on each row
@@ -169,7 +199,11 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * Adds a new datarow to the existing table
    */
-  def |(r: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = DataTable(header, rows:::List({r.header_=(header); r}), shouldExecute)
+  def |(r: DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]) = {
+    val table = DataTable(header, rows:::List({r.header_=(header); r}), shouldExecute)
+    header.setTable(table)
+    table
+  }
 
   /**
    * Adds a new datarow to the existing table and sets the table for immediate execution

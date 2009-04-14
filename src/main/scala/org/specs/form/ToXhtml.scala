@@ -7,11 +7,11 @@ import scala.xml.NodeSeq
  */
 trait ToXhtml {
   /** valign value */
-  protected val valignment = new Property("top")
+  protected val valignment = Property("top")
   /** set the valign value */
   def valign(s: String): this.type = { valignment(s); this }
   /** status code value */
-  protected val statusCode = new Property("value")
+  protected val statusCode = Property("value")
   /** set the status code */
   def statusClass(s: String): this.type = { statusCode(s); this }
  

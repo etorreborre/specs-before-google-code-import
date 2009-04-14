@@ -1,14 +1,13 @@
 package org.specs.util
 import scala.xml._
-
 /**
  * This class represent properties which can be updated and retrieved using customized getter and setter functions
  */
-case class Property[T](init: T) {
+class Property[T](init: =>Option[T]) {
   /**
    * raw value of the property
    */
-  private var value: () => T = () => init
+  private var value: () => T = () => init.get
 
   /**
    * setter function used to set the property value. The default is the identity function
@@ -29,33 +28,41 @@ case class Property[T](init: T) {
    * @returns a value using the getter function
    */
   def apply(): T = getter(value())
-  def apply(newValue: =>T) = update(newValue)
+  def apply[S <% T](newValue: =>S): this.type = update(newValue)
 
   /**
    * updates the value using the setter function
    */
-  def update(newValue: =>T) = {value = () => setter(newValue); this}
+  def update[S <% T](newValue: =>T): this.type = { value = () => setter(newValue); this }
 
   /**
    * sets a new getter function
    */
-  def onGet(newGetter: T => T) = {getter = newGetter; this}
+  def onGet(newGetter: T => T) = { getter = newGetter; this }
 
   /**
    * sets a new setter function
    */
-  def onSet(newSetter: T => T) = {setter = newSetter; this}
+  def onSet(newSetter: T => T) = { setter = newSetter; this }
 
   /**
    * sets a new display function
    */
-  def onToString(newToStringer: T => String) = {toStringer = newToStringer; this}
+  def onToString(newToStringer: T => String) = { toStringer = newToStringer; this }
 
   /**
    * @returns the string value using the stringer function
    */
   override def toString = toStringer(value())
 }
+/**
+ * Companion object to create properties with possibly no initial value
+ */
+object Property {
+  def apply[T](i: T) = new Property(Some(i))
+  def apply[T]() = new Property[T](None)
+}
+
 object Properties extends Properties
 trait Properties {
     /**
@@ -125,20 +132,20 @@ trait IntProperties { outer =>
   val n = Property[Int](0)
   implicit def intToAlpha(value: Int) = IntToAlpha(value)
   case class IntToAlpha(value: Int) {
-    def i = { outer.i() = value; value }
-    def j = { outer.j() = value; value }
-    def k = { outer.k() = value; value }
-    def l = { outer.l() = value; value }
-    def m = { outer.m() = value; value }
-    def n = { outer.n() = value; value }
+    def i = { outer.i(value); value }
+    def j = { outer.j(value); value }
+    def k = { outer.k(value); value }
+    def l = { outer.l(value); value }
+    def m = { outer.m(value); value }
+    def n = { outer.n(value); value }
   } 
 }
 /**
  * This trait provides Boolean properterties with alphabetical names.
  */
 trait BooleanProperties { outer =>
-  val o = Property[Boolean](true)
-  val p = Property[Boolean](true)
+  val o = Property(true)
+  val p = Property(true)
   val q = Property[Boolean](true)
   val r = Property[Boolean](true)
   val s = Property[Boolean](true)
@@ -165,12 +172,12 @@ trait DoubleProperties { outer =>
   val z = Property[Double](0.0)
   implicit def doubleToAlpha(value: Double) = DoubleToAlpha(value)
   case class DoubleToAlpha(value: Double) {
-    def u = { outer.u() = value; value }
-    def v = { outer.v() = value; value }
-    def w = { outer.w() = value; value }
-    def x = { outer.x() = value; value }
-    def y = { outer.w() = value; value }
-    def z = { outer.z() = value; value }
+    def u = { outer.u(value); value }
+    def v = { outer.v(value); value }
+    def w = { outer.w(value); value }
+    def x = { outer.x(value); value }
+    def y = { outer.w(value); value }
+    def z = { outer.z(value); value }
   } 
 }
 /**

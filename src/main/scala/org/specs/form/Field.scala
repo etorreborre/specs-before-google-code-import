@@ -6,20 +6,20 @@ import org.specs.util.Property
  * 
  * val f = Field(label, 1)
  * 
- * Note that the value is not evaluated until explicitely queried
+ * Note that the value is not evaluated until explicitly queried
  */
-class Field[T](val label: String, value: =>T) extends Property(() => value) with LabeledXhtml with ValueFormatter[T] {
+class Field[T](val label: String, value: =>T) extends Property(Some(value)) with LabeledXhtml with ValueFormatter[T] {
   
   /**
    * set a new value on the field. 
    */
-  def apply[S <% T](value: =>S): Field[T] = {
-    super.apply(() => value)
+  override def apply[S <% T](value: =>S): this.type = {
+    super.apply(value)
     this
   }
 
   /** shortcut method for this().apply() returning the contained value. */
-  def get: T = this()()
+  def get: T = this()
 
   /** @return label: value */
   override def toString = label + ": " + this.get

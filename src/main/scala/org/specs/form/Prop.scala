@@ -52,7 +52,7 @@ import util.Property
  */
 class Prop[T](val label: String,
               var expected: Option[T],
-              actual: =>Option[T], constraint: Option[Constraint[T]]) extends Property(expected) 
+              actual: =>Option[T], constraint: Option[Constraint[T]]) extends Property(Some(expected)) 
               with DefaultExecutable with LabeledXhtml with ValueFormatter[T] {
 
   /**

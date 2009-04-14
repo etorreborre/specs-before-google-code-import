@@ -5,7 +5,7 @@ import org.specs.xml.NodeFunctions._
 class DataTableForm extends TableForm with DataTables {
 
   /** header retrieved from the DataTable header */
-  private var tableHeader: Option[TableHeader] = None
+  protected var tableHeader: Option[TableHeader] = None
   /** store a reference to the DataTable header */
   implicit override def toTableHeader(s: String) = {
     val th = super.toTableHeader(s)
@@ -20,6 +20,10 @@ class DataTableForm extends TableForm with DataTables {
     }
     appendRows(line.rows)
     line
+  }
+  override def report(s: Specification) = {
+    tableHeader.map(_.executeWithNoFailureFunction)
+    super.report(s)
   }
 
 }
