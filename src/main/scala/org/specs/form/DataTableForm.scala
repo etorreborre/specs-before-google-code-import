@@ -1,6 +1,7 @@
 package org.specs.form
 import org.specs.util._
 import org.specs.xml.NodeFunctions._
+import scala.collection.mutable.ListBuffer
 
 class DataTableForm(title: Option[String]) extends TableForm(title) with DataTables {
   def this() = this(None)
@@ -16,13 +17,14 @@ class DataTableForm(title: Option[String]) extends TableForm(title) with DataTab
   }
   /** add a header row if it hasn't been done */
   override def tr[F <: Form](line: F): F = {
-    if (unsetHeader) {
+    if (unsetHeader && tableHeader.isDefined) {
       tableHeader.map((header: TableHeader) => inNewRow(reduce(header.titles, { (s: String) => <th>{s}</th> })))
       unsetHeader = false
     }
     appendRows(line.rows)
     line
   }
+
   override def report(s: Specification) = {
     executeTable
     superReport(s)
