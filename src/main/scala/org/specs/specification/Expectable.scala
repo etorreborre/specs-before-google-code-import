@@ -83,7 +83,7 @@ class Expectable[T](value: => T) {
         case false => {
           addMatchMessage(koMessage)
           new FailureExceptionWithResult(makeFailureMessage, 
-                                         new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesAsFarAsNameMatches("(Expectable|Matchers)"))
+                                         new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesWhileNameMatches("(Expectable.scala|Matchers.scala)"))
         }
         case _ => {
           addMatchMessage(koMessage)

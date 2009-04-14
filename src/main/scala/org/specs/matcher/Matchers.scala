@@ -220,7 +220,7 @@ abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer
           val result = outer(a)
           if (!result.success) {
             val skippedException = new SkippedException("skipped because " + result.koMessage)
-            skippedException.throwWithStackTraceOf(new SkippedException("").removeTracesWhileNameMatches("(Expectable|Matchers)"))
+            skippedException.throwWithStackTraceOf(new SkippedException("").removeTracesWhileNameMatches("(Expectable.scala|Matchers.scala)"))
           }
           (result.success, result.okMessage, result.koMessage)
       }}

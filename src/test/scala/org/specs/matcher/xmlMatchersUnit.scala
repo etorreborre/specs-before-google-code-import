@@ -53,7 +53,7 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
       <a><b name="value"></b></a> must \("b", ("name"))
     }
     "match a node b contained inside a node a given its label and its attribute names" in {
-      <a><b name="value" name2="value"></b></a> must \("b", ("name2", "name"))
+      <a><b name="value" name2="value"></b></a> must \("b", List("name2", "name"))
     }
     "not match a node b contained inside a node a given its label and a missing attribute name" in {
       expectation(<a><b name2="value"></b></a> must \("b", "name")) must failWith("<a><b name2=\"value\"></b></a> doesn't contain subnode b with attributes: name")
@@ -104,8 +104,8 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     "match a node given its label and one attribute name" in {
       <a><b name="value"></b></a> must \\("b", "name")
     }
-    "match a node given its label and all of its attribute names" in {
-      <a><b><c name="value" name2="value"></c></b></a> must \\("c", ("name2", "name"))
+    "matching a node given its label and all of its attribute names" in {
+      <a><b><c name="value" name2="value"></c></b></a> must \\("c", List("name2", "name"))
     }
     "not match a node given its label and one missing attribute name" in {
       expectation(<a><b name2="value"></b></a> must \\("b", "name")) must failWith("<a><b name2=\"value\"></b></a> doesn't contain node b with attributes: name")
