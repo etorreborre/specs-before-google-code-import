@@ -36,7 +36,9 @@ object Xhtml {
       case List(<td>{ b }</td>) => maximum + 1
       case List(<td>{ b }</td>, Text(x)) => maximum + 1
       case <th>{ b }</th> :: otherThs => maxColSize(otherThs, maximum + 1)
+      case List(<th>{ b @ _* }</th>) => maximum + 1
       case <td>{ b }</td> :: otherTds => maxColSize(otherTds, maximum + 1)
+      case List(<td>{ b @ _* }</td>) => maximum + 1
       case List(<table>{ x @ _*}</table>) => maxColSize(x, maximum)
       case <tr>{ y @ _*}</tr> :: otherRows => max(maxColSize(y, maximum), maxColSize(otherRows, maximum))
       case Text(x) :: other => maxColSize(other, maximum)

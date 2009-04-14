@@ -24,8 +24,11 @@ class DataTableForm(title: Option[String]) extends TableForm(title) with DataTab
     line
   }
   override def report(s: Specification) = {
-    tableHeader.map(_.executeWithNoFailureFunction)
-    super.report(s)
+    executeTable
+    superReport(s)
   }
-
+  protected def superReport(s: Specification) = super.report(s) 
+  protected def executeTable = {
+    tableHeader.map(_.executeWithNoFailureFunction)
+  }
 }
