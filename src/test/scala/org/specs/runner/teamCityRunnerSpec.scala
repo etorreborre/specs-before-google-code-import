@@ -41,7 +41,7 @@ When executed, <ex>the TeamCity runner should notify the start of a specificatio
 (the _details_ attribute is omitted)
 
 {List("##teamcity[testStarted name='specification name.failed example']",
-      "##teamcity[testFailed name='specification name.failed example' message='the value is true (teamCityRunnerRules.scala:12)' details='exception stacktrace']",
+      "##teamcity[testFailed name='specification name.failed example' message='the value is true (teamCityRunnerRules.scala:20)' details='exception stacktrace']",
       "##teamcity[testFinished name='specification name.failed example']").as(messages).mkString("\n") >@}{messagesMustBeCreated}
 
 <ex>An example with an exception must be reported with its error message</ex>:
@@ -62,7 +62,7 @@ When executed, <ex>the TeamCity runner should notify the start of a specificatio
 The messages should be (the _details_ attribute is omitted):
 
 {List("##teamcity[testStarted name='specification name.sub examples']",
-      "##teamcity[testFailed name='specification name.sub examples' message='bad sub1: the value is true (teamCityRunnerRules.scala:12); bad sub2: the value is false (teamCityRunnerRules.scala:12)' details='exception stacktrace']",
+      "##teamcity[testFailed name='specification name.sub examples' message='bad sub1: the value is true (teamCityRunnerRules.scala:24); bad sub2: the value is false (teamCityRunnerRules.scala:25)' details='exception stacktrace']",
       "##teamcity[testFinished name='specification name.sub examples']").as(messages).mkString("\n")}{messagesMustBeCreated}
 
 </wiki>

@@ -37,7 +37,7 @@ trait Html extends File {
     debug("Html - reporting to " + outputDir + ": " + specs.map(_.description).mkString(", "))
     this
   }
-
+  
   /** define the html content for this specification execution. */
   def specOutput(spec: Specification): String = {
     // it is necessary to replace the br blocks because:
@@ -84,8 +84,8 @@ trait Html extends File {
         <link href="./css/tooltip.css" rel="stylesheet" type="text/css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <script type="text/javascript" src="./css/tooltip.js"/>
-        {javaScript}
-        <script language="javascript">window.onLoad={onLoadFunction(specification)}</script>
+        {javaScript(specification)}
+        <script language="javascript">window.onload={"init;"}</script>
     </head>
 
   /** return a formatted string depending on the type of literate description: text, wiki or html. */
@@ -272,18 +272,18 @@ trait Html extends File {
   def stackTrace(e: Throwable) = if (!e.isInstanceOf[FailureException]) e.stackToString("\r", "\r", "") else ""
   def exceptionText(e: Throwable) = <a title={e.fullLocation + stackTrace(e)}>{if (e.getMessage != null) new Text(e.getMessage) else new Text("null")}</a>
 
-  /** reduce a list with a function returning a NodeSeq. */
-  def onLoadFunction(specification: Specification) = {
-    "prettyPrint()" + (if (nonTrivialSpec(specification)) "" else ";noNavBar()")
+  def initFunction(specification: Specification) = {
+    """function init() { """ +
+     "prettyPrint()" + 
+      (if (nonTrivialSpec(specification)) "" else ";noNavBar()") +
+    "}"
   }
   def nonTrivialSpec(specification: Specification) = {
     (specification.systems ++ specification.subSpecifications).size > 1
   }
-  def javaScript = <script language="javascript"> {"""
-    function init() {
-	   prettyPrint()
-       noNavBar()
-    }
+  def javaScript(specification: Specification) = <script language="javascript"> { 
+    initFunction(specification) +
+    """
     // found on : http://www.tek-tips.com/faqs.cfm?fid=6620
     String.prototype.endsWith = function(str) { return (this.match(str+'$') == str) }
 
@@ -295,6 +295,8 @@ trait Html extends File {
     }
     function noNavBar() {
       changeWidth('leftColumn','0px');
+      document.getElementById('leftColumn').style.visibility = 'hidden'; 
+      document.getElementById('leftColumn').style.display = 'none'; 
       changeMarginLeft('bodyColumn', '10px')
    }
    function toggleNavBar(image) {
