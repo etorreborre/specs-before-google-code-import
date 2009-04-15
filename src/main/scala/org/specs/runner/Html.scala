@@ -146,16 +146,8 @@ trait Html extends File {
 
   /** create a table for one specification. */
   def specificationTable(spec: Specification) = {
-    val subSpecsToDisplay = new scala.collection.mutable.ListBuffer[Specification]
-    spec.subSpecifications.foldLeft(subSpecsToDisplay) { (res, cur) =>
-      cur match {
-        case literate: LiterateSpecification if (literate.hasParentLink(spec)) => { literate.reportSpecs; res }  
-        case other => { res.append(other); res }
-      }
-    }
-    <h2>{spec.description}</h2> ++ subspecsTables(subSpecsToDisplay.toList) ++ susTables(spec)
+    <h2>{spec.description}</h2> ++ subspecsTables(spec.unlinkedSpecifications.toList) ++ susTables(spec)
   }
-
   /** create tables for systems. */
   def susTables(spec: Specification): NodeSeq = reduce[Sus](spec.systems, susTable(_, spec))
 
@@ -279,7 +271,7 @@ trait Html extends File {
     "}"
   }
   def nonTrivialSpec(specification: Specification) = {
-    (specification.systems ++ specification.subSpecifications).size > 1
+    (specification.systems ++ specification.unlinkedSpecifications).size > 1
   }
   def javaScript(specification: Specification) = <script language="javascript"> { 
     initFunction(specification) +
@@ -297,7 +289,7 @@ trait Html extends File {
       changeWidth('leftColumn','0px');
       document.getElementById('leftColumn').style.visibility = 'hidden'; 
       document.getElementById('leftColumn').style.display = 'none'; 
-      changeMarginLeft('bodyColumn', '10px')
+      changeMarginLeft('bodyColumn', '35px')
    }
    function toggleNavBar(image) {
       toggleImage(image)

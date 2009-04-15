@@ -38,7 +38,7 @@ import org.specs.execute._
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
 trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsListener with Tagged 
-  with HasResults { outer =>
+  with HasResults with LinkedSpecification { outer =>
 
   /** description of the specification */
   var description = createDescription(getClass.getName)
@@ -201,7 +201,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   def addExamples(examples: List[Example]) = currentSus.examples = currentSus.examples ::: examples
   
   /** @return true if it contains the specification recursively */
-  def contains(s: Specification): Boolean = {
+  def contains(s: Any): Boolean = {
     subSpecifications.contains(s) || subSpecifications.exists(_.contains(s))
   }
     /**
@@ -261,4 +261,36 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   }
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
   override def taggedComponents = this.subSpecifications ++ this.systems
+}
+/**
+ * This trait adds the possibility to declare an included specification as "linked" in order to 
+ * control its reporting in a separate file for example.
+ */
+trait LinkedSpecification { this: SpecificationStructure => 
+  /** storing the parent links of this specification */
+  private var parentLinks = List[LinkedSpecification]()
+  def addParent(s: LinkedSpecification): this.type = { parentLinks = s :: parentLinks; this }
+  def hasParent(s: LinkedSpecification): Boolean = parentLinks.contains(s)
+
+  def linkTo(subSpec: Specification with LinkedSpecification): this.type  = linkTo(subSpec.description, subSpec)
+  def linkTo(desc: String, subSpec: Specification): this.type = {
+    if (!contains(subSpec)) include(subSpec)
+    subSpec.addParent(this)
+    this
+  }
+  /** 
+   * partitions the subspecifications in a pair where the first member is the list of linked specifications, 
+   * and the second member is the unlinked ones
+   */
+  def partitionLinkedSpecifications: (List[Specification], List[Specification]) = {
+    this.subSpecifications.partition(_.hasParent(this))  
+  }
+  /**
+   * @return the linked specifications
+   */
+  def linkedSpecifications = this.partitionLinkedSpecifications._1
+  /**
+   * @return the unlinked specifications
+   */
+  def unlinkedSpecifications = this.partitionLinkedSpecifications._2 
 }

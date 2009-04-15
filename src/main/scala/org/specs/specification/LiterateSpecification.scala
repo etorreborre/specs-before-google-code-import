@@ -186,21 +186,22 @@ trait LiterateSpecificationStructure extends ExpectableFactory with Specificatio
  * The "parent/child" relationship is kept in that trait to allow the Html runner
  * to be reported when reporting the parent.
  */
-trait LiterateSpecificationLinks extends Links { this: Specification => 
-  /** storing the parent links of this specification */
-  private var parentLinks = List[Specification]()
-  def addParentLink(s: Specification): this.type = { parentLinks = s :: parentLinks; this }
-  def hasParentLink(s: Specification) = parentLinks.contains(s)
-
-  def linkTo(subSpec: LiterateSpecification with Html): String = linkTo(subSpec.description, subSpec)
-  def linkTo(desc: String, subSpec: LiterateSpecification with Html): String = {
-    if (!contains(subSpec)) include(subSpec)
+trait LiterateSpecificationLinks extends LinkedSpecification with Links { this: Specification => 
+  def linkTo(subSpec: Specification with Html): String = linkTo(subSpec.description, subSpec)
+  def linkTo(desc: String, subSpec: Specification with Html): String = {
+    super.linkTo(desc, subSpec)
     // execute the subSpec
     subSpec.failures
-    subSpec.addParentLink(this)
     relativeLink(desc, subSpec.fileName(subSpec))
   }
 }
+/**
+ * This trait allows to add links to other specifications inside a literate specification.
+ * The link will be displayed as a Html link
+ * 
+ * The "parent/child" relationship is kept in that trait to allow the Html runner
+ * to be reported when reporting the parent.
+ */
 /**
  * This trait provides functions which can be used to ease the use of wiki markup
  */
