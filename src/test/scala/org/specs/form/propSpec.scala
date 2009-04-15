@@ -5,8 +5,10 @@ import org.specs.matcher._
 import org.specs.runner._
 import org.specs.mock.Mockito
 import org.specs.specification._
+import org.specs.util._
+import scala.xml._
 
-class propSpec extends Specification with JUnit with Mockito with SystemContexts with Sugar {
+class propSpec extends Specification with JUnit with Mockito with SystemContexts with Sugar with DataTables {
   "A property" should {
     "return the expected value with the get method" in {
       Prop("label", 1)(2).get must ==(2)
@@ -72,6 +74,38 @@ class propSpec extends Specification with JUnit with Mockito with SystemContexts
     }
     "format a Double expected value with all decimals, up to 15 decimals" in {
       Prop("Result", 1.123456789012345).toXhtml(1) must ==/(<td class="value">1.123456789012345</td>)
+    }
+    "allow a label decorator to be used to surround the label" in {
+      val p = Prop("Result", 1.123456789012345).decorateLabelWith((s: String) => <b>{s}</b>).toXhtml(0)
+      p aka "the prop with a decorated label" must ==/(<td><b>Result</b></td>)
+    }
+    "allow a values decorator to be used to surround the value" in {
+      val p = Prop("Result", 1.123456789012345).decorateValueWith((s: String) => <b>{s}</b>).toXhtml(1)
+      p aka "the prop with a decorated value" must ==/(<td class="value"><b>1.123456789012345</b></td>)
+    }
+    "allow an italic/bold/strike value/label decorator to be used to surround the value" in {
+      
+      "style"                   | "expected"    |
+      {(_:ToXhtml).italicValue} ! <i/>          |
+      {(_:ToXhtml).boldValue}   ! <b/>          |
+      {(_:ToXhtml).strikeValue} ! <s/>          |
+      {(_:ToXhtml).italicLabel} ! <i/>          |
+      {(_:ToXhtml).boldLabel}   ! <b/>          |
+      {(_:ToXhtml).strikeLabel} ! <s/>          |
+      {(_:ToXhtml).italic}      ! <i/>          |
+      {(_:ToXhtml).bold}        ! <b/>          |
+      {(_:ToXhtml).strike}      ! <s/>          |> { (style: ToXhtml => ToXhtml, expected: Elem) => 
+         val p = Prop("Result", 1)
+         style(p).toXhtml aka "the decorated prop" must have \\(expected)
+         val f = Field("Result", 1)
+         style(f).toXhtml aka "the decorated field" must have \\(expected)
+
+         val formWithField = new Form { tr(field("Result", 1)) }
+         style(formWithField).toXhtml aka "the decorated form with a field" must have \\(expected)
+
+         val formWithProp = new Form { tr(prop("Result", 1)) }
+         style(formWithProp).toXhtml aka "the decorated form with a Prop" must have \\(expected)
+      }
     }
   }
   "A Prop" can {

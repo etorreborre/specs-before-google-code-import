@@ -43,10 +43,16 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
   type FormProperty = DefaultExecutable with LabeledXhtml
   /** Props or Forms held by this Form */
   protected val properties: ListBuffer[FormProperty] = new ListBuffer
+  /** Fields held by this Form */
+  protected val fields: ListBuffer[Field[_]] = new ListBuffer
   /**
    * add a Prop to the Form.
    */
   def add(p: FormProperty): this.type = { properties.append(p); this }
+  /**
+   * add a Field to the Form.
+   */
+  def add[T](p: Field[T]): this.type = { fields.append(p); this }
   /**
    * this allows to set properties on this Form with:
    * myForm.set { f =>
@@ -69,13 +75,21 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
    * factory method for creating a property linked to an actual value == to the expected value
    * Using this method adds the property to the Form
    */
-  def field[T](label: String, value: =>T) = Field(label, value)
+  def field[T](label: String, value: =>T): Field[T] = {
+    val f = Field(label, value)
+    add(f)
+    f
+  }
   /** create a field with no label */
-  def field[T](value: =>T) = Field("", value)
+  def field[T](value: =>T): Field[T] = field("", value)
   /**
    * factory method for creating a field summarizing several properties values
    */
-  def field[T](label: String, values: Prop[T]*) = Field(label, values)
+  def field[T](label: String, values: Prop[T]*) = {
+    val f = Field(label, values)
+    add(f)
+    f
+  }
   /**
    * @return implicitly the field value where this is expected
    */
@@ -144,6 +158,20 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
   }
   /** reset the included/excluded properties of the Form. */
   def resetIncludeExclude() = super[Layoutable].reset()
+
+  /** decorate all the properties held by this form */
+  override def decorateLabelsWith(x: String => Node): this.type = { 
+    properties.foreach(_.decorateLabelsWith(x)) 
+    fields.foreach(_.decorateLabelsWith(x)) 
+    this 
+  }
+  /** decorate all the properties held by this form */
+  override def decorateValuesWith(x: String => Node): this.type = {
+    properties.foreach(_.decorateValuesWith(x)) 
+    fields.foreach(_.decorateValuesWith(x)) 
+    this 
+  }
+
 }
 /**
  * Some Forms can be declared as building an element of type T
