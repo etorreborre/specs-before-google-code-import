@@ -89,6 +89,7 @@ case class Sus(description: String, parent: SpecificationStructure) extends Exam
     verb = "should"
     specifyExamples(ex)
     isSpecified = true
+    this
   }
   /** header for the full sus description: description + " " + verb */
   def header = description + " " + verb
@@ -105,7 +106,11 @@ case class Sus(description: String, parent: SpecificationStructure) extends Exam
   }
 
   /** alternately there may be no example given yet */
-  def should(noExampleGiven: Unit) = { verb = "should"; this }
+  def should(noExampleGiven: Unit) = { 
+    verb = "should"
+    isSpecified = true
+    this 
+  }
   
   /** @return true if there are only successes */
   def isFullSuccess = failures.isEmpty && skipped.isEmpty && errors.isEmpty
