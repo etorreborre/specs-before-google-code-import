@@ -115,7 +115,13 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     f
   }
   /** executing the Form is done by executing all of its properties. */
-  def executeThis = properties.foreach(_.execute)
+  def executeThis = {
+    properties.foreach(_.execute)
+    // get the rows and allow them to be layedout differently in subclasses
+    val formRows = this.rows 
+    resetLayout()
+    layoutRows(formRows)
+  }
   /** the Form failures are all the failures of the Form properties. */
   override def failures = properties.toList.flatMap(_.failures)
   /** the Form skipped are all the skipped of the Form properties. */
@@ -143,10 +149,6 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
         p.issues.foreach(throw _)
       }
     }
-    // get the rows and allow them to be layed out differently in subclasses
-    val formRows = this.rows 
-    resetLayout()
-    layoutRows(formRows)
     toHtml
   }
   /** this function can be overriden to provide a different layout of the form rows, like enclosing them in a different table or in tabs. */
