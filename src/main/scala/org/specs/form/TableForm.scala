@@ -9,6 +9,7 @@ import org.specs.specification.DefaultExpectableFactory
 class TableForm(title: Option[String]) extends Form(title, new DefaultExpectableFactory {}) {
   def this() = this(None)
   def this(t: String) = this(Some(t))
+
   /** this variable becomes false when there is no more need to insert a header row in the table */
   protected var unsetHeader = true
   /** automatically transform a value into a Field for easier declaration of tr(...) lines */
@@ -17,10 +18,15 @@ class TableForm(title: Option[String]) extends Form(title, new DefaultExpectable
    * adds properties in a line form 
    */
   override def tr(props: LabeledXhtml*): this.type = {
-    val lineForm = new LineForm {
-      override val lineProperties = { val l = new ListBuffer[LabeledXhtml](); l.appendAll(props); l }
+    props.toList match {
+      case List(t: Tabs) => super.tr(t)
+      case _ => {
+        val lineForm = new LineForm {
+          override val lineProperties = { val l = new ListBuffer[LabeledXhtml](); l.appendAll(props); l }
+        }
+        this.tr(lineForm)
+      }
     }
-    this.tr(lineForm)
     this
   }
   /**

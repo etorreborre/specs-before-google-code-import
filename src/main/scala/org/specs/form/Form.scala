@@ -24,9 +24,8 @@ import org.specs.util.Classes._
  * inside an Html table, like aligning them on a row.
  *
  */
-class Form(titleString: Option[String], factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with LabeledXhtml with Layoutable {
-          
+class Form(val titleString: Option[String], val factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
+        with DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory {
   /** constructor with no title, this will be set from the class name */
   def this() = this(None, new DefaultExpectableFactory {})
   /** constructor with a title */
@@ -136,6 +135,7 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
   def toHtml_! = execute.toHtml
   /** add all the properties as examples to a specification and return the html for display */
   def report(s: Specification) = {
+
     execute
     properties.foreach { p => 
       s.forExample(title + " - " + p.label + " example") in {
@@ -143,9 +143,18 @@ class Form(titleString: Option[String], factory: ExpectableFactory) extends Dele
         p.issues.foreach(throw _)
       }
     }
+    // get the rows and allow them to be layed out differently in subclasses
+    val formRows = this.rows 
+    resetLayout()
+    layoutRows(formRows)
     toHtml
   }
-  /** reset both the execution of the Form and its included/excluded properties. */
+  /** this function can be overriden to provide a different layout of the form rows, like enclosing them in a different table or in tabs. */
+  def layoutRows(formRows: List[Seq[LabeledXhtml]]) = {
+    trs(formRows)
+  }
+
+  /** reset both the execution of the Form, its included/excluded properties and the layout. */
   override def reset(): this.type = {
     resetExecution()
     resetIncludeExclude()

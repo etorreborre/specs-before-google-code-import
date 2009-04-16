@@ -2,6 +2,7 @@ package org.specs.form
 import org.specs.util._
 import org.specs.xml.NodeFunctions._
 import scala.collection.mutable.ListBuffer
+import org.specs.form._
 
 class DataTableForm(title: Option[String]) extends TableForm(title) with DataTables {
   def this() = this(None)
@@ -15,21 +16,26 @@ class DataTableForm(title: Option[String]) extends TableForm(title) with DataTab
     tableHeader = Some(th)
     th
   }
+  /** @return the data table if the header is set */
+  def dataTable: Option[ExecutableDataTable] = tableHeader.flatMap(_.table)
   /** add a header row if it hasn't been done */
   override def tr[F <: Form](line: F): F = {
+    setHeader(line)
+    appendRows(line.rows)
+    line
+  }
+  def setHeader[F <: Form](line: F): F = {
     if (unsetHeader && tableHeader.isDefined) {
       tableHeader.map((header: TableHeader) => inNewRow(reduce(header.titles, { (s: String) => <th>{s}</th> })))
       unsetHeader = false
     }
-    appendRows(line.rows)
     line
   }
-
-  override def report(s: Specification) = {
+  /** execute the table to create the properties and execute them */
+  override def execute = {
     executeTable
-    superReport(s)
+    super.execute
   }
-  protected def superReport(s: Specification) = super.report(s) 
   protected def executeTable = {
     tableHeader.map(_.executeWithNoFailureFunction)
   }

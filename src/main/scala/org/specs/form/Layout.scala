@@ -71,6 +71,9 @@ trait Layout extends IncludeExclude[LabeledXhtml] {
    * create a row with the "embedded" Xhtml values, filtered according to the IncludeExclude trait.
    */
   protected def toRow(values: LabeledXhtml*) = <tr>{ reduce(filter(values), { (x: LabeledXhtml) => x.toEmbeddedXhtml }) }</tr>
+  
+  /** remove all previously declared layout */
+  def resetLayout() = rowValues = new ListBuffer
 }
 /** alias type */
 trait LabeledXhtml extends HasLabel with ToXhtml
