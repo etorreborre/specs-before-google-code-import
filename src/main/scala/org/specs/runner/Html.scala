@@ -71,21 +71,23 @@ trait Html extends File {
    */
   def head(specification: Specification) = <head>
       <title>{specification.name}</title>
-	    <style type="text/css" media="all">
-	      @import url('./css/maven-base.css');
-	      @import url('./css/maven-theme.css');
-	      @import url('./css/site.css');
-	    </style>
+        <style type="text/css" media="all">
+          @import url('./css/maven-base.css');
+          @import url('./css/maven-theme.css');
+          @import url('./css/site.css');
+        </style>
         <link href="./css/prettify.css" type="text/css" rel="stylesheet" />
         <script type="text/javascript" src="./css/prettify.js"></script>
         <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
-        <script type="text/javascript" src="./css/tabber.js"></script> 
-        <link rel="stylesheet" href="./css/tabber.css" type="text/css" media="screen"/> 
         <link href="./css/tooltip.css" rel="stylesheet" type="text/css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <script type="text/javascript" src="./css/tooltip.js"/>
         {javaScript(specification)}
         <script language="javascript">window.onload={"init;"}</script>
+        // the tabber.js file must be loaded after the onload function has been set, in order to run the
+        // tabber code, then the init code
+        <script type="text/javascript" src="./css/tabber.js"></script> 
+        <link rel="stylesheet" href="./css/tabber.css" type="text/css" media="screen"/> 
     </head>
 
   /** return a formatted string depending on the type of literate description: text, wiki or html. */
@@ -120,7 +122,7 @@ trait Html extends File {
 
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
-	<td>{statusIcon(sus)}</td>
+    <td>{statusIcon(sus)}</td>
     <td>{anchorRef(susName(sus, spec))}</td>
   </tr>
 
@@ -178,7 +180,7 @@ trait Html extends File {
          </table>}
       case Some(_) if !sus.examples.isEmpty => {
         <h3><img src="images/collapsed.gif" onclick={"toggleImage(this); showHideTable('sus:" + System.identityHashCode(sus) + "')"}/>Examples summary</h3>
-	    <div id={"sus:" + System.identityHashCode(sus)} style="display:none">
+        <div id={"sus:" + System.identityHashCode(sus)} style="display:none">
           <table class="bodyTable">
              {exampleRows(sus.examples, sus.isFullSuccess)}
           </table>
@@ -236,14 +238,14 @@ trait Html extends File {
   /** Message for an example. */
   def message(example: Example, fullSuccess: Boolean) = {
     def msg = {
-	  if (!example.failures.isEmpty)
-	      reduce[FailureException](example.failures, failure(_))
-	    else if (!example.errors.isEmpty)
-	      reduce[Throwable](example.errors, e => exceptionText(e))
-	    else if (!example.skipped.isEmpty)
-	      reduce[SkippedException](example.skipped, s => exceptionText(s))
-	    else
-	      ""
+      if (!example.failures.isEmpty)
+          reduce[FailureException](example.failures, failure(_))
+        else if (!example.errors.isEmpty)
+          reduce[Throwable](example.errors, e => exceptionText(e))
+        else if (!example.skipped.isEmpty)
+          reduce[SkippedException](example.skipped, s => exceptionText(s))
+        else
+          ""
     }
     if (fullSuccess)
       NodeSeq.Empty
@@ -294,35 +296,35 @@ trait Html extends File {
    function toggleNavBar(image) {
       toggleImage(image)
       if (image.src.endsWith('images/expanded.gif')) {
-		changeWidth('leftColumn','20px');
-      	changeMarginLeft('bodyColumn', '35px')
-	  }
+        changeWidth('leftColumn','20px');
+        changeMarginLeft('bodyColumn', '35px')
+      }
     else {
-		changeWidth('leftColumn','250px');
-      	changeMarginLeft('bodyColumn', '277px')
-	  }
+        changeWidth('leftColumn','250px');
+        changeMarginLeft('bodyColumn', '277px')
+      }
    }
    function toggleImage(image) {
-	  if (image.src.endsWith('images/expanded.gif')) {
-	    image.src = 'images/collapsed.gif';
-	  }
+      if (image.src.endsWith('images/expanded.gif')) {
+        image.src = 'images/collapsed.gif';
+      }
     else {
         image.src = 'images/expanded.gif';
-	  }
+      }
    }
-	function showHideTable(tableId) {
-	  table = document.getElementById(tableId)
-	  table.style.display = (table.style.display == 'none')? 'block' : 'none';
-	}
-	function showExampleMessage(status, exId, event) {
+    function showHideTable(tableId) {
+      table = document.getElementById(tableId)
+      table.style.display = (table.style.display == 'none')? 'block' : 'none';
+    }
+    function showExampleMessage(status, exId, event) {
     exampleMessage = document.getElementById('rowmess:' + exId)
     exampleIcon = document.getElementById('rowicon:' + exId)
     showToolTipWithIcon(status, exampleIcon.src, exampleMessage.innerHTML, event)
   }
-	function showExampleDesc(exId, event) {
-		exampleDesc = document.getElementById('rowdesc:' + exId)
+    function showExampleDesc(exId, event) {
+        exampleDesc = document.getElementById('rowdesc:' + exId)
         showToolTip('Description', exampleDesc.innerHTML, event)
-	}
+    }
 
 """}
     </script>
