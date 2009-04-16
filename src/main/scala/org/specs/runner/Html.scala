@@ -84,8 +84,8 @@ trait Html extends File {
         <script type="text/javascript" src="./css/tooltip.js"/>
         {javaScript(specification)}
         <script language="javascript">window.onload={"init;"}</script>
-        // the tabber.js file must be loaded after the onload function has been set, in order to run the
-        // tabber code, then the init code
+        <!-- the tabber.js file must be loaded after the onload function has been set, in order to run the
+             tabber code, then the init code -->
         <script type="text/javascript" src="./css/tabber.js"></script> 
         <link rel="stylesheet" href="./css/tabber.css" type="text/css" media="screen"/> 
     </head>
