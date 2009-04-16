@@ -148,6 +148,7 @@ trait Html extends File {
 
   /** create a table for one specification. */
   def specificationTable(spec: Specification) = {
+    spec.linkedSpecifications.foreach(_.reportSpecs)
     <h2>{spec.description}</h2> ++ subspecsTables(spec.unlinkedSpecifications.toList) ++ susTables(spec)
   }
   /** create tables for systems. */

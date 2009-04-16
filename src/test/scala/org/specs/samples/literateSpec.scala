@@ -44,7 +44,7 @@ class fieldsFormSpec extends LiterateSpecification with Html with JUnit {
 }
 
 class formSampleSpec extends PersonForms with Html with JUnit {
-  "Forms can be used in a Literate specificatins" is <textile>
+  "Forms can be used in a Literate specification" is <textile>
 
 This is a Person form, checking that the initials are set properly on a Person object:
 { 
