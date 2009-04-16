@@ -22,7 +22,7 @@ import org.specs.execute._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class SusWithContext[S](val context: SystemContext[S], desc: String, var cyc: ExampleLifeCycle) extends Sus(desc, cyc) {
+case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec: SpecificationStructure) extends Sus(desc, parentSpec) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
     val newContext = context.newInstance
     val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), this)
@@ -44,7 +44,7 @@ case class SusWithContext[S](val context: SystemContext[S], desc: String, var cy
     copyDefAndSubExamples(e, ExampleWithContext(context.newInstance, e.exampleDescription, this))
   }
 } 
-case class Sus(description: String, var cycle: ExampleLifeCycle) extends ExampleLifeCycle 
+case class Sus(description: String, parent: SpecificationStructure) extends ExampleLifeCycle 
                                       with Tagged with HasResults {
 
   /** default verb used to define the behaviour of the sus */
@@ -83,11 +83,12 @@ case class Sus(description: String, var cycle: ExampleLifeCycle) extends Example
 
   var skippedSus: Option[Throwable] = None
   var failedSus: Option[String] = None
-
+  var isSpecified = false
   /** default way of defining the behaviour of a sus */
   def should(ex: =>Example) = {
     verb = "should"
     specifyExamples(ex)
+    isSpecified = true
   }
   /** header for the full sus description: description + " " + verb */
   def header = description + " " + verb
@@ -128,32 +129,32 @@ case class Sus(description: String, var cycle: ExampleLifeCycle) extends Example
   def pretty(tab: String) = tab + description + " " + verb + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
   
   /** forwards the call to the "parent" cycle */
-  override def until = { cycle.until && this.untilPredicate.getOrElse(() => true)() }
+  override def until = { parent.until && this.untilPredicate.getOrElse(() => true)() }
 
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)
-    cycle.beforeExample(ex)
+    parent.beforeExample(ex)
     if (!examples.isEmpty && ex == examples.first)
       firstActions.map(_.apply)
     before.foreach {_.apply()}
   }
   
   /** forwards the call to the "parent" cycle */
-  override def beforeTest(ex: Example) = { cycle.beforeTest(ex) }
+  override def beforeTest(ex: Example) = { parent.beforeTest(ex) }
 
   /** forwards the call to the "parent" cycle */
   override def executeTest(ex: Example, t: =>Any) = { 
-    cycle.executeTest(ex, t) 
+    parent.executeTest(ex, t) 
   }
 
   /** forwards the call to the "parent" cycle */
-  override def afterTest(ex: Example) = { cycle.afterTest(ex) }
+  override def afterTest(ex: Example) = { parent.afterTest(ex) }
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Example) = { 
     after.map {_.apply()}
     if (!examples.isEmpty && ex == examples.last) lastActions.map(_.apply)
-    cycle.afterExample(ex)
+    parent.afterExample(ex)
     super.afterExample(ex)
   }
   /** Declare the examples as components to be tagged when the sus is tagged */

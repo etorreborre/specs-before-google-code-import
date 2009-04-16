@@ -27,6 +27,19 @@ class specificationsUnit extends Specification with ScalaCheck with JUnit {
       }
     }
   }
+  "A specification with one sus and an example alone" should {
+    object testSpec extends Specification { 
+      "this sus" should { "ex1" in { 1 must_== 1 } }
+      "ex2" in { 1 must_== 1 }
+    }
+    "have two sus" in {
+      testSpec.systems must have size(2)
+      testSpec.systems(0).examples must have size(1)
+      testSpec.systems(0).examples(0).description must_== "ex1" 
+      testSpec.systems(1).examples must have size(1)
+      testSpec.systems(1).examples(0).description must_== "ex2" 
+    }
+  }
   "A specification with one expectation only" should {
     object nudeSpec extends Specification { "name" mustEqual "name" }
     "create a default sus" in {

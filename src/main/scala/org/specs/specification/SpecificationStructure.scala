@@ -110,7 +110,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
   }
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
-  protected[this] def currentSus = if (!systems.isEmpty) systems.last else specify("specifies")
+  protected[this] def currentSus = if (!systems.isEmpty && !systems.last.isSpecified) systems.last else specify("specifies")
 
   /** Return all the systems for this specification, including the ones from the sub-specifications (recursively). */
   def allSystems: List[Sus] = {
