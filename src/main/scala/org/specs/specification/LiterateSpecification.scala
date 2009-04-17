@@ -136,7 +136,7 @@ trait LiterateShortcuts extends ExpectableFactory with BaseSpecification {
   /** embeddeds a test into a new example and silence the result */
   def eg(test: =>Any): Unit = (forExample in test).shh
   /** create an anonymous example which will be skipped until it is implemented */
-  def notImplemented = forExample in { }
+  def notImplemented = forExample in { skip("PENDING: not yet implemented") }
   /** return a String containing the output messages from the console with a given padding such as a newline for instance */
   def consoleOutput(pad: String, messages: Seq[String]): String = { pad + consoleOutput(messages) }
   /** return a String containing the output messages from the console */
