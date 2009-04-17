@@ -93,7 +93,9 @@ trait Html extends File {
 
   /** create breadcrumbs links for a specification, starting with the oldest parent */
   def breadcrumbs(spec: Specification) = {
-    reduce[BaseSpecification](spec.parentSpecifications.reverse, <t>{"&gt"} </t> ++ specificationLink(_))
+    if (!spec.parentSpecifications.isEmpty)
+      <div id="breadcrumbs">{reduce[BaseSpecification](spec.parentSpecifications.reverse, 
+                              (s: BaseSpecification) => Text("> ") ++ specificationLink(s) )}</div>
   }
   /** @return the path to a specification report file */
   def specificationLink(spec: BaseSpecification) = {
@@ -101,7 +103,7 @@ trait Html extends File {
       case s: BaseSpecification with Html => s.fileName(spec)
       case _ => HtmlNamingFunction.default(spec)
     }
-    <a href={filePath}>{spec.name}</a>
+    <a href={filePath}>{spec.name} </a>
   }
   
   /** @return a formatted string depending on the type of literate description: text, wiki or html. */

@@ -74,6 +74,8 @@ p {
   border-top: 1px solid #aaa;
   border-bottom: 1px solid #aaa;
   background-color: #ccc;
+  font-size: small;
+  font-weight: bold;
 }
 #leftColumn {
   margin: 10px 0 0 5px;
