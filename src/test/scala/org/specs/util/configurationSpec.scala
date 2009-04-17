@@ -18,4 +18,7 @@ class configurationSpec extends spex.Specification {
     }
   }
 }
-class TestConfiguration extends Configuration
+class TestConfiguration extends Configuration {
+  override def finalStatisticsOnly = true
+  override def failedAndErrorsOnly = true
+}

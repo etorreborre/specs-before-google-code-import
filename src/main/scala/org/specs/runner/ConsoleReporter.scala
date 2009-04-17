@@ -16,17 +16,17 @@ trait OutputReporter extends Reporter with Output {
 
   /** colors the text in red if colors are enabled   */
   def failureColored(text: String) =
-    if (colorize) AnsiColors.red + text + AnsiColors.reset
+    if (colorize()) AnsiColors.red + text + AnsiColors.reset
     else text
 
   /** colors the text in green if colors are enabled   */
   def successColored(text: String) =
-    if (colorize) AnsiColors.green + text + AnsiColors.reset
+    if (colorize()) AnsiColors.green + text + AnsiColors.reset
     else text
 
   /** colors the text in yellow if colors are enabled   */
   def skipColored(text: String) =
-    if (colorize) AnsiColors.yellow + text + AnsiColors.reset
+    if (colorize()) AnsiColors.yellow + text + AnsiColors.reset
     else text
 
 
@@ -67,8 +67,8 @@ trait OutputReporter extends Reporter with Output {
     // if we want final statistics only, we check the padding to know if we're
     // reporting the first specification. An empty padding means this is the first spec.
     val isFirstSpecification = padding.isEmpty
-    if (statistics && (!finalStatisticsOnly ||
-                        finalStatisticsOnly && isFirstSpecification))  {
+    if (statistics() && (!finalStatisticsOnly() ||
+                         finalStatisticsOnly() && isFirstSpecification))  {
       println(padding + "Total for specification \"" + spec.name + "\":")
       printStats(stats(spec), padding)
     }
@@ -126,7 +126,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportSus(sus: Sus, padding: String) = {
     printSus(sus, padding);
-    if (statistics && !finalStatisticsOnly) 
+    if (statistics() && !finalStatisticsOnly()) 
       printStats(sus, padding)
   }
 
@@ -208,13 +208,13 @@ trait OutputReporter extends Reporter with Output {
 	      else
 	        println(padding + errorType(f) + parens(f))
 	    }
-	    if (stacktrace && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
+	    if (stacktrace() && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
     }
   }
   /** @return true if the results should be printed
    */
   private def canReport(hasResults: HasResults) = {
-    !failedAndErrorsOnly || failedAndErrorsOnly && hasResults.hasFailureOrErrors
+    !failedAndErrorsOnly() || failedAndErrorsOnly() && hasResults.hasFailureOrErrors
   }
 }
 
