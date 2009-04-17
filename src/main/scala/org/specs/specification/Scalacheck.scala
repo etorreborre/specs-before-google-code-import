@@ -12,7 +12,7 @@ import org.specs.specification._
  * This trait can be mixed with a specification to allow the use of ScalaCheck in a specification
  */
 trait ScalaCheck extends ScalaCheckMatchers with ScalaCheckParameters with ScalaCheckVerifications {
-  this: ExpectableFactory with SpecificationStructure =>
+  this: ExpectableFactory with BaseSpecification =>
 }
 
 /**
@@ -38,7 +38,7 @@ trait ScalaCheck extends ScalaCheckMatchers with ScalaCheckParameters with Scala
  * </pre>
  *  
  */
-trait ScalaCheckVerifications { outer: ExpectableFactory with SpecificationStructure with ScalaCheckParameters with ScalaCheckMatchers =>
+trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification with ScalaCheckParameters with ScalaCheckMatchers =>
 
   /** 
    * Transforms a function to an object supporting ScalaCheck parameters.

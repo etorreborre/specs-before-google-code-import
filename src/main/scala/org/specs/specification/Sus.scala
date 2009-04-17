@@ -22,7 +22,7 @@ import org.specs.execute._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec: SpecificationStructure) extends Sus(desc, parentSpec) {
+case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec: BaseSpecification) extends Sus(desc, parentSpec) {
   override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
     val newContext = context.newInstance
     val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), this)
@@ -44,7 +44,7 @@ case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec
     copyDefAndSubExamples(e, ExampleWithContext(context.newInstance, e.exampleDescription, this))
   }
 } 
-case class Sus(description: String, parent: SpecificationStructure) extends ExampleLifeCycle 
+case class Sus(description: String, parent: BaseSpecification) extends ExampleLifeCycle 
                                       with Tagged with HasResults {
 
   /** default verb used to define the behaviour of the sus */

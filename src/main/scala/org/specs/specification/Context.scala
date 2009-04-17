@@ -16,7 +16,7 @@ import org.specs.execute._
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
  * each system under test being specified.
  */
-trait BeforeAfter extends SpecificationStructure { outer =>
+trait BeforeAfter extends BaseSpecification { outer =>
   /** 
    * @deprecated
    * adds a "before" function to the last sus being defined 

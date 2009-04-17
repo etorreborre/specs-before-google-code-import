@@ -37,7 +37,7 @@ import org.specs.execute._
  * </code>
  * 
  */
-class LiterateSpecification extends Specification with LiterateSpecificationStructure with LiterateSpecificationLinks 
+class LiterateSpecification extends Specification with LiterateBaseSpecification with LiterateSpecificationLinks 
       with LiterateDataTables with LiterateForms with LiterateProperties with LiterateShortcuts {
   setSequential()
 
@@ -49,7 +49,7 @@ class LiterateSpecification extends Specification with LiterateSpecificationStru
 /**
  * This trait helps declaring datatables inside the Literate Specification
  */
-trait LiterateDataTables extends DataTables with ExpectableFactory with SpecificationStructure {
+trait LiterateDataTables extends DataTables with ExpectableFactory with BaseSpecification {
   /**
    * This method allows to embbed a DataTable in a literate specification and display the results of its execution
    */
@@ -86,7 +86,7 @@ trait LiterateProperties extends Properties with ExpectableFactory {
 /**
  * This trait adds shortcut to declare forms in the specification text
  */
-trait LiterateForms extends ExpectableFactory with SpecificationStructure { 
+trait LiterateForms extends ExpectableFactory with BaseSpecification { 
   /**
    * This method allows to embbed a Form in a literate specification and display the results of its execution
    */
@@ -106,7 +106,7 @@ trait LiterateForms extends ExpectableFactory with SpecificationStructure {
 /**
  * This trait adds shortcut methods to define expectations, to silence expressions
  */
-trait LiterateShortcuts extends ExpectableFactory with SpecificationStructure { 
+trait LiterateShortcuts extends ExpectableFactory with BaseSpecification { 
   /**
    * This method is used to silence the result of a call in an action. For example: <pre>
    * The timer should be stopped {timer.stop.shh}
@@ -136,7 +136,7 @@ trait LiterateShortcuts extends ExpectableFactory with SpecificationStructure {
   /** return a String containing the output messages from the console */
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
 }
-trait LiterateSpecificationStructure extends ExpectableFactory with SpecificationStructure {
+trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification {
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e

@@ -32,12 +32,12 @@ import org.specs.execute._
  * } </pre>
  * Sub-examples are usually used to share examples across specifications (see the Stack example in test/scala/scala/specs/sample)
  * <p>
- * A <code>SpecificationStructure</code> also implements an <code>ExampleLifeCycle</code> trait
+ * A <code>BaseSpecification</code> also implements an <code>ExampleLifeCycle</code> trait
  * allowing subclasses to refine the behaviour of the specification before/after an example and before/after
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsListener with Tagged 
+trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification { outer =>
 
   /** description of the specification */
@@ -84,7 +84,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
    * implicit definition allowing to declare a composition inside the current specification:
    * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code>
    */
-  implicit def declare(d: String): SpecificationStructure = { name = d; this }
+  implicit def declare(d: String): BaseSpecification = { name = d; this }
 
   /** list of systems under test */
   var systems : List[Sus] = Nil
@@ -266,7 +266,7 @@ trait SpecificationStructure extends ExampleLifeCycle with ExampleExpectationsLi
  * This trait adds the possibility to declare an included specification as "linked" in order to 
  * control its reporting in a separate file for example.
  */
-trait LinkedSpecification { this: SpecificationStructure => 
+trait LinkedSpecification { this: BaseSpecification => 
   /** storing the parent links of this specification */
   private var parentLinks = List[LinkedSpecification]()
   def addParent(s: LinkedSpecification): this.type = { parentLinks = s :: parentLinks; this }
