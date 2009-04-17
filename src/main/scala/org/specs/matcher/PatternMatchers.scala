@@ -116,7 +116,7 @@ trait PatternBaseMatchers {
        }
   }
 }
-trait PatternBeHaveMatchers { this: PatternBaseMatchers =>
+trait PatternBeHaveMatchers { outer: PatternBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb
    */
@@ -127,13 +127,23 @@ trait PatternBeHaveMatchers { this: PatternBaseMatchers =>
   implicit def toOptionPatternResult[T](result: Result[Option[T]]) = new OptionResultMatcher(result)
   class OptionResultMatcher[T](result: Result[Option[T]]) {
     def asNoneAs(a: =>Option[T]) = result.matchWithMatcher(beAsNoneAs(a))
+    def beNone = result.matchWithMatcher(outer.beNone)
+    def none = result.matchWithMatcher(outer.beNone)
+    def beSome = result.matchWithMatcher(outer.beSome)
+    def some = result.matchWithMatcher(outer.beSome)
   }
   implicit def toSomePatternResult[T](result: Result[Some[T]]) = new SomeResultMatcher(result)
   class SomeResultMatcher[T](result: Result[Some[T]]) {
     def asNoneAs(a: =>Some[T]) = result.matchWithMatcher(beAsNoneAs(a))
+    def beNone = result.matchWithMatcher(outer.beNone)
+    def none = result.matchWithMatcher(outer.beNone)
+    def beSome = result.matchWithMatcher(outer.beSome)
+    def some = result.matchWithMatcher(outer.beSome)
   }
   def like[T](pattern: => PartialFunction[T, Boolean]) = beLike(pattern)
   def asNoneAs[T](a: =>Option[T]) = beAsNoneAs(a)
+  def none = beNone
+  def some = beSome
 }
 /**
  * Companion object for PatternMatchers.
