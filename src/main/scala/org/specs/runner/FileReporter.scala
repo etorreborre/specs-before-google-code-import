@@ -3,6 +3,8 @@ import org.specs.io._
 import org.specs.util._
 import org.specs.log._
 import java.io.Writer
+import org.specs.specification.BaseSpecification
+import org.specs.util.ExtendedString._
 
 /**
  * This trait groups the functionalities of runners creating files from
@@ -19,7 +21,7 @@ import java.io.Writer
  */
 trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
   /** @return the file name which should be created */
-  def fileName(spec: Specification): String
+  def fileName(spec: BaseSpecification): String
   
   /** @return the output directory path */
   def outputDir: String
@@ -27,7 +29,7 @@ trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
   /**
    * the default path is the output dir + file name  
    */
-  def filePath(spec: Specification) = normalize(outputDir) + fileName(spec)
+  def filePath(spec: BaseSpecification) = normalize(outputDir) + fileName(spec)
 
   /**
    * get the specification output from specOutput and write it to the target file.
@@ -63,8 +65,8 @@ trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
 /** 
  * A FileReporter class is used to have a constructor setting the required variables of the File trait.
  */
-abstract class FileReporter(outputDirPath: String, fName: Specification => String) extends File {
-  override def fileName(s: Specification) = fName(s)
+abstract class FileReporter(outputDirPath: String, fName: BaseSpecification => String) extends File {
+  override def fileName(s: BaseSpecification) = fName(s)
   override def outputDir = normalize(outputDirPath)
 }
 
@@ -73,13 +75,12 @@ abstract class FileReporter(outputDirPath: String, fName: Specification => Strin
  */
 import _root_.org.junit.runner._
 @RunWith(classOf[JUnitSuiteRunner])
-abstract class FileSuite(outputDirPath: String, fName: Specification => String) extends File {
-  override def fileName(s: Specification) = fName(s)
+abstract class FileSuite(outputDirPath: String, fName: BaseSpecification => String) extends File {
+  override def fileName(s: BaseSpecification) = fName(s)
   override def outputDir = normalize(outputDirPath)
 }
 object NamingFunction {
-  import org.specs.util.ExtendedString._
-  val default = (s: Specification) => s.getClass.getName.takeWhile(_ != '$').mkString
-  val short = (s: Specification) => default(s).split("\\.").toList.last
+  val default = (s: BaseSpecification) => s.getClass.getName.takeWhile(_ != '$').mkString
+  val short = (s: BaseSpecification) => default(s).split("\\.").toList.last
 }
 

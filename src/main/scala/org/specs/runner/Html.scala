@@ -18,7 +18,7 @@ trait Html extends File {
   val descriptionFormatter = new DescriptionFormatter()
 
   /** definition of the file name of a specification. */
-  override def fileName(spec: Specification): String = HtmlNamingFunction.default(spec)
+  override def fileName(spec: BaseSpecification): String = HtmlNamingFunction.default(spec)
 
   /** definition of the output directory of the report. */
   override def outputDir = normalize(htmlDir)
@@ -55,6 +55,7 @@ trait Html extends File {
   def asHtml(spec: Specification): Elem = <html>
     {head(spec)}
     <body>
+      {breadcrumbs(spec)}
       <div id="toolTip"/>
       {anchorName("top")}
       {summaryTable(spec)}
@@ -90,7 +91,20 @@ trait Html extends File {
         <link rel="stylesheet" href="./css/tabber.css" type="text/css" media="screen"/> 
     </head>
 
-  /** return a formatted string depending on the type of literate description: text, wiki or html. */
+  /** create breadcrumbs links for a specification, starting with the oldest parent */
+  def breadcrumbs(spec: Specification) = {
+    reduce[BaseSpecification](spec.parentSpecifications.reverse, <t>{"&gt"} </t> ++ specificationLink(_))
+  }
+  /** @return the path to a specification report file */
+  def specificationLink(spec: BaseSpecification) = {
+    val filePath = spec match {
+      case s: BaseSpecification with Html => s.fileName(spec)
+      case _ => HtmlNamingFunction.default(spec)
+    }
+    <a href={filePath}>{spec.name}</a>
+  }
+  
+  /** @return a formatted string depending on the type of literate description: text, wiki or html. */
   def formattedDescription(sus: Sus): Option[Node] = sus.literateDescription map (descriptionFormatter.format(_, sus.examples))
 
   /**
@@ -331,6 +345,6 @@ trait Html extends File {
     </script>
 }
 object HtmlNamingFunction {
-  val default = { (s: Specification) => NamingFunction.default(s) + ".html" }
-  val short = { (s: Specification) => NamingFunction.short(s) + ".html" }
+  val default = { (s: BaseSpecification) => NamingFunction.default(s) + ".html" }
+  val short = { (s: BaseSpecification) => NamingFunction.short(s) + ".html" }
 }

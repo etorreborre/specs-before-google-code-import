@@ -188,6 +188,7 @@ trait StringBeHaveMatchers { outer: StringBaseMatchers =>
     def equalIgnoringSpaceTo(s: String) = result.matchWith(beEqualToIgnoringSpace(s))
     def ==/(s: String) = result.matchWith(be_==/(s))
     def !=/(s: String) = result.matchWith(be_!=/(s))
+    def empty = result.matchWith(new StringEmptyMatcher)
     def size(n: Int) = result.matchWith(haveLength(n))
     def length(n: Int) = result.matchWith(haveLength(n))
     def include(s: String) = result.matchWith(outer.include(s))
@@ -196,6 +197,12 @@ trait StringBeHaveMatchers { outer: StringBaseMatchers =>
   }
   def length(n: Int) = haveLength(n)
   def matching(s: String) = beMatching(s)
+}
+class StringEmptyMatcher extends Matcher[String] {
+  def apply(v: => String) = {
+    val s = v
+    (s.isEmpty, dUnquoted(s) + " is empty", dUnquoted(s) + " is not empty")
+  }
 }
 class BeEqualToIgnoringCase[T <: String](a: T) extends Matcher[T] { 
   def apply(v: => T) = {val b = v; (a != null && b != null && a.equalsIgnoreCase(b), 

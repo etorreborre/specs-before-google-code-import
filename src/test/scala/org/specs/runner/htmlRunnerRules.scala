@@ -37,15 +37,21 @@ class htmlRunnerRules(name: String) extends LiterateSpecification(name) with Xml
   def noSystemsListForOneOnly = runSmall.toString must include("<script language=\"javascript\">window.onload=init;</script>")
   def collapsibleColumn = run must \\(<img src="images/expanded.gif" onclick="toggleNavBar(this)"/>)
   def greenHighlight = 1 must_== 1
-
-  lazy val executeRunner = {
-    hRunner.report(hRunner.specs)
-    hRunner
+  def breadcrumbs = eg {
+    class ParentSpec extends Specification
+    class ChildSpec extends Specification
+    val parent = new ParentSpec
+    val child = new ChildSpec
+    parent.include(child)
+    val runner = new InstrumentedRunner(child)
+    execute(runner).results must have \\("a") \ Text("ParentSpec") 
   }
-  lazy val executeSmallRunner = {
-    smallRunner.report(smallRunner.specs)
-    smallRunner
+  def execute[R <: Reporter](r: R) = {
+    r.report(r.specs)
+    r
   }
+  lazy val executeRunner = execute(hRunner)
+  lazy val executeSmallRunner = execute(smallRunner)
   val run = executeRunner.results aka "the generated html"
   val runString = executeRunner.results.toString aka "the generated html"
   val runSmall = executeSmallRunner.results

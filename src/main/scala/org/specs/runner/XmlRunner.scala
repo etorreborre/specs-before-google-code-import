@@ -16,7 +16,7 @@ import org.specs.execute._
  * The name of the generated file is specification.name by default but can be overriden:<pre>
  * object runner extends XmlRunner("./results/specs", mySpec){ override def fileName="spec-report.xml" }</pre>
  */
-case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName: Specification => String) extends 
+case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName: BaseSpecification => String) extends 
   FileReporter(outputDirPath, fName) with Xml {
   
   /** 
@@ -35,10 +35,10 @@ case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName
   def this(spec: Specification, outputDirPath: String) = this(List(spec), outputDirPath, XmlNamingFunction.default)
   
   /** alternate constructor with one specification only. */
-  def this(spec: Specification, outputDirPath: String, fName: Specification => String) = this(List(spec), outputDirPath, fName)
+  def this(spec: Specification, outputDirPath: String, fName: BaseSpecification => String) = this(List(spec), outputDirPath, fName)
 
   /** definition of the file name of a specification. */
-  override def fileName(spec: Specification): String = fName(spec) 
+  override def fileName(spec: BaseSpecification): String = fName(spec) 
 
   /** definition of the output directory of the report. */
   override def outputDir = normalize(outputDirPath)
@@ -46,7 +46,7 @@ case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName
 /**
  * The XmlSuite is the same class as XmlRunner but can be extended with the JUnit trait.
  */
-case class XmlSuite(val specs: Seq[Specification], outputDirPath: String, fName: Specification => String) extends 
+case class XmlSuite(val specs: Seq[Specification], outputDirPath: String, fName: BaseSpecification => String) extends 
   FileSuite(outputDirPath, fName) with Xml {
   
   /** 
@@ -65,10 +65,10 @@ case class XmlSuite(val specs: Seq[Specification], outputDirPath: String, fName:
   def this(spec: Specification, outputDirPath: String) = this(List(spec), outputDirPath, XmlNamingFunction.default)
   
   /** alternate constructor with one specification only. */
-  def this(spec: Specification, outputDirPath: String, fName: Specification => String) = this(List(spec), outputDirPath, fName)
+  def this(spec: Specification, outputDirPath: String, fName: BaseSpecification => String) = this(List(spec), outputDirPath, fName)
 
   /** definition of the file name of a specification. */
-  override def fileName(spec: Specification): String = fName(spec) 
+  override def fileName(spec: BaseSpecification): String = fName(spec) 
 
   /** definition of the output directory of the report. */
   override def outputDir = normalize(outputDirPath)
@@ -89,7 +89,7 @@ case class XmlSuite(val specs: Seq[Specification], outputDirPath: String, fName:
  */
 trait Xml extends File {
   /** definition of the file name of a specification. */
-  override def fileName(spec: Specification): String = XmlNamingFunction.default(spec) 
+  override def fileName(spec: BaseSpecification): String = XmlNamingFunction.default(spec) 
 
   /** definition of the output directory of the report. */
   override def outputDir = "."
@@ -142,6 +142,6 @@ trait Xml extends File {
   def asXml(skipped: SkippedException): Elem = <skipped location={skipped.location}>{skipped.message}</skipped>
 }
 object XmlNamingFunction {
-  val default = { (s: Specification) => NamingFunction.default(s) + ".xml" } 
-  val short = { (s: Specification) => NamingFunction.short(s) + ".xml" } 
+  val default = { (s: BaseSpecification) => NamingFunction.default(s) + ".xml" } 
+  val short = { (s: BaseSpecification) => NamingFunction.short(s) + ".xml" } 
 }

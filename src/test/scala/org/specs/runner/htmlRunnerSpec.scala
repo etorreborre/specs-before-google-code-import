@@ -1,6 +1,6 @@
 package org.specs.runner
 
-class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with Html { "Html Runner Specification" ->> <wiki>
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with Html with JUnit { "Html Runner Specification" is <wiki>
 
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:
@@ -78,6 +78,11 @@ h4. Stylesheets and images
 
 <ex>The stylesheets for the report must be created in a directory named css, relative to the output directory.</ex>{cssDir}
 <ex>The images for the report must be created in a directory named images, relative to the output directory.</ex>{imagesDir}
+
+h4. Breadcrumbs
+
+<ex>When the current specification has some parent specifications, they must be displayed a the top in a breadcrumb fashion, providing
+links to access the parent specifications</ex>{breadcrumbs}
 
 </wiki>
 }
