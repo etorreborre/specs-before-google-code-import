@@ -47,6 +47,12 @@ class LiterateSpecification extends Specification with LiterateBaseSpecification
   override def filterEmptySus = false
 }
 /**
+ * LiterateSpecification with Html reporting
+ */      
+class HtmlSpecification extends LiterateSpecification with Html {
+  def this(n: String) = { this(); name = n; description = n; this }
+}
+/**
  * This trait helps declaring datatables inside the Literate Specification
  */
 trait LiterateDataTables extends DataTables with ExpectableFactory with BaseSpecification {
