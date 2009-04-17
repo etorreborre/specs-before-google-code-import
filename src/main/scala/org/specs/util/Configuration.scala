@@ -25,11 +25,11 @@ object Configuration {
   } 
   /** @return the user configuration object from a properties file */
   def getConfigurationFromPropertiesFile(filePath: String): Option[Configuration] = {
-    var config: Option[Configuration] = None
+    var configuration: Option[Configuration] = None
     try {
       val properties = new java.util.Properties()
       properties.load(new java.io.FileInputStream(filePath))
-      config = Some(new DefaultConfiguration {
+      configuration = Some(new DefaultConfiguration {
         override def stacktrace = boolean(properties, "stacktrace", super.stacktrace)
         override def failedAndErrorsOnly = boolean(properties, "failedAndErrorsOnly", super.failedAndErrorsOnly)
         override def statistics = boolean(properties, "statistics", super.statistics)
@@ -41,7 +41,7 @@ object Configuration {
     catch {
       case _ => ()
     }
-    config
+    configuration
   } 
   def boolean(properties: java.util.Properties, propName: String, defaultValue: Boolean) = {
     var prop = properties.get(propName)
