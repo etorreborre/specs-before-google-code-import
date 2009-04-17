@@ -126,7 +126,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     executed
   }
   protected def skipIfNoExpectations() = {
-    if (this.expectationsNumber == 0 && this.subExs.isEmpty)
+    if (this.expectationsNumber == 0 && this.subExs.isEmpty && Configuration.config.examplesWithoutExpectationsMustBePending)
       throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("(specification.Example|LiterateSpecification)")
   }
 

@@ -2,6 +2,7 @@ package org.specs.specification
 import org.specs._
 import org.specs.execute._
 import org.specs.runner._
+import org.specs.util._
 
 class exampleSpec extends Specification with JUnit {
   setSequential()
@@ -49,6 +50,12 @@ class exampleSpec extends Specification with JUnit {
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
       object s extends Specification { "this is a pending example" in {} }
       s.skipped must_== List(new SkippedException("PENDING: not yet implemented"))
+    }
+    "not throw a SkippedException with a PENDING message if it has a body with no expectations and the configuration" +
+    "has examplesWithoutExpectationsMustBePending=false" in {
+      Configuration.config = new Configuration { override val examplesWithoutExpectationsMustBePending = false }
+      object s extends Specification { "this is a pending example" in {} }
+      s.skipped must be empty
     }
   }
 }

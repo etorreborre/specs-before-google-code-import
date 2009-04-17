@@ -3,6 +3,8 @@ package org.specs.runner
 import scala.collection.mutable.Queue
 import org.specs.log.ConsoleLog
 import org.specs.specification._
+import org.specs.util.Configuration._
+import org.specs.util.Configuration
 
 /**
  * The SpecsHolder trait is used by any class providing access to a sequence of specifications
@@ -37,16 +39,21 @@ trait SpecsHolder {
  */
 trait Reporter extends SpecsFilter with ConsoleLog {
   /** this variable controls if stacktraces should be printed. */
-  protected var stacktrace = true
+  protected var stacktrace = config.stacktrace
   /** this variable controls if ok examples should be printed. */
-  protected var failedAndErrorsOnly = false
+  protected var failedAndErrorsOnly = config.failedAndErrorsOnly
   /** this variable controls if the statistics should be printed. */
-  protected var statistics = true
+  protected var statistics = config.statistics
   /** this variable controls if the final statistics should be printed. */
-  protected var finalStatisticsOnly = false
+  protected var finalStatisticsOnly = config.finalStatisticsOnly
   /** this variable controls if the ANSI color sequences should be used to colorize output */
-  protected var colorize = false
+  protected var colorize = config.colorize
 
+  /** set a new configuration object. */
+  def setConfiguration(className: Option[String]): this.type = { 
+    className.map((name: String) => Configuration.config = Configuration.getConfiguration(name)) 
+    this
+  }
   /** allow subclasses to remove the stacktrace display. */
   def setNoStacktrace(): this.type = { stacktrace = false; this }
   /** allow subclasses to remove the ok and skipped examples. */
@@ -104,6 +111,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   protected def displayOptions = {
     println("""
     [-h|--help]
+    [-config|--configuration]
     [-ns|--nostacktrace]
     [-nostats|--nostatistics]
     [-finalstats|--finalstatistics]
@@ -117,6 +125,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   protected def displayOptionsDescription = {
     println("""
 -h, --help                      print this message and doesn't execute the specification
+-config, --configuration        class name of an object extending the org.specs.util.Configuration trait
 -ns, --nostacktrace             remove the stacktraces from the reporting
 -nostats, --nostatistics        remove the statistics from the reporting
 -finalstats, --finalstatistics  print the final statistics only
@@ -149,7 +158,8 @@ trait Reporter extends SpecsFilter with ConsoleLog {
    * to allow the chaining of several reporters as traits.
    */
   def report(specs: Seq[Specification]): this.type = {
-     if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
+    if (argsContain("-config", "--configuration")) setConfiguration(argValue(args, List("-config", "--configuration")))
+    if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
     if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
     if (argsContain("-finalstats", "-finalstatistics")) setFinalStatisticsOnly()
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
