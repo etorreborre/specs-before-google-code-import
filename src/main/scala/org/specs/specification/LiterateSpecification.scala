@@ -112,7 +112,7 @@ trait LiterateForms extends ExpectableFactory with BaseSpecification {
 /**
  * This trait adds shortcut methods to define expectations, to silence expressions
  */
-trait LiterateShortcuts extends ExpectableFactory with BaseSpecification { 
+trait LiterateShortcuts extends ExpectableFactory with BaseSpecification with FailOrSkip { 
   /**
    * This method is used to silence the result of a call in an action. For example: <pre>
    * The timer should be stopped {timer.stop.shh}
