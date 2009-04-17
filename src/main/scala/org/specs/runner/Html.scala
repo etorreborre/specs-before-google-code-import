@@ -93,9 +93,10 @@ trait Html extends File {
 
   /** create breadcrumbs links for a specification, starting with the oldest parent */
   def breadcrumbs(spec: Specification) = {
-    if (!spec.parentSpecifications.isEmpty)
+    if (!spec.parentSpecifications.isEmpty) {
       <div id="breadcrumbs">{reduce[BaseSpecification](spec.parentSpecifications.reverse, 
-                              (s: BaseSpecification) => Text("> ") ++ specificationLink(s) )}</div>
+                             (s: BaseSpecification) => Text("> ") ++ specificationLink(s) )}</div>
+    } else NodeSeq.Empty
   }
   /** @return the path to a specification report file */
   def specificationLink(spec: BaseSpecification) = {
