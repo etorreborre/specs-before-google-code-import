@@ -34,8 +34,15 @@ class LineForm extends Form {
     tr(lineProperties:_*)
     super.rows
   }
+  override def propertiesAndFields = lineProperties.toList ::: super.propertiesAndFields
   /** extract a header from all the property labels */
   def header = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
   override def toXhtml = reduce(lineProperties, { (p: LabeledXhtml) => p.toXhtml })
+}
+object LineForm {
+  /** create a LineForm with labels only to create header rows */
+  def apply(labels: String*) = new LineForm {
+    labels.foreach((s:String) => field(s, s))
+  }
 }

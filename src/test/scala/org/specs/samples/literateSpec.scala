@@ -5,7 +5,7 @@ import org.specs.util._
 import org.specs.form._
 import org.specs.runner._
 
-class helloWorld extends LiterateSpecification("Hello World") with Html {
+class helloWorld extends HtmlSpecification("Hello World") {
   def greet = "hello"
   def greet(s: String) = s match {
     case "French" => "bonjour"
@@ -30,8 +30,27 @@ Then, other languages, like <ex>French and German should be supported too</ex>
 
  </textile>
 }
+class tabsSpec extends HtmlSpecification("Tabs sample") with JUnit {
+ class ClubMember extends Form {
+   new tabs() {
+     new tab("Contact details") {
+       tr(field("First name", "Eric"))
+       tr(field("Last name", "Torreborre"))
+     }
+     new tab("Sports") {
+       th2("Sport", "Years of practice")
+       tr(field("Squash", 10))
+       tr(field("Tennis", 5))
+       tr(field("Windsurf", 2))
+     }
+   }
+ }
+ "A form with tabs" is <textile>
+   { new ClubMember().toHtml }  
+  </textile>
+}
 
-class fieldsFormSpec extends LiterateSpecification with Html with JUnit {
+class fieldsFormSpec extends HtmlSpecification("Fields form") with JUnit {
  class Person extends Form {
    val firstName = field("First name", "Eric")
    val lastName = field("Last name", "Torreborre")
@@ -43,7 +62,7 @@ class fieldsFormSpec extends LiterateSpecification with Html with JUnit {
   </textile>
 }
 
-class formSampleSpec extends PersonForms with Html with JUnit {
+class formSampleSpec extends PersonForms with JUnit {
   "Forms can be used in a Literate specification" is <textile>
 
 This is a Person form, checking that the initials are set properly on a Person object:
@@ -71,7 +90,7 @@ trait PersonBusinessEntities {
   }
   case class Address(number: Int, street: String)
 }
-trait PersonForms extends LiterateSpecification with PersonBusinessEntities {
+trait PersonForms extends HtmlSpecification with PersonBusinessEntities {
 
   case class PersonForm(t: String, p: Person) extends Form(t) {
     def this(p: Person) = this("Customer", p)

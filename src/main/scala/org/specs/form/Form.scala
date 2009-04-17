@@ -169,17 +169,16 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
   }
   /** reset the included/excluded properties of the Form. */
   def resetIncludeExclude() = super[Layoutable].reset()
-
+  /** @return all properties and fields for this form */
+  def propertiesAndFields: List[LabeledXhtml] = properties.toList ::: fields.toList
   /** decorate all the properties held by this form */
   override def decorateLabelsWith(x: String => Node): this.type = { 
-    properties.foreach(_.decorateLabelsWith(x)) 
-    fields.foreach(_.decorateLabelsWith(x)) 
+    propertiesAndFields.foreach(_.decorateLabelsWith(x)) 
     this 
   }
   /** decorate all the properties held by this form */
   override def decorateValuesWith(x: String => Node): this.type = {
-    properties.foreach(_.decorateValuesWith(x)) 
-    fields.foreach(_.decorateValuesWith(x)) 
+    propertiesAndFields.foreach(_.decorateValuesWith(x)) 
     this 
   }
 

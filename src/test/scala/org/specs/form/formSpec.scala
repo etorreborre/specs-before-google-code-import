@@ -7,10 +7,10 @@ import org.specs.runner.{JUnitSuiteRunner, JUnit}
 import samples.PersonForms
 import scala.xml._
 import org.specs.Sugar._
-import org.specs.specification.LiterateSpecification
+import org.specs.specification._
 import org.junit.runner.RunWith
 
-class formSpec extends LiterateSpecification with PersonForms with JUnit { persons =>
+class formSpec extends HtmlSpecification with PersonForms with JUnit { persons =>
   val address = Address(37, "Nando-cho")
   val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
 
