@@ -71,7 +71,7 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   }
 
   def include(specifications: Specification*) = {
-    subSpecifications = subSpecifications ::: specifications.toList.filter((s: Specification) => !(s eq this))
+    subSpecifications = subSpecifications ::: specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
   }
 
   /** alias for isSpecifiedBy */
