@@ -159,6 +159,7 @@ abstract class SystemContext[S] extends Context with java.lang.Cloneable {
 }
 trait SystemContexts extends Contexts {
   class SystemContextCaller(s: String) {
+    def withSome[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
     def withAn[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
     def withA[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
     def into[T](f: T => Any)(implicit context: SystemContext[T]): Example = {

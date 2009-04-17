@@ -64,6 +64,15 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   /** specifications contained by the current specification. An empty list by default */
   var subSpecifications: List[Specification] = List()
 
+  /** specification including this one */
+  var parentSpecification: Option[BaseSpecification] = None
+
+  /** set the parent specification of this one */
+  def setParent(s: BaseSpecification): this.type = { parentSpecification = Some(s); this }
+  /** @return all the parent specifications of this specification, starting with the immediate parent */
+  def parentSpecifications: List[BaseSpecification] = {
+    parentSpecification.map(List(_)).getOrElse(Nil) ::: parentSpecification.map(_.parentSpecifications).getOrElse(Nil)   
+  } 
   /** this declares that a specification is composed of other specifications */
   def isSpecifiedBy(specifications: Specification*) = {
     this.description = this.name + " is specified by"
@@ -71,7 +80,9 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   }
 
   def include(specifications: Specification*) = {
-    subSpecifications = subSpecifications ::: specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
+    val toInclude = specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
+    toInclude.foreach(_.setParent(this))
+    subSpecifications = subSpecifications ::: toInclude 
   }
 
   /** alias for isSpecifiedBy */
@@ -261,6 +272,8 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   }
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
   override def taggedComponents = this.subSpecifications ++ this.systems
+  
+  override def toString = name
 }
 /**
  * This trait adds the possibility to declare an included specification as "linked" in order to 
