@@ -4,6 +4,7 @@ import org.specs._
 object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
         new classSpec,
+        new configurationSpec,
         new editDistanceSpec,
 		new extendedStringSpec,
         new includeExcludeSpec,
