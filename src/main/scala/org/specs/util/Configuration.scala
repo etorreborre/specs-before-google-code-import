@@ -1,11 +1,28 @@
 package org.specs.util
 import Classes._
+import org.specs.io._
 
-object Configuration {
+object Configuration extends Configuration {
   /** variable holding the current configuration which is the user configuration by default */
   var config = getUserConfiguration
+}
+trait Configuration extends ConfigurationFactory {
+  /** this value controls if the errors stacktrace should be printed. */
+  def stacktrace = true
+  /** this value controls if ok examples should be printed. */
+  def failedAndErrorsOnly = false
+  /** this value controls if the statistics should be printed. */
+  def statistics = true
+  /** this value controls if the final statistics should be printed. */
+  def finalStatisticsOnly = false
+  /** this value controls if the ANSI color sequences should be used to colorize output */
+  def colorize = false
+  /** this value controls if examples without expectations should be marked as PENDING examples */
+  def examplesWithoutExpectationsMustBePending = true
+}
+trait ConfigurationFactory extends FileSystem {
   /** @return the default configuration class */
-  def getDefaultConfiguration: Configuration = createObject[Configuration]("org.specs.util.DefaultConfiguration").get 
+  def getDefaultConfiguration: Configuration = new DefaultConfiguration 
   /** @return the user configuration class */
   def getUserConfiguration: Configuration = {
     getUserConfigurationFromPropertiesFile getOrElse( 
@@ -28,7 +45,7 @@ object Configuration {
     var configuration: Option[Configuration] = None
     try {
       val properties = new java.util.Properties()
-      properties.load(new java.io.FileInputStream(filePath))
+      properties.load(inputStream(filePath))
       configuration = Some(new DefaultConfiguration {
         override def stacktrace = boolean(properties, "stacktrace", super.stacktrace)
         override def failedAndErrorsOnly = boolean(properties, "failedAndErrorsOnly", super.failedAndErrorsOnly)
@@ -65,19 +82,4 @@ object Configuration {
   def getUserConfigurationFromPropertiesFile: Option[Configuration] = {
     getConfigurationFromPropertiesFile("configuration.properties")
   }
-  
-}
-trait Configuration {
-  /** this value controls if the errors stacktrace should be printed. */
-  def stacktrace = true
-  /** this value controls if ok examples should be printed. */
-  def failedAndErrorsOnly = false
-  /** this value controls if the statistics should be printed. */
-  def statistics = true
-  /** this value controls if the final statistics should be printed. */
-  def finalStatisticsOnly = false
-  /** this value controls if the ANSI color sequences should be used to colorize output */
-  def colorize = false
-  /** this value controls if examples without expectations should be marked as PENDING examples */
-  def examplesWithoutExpectationsMustBePending = true
 }

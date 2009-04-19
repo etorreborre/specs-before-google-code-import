@@ -104,6 +104,8 @@ trait MockFileSystem extends FileSystem {
   }
   
   override def exists(path: String) = files.contains(path)
+  
+  override def inputStream(filePath: String) = new java.io.StringBufferInputStream(readFile(filePath))
 }
 
 /**

@@ -39,17 +39,17 @@ trait SpecsHolder {
  * object runner extends Runner(spec) with Html with Xml for example
  */
 trait Reporter extends SpecsFilter with ConsoleLog {
-  val configuration: Property[Configuration] = Property(config)
+  val specsConfiguration: Property[Configuration] = Property(config)
   /** this variable controls if stacktraces should be printed. */
-  protected val stacktrace = Property(configuration().stacktrace)
+  protected val stacktrace = Property(specsConfiguration().stacktrace)
   /** this variable controls if ok examples should be printed. */
-  protected val failedAndErrorsOnly = Property(configuration().failedAndErrorsOnly)
+  protected val failedAndErrorsOnly = Property(specsConfiguration().failedAndErrorsOnly)
   /** this variable controls if the statistics should be printed. */
-  protected val statistics = Property(configuration().statistics)
+  protected val statistics = Property(specsConfiguration().statistics)
   /** this variable controls if the final statistics should be printed. */
-  protected val finalStatisticsOnly = Property(configuration().finalStatisticsOnly)
+  protected val finalStatisticsOnly = Property(specsConfiguration().finalStatisticsOnly)
   /** this variable controls if the ANSI color sequences should be used to colorize output */
-  protected val colorize = Property(configuration().colorize)
+  protected val colorize = Property(specsConfiguration().colorize)
 
   /** set a new configuration object. */
   def setConfiguration(className: Option[String]): this.type = { 
@@ -73,12 +73,12 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     setOptionsFromConfig()
   }
   def setOptionsFromConfig(): this.type = {
-    configuration(config)
-    stacktrace(configuration().stacktrace)
-    failedAndErrorsOnly(configuration().failedAndErrorsOnly)
-    colorize(configuration().colorize)
-    statistics(configuration().statistics)
-    finalStatisticsOnly(configuration().finalStatisticsOnly)
+    specsConfiguration(config)
+    stacktrace(specsConfiguration().stacktrace)
+    failedAndErrorsOnly(specsConfiguration().failedAndErrorsOnly)
+    colorize(specsConfiguration().colorize)
+    statistics(specsConfiguration().statistics)
+    finalStatisticsOnly(specsConfiguration().finalStatisticsOnly)
     this
   }
 

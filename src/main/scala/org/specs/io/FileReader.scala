@@ -25,4 +25,8 @@ trait FileReader {
     in.close();
     result.toString
   }
+  /**
+   * @returns a FileInputStream for a given file path
+   */
+  def inputStream(filePath: String): java.io.InputStream = new java.io.FileInputStream(filePath)
 }

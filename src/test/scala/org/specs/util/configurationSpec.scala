@@ -1,4 +1,5 @@
 package org.specs.util
+import org.specs.io.mock._
 
 class configurationSpec extends spex.Specification {
   "A configuration object" should {
@@ -15,6 +16,20 @@ class configurationSpec extends spex.Specification {
     }
     "try to find a configuration class, with a given name defaulting to the user configuration" in {
       Configuration.getConfiguration("org.specs.util.TestConfiguration") must haveClass[TestConfiguration]
+    }
+    "try to find a configuration properties file and load the properties from there" in {
+      val props = """"
+stacktrace = false
+failedAndErrorsOnly = true
+statistics = false
+finalStatisticsOnly = true
+colorize = true
+examplesWithoutExpectationsMustBePending = false
+"""
+      configuration.addFile("configuration.properties", props)
+      val c = configuration.getConfiguration("configuration.properties")
+      (c.stacktrace, c.statistics, c.examplesWithoutExpectationsMustBePending).foreach(_ must beFalse)
+      (c.failedAndErrorsOnly, c.finalStatisticsOnly, c.colorize).foreach(_ must beTrue)
     }
   }
   "A configuration" can {
@@ -43,6 +58,7 @@ class configurationSpec extends spex.Specification {
      }
    }
   }
+  val configuration = new Configuration with MockFileSystem
 }
 class TestConfiguration extends Configuration {
   override def finalStatisticsOnly = true
