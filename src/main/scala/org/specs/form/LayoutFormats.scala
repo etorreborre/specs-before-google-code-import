@@ -56,6 +56,26 @@ trait LayoutFormats extends Layout with Tabs {
   }
   /** display a th header, left aligned, with a given class attribute */
   def th3(title: String, status: Status.Value): this.type = th3(List(title), status)
+  /** display a th header, left aligned, with a success style */
+  def th3Success(title: String): this.type = th3(List(title), Status.Success)
+  /** display a th header, left aligned, with a failure style */
+  def th3Failure(title: String): this.type = th3(List(title), Status.Failure)
+  /** display a th header, left aligned, with an error style */
+  def th3Error(title: String): this.type = th3(List(title), Status.Error)
+  /** display a th header, left aligned, with a Skipped style */
+  def th3Skipped(title: String): this.type = th3(List(title), Status.Skipped)
+  /** display a th header, left aligned, with an Info style */
+  def th3Info(title: String): this.type = th3(List(title), Status.Info)
+  /** display a th header, left aligned, with a Success style */
+  def th3Success(titles: List[String]): this.type = th3(titles, Status.Success)
+  /** display a th header, left aligned, with a Failure style */
+  def th3Failure(titles: List[String]): this.type = th3(titles, Status.Failure)
+  /** display a th header, left aligned, with an Error style */
+  def th3Error(titles: List[String]): this.type = th3(titles, Status.Error)
+  /** display a th header, left aligned, with a Skipped style */
+  def th3Skipped(titles: List[String]): this.type = th3(titles, Status.Skipped)
+  /** display a th header, left aligned, with an Info style */
+  def th3Info(titles: List[String]): this.type = th3(titles, Status.Info)
   /** display a list of th headers, left aligned, with a given class attribute */
   def th3(titles: List[String], status: Status.Value): this.type = {
     inNewRow(reduce[String](titles, (title: String) => <th align="left" class={status.toString}>{ removeUnnecessaryNewlines(title) }</th>))

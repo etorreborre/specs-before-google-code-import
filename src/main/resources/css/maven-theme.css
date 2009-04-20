@@ -161,7 +161,7 @@ table.bodyTable tr.error {
 table.bodyTable tr.skipped {
   background-color: #DDDDDD;
 }
-table.dataTable td.value {
+table.dataTable td.info {
   background-color: #FFFFFF;
 }
 table.dataTable td.success {

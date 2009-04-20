@@ -190,12 +190,12 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
   /** @return all properties and fields for this form */
   def propertiesAndFields: List[LabeledXhtml] = properties.toList ::: fields.toList
   /** decorate all the properties held by this form */
-  override def decorateLabelsWith(x: String => Node): this.type = { 
+  override def decorateLabelsWith(x: Node => Node): this.type = { 
     propertiesAndFields.foreach(_.decorateLabelsWith(x)) 
     this 
   }
   /** decorate all the properties held by this form */
-  override def decorateValuesWith(x: String => Node): this.type = {
+  override def decorateValuesWith(x: Node => Node): this.type = {
     propertiesAndFields.foreach(_.decorateValuesWith(x)) 
     this 
   }

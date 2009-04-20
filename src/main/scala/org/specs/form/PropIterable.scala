@@ -46,7 +46,7 @@ class MatcherPropIterable[T](override val label: String,
     v.map(formatIterable(_)).getOrElse("_")
   }
   
-  override private[form] def formattedValue = valuesDecorator(formatIterable(expected.getOrElse(actual.getOrElse(Nil: Iterable[T]))))
+  override private[form] def formattedValue = decorateValue(formatIterable(expected.getOrElse(actual.getOrElse(Nil: Iterable[T]))))
 }
 /**
  * Companion object containing default factory methods
