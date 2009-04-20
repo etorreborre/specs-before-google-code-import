@@ -98,6 +98,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <name>Scala-Tools Maven2 Repository - snapshots</name>
       <url>http://scala-tools.org/repo-snapshots</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>mc-release</id>
+      <name>Local Maven repository of releases</name>
+      <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
   </pluginRepositories>
   <dependencies>
     <dependency>
@@ -232,7 +243,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.4.3</version>
-		<configuration>
+        <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <argLine>-Xmx512m</argLine>
           <includes>
@@ -266,6 +277,28 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <phase>verify</phase>
             <goals>
               <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <header>LICENSE.txt</header>
+          <failIfMissing>false</failIfMissing>
+          <mapping>
+            <scala>JAVADOC_STYLE</scala>
+          </mapping>
+          <includes>
+            <include>src/main/scala/**</include>
+            <include>src/test/scala/**</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
             </goals>
           </execution>
         </executions>

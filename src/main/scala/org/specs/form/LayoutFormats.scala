@@ -1,7 +1,26 @@
+/**
+ * Copyright (c) 2007-2009 Eric Torreborre <etorreborre@yahoo.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+ * the Software. Neither the name of specs nor the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior written permission.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS INTHE SOFTWARE.
+ */
 package org.specs.form
 import org.specs.xml.Xhtml._
 import org.specs.xml.NodeFunctions._
 import scala.xml._
+import org.specs.execute._
 
 /**
  * The LayoutFormats trait provides pre-defined formatting rows for headers and paragraphs
@@ -23,15 +42,23 @@ trait LayoutFormats extends Layout with Tabs {
   def th2(titles: String*): this.type = {
     inNewRow(reduce[String](titles, (title: String) => <th>{ removeUnnecessaryNewlines(title) }</th>))
   }
+  /** display a th header */
+  def th2(titles: List[LabeledXhtml]): this.type = {
+    inNewRow(reduce[LabeledXhtml](titles, (title: LabeledXhtml) => <th>{ title.toXhtml }</th>))
+  }
   /** display a th header, left aligned */
   def th3(titles: String*): this.type = {
     inNewRow(reduce[String](titles, (title: String) => <th align="left">{ removeUnnecessaryNewlines(title) }</th>))
   }
+  /** display a th header, left aligned */
+  def th3(titles: List[LabeledXhtml]): this.type = {
+    inNewRow(reduce[LabeledXhtml](titles, (title: LabeledXhtml) => <th align="left">{ title.toXhtml }</th>))
+  }
   /** display a th header, left aligned, with a given class attribute */
-  def th3(title: String, status: String): this.type = th3(List(title), status)
+  def th3(title: String, status: Status.Value): this.type = th3(List(title), status)
   /** display a list of th headers, left aligned, with a given class attribute */
-  def th3(titles: List[String], status: String): this.type = {
-    inNewRow(reduce[String](titles, (title: String) => <th align="left" class={status}>{ removeUnnecessaryNewlines(title) }</th>))
+  def th3(titles: List[String], status: Status.Value): this.type = {
+    inNewRow(reduce[String](titles, (title: String) => <th align="left" class={status.toString}>{ removeUnnecessaryNewlines(title) }</th>))
   }
   
   /** remove unnecessary newlines which will cause <p/> to be inserted by markup languages */

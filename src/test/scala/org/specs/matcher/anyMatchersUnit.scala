@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2007-2009 Eric Torreborre <etorreborre@yahoo.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+ * the Software. Neither the name of specs nor the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior written permission.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS INTHE SOFTWARE.
+ */
 package org.specs.matcher
 import org.specs._
 import org.specs.mock._
@@ -123,7 +141,7 @@ class anyMatchersUnit extends MatchersSpecification {
   }
   "A throwA + exception matcher" should {
     "be ok if a value throws the expected exception type" in {
-      throwThis(new Error("test"))(throw new Error("test")) must beLike { case (true, _, _) => ok }
+      throwThis(new java.lang.Error("test"))(throw new java.lang.Error("test")) must beLike { case (true, _, _) => ok }
     }
     "be ko if the value doesn't throw any exception" in {
       throwThis(new Exception)(1) must beLike { case (false, _, message) => ok }
@@ -132,15 +150,15 @@ class anyMatchersUnit extends MatchersSpecification {
       throwThis(new Exception)(1)._3 must include((new Exception).getClass.getName)
     }
     "throw a Failure exception if the value throws another exception" in {
-      val matcher: ExceptionClassMatcher[Error] = throwAn[Error]
+      val matcher: ExceptionClassMatcher[java.lang.Error] = throwA[java.lang.Error]
       matcher(throw new Exception) must throwA[FailureException]
     }
     "throw a Failure exception with the other exception message, if the value throws another exception" in {
-      throwThis(new Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
+      throwThis(new java.lang.Error("Error"))(throw new Exception) must throwThis(new FailureException("java.lang.Error: Error should have been thrown. Got: java.lang.Exception"))
     }
     "display a precise failure message if the block has a description" in {
       lazy val block = { throw new Exception  }
-      { theBlock(block) aka "this block" must throwThis(new Error("Error")) } must throwThis(new FailureException("java.lang.Error: Error should have been thrown from this block. Got: java.lang.Exception"))
+      { theBlock(block) aka "this block" must throwThis(new java.lang.Error("Error")) } must throwThis(new FailureException("java.lang.Error: Error should have been thrown from this block. Got: java.lang.Exception"))
     }
   }
   "the message function" should {
