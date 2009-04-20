@@ -28,6 +28,14 @@ class fieldSpec extends Specification {
     "a toString method formatting Doubles properly" in {
       Field("label", 1.2345).toString must_== "label: 1.2345"
     }
+    "allow a to set a success style attribute to decorate the value" in {
+      val f = Field("Result", 1.12).successValue.toXhtml(1)
+      f must ==/(<td class="success">1.12</td>)
+    }
+    "allow a to set both a success style attribute and a bold style to decorate the value" in {
+      val f = Field("Result", 1.12).boldValue.successValue.toXhtml(1)
+      f must ==/(<td class="success"><b>1.12</b></td>)
+    }
   }
   "A Field" can {
     "concanate other fields" in {

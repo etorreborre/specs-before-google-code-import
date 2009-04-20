@@ -30,7 +30,7 @@ trait ToXhtml extends DecoratedXhtml {
   /** set the valign value */
   def valign(s: String): this.type = { valignment(s); this }
   /** status code value */
-  protected val statusCode = Property("value")
+  protected val statusCode = Property("info")
   /** set the status code */
   def statusClass(s: String): this.type = { statusCode(s); this }
  

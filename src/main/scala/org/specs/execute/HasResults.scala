@@ -31,7 +31,7 @@ package org.specs.execute
 trait HasResults {
   /** @return a list of failures */
   def failures: Seq[FailureException]
-  /** @return a list of skipped exceptions (whose messages include the reason for skippingg) */
+  /** @return a list of skipped exceptions (whose messages include the reason for skipping) */
   def skipped: Seq[SkippedException]
   /** @return a list of errors */
   def errors: Seq[Throwable]
@@ -68,7 +68,7 @@ trait HasResults {
   /** @return true if there are no issues */
   def isOk = issues.isEmpty
 }
-object Status extends Enumeration("success", "failure", "error", "skipped", "value") {
+object Status extends Enumeration("success", "failure", "error", "skipped", "info") {
   type Status = Value
   val Success, Failure, Error, Skipped, Info = Value
 }
