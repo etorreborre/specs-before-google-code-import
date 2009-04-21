@@ -55,12 +55,12 @@ class xmlRunnerSpec extends RunnerFixture with JUnit { "The specification for th
 
 <li> {"containing an element for the ko example test containing the failure:\n" +
   <example expectations="1" failures="1" description="have one ko example" errors="0">
-          <failure location="xmlRunnerFixture.scala:47">'1' is not the same as '2'</failure>
+          <failure location="xmlRunnerFixture.scala:65">'1' is not the same as '2'</failure>
     </example>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the ko example test containing the exception:\n" +
   <example description="have an example with an error" expectations="1" failures="0" errors="1">
-      <error location="xmlRunnerFixture.scala:48">error message</error>
+      <error location="xmlRunnerFixture.scala:66">error message</error>
     </example>.as(xml) in checkXml }</li>
 
 <li> {"containing an element for the example containing a sub-example:\n" +

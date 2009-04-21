@@ -27,10 +27,10 @@ class propIterableSpec extends spex.Specification {
   "An iterable property toXhtml method" should {
     val l = List(1.234, 2.345)
     "display one value only if there is only one" in {
-      PropIterable("", List(1.234)).toXhtml must ==/(<td class="value">1.234</td>)
+      PropIterable("", List(1.234)).toXhtml must ==/(<td class="info">1.234</td>)
     }
     "display comma-separated values if there are more than one" in {
-      PropIterable("", l).toXhtml must ==/(<td class="value">1.234, 2.345</td>)
+      PropIterable("", l).toXhtml must ==/(<td class="info">1.234, 2.345</td>)
     }
     "display values with another separator if the valuesFormatter is changed" in {
       val p = PropIterable("", l)
@@ -38,7 +38,7 @@ class propIterableSpec extends spex.Specification {
         case None => ""
         case Some(x) => x.map(p.formatValue(_)).mkString("/")
       })
-      p.toXhtml must ==/(<td class="value">1.234/2.345</td>)
+      p.toXhtml must ==/(<td class="info">1.234/2.345</td>)
     }
     "display values with another formatter if the valueFormatter is changed" in {
       val p = PropIterable("", l)
@@ -46,7 +46,7 @@ class propIterableSpec extends spex.Specification {
         case None => "0.0"
         case Some(d) => new java.text.DecimalFormat("#.#").format(d)
       })
-      p.toXhtml must ==/(<td class="value">1.2, 2.3</td>)
+      p.toXhtml must ==/(<td class="info">1.2, 2.3</td>)
     }
   }
 

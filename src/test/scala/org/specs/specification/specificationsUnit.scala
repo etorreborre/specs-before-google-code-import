@@ -75,20 +75,20 @@ class specificationsUnit extends Specification with ScalaCheck with JUnit {
   }
   "the location of a failure" should {
     "indicate the precise location if it is an anonymous example" in {
-      anonymousSpecification.failures(0).location must_== "specificationsUnit.scala:99"
+      anonymousSpecification.failures(0).location must_== "specificationsUnit.scala:117"
     }
     "indicate the precise location if it is in a sus" in {
-      failedSpecification.failures(0).location must_== "specificationsUnit.scala:100"
+      failedSpecification.failures(0).location must_== "specificationsUnit.scala:118"
     }
     "indicate the precise location if it is a skipped example" in {
-      skippedSpecification.skipped(0).location must_== "specificationsUnit.scala:101"
+      skippedSpecification.skipped(0).location must_== "specificationsUnit.scala:119"
     }
     "indicate the precise location if it is a skipped example with a skipped matcher" in {
-      skippedMatcherSpecification.skipped(0).location must_== "specificationsUnit.scala:102"
+      skippedMatcherSpecification.skipped(0).location must_== "specificationsUnit.scala:120"
     }
     "indicate the precise location if it is in an example" in {
       failedSpecification.failures(0).getMessage must_== "'1' is not equal to '0'"
-      failedSpecification.failures(0).location must_== "specificationsUnit.scala:100"
+      failedSpecification.failures(0).location must_== "specificationsUnit.scala:118"
     }
   }
   "A specification with 2 expectations only" should {
