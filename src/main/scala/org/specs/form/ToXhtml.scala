@@ -85,6 +85,8 @@ trait DecoratedXhtml {
   }
   def valueCellAttribute(name: String, value: String): this.type = decorateValuesCellsWith((s:Node) => setAttribute(s, name, value))
   def labelCellAttribute(name: String, value: String): this.type = decorateLabelsCellsWith((s:Node) => setAttribute(s, name, value))
+  def valueBgcolor(value: String): this.type = valueCellAttribute("bgcolor", value).valueCellAttribute("class", "none")
+  def labelBgcolor(value: String): this.type = labelCellAttribute("bgcolor", value).labelCellAttribute("class", "none")
   def successValues: this.type = valueCellAttribute("class", "success")
   def successValue: this.type = successValues
   def successLabels: this.type = labelCellAttribute("class", "success")

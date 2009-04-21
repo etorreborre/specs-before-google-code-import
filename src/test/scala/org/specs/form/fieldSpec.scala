@@ -36,6 +36,14 @@ class fieldSpec extends Specification {
       val f = Field("Result", 1.12).boldValue.successValue.toXhtml(1)
       f must ==/(<td class="success"><b>1.12</b></td>)
     }
+    "allow a to set an attribute, like bgcolor, on a value cell" in {
+      val f = Field("Result", 1.12).valueCellAttribute("bgcolor", "#FF6699").toXhtml(1)
+      f must ==/(<td class="info" bgcolor="#FF6699">1.12</td>)
+    }
+    "allow a to set the bg color of a cell, setting the class attribute to 'none'" in {
+      val f = Field("Result", 1.12).valueBgcolor("#FF6699").toXhtml(1)
+      f must ==/(<td class="none" bgcolor="#FF6699">1.12</td>)
+    }
   }
   "A Field" can {
     "concanate other fields" in {
