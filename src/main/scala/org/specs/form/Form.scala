@@ -43,7 +43,7 @@ import org.specs.util.Classes._
  *
  */
 class Form(val titleString: Option[String], val factory: ExpectableFactory) extends DelegatedExpectableFactory(factory)
-        with DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory {
+        with FormEnabled {
   /** constructor with no title, this will be set from the class name */
   def this() = this(None, new DefaultExpectableFactory {})
   /** constructor with a title */
@@ -53,7 +53,18 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
   /** constructor with no title and a specific expectable factory */
   def this(factory: ExpectableFactory) = this(None, factory)
   /** @return the title if set or build a new one based on the class name (by uncamelling it) */
-  lazy val title = titleString.getOrElse(className(this.getClass).uncamel)
+  def title = titleString.getOrElse(className(this.getClass).uncamel)
+  /**
+   * add a subForm to this form.
+   */
+  override def form[F <: Form](f: F): F = {
+    f.delegate = this.factory
+    super.form(f)
+  }
+}
+trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory {
+  /** @return the title if set or build a new one based on the class name (by uncamelling it) */
+  def title: String
   /** implementation of the HasLabel trait */
   lazy val label = title
   /** alias for properties or forms held by this Form */
@@ -97,6 +108,13 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     add(f)
     f
   }
+  /**
+   * add a subForm to this form.
+   */
+  def form[F <: Form](f: F): F = {
+    add(f)
+    f
+  }
   /** create a field with no label */
   def field[T](value: =>T): Field[T] = field("", value)
   /**
@@ -123,14 +141,6 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     p.matchesWith(new HaveTheSameElementsAs(_))
     add(p)
     p
-  }
-  /**
-   * add a subForm to this form.
-   */
-  def form[F <: Form](f: F): F = {
-    add(f)
-    f.delegate = this.factory
-    f
   }
   /** executing the Form is done by executing all of its properties. */
   def executeThis = {

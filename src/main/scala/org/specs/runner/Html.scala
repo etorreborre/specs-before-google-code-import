@@ -268,7 +268,7 @@ trait Html extends File {
     <img src={image(result)} id={"rowicon:" + System.identityHashCode(result)}/>
   }
   def image(result: HasResults) = {
-    "images/icon_" + result.status + "_sml.gif"
+    "images/icon_" + result.statusClass + "_sml.gif"
   }
 
   /** Message for an example. */

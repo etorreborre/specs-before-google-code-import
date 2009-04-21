@@ -104,7 +104,7 @@ class Prop[T](val label: String,
   /** format the expected value if set or else the actual value. */
   private[form] def formattedValue = decorateValue(format(this().orElse(actual)))
   /** @return the status of the execution or value if the cell hasn't been executed. */
-  protected def statusClass = if (executed) status else "info"
+  override def statusClass = if (executed) super.statusClass else "info"
   /**
    * Display the Property expected value with a different class attribute
    * depending if it hasn't been executed (white), has failed (yellow),

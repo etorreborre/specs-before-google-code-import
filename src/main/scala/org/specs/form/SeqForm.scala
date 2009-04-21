@@ -50,20 +50,28 @@ class SeqForm[T](seq: Seq[T]) extends Form {
    * 
    * If this is the first line, a table header is added
    */
-  def line(l : Option[T] => LineForm) = {
+  def line(l : Option[T] => LineForm): LineForm = {
     var currentLine: LineForm = null
-    def addHeader = if (rowsNb == 0) inNewRow(currentLine.header) 
     if (rowsNb >= seq.size) {
       currentLine = l(None)
-      addHeader
+      setHeader(currentLine)
       unmatchedLines.append(currentLine.comment)
+      currentLine
     } else {
       currentLine = l(Some(seq(rowsNb)))
-      addHeader
+      setHeader(currentLine)
       trs(currentLine.rows)
       form(currentLine)
     }
   }
+  def line(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
+    l.entityIs(actual)
+  }
+  def setHeader[F <: LineForm](line: F): F = {
+    if (rowsNb == 0) inNewRow(line.header)
+    line
+  }
+
   /**
    * upon execution a new row will be added to notify the user of unmatched lines
    */

@@ -29,11 +29,11 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     var result = desc
     examples foreach { example =>
       def onmouse(example: Example) = {
-        var function = if (example.hasIssues) "showExampleMessage('" + example.status.capitalize + "','" else "showExampleDesc('"
+        var function = if (example.hasIssues) "showExampleMessage('" + example.statusClass.capitalize + "','" else "showExampleDesc('"
         "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
         "onmouseout=\"hideToolTip();\""
       }
-      def toReplace = "==<ex class=\"" + example.status + "\" " + onmouse(example) + ">" +
+      def toReplace = "==<ex class=\"" + example.statusClass + "\" " + onmouse(example) + ">" +
                       format(example.description) + "</ex>=="
       result = result.replace(example.description.toString, toReplace)
     }

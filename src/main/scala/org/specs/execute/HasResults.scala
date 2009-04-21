@@ -36,7 +36,7 @@ trait HasResults {
   /** @return a list of errors */
   def errors: Seq[Throwable]
   /** @return a string showing the status. "error" if there are errors, then "failure", "skipped" or finally "success" */
-  def status = {
+  def statusClass = {
     if (!errors.isEmpty)
       "error"
     else if (!failures.isEmpty)

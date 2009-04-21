@@ -22,10 +22,11 @@ import org.specs.xml.NodeFunctions._
 import scala.collection.mutable.ListBuffer
 import org.specs.form._
 
-class DataTableForm(title: Option[String]) extends TableForm(title) with DataTables {
+class DataTableForm(title: Option[String]) extends TableForm(title) with DataTableFormEnabled {
   def this() = this(None)
   def this(t: String) = this(Some(t))
-
+}
+trait DataTableFormEnabled extends TableFormEnabled with DataTables {
   /** header retrieved from the DataTable header */
   protected var tableHeader: Option[TableHeader] = None
   /** store a reference to the DataTable header */
@@ -38,11 +39,14 @@ class DataTableForm(title: Option[String]) extends TableForm(title) with DataTab
   def dataTable: Option[ExecutableDataTable] = tableHeader.flatMap(_.table)
   /** add a header row if it hasn't been done */
   override def tr[F <: Form](line: F): F = {
-    setHeader(line)
+    line match {
+      case l: LineForm => setHeader(l)
+      case _ => ()
+    }
     appendRows(line.rows)
     line
   }
-  def setHeader[F <: Form](line: F): F = {
+  def setHeader[F <: LineForm](line: F): F = {
     if (unsetHeader && tableHeader.isDefined) {
       tableHeader.map((header: TableHeader) => inNewRow(reduce(header.titles, { (s: String) => <th>{s}</th> })))
       unsetHeader = false

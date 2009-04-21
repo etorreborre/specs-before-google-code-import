@@ -149,7 +149,7 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
   override def toString = valuesList.mkString("|", "|", "|")
   def result = statusAsText + toString + (if (isOk) "" else " ") + issues.map(_.getMessage).mkString(",")
   def toHtml = {
-    <tr class={status}>{
+    <tr class={statusClass}>{
       valuesList.map((v:Any) => <td>{v.toString}</td>)}{
       if (header.isOk) NodeSeq.Empty else <td>{issues.map(_.getMessage)}</td>
     }</tr>

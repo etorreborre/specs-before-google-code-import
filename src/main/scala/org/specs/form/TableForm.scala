@@ -24,10 +24,11 @@ import org.specs.specification.DefaultExpectableFactory
  * 
  * Each time, the set is passed set of line forms, the first line is used to add a header
  */
-class TableForm(title: Option[String]) extends Form(title, new DefaultExpectableFactory {}) {
+class TableForm(title: Option[String]) extends Form(title, new DefaultExpectableFactory {}) with TableFormEnabled {
   def this() = this(None)
   def this(t: String) = this(Some(t))
-
+}
+trait TableFormEnabled extends FormEnabled {
   /** this variable becomes false when there is no more need to insert a header row in the table */
   protected var unsetHeader = true
   /** automatically transform a value into a Field for easier declaration of tr(...) lines */

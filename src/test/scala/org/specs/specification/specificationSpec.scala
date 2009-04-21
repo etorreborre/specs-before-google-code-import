@@ -40,8 +40,8 @@ object basicFeatures extends SpecificationWithSamples {
       twoSystems(that.isOk, that.isOk).systems.size mustBe 2
     }
     "have zero or more examples, sorted by sus" in {
-      twoSystems(that.isOk, that.isKo).systems.first.status must_== "success"
-      twoSystems(that.isOk, that.isKo).systems.last.status must_== "failure"
+      twoSystems(that.isOk, that.isKo).systems.first.statusClass must_== "success"
+      twoSystems(that.isOk, that.isKo).systems.last.statusClass must_== "failure"
     }
    "have no failures if it contains no expectation" in {
      oneEx(that.isOk).failures must beEmpty
