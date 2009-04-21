@@ -79,29 +79,31 @@ trait DecoratedXhtml {
   def decorateValueCell(valueCell: Node) = valuesCellsDecorators.foldLeft(valueCell) { (res: Node, decorator: Node => Node) => 
      decorator(res)
   }
-  private def setClassAttribute(s: Node, value: String) = s match {
-    case e: Elem => e % new UnprefixedAttribute("class", value, Null)
-    case _ => println(s);s
+  private def setAttribute(s: Node, name: String, value: String) = s match {
+    case e: Elem => e % new UnprefixedAttribute(name, value, Null)
+    case _ => s
   }
-  def successValues: this.type = decorateValuesCellsWith((s:Node) => setClassAttribute(s, "success"))
+  def valueCellAttribute(name: String, value: String): this.type = decorateValuesCellsWith((s:Node) => setAttribute(s, name, value))
+  def labelCellAttribute(name: String, value: String): this.type = decorateLabelsCellsWith((s:Node) => setAttribute(s, name, value))
+  def successValues: this.type = valueCellAttribute("class", "success")
   def successValue: this.type = successValues
-  def successLabels: this.type = decorateLabelsCellsWith((s:Node) => setClassAttribute(s, "success"))
+  def successLabels: this.type = labelCellAttribute("class", "success")
   def successLabel: this.type = successLabels
-  def failureValues: this.type = decorateValuesCellsWith((s:Node) => setClassAttribute(s, "success"))
+  def failureValues: this.type = valueCellAttribute("class", "failure")
   def failureValue: this.type = failureValues
-  def failureLabels: this.type = decorateLabelsCellsWith((s:Node) => setClassAttribute(s, "failure"))
+  def failureLabels: this.type = labelCellAttribute("class", "success")
   def failureLabel: this.type = failureLabels
-  def errorValues: this.type = decorateValuesCellsWith((s:Node) => setClassAttribute(s, "error"))
+  def errorValues: this.type = valueCellAttribute("class", "error")
   def errorValue: this.type = errorValues
-  def errorLabels: this.type = decorateLabelsCellsWith((s:Node) => setClassAttribute(s, "error"))
+  def errorLabels: this.type = labelCellAttribute("class", "error")
   def errorLabel: this.type = errorLabels
-  def skippedValues: this.type = decorateValuesCellsWith((s:Node) => setClassAttribute(s, "skipped"))
+  def skippedValues: this.type = valueCellAttribute("class", "skipped")
   def skippedValue: this.type = skippedValues
-  def skippedLabels: this.type = decorateLabelsCellsWith((s:Node) => setClassAttribute(s, "skipped"))
+  def skippedLabels: this.type = labelCellAttribute("class", "skipped")
   def skippedLabel: this.type = skippedLabels
-  def infoValues: this.type = decorateValuesCellsWith((s:Node) => setClassAttribute(s, "info"))
+  def infoValues: this.type = valueCellAttribute("class", "info")
   def infoValue: this.type = infoValues
-  def infoLabels: this.type = decorateLabelsCellsWith((s:Node) => setClassAttribute(s, "info"))
+  def infoLabels: this.type = labelCellAttribute("class", "info")
   def infoLabel: this.type = infoLabels
 
   def italicValues: this.type = decorateValuesWith((s:Node) => <i>{s}</i>)
