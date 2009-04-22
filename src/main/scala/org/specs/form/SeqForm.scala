@@ -64,7 +64,7 @@ class SeqForm[T](seq: Seq[T]) extends Form {
       form(currentLine)
     }
   }
-  def line(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
+  def tr(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
     l.entityIs(actual)
   }
   def setHeader[F <: LineForm](line: F): F = {

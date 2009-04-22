@@ -18,8 +18,8 @@
  */
 package org.specs.form
 
-class EntityLineForm[T](var entity: Option[T]) extends LineForm {
-  def this() = this(None)
+class EntityLineForm[T] extends LineForm {
+  var entity: Option[T] = None
   /** add a new LineProp to that line */
   def prop[S](s: String, f:(T => S)): LineProp[S] = {
     lazy val actual: Option[S] = entity.map(f(_))
