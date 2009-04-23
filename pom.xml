@@ -336,17 +336,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </distributionManagement>
   <profiles>
     <profile>
-      <id>release</id>
+      <id>hudson</id>
       <distributionManagement>
         <repository>
-          <id>scala-tools.org</id>
-          <url>dav:http://dav.scala-tools.org/repo-releases</url>
+          <id>hudson.scala-tools.org</id>
+          <url>file://home/scala-tools.org/www/repo-snapshots</url>
         </repository>
-        <site>
-          <id>scala-tools.org</id>
-          <url>
-          dav:http://dav.scala-tools.org/mvnsites/specs/${project.version}</url>
-        </site>
+        <snapshotRepository>
+          <id>hudson.scala-tools.org</id>
+          <url>file://home/scala-tools.org/www/repo-snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
       </distributionManagement>
     </profile>
   </profiles>
