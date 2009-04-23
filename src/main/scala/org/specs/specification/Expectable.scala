@@ -104,7 +104,7 @@ class Expectable[T](value: => T) {
                                          new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesWhileNameMatches("(Expectable.scala|Matchers.scala)"))
         }
         case _ => {
-          addMatchMessage(koMessage)
+          addMatchMessage(okMessage)
           new Result(this, successValueToString)
         }
       }
