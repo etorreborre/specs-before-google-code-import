@@ -40,6 +40,6 @@ trait Matching {
       }
     }
     def graphWeight(graph: List[(A, B, E)]) = graph.maximum((e: (A, B, E)) => edgeWeight(e._3))
-    combined.maxElement((l:List[(A, B, E)]) => graphWeight(l)).getOrElse(Nil).unique
+    combined.maxElement((l:List[(A, B, E)]) => graphWeight(l)).getOrElse(Nil)
   }
 }

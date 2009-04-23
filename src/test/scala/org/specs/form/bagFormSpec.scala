@@ -69,7 +69,7 @@ class bagFormSpec extends org.specs.Specification with JUnit {
         tr(PersonLine("Bob",  40)) 
       }
       form.execute.matchedLines aka "matched lines" must have size 2
-      form.execute.matchedLines.toString aka "matched lines" must include("Eric") and include("Bob")
+      form.execute.matchedLines.toString aka "matched lines toString" must include("Eric") and include("Bob")
       form.execute.matchedExpectedLines aka "matched expected lines" must have size 2
       form.execute.matchedActual aka "matched actual lines" must have size 2 
       form.execute.unmatchedExpectedLines aka "unmatched expected lines" must have size 1

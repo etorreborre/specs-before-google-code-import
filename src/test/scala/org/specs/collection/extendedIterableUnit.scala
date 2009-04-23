@@ -74,13 +74,18 @@ class extendedIterableUnit extends IterableData with JUnit with ScalaCheck {
         }
       }
     }
-    "combine 2 simplesets" in {
+    "combine 2 simple sets" in {
       val set1 = Set("Art", "Bill")
       val set2 = Set("Ann", "Bess")
       combine(set1, set2) must have the sameElementsAs(List(
         List(("Art", "Ann"), ("Bill", "Bess")),
         List(("Art", "Bess"), ("Bill", "Ann"))
       )) 
+    }
+    "combine 2 simple sets with 3 elements each" in {
+      val set1 = List("Art", "Bill", "Chris")
+      val set2 = List("Ann", "Bess", "Clara")
+      combine(set1, set2) must have size 6
     }
   }
 

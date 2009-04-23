@@ -51,7 +51,7 @@ class matchingSpec extends spex.Specification {
   "matching a set with duplicated element" in {
     val set1 = List("Art", "Art")
     val set2 = List("Art", "Bill")
-    edgeWeight = (t:(String, String)) => if (t._1 == t._2) 1 else 0 
-    bestMatch(set1, set2, edgeFunction, edgeWeight).toString must include("Art") and not include("Bill")
+    edgeWeight = (t:(String, String)) => t._1.size +  t._2.size 
+    bestMatch(set1, set2, edgeFunction, edgeWeight).toString must include("Art") and include("Bill")
   }
 }
