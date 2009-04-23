@@ -66,11 +66,13 @@ class setFormSpec extends org.specs.Specification with JUnit {
         th2("Name", "Age")
         tr(PersonLine("Eric", 36)) 
         tr(PersonLine("Eric", 36)) 
+        tr(PersonLine("Bob",  40)) 
       }
-      form.execute.matchedLines aka "matched lines" must have size 1
-      form.execute.matchedExpectedLines aka "matched expected lines" must have size 1
-      form.execute.matchedActual aka "matched actual lines" must have size 1 
-      form.execute.unmatchedExpectedLines aka "unmatched expected lines" must be empty
+      form.execute.matchedLines aka "matched lines" must have size 2
+      form.execute.matchedLines.toString aka "matched lines" must include("Eric") and include("Bob")
+      form.execute.matchedExpectedLines aka "matched expected lines" must have size 2
+      form.execute.matchedActual aka "matched actual lines" must have size 2 
+      form.execute.unmatchedExpectedLines aka "unmatched expected lines" must have size 1
     }
   }
 }

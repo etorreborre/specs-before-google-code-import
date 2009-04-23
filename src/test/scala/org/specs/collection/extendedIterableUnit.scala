@@ -22,8 +22,8 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.runner._
 
-class extendedIterableUnit extends IterableData with JUnit {
-  "A sameElementsAs function" should returnTrue{
+class extendedIterableUnit extends IterableData with JUnit with ScalaCheck {
+  "A sameElementsAs function" should returnTrue {
     "if 2 lists of lists contain the same elements in a different order" in {
       List(List(1), List(2, 3)) must haveSameElementsAs(List(List(3, 2), List(1)))
     }
@@ -57,6 +57,33 @@ class extendedIterableUnit extends IterableData with JUnit {
       List(1, 2, 3).containsInOrder(2, 1) must beFalse
     }
   }
+  import org.scalacheck.Gen
+  import scala.Math.min
+  val sets = for {
+        size1   <- Gen.choose(1, 3)
+        set1    <- Gen.vectorOf(size1, Gen.elements("Art", "Bill", "Chris"))
+        size2   <- Gen.choose(1, 3)
+        set2   <- Gen.vectorOf(size2, Gen.elements("Ann", "Bess", "Clara"))
+  } yield (Set(set1:_*), Set(set2:_*)) 
+
+  "A combine function" should {
+    "combine 2 sets returning the list of possible associations between the 2 sets" >> {
+      "each list size must have the minimum size of both sets" in {
+        sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
+          combine(set1, set2).forall(_ must have size(min(set1.size, set2.size)))
+        }
+      }
+    }
+    "combine 2 simplesets" in {
+      val set1 = Set("Art", "Bill")
+      val set2 = Set("Ann", "Bess")
+      combine(set1, set2) must have the sameElementsAs(List(
+        List(("Art", "Ann"), ("Bill", "Bess")),
+        List(("Art", "Bess"), ("Bill", "Ann"))
+      )) 
+    }
+  }
+
 }
 import org.specs._
 import scalacheck.Gen._

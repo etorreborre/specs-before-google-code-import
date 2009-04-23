@@ -138,8 +138,9 @@ object ExtendedIterable {
     }
   }
   def combine[A, B](firstSet: Iterable[A], secondSet: Iterable[B]): List[List[(A, B)]] = {
-    for { a  <- everyOrder(firstSet.toList)
+    val values = for { a  <- everyOrder(firstSet.toList)
           b  <- everyOrder(secondSet.toList)
-    } yield a.zip(b).unique
+    } yield Set(a.zip(b).unique:_*)
+    values.unique.map(_.toList)
   }
 }

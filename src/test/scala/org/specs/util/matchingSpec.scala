@@ -48,11 +48,10 @@ class matchingSpec extends spex.Specification {
       bestMatch(set1, set2, edgeFunction, edgeWeight) must have size(min(set1.size, set2.size))
     }
   }
-  "combining 2 sets returns the list of possible associations between the 2 sets" >> {
-    "each list size must have the minimum size of both sets" in {
-      sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
-        combine(set1, set2).forall(_ must have size(min(set1.size, set2.size)))
-      }
-    }
+  "matching a set with duplicated element" in {
+    val set1 = Set("Art", "Art")
+    val set2 = Set("Art", "Bill")
+    edgeWeight = (t:(String, String)) => if (t._1 == t._2) 1 else 0 
+    bestMatch(set1, set2, edgeFunction, edgeWeight).toString must include("Art") and not include("Bill")
   }
 }
