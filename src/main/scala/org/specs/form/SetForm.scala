@@ -30,8 +30,11 @@ import org.specs.execute.Status
  * @see SetForm
  */
 class SetForm[T](title: Option[String], val set: Set[T]) extends TableForm(title) with SetFormEnabled[T] {
+  def this(title: String) = this(Some(title), Set[T]())
+  def this(title: String, set: Seq[T]) = this(Some(title), Set(set:_*))
+  def this(set: Seq[T]) = this(None, Set(set:_*))
   def this(set: Set[T]) = this(None, set)
-  def this() = this(None, Set())
+  def this() = this(None, Set[T]())
 }
 trait SetFormEnabled[T] extends TableFormEnabled {
   val set: Set[T]

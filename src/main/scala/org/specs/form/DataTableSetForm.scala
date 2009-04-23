@@ -19,6 +19,7 @@
 package org.specs.form
 
 class DataTableSetForm[T](title: Option[String], set: Set[T]) extends SetForm[T](set) with DataTableFormEnabled {
+  def this(title: String, set: Seq[T]) = this(Some(title), Set(set:_*))
   def this(title: String, set: Set[T]) = this(Some(title), set)
   override def setHeader[F <: LineForm](line: F): F = super[DataTableFormEnabled].setHeader(line)
   
