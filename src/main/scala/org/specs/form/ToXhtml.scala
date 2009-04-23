@@ -39,7 +39,7 @@ trait ToXhtml extends DecoratedXhtml {
   /** @return the Xhtml embedded in a <td> cell with the status code and alignment */
   def toEmbeddedXhtml: NodeSeq = <td valign={valignment()} class={statusCode()}>{ toXhtml }</td>
   /** @return the Html as a String */
-  def toHtml: String = toXhtml.toString
+  def toHtml: String = new scala.xml.PrettyPrinter(10000, 2).format(toXhtml(0))
 }
 trait DecoratedXhtml {
   /** this functions will decorate the labels on the field/property/form */

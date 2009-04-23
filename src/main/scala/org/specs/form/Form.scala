@@ -163,7 +163,10 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   }
   /** @return a Xhtml table representing the Form. */
   override def toXhtml = {
-    spanLastTd(<table class="dataTable"><tr><th>{title}</th></tr>{ if (!xhtml.isEmpty) xhtml else properties.map(toRow(_)) }</table>)
+    spanLastTd(<table class="dataTable">
+                 <tr><th>{title}</th></tr>
+                 { if (!xhtml.isEmpty) xhtml else properties.map(toRow(_)) }
+               </table>)
   }
   /** execute the table and return its Html as string. */
   def toHtml_! = execute.toHtml
