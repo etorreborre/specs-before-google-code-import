@@ -168,7 +168,7 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   /** execute the table and return its Html as string. */
   def toHtml_! = execute.toHtml
   /** add all the properties as examples to a specification and return the html for display */
-  def report(s: BaseSpecification) = {
+  def reportTo(s: BaseSpecification) = {
 
     execute
     properties.foreach { p => 

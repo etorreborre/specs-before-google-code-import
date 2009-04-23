@@ -17,26 +17,15 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.specification
+import org.specs.form._
 
-import org.specs._
-
-object specificationSpecifications extends Specification {
-    "The Specification specifications" areSpecifiedBy (
-        new baseSpecificationSpec,
-        new beforeAfterSpec,
-		new calculatorSpec,
-        new contextSpec,
-        new exampleSpec,
-        new literateSpec,
-        new literateSnippetSpec,
-        new specificationSpec,
-        new sugarSpec,
-		new taggedSpec,
-	    new timerSpecificationSpec
-	)
-}
-object specificationUnits extends Specification {
-    "The specification unit tests" areSpecifiedBy (
-        new literateSpecUnit,
-        new specificationsUnit)
+class literateSpecUnit extends spex.Specification { outer =>
+  "a literate spec can include forms with a report method" in {
+    object l extends HtmlSpecification { 
+      new Form {
+        prop(1)(1)
+      }.report
+    }
+    l.examples must have size 1
+  }
 }

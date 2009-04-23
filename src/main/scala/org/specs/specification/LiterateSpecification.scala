@@ -128,7 +128,7 @@ trait LiterateForms extends ExpectableFactory with BaseSpecification { outer =>
   }
   implicit def toReportableForm(f: Form) = new ReportableForm(f)
   class ReportableForm(f: Form) {
-    def report: String = f.report(outer)
+    def report = f.reportTo(outer)
   }
 }
 /**
