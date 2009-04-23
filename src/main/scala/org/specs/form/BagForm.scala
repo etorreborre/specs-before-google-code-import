@@ -23,21 +23,19 @@ import org.specs.util.Plural._
 import org.specs.util.Matching._
 import org.specs.execute.Status
 /**
- * A SetForm is a TableForm containing a Set of LineForms
- * and using a Set of values as the actual values.
+ * A BagForm is a TableForm containing a Bag of LineForms
+ * and using a Bag of values as the actual values.
  * 
  * It works like a SeqForm but the order of the rows is not relevant
  * @see SetForm
  */
-class SetForm[T](title: Option[String], val set: Set[T]) extends TableForm(title) with SetFormEnabled[T] {
-  def this(title: String) = this(Some(title), Set[T]())
-  def this(title: String, set: Seq[T]) = this(Some(title), Set(set:_*))
-  def this(set: Seq[T]) = this(None, Set(set:_*))
-  def this(set: Set[T]) = this(None, set)
-  def this() = this(None, Set[T]())
+class BagForm[T](title: Option[String], val bag: Seq[T]) extends TableForm(title) with BagFormEnabled[T] {
+  def this(title: String) = this(Some(title), List[T]())
+  def this(bag: Seq[T]) = this(None, bag)
+  def this() = this(None, List[T]())
 }
-trait SetFormEnabled[T] extends TableFormEnabled {
-  val set: Set[T]
+trait BagFormEnabled[T] extends TableFormEnabled {
+  val bag: Seq[T]
   /** list of declared lines which are expected but not received as actual */
   private val expectedLines = new ListBuffer[Option[T] => LineForm]
   private var unsetHeader = true
@@ -81,7 +79,7 @@ trait SetFormEnabled[T] extends TableFormEnabled {
     type ExpectedLine = Function1[Option[T], LineForm]
     val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
     val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
-    bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
+    bestMatch[ExpectedLine, T, LineForm](expectedLines.toList, bag, 
                        edgeFunction, 
                        edgeWeight)
   }
@@ -89,7 +87,7 @@ trait SetFormEnabled[T] extends TableFormEnabled {
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
   def unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines
-  def unmatchedActual = set.toList -- matchedActual
+  def unmatchedActual = bag.toList -- matchedActual
 
   private def addLines(lines: List[LineForm]): this.type = {
     lines.foreach { line => 

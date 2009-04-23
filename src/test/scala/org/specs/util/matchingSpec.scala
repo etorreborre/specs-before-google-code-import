@@ -31,26 +31,26 @@ class matchingSpec extends spex.Specification {
     set1    <- Gen.vectorOf(size1, Gen.elements("Art", "Bill", "Chris"))
     size2   <- Gen.choose(1, 3)
     set2   <- Gen.vectorOf(size2, Gen.elements("Ann", "Bess", "Clara"))
-  } yield (Set(set1:_*), Set(set2:_*)) 
+  } yield (set1, set2) 
 
   "matching an empty set with an empty set returns an empty list" in {
-    bestMatch(Set[String](), Set[String](), edgeFunction, edgeWeight) must be empty
+    bestMatch(List[String](), List[String](), edgeFunction, edgeWeight) must be empty
   }
   "matching 2 non-empty sets must return edges with the maximum weigth" in {
-    sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
+    sets must pass { s: (Seq[String], Seq[String]) => val (set1, set2) = s
       val maxOfSet1 = set1.toList.maxElement((_:String).size).get
       val maxOfSet2 = set2.toList.maxElement((_:String).size).get
       bestMatch(set1, set2, edgeFunction, edgeWeight) must contain((maxOfSet1, maxOfSet2, (maxOfSet1, maxOfSet2)))
     }
   }
   "matching 2 non-empty sets must return a list of edges which size is the minimum size of both sets" in {
-    sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
+    sets must pass { s: (Seq[String], Seq[String]) => val (set1, set2) = s
       bestMatch(set1, set2, edgeFunction, edgeWeight) must have size(min(set1.size, set2.size))
     }
   }
   "matching a set with duplicated element" in {
-    val set1 = Set("Art", "Art")
-    val set2 = Set("Art", "Bill")
+    val set1 = List("Art", "Art")
+    val set2 = List("Art", "Bill")
     edgeWeight = (t:(String, String)) => if (t._1 == t._2) 1 else 0 
     bestMatch(set1, set2, edgeFunction, edgeWeight).toString must include("Art") and not include("Bill")
   }

@@ -26,8 +26,8 @@ trait Matching {
   /**
    * @return a list containing the matched vertices and corresponding edges
    */
-  def bestMatch[A, B, E](firstSet: Set[A], 
-                         secondSet: Set[B], 
+  def bestMatch[A, B, E](firstSet: Seq[A], 
+                         secondSet: Seq[B], 
                          edgeFunction: Function1[(A, B), E], 
                          edgeWeight: E => Int): List[(A, B, E)] = {
     

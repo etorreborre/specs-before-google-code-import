@@ -19,17 +19,17 @@
 package org.specs.form
 import org.specs.runner._
 
-class setFormSpec extends org.specs.Specification with JUnit {
+class bagFormSpec extends org.specs.Specification with JUnit {
   case class Person(name: String, age: Int)
   case class PersonLine(name: String, age: Int) extends EntityLineForm[Person] {
     prop((_:Person).name)(name)
     prop((_:Person).age)(age)
   }
-  val actual = Set(Person("Eric", 36), Person("Bob", 40))
+  val actual = List(Person("Eric", 36), Person("Bob", 40))
   
   "A set form" should {
     "match all rows if there are the same number of rows than entities" in {
-      val form = new DataTableSetForm("Persons", actual) {
+      val form = new DataTableBagForm("Persons", actual) {
         "Name" | "Age" |
         "Eric" ! 36    | 
         "Bob"  ! 40    | { (name, age) =>
@@ -39,7 +39,7 @@ class setFormSpec extends org.specs.Specification with JUnit {
       (form.execute.toXhtml \\("tr")).toList must have size 4 
     }
     "define, matched/unmatched expected/actual rows" in {
-      val form = new DataTableSetForm("Persons", actual) {
+      val form = new DataTableBagForm("Persons", actual) {
         "Name" | "Age" |
         "Eric" ! 36    | 
         "Bob"  ! 42    | { (name, age) =>
@@ -54,7 +54,7 @@ class setFormSpec extends org.specs.Specification with JUnit {
       form.execute.unmatchedActual aka "unmatched actual lines" must be empty
     }
     "report unmatched rows" in {
-      val form = new SetForm(actual) {
+      val form = new BagForm(actual) {
         th2("Name", "Age")
         tr(PersonLine("Eric", 36)) 
         tr(PersonLine("Bob",  42)) 
@@ -62,7 +62,7 @@ class setFormSpec extends org.specs.Specification with JUnit {
       (form.execute.toXhtml \\("tr")).toList must have size 4
     }
     "not match rows twice" in {
-      val form = new SetForm(actual) {
+      val form = new BagForm(actual) {
         th2("Name", "Age")
         tr(PersonLine("Eric", 36)) 
         tr(PersonLine("Eric", 36)) 
