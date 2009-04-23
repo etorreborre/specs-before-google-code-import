@@ -67,12 +67,12 @@ trait SetFormEnabled[T] extends TableFormEnabled {
     addLines(matchedLines)
     val i = unmatchedExpectedLines.size
     if (i > 0) { 
-      th3("There ".bePlural(i) + i + " unmatched expected lines".plural(i), Status.Failure)
-      unmatchedExpectedLines.foreach { (line: Option[T] => LineForm) => trs(line(None).rows) }
+      th3("There ".bePlural(i) + " " + i + " unmatched expected line".plural(i), Status.Failure)
+      unmatchedExpectedLines.foreach { (line: Option[T] => LineForm) => trs(line(None).reset().rows) }
     }
     val j = unmatchedActual.size
     if (j > 0) { 
-      th3("There ".bePlural(j) + j + " unmatched actual entities".plural(j), Status.Failure)
+      th3("There ".bePlural(j) + " " + j + " unmatched actual line".plural(j), Status.Failure)
       unmatchedActual.foreach { (actual: T) => th3(actual.toString) }
     }
     this

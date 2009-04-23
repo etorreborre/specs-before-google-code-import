@@ -88,7 +88,7 @@ trait SeqFormEnabled[T] extends TableFormEnabled {
   override def executeThis = {
     val i = unmatchedLines.size
     if (i > 0) { 
-      th3("There ".bePlural(i) + i + " unmatched line".plural(i), Status.Failure)
+      th3("There ".bePlural(i) + " " + i + " unmatched line".plural(i), Status.Failure)
       unmatchedLines.foreach { (line: LineForm) => trs(line.rows) }
     }
     super.executeThis
