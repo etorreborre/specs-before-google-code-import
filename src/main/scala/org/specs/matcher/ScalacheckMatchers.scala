@@ -67,7 +67,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * Usage: <code>generated_values must pass(function)</code>
     */
    def pass[T, S](f: T => Boolean)(implicit params: Parameters) = new Matcher[Gen[T]](){
-      def apply(g: => Gen[T]) = checkFunction(g)(f)(params)
+     def apply(g: => Gen[T]) = checkFunction(g)(f)(params)
    }
 
    /**

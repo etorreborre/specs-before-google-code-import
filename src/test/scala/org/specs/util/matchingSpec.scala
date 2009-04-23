@@ -51,8 +51,7 @@ class matchingSpec extends spex.Specification {
   "combining 2 sets returns the list of possible associations between the 2 sets" >> {
     "each list size must have the minimum size of both sets" in {
       sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
-        combine(set1, set2).foreach(_ must have size(min(set1.size, set2.size)))
-        true // dummy value expected by the type checker,...
+        combine(set1, set2).forall(_ must have size(min(set1.size, set2.size)))
       }
     }
   }
