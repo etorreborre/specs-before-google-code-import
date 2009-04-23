@@ -27,6 +27,7 @@ class DataTableForm(title: Option[String]) extends TableForm(title) with DataTab
   def this(t: String) = this(Some(t))
 }
 trait DataTableFormEnabled extends TableFormEnabled with DataTables {
+  private var unsetHeader = true
   /** header retrieved from the DataTable header */
   protected var tableHeader: Option[TableHeader] = None
   /** store a reference to the DataTable header */
@@ -55,8 +56,11 @@ trait DataTableFormEnabled extends TableFormEnabled with DataTables {
   }
   /** execute the table to create the properties and execute them */
   override def execute = {
-    executeTable
-    super.execute
+    if (!executed) {
+      executeTable
+      super.execute
+    }
+    this
   }
   protected def executeTable = {
     tableHeader.map(_.executeWithNoFailureFunction)

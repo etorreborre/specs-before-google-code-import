@@ -23,13 +23,18 @@ import org.specs.util.Plural._
 import org.specs.util.Matching._
 import org.specs.execute.Status
 /**
- * A SetForm is a Form containing a Set of LineForms
+ * A SetForm is a TableForm containing a Set of LineForms
  * and using a Set of values as the actual values.
  * 
  * It works like a SeqForm but the order of the rows is not relevant
  * @see SetForm
  */
-class SetForm[T](val set: Set[T]) extends Form {
+class SetForm[T](title: Option[String], val set: Set[T]) extends TableForm(title) with SetFormEnabled[T] {
+  def this(set: Set[T]) = this(None, set)
+  def this() = this(None, Set())
+}
+trait SetFormEnabled[T] extends TableFormEnabled {
+  val set: Set[T]
   /** list of declared lines which are expected but not received as actual */
   private val expectedLines = new ListBuffer[Option[T] => LineForm]
   private var unsetHeader = true
@@ -40,8 +45,12 @@ class SetForm[T](val set: Set[T]) extends Form {
     expectedLines.append(l)
     l(None)
   }
-  def tr(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
-    l.entityIs(actual)
+  override def tr[F <: Form](l: F): F = {
+    l match {
+      case entityLine: EntityLineForm[T] => this.line { (actual: Option[T]) => entityLine.entityIs(actual) }
+      case _ => super[TableFormEnabled].tr(l)
+    }
+    l
   }
   def setHeader[F <: LineForm](line: F): F = {
     if (rowsNb == 0) inNewRow(line.header)
@@ -52,19 +61,7 @@ class SetForm[T](val set: Set[T]) extends Form {
    * upon execution a new row will be added to notify the user of unmatched lines
    */
   override def executeThis = {
-    type ExpectedLine = Function1[Option[T], LineForm]
-    val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
-    val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
-    val matches = bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
-                       edgeFunction, 
-                       edgeWeight)
-    val linesToAdd = matches.map(_._3)
-    val matchedExpectedLines = matches.map(_._1)
-    val unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines
-    val matchedActual = matches.map(_._2)
-    val unmatchedActual = set.toList -- matchedActual
-    
-    addLines(linesToAdd)
+    addLines(matchedLines)
     val i = unmatchedExpectedLines.size
     if (i > 0) { 
       th3("There ".bePlural(i) + i + " unmatched expected lines".plural(i), Status.Failure)
@@ -77,6 +74,20 @@ class SetForm[T](val set: Set[T]) extends Form {
     }
     this
   }
+  lazy val matches = {
+    type ExpectedLine = Function1[Option[T], LineForm]
+    val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
+    val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
+    bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
+                       edgeFunction, 
+                       edgeWeight)
+  }
+  def matchedLines = matches.map(_._3)
+  def matchedExpectedLines = matches.map(_._1)
+  def matchedActual = matches.map(_._2)
+  def unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines
+  def unmatchedActual = set.toList -- matchedActual
+
   private def addLines(lines: List[LineForm]): this.type = {
     lines.foreach { line => 
       if (unsetHeader) {

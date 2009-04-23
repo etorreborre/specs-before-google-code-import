@@ -100,8 +100,8 @@ class iterableMatchersSpec extends MatchersSpecification {
     }
     "provide a 'haveSize' matcher checking the size of a collection" in {
       List("one", "two") must haveSize(2)
-      expectation(List("one", "two") must haveSize(3)) must failWith("'List(one, two)' doesn't have size 3")
-      expectation(List("one", "two") aka "the list" must haveSize(3)) must failWith("the list 'List(one, two)' doesn't have size 3")
+      expectation(List("one", "two") must haveSize(3)) must failWith("'List(one, two)' doesn't have size 3. It has size 2")
+      expectation(List("one", "two") aka "the list" must haveSize(3)) must failWith("the list 'List(one, two)' doesn't have size 3. It has size 2")
     }
     "provide a 'must be empty' matcher on iterables" in {
       List() must be empty

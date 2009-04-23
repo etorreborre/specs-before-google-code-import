@@ -163,7 +163,7 @@ trait IterableBaseMatchers { outer =>
    * Matches if the size is n
    */
   def haveSize[T <% {def size: Int}](n: Int) = new Matcher[T](){
-    def apply(v: => T) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
+    def apply(v: => T) = {val collection = v; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n + ". It has size " + collection.size)}
   }
 }
 trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
@@ -218,7 +218,7 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     def containMatch(s: String) = result.matchWith(outer.containMatch(s))
   }
   def size[T](n: Int) = new Matcher[Iterable[T]](){
-    def apply(v: => Iterable[T]) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n)}
+    def apply(v: => Iterable[T]) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n  + ". It has size " + collection.size)}
   }
   def sameElementsAs[T](l: Iterable[T]) = new HaveTheSameElementsAs(l)
   def sameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = beTheSameSeqAs(s)(d).asInstanceOf[Matcher[Seq[T]]]

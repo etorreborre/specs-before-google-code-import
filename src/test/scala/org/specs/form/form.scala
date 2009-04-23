@@ -23,6 +23,7 @@ object formSpecifications extends Specification {
   "The form specifications" areSpecifiedBy (
     new fieldSpec,
     new formSpec,
+    new lineFormSpec,
     new propSpec,
     new propIterableSpec
   )

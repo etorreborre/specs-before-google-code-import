@@ -22,7 +22,7 @@ import scala.xml._
 import org.specs.util.Plural._
 import org.specs.execute.Status
 /**
- * A SeqForm is a Form containing a sequence of LineForms
+ * A SeqForm is a TableForm containing a sequence of LineForms
  * and using a sequence of values as the actual values
  * 
  * It is used in conjonction with a custom LineForm representing the values on a line: <code>
@@ -42,7 +42,12 @@ import org.specs.execute.Status
  * }
  * </code>
  */
-class SeqForm[T](val seq: Seq[T]) extends Form {
+class SeqForm[T](title: Option[String], val seq: Seq[T]) extends TableForm(title) with SeqFormEnabled[T] {
+  def this(seq: Seq[T]) = this(None, seq)
+  def this() = this(None, List())
+}
+trait SeqFormEnabled[T] extends TableFormEnabled {
+  val seq: Seq[T]
   /** list of declared lines which are expected but not received as actual */
   private var unmatchedLines = new ListBuffer[LineForm]
   /** number of already expected lines */

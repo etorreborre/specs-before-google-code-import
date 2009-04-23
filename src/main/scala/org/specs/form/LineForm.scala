@@ -30,7 +30,8 @@ import org.specs.xml.NodeFunctions._
  *
  */
 class LineForm extends Form {
-
+  /** state variable to know if the rows have already been tr-ed to the form. */
+  private var propertiesAreLayedout = false
   /** list of the properties to display */
   protected val lineProperties: ListBuffer[LabeledXhtml] = new ListBuffer
 
@@ -49,7 +50,10 @@ class LineForm extends Form {
   }
   /** when rows are requested (one row only in that case), the properties are added on the same row.  */
   override def rows = {
-    tr(lineProperties:_*)
+    if (!propertiesAreLayedout) {
+      tr(lineProperties:_*)
+      propertiesAreLayedout = true
+    }
     super.rows
   }
   override def propertiesAndFields = lineProperties.toList ::: super.propertiesAndFields
