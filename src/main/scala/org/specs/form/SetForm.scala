@@ -55,9 +55,27 @@ class SetForm[T](val set: Set[T]) extends Form {
     type ExpectedLine = Function1[Option[T], LineForm]
     val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
     val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
-    addLines(bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
+    val matches = bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
                        edgeFunction, 
-                       edgeWeight).map(_._3))
+                       edgeWeight)
+    val linesToAdd = matches.map(_._3)
+    val matchedExpectedLines = matches.map(_._1)
+    val unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines
+    val matchedActual = matches.map(_._2)
+    val unmatchedActual = set.toList -- matchedActual
+    
+    addLines(linesToAdd)
+    val i = unmatchedExpectedLines.size
+    if (i > 0) { 
+      th3("There ".bePlural(i) + i + " unmatched expected lines".plural(i), Status.Failure)
+      unmatchedExpectedLines.foreach { (line: Option[T] => LineForm) => trs(line(None).rows) }
+    }
+    val j = unmatchedActual.size
+    if (j > 0) { 
+      th3("There ".bePlural(j) + j + " unmatched actual entities".plural(j), Status.Failure)
+      unmatchedActual.foreach { (actual: T) => th3(actual.toString) }
+    }
+    this
   }
   private def addLines(lines: List[LineForm]): this.type = {
     lines.foreach { line => 
