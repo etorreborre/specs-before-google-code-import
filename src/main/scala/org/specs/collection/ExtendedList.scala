@@ -25,7 +25,7 @@ import scala.collection.immutable._
  * <li><code>removeFirst</code>: returns a list minus the first element matching a given element according to a predicate
  * </ul>
  */
-object ExtendedList {
+object ExtendedList { outer =>
   /**
    * @return a list of lists where x is inserted between every element of the original list
    */
@@ -101,5 +101,53 @@ object ExtendedList {
      * @return a randomly mixed list
      */
     def scramble = l.sort((a, b) => (new java.util.Random).nextInt(1) > 0)
+    
+    /**
+     * @return a list without duplicates
+     */
+    def unique = Set(l:_*).toList
+    
+    /**
+     * @return the max element according the function f
+     */
+    def maxElement(f: T => Int): Option[T] = outer.maxElement(l, f)
+    /**
+     * @return the maximum value according the function f
+     */
+    def maximum(f: T => Int): Int = outer.maximum(l, f)
+    /**
+     * @return the max according the function f
+     */
+    def max(f: T => Int) = outer.max(l, f)
+    /**
+     * @return the min element according the function f
+     */
+    def minElement(f: T => Int): Option[T] = outer.minElement(l, f)
+    /**
+     * @return the minimum value according the function f
+     */
+    def minimum(f: T => Int): Int = outer.minimum(l, f)
+    /**
+     * @return the min according the function f
+     */
+    def min(f: T => Int) = outer.min(l, f)
+  }
+  def maxElement[T](list: List[T], f: T => Int): Option[T] = max(list, f)._1
+  def maximum[T](list: List[T], f: T => Int): Int = max(list, f)._2
+  def max[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, 0, None, (_>_))
+  def minElement[T](list: List[T], f: T => Int): Option[T] = min(list, f)._1
+  def minimum[T](list: List[T], f: T => Int): Int = min(list, f)._2
+  def min[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, scala.Math.MAX_INT, None, (_<_))
+  def optimum[T](list: List[T], f: T => Int, currentOptimum: Int, optimumElement: Option[T], compare: (Int, Int) => Boolean): (Option[T], Int) ={
+    list match {
+      case Nil => (optimumElement, currentOptimum)
+      case a :: rest => {
+        val currentValue = f(a)
+        if (compare(currentValue, currentOptimum)) 
+          optimum(rest, f, currentValue, Some(a), compare) 
+        else 
+          optimum(rest, f, currentOptimum, optimumElement, compare)
+      }
+    }
   }
 }

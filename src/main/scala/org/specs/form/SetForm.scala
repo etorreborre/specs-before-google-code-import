@@ -17,57 +17,28 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.form
-import scala.collection.mutable._
+import scala.collection.mutable.ListBuffer
 import scala.xml._
 import org.specs.util.Plural._
+import org.specs.util.Matching._
 import org.specs.execute.Status
 /**
- * A SeqForm is a Form containing a sequence of LineForms
- * and using a sequence of values as the actual values
+ * A SetForm is a Form containing a Set of LineForms
+ * and using a Set of values as the actual values.
  * 
- * It is used in conjonction with a custom LineForm representing the values on a line: <code>
- * 
- * // @see EntityLineForm for LineForms representing a specific entity, possibly unset
- * case class CustomerLine(name: String, age: Int) extends EntityLineForm[Customer] {
- * // the prop method accepts a function here, taking the proper attribute on the "Entity"
- *   prop("Name", (_:Customer).getName)(name)
- *   prop("Age", (_:Customer).getAge)(age)
- * }
- * class Customers(actualCustomers: Seq[Customer]) extends SeqForm[T](actualCustomers)
- *  
- * // example usage
- * new Customers(listFromTheDatabase) {
- *   tr(CustomerLine("Eric", 36))
- *   tr(CustomerLine("Bob", 27))
- * }
- * </code>
+ * It works like a SeqForm but the order of the rows is not relevant
+ * @see SetForm
  */
-class SeqForm[T](val seq: Seq[T]) extends Form {
+class SetForm[T](val set: Set[T]) extends Form {
   /** list of declared lines which are expected but not received as actual */
-  private var unmatchedLines = new ListBuffer[LineForm]
-  /** number of already expected lines */
-  private var expectedLinesNb = 0
+  private val expectedLines = new ListBuffer[Option[T] => LineForm]
+  private var unsetHeader = true
   /** 
-   * add a new line with a function taking an object (which may be None, if the set of actual values doesn't contain enough values), 
-   * returning a LineForm
-   * 
-   * If this is the first line, a table header is added
+   * add a new expected line 
    */
   def line(l : Option[T] => LineForm): LineForm = {
-    var currentLine: LineForm = null
-    if (expectedLinesNb >= seq.size) {
-      currentLine = l(None)
-      setHeader(currentLine)
-      unmatchedLines.append(currentLine.comment)
-      currentLine
-    } else {
-      currentLine = l(Some(seq(expectedLinesNb)))
-      setHeader(currentLine)
-      trs(currentLine.rows)
-      form(currentLine)
-    }
-    expectedLinesNb = expectedLinesNb + 1
-    currentLine
+    expectedLines.append(l)
+    l(None)
   }
   def tr(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
     l.entityIs(actual)
@@ -81,11 +52,21 @@ class SeqForm[T](val seq: Seq[T]) extends Form {
    * upon execution a new row will be added to notify the user of unmatched lines
    */
   override def executeThis = {
-    val i = unmatchedLines.size
-    if (i > 0) { 
-      th3("There ".bePlural(i) + i + " unmatched line".plural(i), Status.Failure)
-      unmatchedLines.foreach { (line: LineForm) => trs(line.rows) }
+    type ExpectedLine = Function1[Option[T], LineForm]
+    val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
+    val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
+    addLines(bestMatch[ExpectedLine, T, LineForm](Set(expectedLines.toList:_*), set, 
+                       edgeFunction, 
+                       edgeWeight).map(_._3))
+  }
+  private def addLines(lines: List[LineForm]): this.type = {
+    lines.foreach { line => 
+      if (unsetHeader) {
+        setHeader(line)
+        unsetHeader = false
+      }
+      trs(line.rows)
     }
-    super.executeThis
+    this
   }
 }

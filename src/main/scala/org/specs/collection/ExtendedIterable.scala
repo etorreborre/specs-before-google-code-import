@@ -137,4 +137,9 @@ object ExtendedIterable {
        def sameElementsAs(that: Any): Boolean = x == that
     }
   }
+  def combine[A, B](firstSet: Iterable[A], secondSet: Iterable[B]): List[List[(A, B)]] = {
+    for { a  <- everyOrder(firstSet.toList)
+          b  <- everyOrder(secondSet.toList)
+    } yield a.zip(b).unique
+  }
 }

@@ -70,9 +70,9 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   /** alias for properties or forms held by this Form */
   type FormProperty = DefaultExecutable with LabeledXhtml
   /** Props or Forms held by this Form */
-  protected val properties: ListBuffer[FormProperty] = new ListBuffer
+  val properties: ListBuffer[FormProperty] = new ListBuffer
   /** Fields held by this Form */
-  protected val fields: ListBuffer[Field[_]] = new ListBuffer
+  val fields: ListBuffer[Field[_]] = new ListBuffer
   /**
    * add a Prop to the Form.
    */
