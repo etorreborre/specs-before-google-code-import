@@ -324,13 +324,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <distributionManagement>
     <repository>
       <id>scala-tools.org</id>
-      <url>
-      http://scala-tools.org:8081/nexus/content/repositories/releases</url>
+      <url>http://nexus.scala-tools.org/content/repositories/releases</url>
     </repository>
     <snapshotRepository>
       <id>scala-tools.org</id>
-      <url>
-      http://scala-tools.org:8081/nexus/content/repositories/snapshots</url>
+      <url>http://nexus.scala-tools.org/content/repositories/snapshots</url>
       <uniqueVersion>false</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
