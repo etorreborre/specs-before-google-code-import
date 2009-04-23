@@ -110,7 +110,7 @@ trait LiterateProperties extends Properties with ExpectableFactory {
 /**
  * This trait adds shortcut to declare forms in the specification text
  */
-trait LiterateForms extends ExpectableFactory with BaseSpecification { 
+trait LiterateForms extends ExpectableFactory with BaseSpecification { outer =>
   /**
    * This method allows to embbed a Form in a literate specification and display the results of its execution
    */
@@ -125,6 +125,10 @@ trait LiterateForms extends ExpectableFactory with BaseSpecification {
       }
       description + "\n" + formToExecute.toHtml.toString
     }
+  }
+  implicit def toReportableForm(f: Form) = new ReportableForm(f)
+  class ReportableForm(f: Form) {
+    def report: String = f.report(outer)
   }
 }
 /**
