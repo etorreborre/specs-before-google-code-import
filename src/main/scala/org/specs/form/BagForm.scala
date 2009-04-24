@@ -37,7 +37,7 @@ class BagForm[T](title: Option[String], val bag: Seq[T]) extends TableForm(title
 trait BagFormEnabled[T] extends TableFormEnabled {
   val bag: Seq[T]
   /** list of declared lines which are expected but not received as actual */
-  private val expectedLines = new ListBuffer[Option[T] => LineForm]
+  protected val expectedLines = new ListBuffer[Option[T] => LineForm]
   private var unsetHeader = true
   /** 
    * add a new expected line 
@@ -76,12 +76,12 @@ trait BagFormEnabled[T] extends TableFormEnabled {
     this
   }
   type ExpectedLine = Function1[Option[T], LineForm]
-  val edgeFunction = (t: (ExpectedLine, T)) => t._1(Some(t._2))
-  val edgeWeight = (l: LineForm) => l.execute.properties.filter(_.isOk).size
-  lazy val matches = bestMatch[ExpectedLine, T, LineForm](expectedLines.toList, bag, 
+  val edgeFunction = (t: (ExpectedLine, T)) => t
+  val edgeWeight = (l: (ExpectedLine, T)) => (l._1(Some(l._2))).execute.properties.filter(_.isOk).size
+  lazy val matches = bestMatch[ExpectedLine, T, (ExpectedLine, T)](expectedLines.toList, bag, 
                        edgeFunction, 
                        edgeWeight)
-  def matchedLines = matches.map(_._3)
+  def matchedLines = matches.map(_._3).map(t => t._1(Some(t._2)).execute)
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
   def unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines

@@ -38,4 +38,15 @@ class lineFormSpec extends spex.Specification {
       lineForm.rows aka "multiple rows query" must have size 1
     }
   }
+  "An entity line form" should {
+    "reset its actual values when the entity changes" in {
+      val stringSize = new EntityLineForm[String] {
+        prop((_:String).size)(5)
+      }
+      val update = (a: Option[String]) => stringSize.entityIs(a)
+      update(None).execute.isOk must be(true)
+      update(Some("Hello")).execute.isOk must be(true)
+      update(Some("My dear")).execute.isOk must be(false)
+    }
+  }
 }

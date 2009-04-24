@@ -77,8 +77,8 @@ class bagFormSpec extends org.specs.Specification with JUnit {
     "match the maximum rows" in {
       val form = new BagForm(actual) {
         th2("Name", "Age")
-        tr(PersonLine("Eric", 38)) 
         tr(PersonLine("Eric", 36)) 
+        tr(PersonLine("Eric", 38)) 
         tr(PersonLine("Bob",  40)) 
       }
       form.execute.matchedLines aka "matched lines" must have size 2

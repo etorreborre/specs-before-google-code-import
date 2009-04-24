@@ -17,16 +17,13 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.form
+import org.specs.util.Property
 
 class EntityLineForm[T] extends LineForm {
-  var entity: Option[T] = None
+  var entity: Property[Option[T]] = Property(None)
   /** add a new LineProp to that line */
   def prop[S](s: String, f:(T => S)): LineProp[S] = {
-    lazy val actual: Option[S] = entity.map(f(_))
-    val p = new LineProp(label, None, actual, Some(MatcherConstraint((m:org.specs.matcher.Matcher[S]) => actual.map(_ must m))))
-    lineProperties.append(p)
-    add(p)
-    p
+    super.prop(label, None, entity().map(f(_)))
   }
   /** add a new LineProp to that line */
   def prop[S](f:(T => S)): LineProp[S] = prop("", f) 
@@ -35,5 +32,8 @@ class EntityLineForm[T] extends LineForm {
   /** in that case a LineField is modeled as a commented line prop */
   def field[S](f:(T => S)): LineProp[S] = field("", f) 
   def entityIs(a: T): this.type = entityIs(Some(a))
-  def entityIs(a: Option[T]): this.type = { entity = a; this }
+  def entityIs(a: Option[T]): this.type = { 
+    entity(a)
+    this 
+  }
 }

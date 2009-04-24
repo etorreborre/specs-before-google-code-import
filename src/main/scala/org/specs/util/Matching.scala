@@ -33,13 +33,20 @@ trait Matching {
     
     // brutal force approach
     // create all possible combinations and take the least costly
+    var existingEdges = Map[(A, B), E]()
     val combined: List[List[(A, B, E)]] = combine(firstSet, secondSet).map { (l: List[(A, B)]) => 
       l.map { (e: (A, B)) => 
         val (a, b) = e
-        (a, b, edgeFunction(a, b))
+        if (existingEdges.isDefinedAt(e))
+          (a, b, existingEdges(e))
+        else {
+          val newEdge = edgeFunction(a, b)
+          existingEdges = existingEdges.update(e, newEdge)
+          (a, b, newEdge)
+        }
       }
     }
-    def graphWeight(graph: List[(A, B, E)]) = graph.maximum((e: (A, B, E)) => edgeWeight(e._3))
+    def graphWeight(graph: List[(A, B, E)]) = graph.foldLeft(0)((total: Int, e: (A, B, E)) => total + edgeWeight(e._3))
     combined.maxElement((l:List[(A, B, E)]) => graphWeight(l)).getOrElse(Nil)
   }
 }

@@ -79,6 +79,11 @@ class extendedListUnit extends TestData with JUnit {
       List(1, 2).toMap("for you") must havePairs(1 -> "for you", 2 -> "for you")
     }
   }
+  "A maxElement function" should {
+    "return the maximum element of a list" in {
+      List("a", "bb", "ccc").maxElement(_.size) must_== Some("ccc")
+    }
+  }
 }
 import org.specs.Sugar._
 import org.specs._

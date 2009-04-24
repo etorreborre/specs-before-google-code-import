@@ -48,6 +48,13 @@ class LineForm extends Form {
     add(p)
     p
   }
+  /** add a new LineProp to that line with expected and actual value */
+  def prop[T](label: String, expected: Option[T], actual: =>Option[T]) = {
+    val p = new LineProp(label, expected, actual, Some(MatcherConstraint((m:org.specs.matcher.Matcher[T]) => actual.map(_ must m))))
+    lineProperties.append(p)
+    add(p)
+    p
+  }
   /** when rows are requested (one row only in that case), the properties are added on the same row.  */
   override def rows = {
     if (!propertiesAreLayedout) {
