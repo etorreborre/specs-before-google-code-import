@@ -37,18 +37,12 @@ class BagForm[T](title: Option[String], val bag: Seq[T]) extends TableForm(title
 trait BagFormEnabled[T] extends TableFormEnabled {
   val bag: Seq[T]
   /** list of declared lines which are expected but not received as actual */
-  protected val expectedLines = new ListBuffer[Option[T] => LineForm]
+  protected val expectedEntities = new ListBuffer[EntityLineForm[T]]
   private var unsetHeader = true
-  /** 
-   * add a new expected line 
-   */
-  def line(l : Option[T] => LineForm): LineForm = {
-    expectedLines.append(l)
-    l(None)
-  }
+
   override def tr[F <: Form](l: F): F = {
     l match {
-      case entityLine: EntityLineForm[T] => this.line { (actual: Option[T]) => entityLine.entityIs(actual) }
+      case entityLine: EntityLineForm[T] => expectedEntities.append(entityLine)
       case _ => super[TableFormEnabled].tr(l)
     }
     l
@@ -66,7 +60,7 @@ trait BagFormEnabled[T] extends TableFormEnabled {
     val i = unmatchedExpectedLines.size
     if (i > 0) { 
       th3("There ".bePlural(i) + " " + i + " unmatched expected line".plural(i), Status.Failure)
-      unmatchedExpectedLines.foreach { (line: Option[T] => LineForm) => trs(line(None).reset().rows) }
+      unmatchedExpectedLines.foreach { (line: EntityLineForm[T]) => trs(line.entityIs(None).reset().rows) }
     }
     val j = unmatchedActual.size
     if (j > 0) { 
@@ -75,16 +69,15 @@ trait BagFormEnabled[T] extends TableFormEnabled {
     }
     this
   }
-  type ExpectedLine = Function1[Option[T], LineForm]
-  val edgeFunction = (t: (ExpectedLine, T)) => t
-  val edgeWeight = (l: (ExpectedLine, T)) => (l._1(Some(l._2))).execute.properties.filter(_.isOk).size
-  lazy val matches = bestMatch[ExpectedLine, T, (ExpectedLine, T)](expectedLines.toList, bag, 
+  val edgeFunction = (t: (EntityLineForm[T], T)) => t
+  val edgeWeight = (l: (EntityLineForm[T], T)) => (l._1.entityIs(l._2)).execute.properties.filter(_.isOk).size
+  lazy val matches = bestMatch(expectedEntities.toList, bag, 
                        edgeFunction, 
                        edgeWeight)
-  def matchedLines = matches.map(_._3).map(t => t._1(Some(t._2)).execute)
+  def matchedLines = matches.map(_._3).map((t: (EntityLineForm[T], T)) => (t._1:EntityLineForm[T]).entityIs(t._2).execute)
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
-  def unmatchedExpectedLines = expectedLines.toList -- matchedExpectedLines
+  def unmatchedExpectedLines = expectedEntities.toList -- matchedExpectedLines
   def unmatchedActual = bag.toList -- matchedActual
 
   private def addLines(lines: List[LineForm]): this.type = {
