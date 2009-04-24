@@ -74,5 +74,18 @@ class bagFormSpec extends org.specs.Specification with JUnit {
       form.execute.matchedActual aka "matched actual lines" must have size 2 
       form.execute.unmatchedExpectedLines aka "unmatched expected lines" must have size 1
     }
+    "match the maximum rows" in {
+      val form = new BagForm(actual) {
+        th2("Name", "Age")
+        tr(PersonLine("Eric", 38)) 
+        tr(PersonLine("Eric", 36)) 
+        tr(PersonLine("Bob",  40)) 
+      }
+      form.execute.matchedLines aka "matched lines" must have size 2
+      form.execute.matchedLines.toString aka "matched lines toString" must include("Eric") and include("Bob") and include("36")
+      form.execute.matchedExpectedLines aka "matched expected lines" must have size 2
+      form.execute.matchedActual aka "matched actual lines" must have size 2 
+      form.execute.unmatchedExpectedLines aka "unmatched expected lines" must have size 1
+    }
   }
 }
