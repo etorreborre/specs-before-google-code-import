@@ -68,6 +68,7 @@ class bagFormSpec extends org.specs.Specification with JUnit {
         tr(PersonLine("Eric", 36)) 
         tr(PersonLine("Bob",  40)) 
       }
+      form.execute.expectedLines aka "expected lines" must have size 3
       form.execute.matchedLines aka "matched lines" must have size 2
       form.execute.matchedLines.toString aka "matched lines toString" must include("Eric") and include("Bob")
       form.execute.matchedExpectedLines aka "matched expected lines" must have size 2
@@ -81,6 +82,7 @@ class bagFormSpec extends org.specs.Specification with JUnit {
         tr(PersonLine("Eric", 38)) 
         tr(PersonLine("Bob",  40)) 
       }
+      form.execute.expectedLines aka "expected lines" must have size 3
       form.execute.matchedLines aka "matched lines" must have size 2
       form.execute.matchedLines.toString aka "matched lines toString" must include("Eric") and include("Bob") and include("36")
       form.execute.matchedExpectedLines aka "matched expected lines" must have size 2

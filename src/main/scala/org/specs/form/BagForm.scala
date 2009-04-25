@@ -22,6 +22,7 @@ import scala.xml._
 import org.specs.util.Plural._
 import org.specs.util.Matching._
 import org.specs.execute.Status
+import org.specs.collection.ExtendedList._
 /**
  * A BagForm is a TableForm containing a Bag of LineForms
  * and using a Bag of values as the actual values.
@@ -37,7 +38,8 @@ class BagForm[T](title: Option[String], val bag: Seq[T]) extends TableForm(title
 trait BagFormEnabled[T] extends TableFormEnabled {
   val bag: Seq[T]
   /** list of declared lines which are expected but not received as actual */
-  protected val expectedEntities = new ListBuffer[EntityLineForm[T]]
+  private val expectedEntities = new ListBuffer[EntityLineForm[T]]
+  def expectedLines = expectedEntities.toList 
   private var unsetHeader = true
 
   override def tr[F <: Form](l: F): F = {
@@ -71,14 +73,14 @@ trait BagFormEnabled[T] extends TableFormEnabled {
   }
   val edgeFunction = (t: (EntityLineForm[T], T)) => t
   val edgeWeight = (l: (EntityLineForm[T], T)) => (l._1.entityIs(l._2)).execute.properties.filter(_.isOk).size
-  lazy val matches = bestMatch(expectedEntities.toList, bag, 
+  lazy val matches = bestMatch(expectedLines, bag, 
                        edgeFunction, 
                        edgeWeight)
   def matchedLines = matches.map(_._3).map((t: (EntityLineForm[T], T)) => (t._1:EntityLineForm[T]).entityIs(t._2).execute)
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
-  def unmatchedExpectedLines = expectedEntities.toList -- matchedExpectedLines
-  def unmatchedActual = bag.toList -- matchedActual
+  def unmatchedExpectedLines = expectedLines.difference(matchedExpectedLines)
+  def unmatchedActual = bag.toList.difference(matchedActual)
 
   private def addLines(lines: List[LineForm]): this.type = {
     lines.foreach { line => 

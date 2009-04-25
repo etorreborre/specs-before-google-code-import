@@ -105,7 +105,17 @@ class extendedIterableUnit extends IterableData with JUnit with ScalaCheck {
       combine(set1, set2) must have size 6
     }
   }
-
+  "A difference method" should {
+    "remove one element" in {
+       List(1, 2).difference(List(2)) must_== List(1)
+    }
+    "remove all elements only once" in {
+       List(1, 2).difference(List(1, 2)) must_== List()
+    }
+    "remove elements only once" in {
+       List(1, 2, 2).difference(List(2)) must_== List(1, 2)
+    }
+  }
 }
 import org.specs._
 import scalacheck.Gen._

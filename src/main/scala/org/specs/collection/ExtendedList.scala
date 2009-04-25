@@ -131,7 +131,25 @@ object ExtendedList { outer =>
      * @return the min according the function f
      */
     def min(f: T => Int) = outer.min(l, f)
+    /** @returns the difference of 2 lists but only removing elements once */
+    def difference(list2: List[T]): List[T] = outer.difference(l, list2)
   }
+  /** @returns the difference of 2 lists but only removing elements once */
+  def difference[A](list1: List[A], list2: List[A]): List[A] = {
+    list1 match {
+      case Nil => Nil
+      case a :: Nil => if (list2.contains(a)) Nil else list1
+      case a :: rest => {
+        if (list2.isEmpty)
+          list1
+        else if (list2.exists((x: A) => a == x)) 
+          difference(rest, difference(list2, List(a))) 
+        else 
+          a :: difference(rest, list2)
+      } 
+    }
+  }
+
   def maxElement[T](list: List[T], f: T => Int): Option[T] = max(list, f)._1
   def maximum[T](list: List[T], f: T => Int): Int = max(list, f)._2
   def max[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, 0, None, (_>_))
