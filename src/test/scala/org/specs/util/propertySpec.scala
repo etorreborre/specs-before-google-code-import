@@ -26,6 +26,15 @@ class propertySpec extends spex.Specification {
       p({fail("must not be thrown"); 2}) must not (throwA[FailureException])
       p() must throwA[FailureException]
     }
+    "allow its value to be modified directly" in {
+      val p = new Property(() => Some(new scala.collection.mutable.ListBuffer[Int]))
+      p.get.append(1)
+      p.get.toList must_== List(1)
+    }
+    "allow its value to be updated" in {
+      val p = Property(1)
+      p.withValue(2).get must_== 2
+    }
     "behave like an Option" in {
       "have an elements method" >> {
         Property(1).elements.toList must_== List(1)

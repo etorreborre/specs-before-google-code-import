@@ -19,12 +19,25 @@
 package org.specs.specification
 import org.specs._
 import org.specs.runner._
+import org.specs.util.Property
 
-class snippetSpec extends Specification with JUnit {
+class snippetSpec extends Specification with JUnit with Snippets {
   "A snippet" should {
-    "cumulutate preludes" in {
+    "have a prelude method" in {
+      val s = Snippet("").prelude("prelude")
+      s.code must include("prelude")
+    }
+    "cumulate preludes" in {
       val s = Snippet("").prelude("prelude1").prelude("prelude2")
-      s.code must (include("prelude1") and include("prelude2"))
+      s.code must include("prelude1") and include("prelude2")
+    }
+  }
+  "The Snippets trait" should {
+    "allow a property to store the current snippet" in {
+      val it = Property[Snippet](Snippet(""))
+      "import org.specs._" prelude it
+      "object s extends Specification" snip it
+      it.get.code must include("import") //and include("Specification")
     }
   }
 }

@@ -25,16 +25,16 @@ trait Snippets extends ScalaInterpreter {
   class SnippetAdder(snippet: Snippet) {
 	def add(prop: Property[Snippet]): String = addTo(prop)
 	def addTo(prop: Property[Snippet]): String = {
-	  prop.forceUpdate(prop() ++ snippet)
+	  prop.forceUpdate(prop.get ++ snippet)
 	  format(snippet.snippet)
 	}
 	def prelude(prop: Property[Snippet]): String = {
-	  prop().prelude(snippet.snippet)
+	  prop.get.prelude(snippet.snippet)
 	  format(snippet.snippet)
 	}
 	def snip(prop: Property[Snippet]): String = {
 	  val newSnippet = Snippet(snippet.snippet)
-	  newSnippet.prelude(prop().prelude)
+	  newSnippet.prelude(prop.get.prelude)
 	  prop(newSnippet) 
 	  format(snippet.snippet)
 	}

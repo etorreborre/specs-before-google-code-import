@@ -19,10 +19,15 @@
 package org.specs.util
 import scala.xml._
 /**
- * This class represent properties which can be updated and retrieved using customized getter and setter functions
+ * This class represent properties which can be updated and retrieved using customized getter and setter functions.
+ * 
+ * The held value is optional: it may not exist yet and it is lazy: it is evaluated only once on the first call to get
  */
 class Property[T](var value: () => Option[T]) {
-
+  /** true when the value will have been evaluated once */
+  private var valueHasBeenEvaluated = false
+  /** first evaluation of the Property's value */
+  private var evaluatedValue: Option[T] = None
   /**
    * setter function used to set the property value. The default is the identity function
    */
@@ -43,9 +48,17 @@ class Property[T](var value: () => Option[T]) {
   /** change the value */
   def updateValue(init: =>Option[T]): this.type = {
     value = () => init
+    valueHasBeenEvaluated = false
     this
   }
-  def optionalValue = value()
+  /** @return the value as an Option */
+  def optionalValue = {
+    if (!valueHasBeenEvaluated) {
+      evaluatedValue = value()
+      valueHasBeenEvaluated = true
+    }
+    evaluatedValue
+  }
   /**
    * @returns a value using the getter function
    */
