@@ -41,8 +41,8 @@ class descriptionFormatterSpec extends Specification with JUnit {
     val example = new Example("example desc", this).in { 1 must_== 1 }
     "set the status of the example descriptions depending on the example status" in {
       wikiFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)) must (
-        include("""this is the ==<ex class="success" """) and
-        include("</ex>== to be highlighted")
+        include("""this is the <ex class="success" """) and
+        include("</ex> to be highlighted")
       )
     }
   }
