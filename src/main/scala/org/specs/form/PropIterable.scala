@@ -28,7 +28,7 @@ class MatcherPropIterable[T](override val label: String,
                              actual: Property[Iterable[T]], constraint: Option[MatcherConstraint[Iterable[T]]]) extends
   MatcherProp[Iterable[T]](label, expectedIt, actual, constraint) with ValuesFormatter[T] {
 
-  override def copy = new MatcherPropIterable(label, expectedIt, actual, constraint).asInstanceOf[this.type]
+  override def copy: MatcherPropIterable[T] = new MatcherPropIterable(label, expectedIt, actual, constraint)
 
   /** apply method with multiple args for better readability */
   def apply(v: T*): this.type = {

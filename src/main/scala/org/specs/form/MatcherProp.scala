@@ -26,7 +26,7 @@ class MatcherProp[T](
   override val label: String,
   expectedValue: Property[T], 
   actual: Property[T], constraint: Option[MatcherConstraint[T]]) extends Prop(label, expectedValue, actual, constraint) {
-  override def copy = new MatcherProp(label, expectedValue, actual, constraint).asInstanceOf[this.type]
+  override def copy: MatcherProp[T] = new MatcherProp(label, expectedValue, actual, constraint)
 
   /**
    * changes the matcher on the constraint

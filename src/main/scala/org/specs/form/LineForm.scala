@@ -70,10 +70,10 @@ class LineForm extends Form {
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
   override def toXhtml = reduce(lineProperties, { (p: LabeledXhtml) => p.toXhtml })
   
-  override def copy = {
+  override def copy: LineForm = {
     val f = new LineForm
-    this.lineProperties.foreach(p => f.lineProperties.append(p.copy))
-    copyPropertiesAndFields(f).asInstanceOf[this.type]
+    this.lineProperties.foreach(p => f.lineProperties.append(p.copy.asInstanceOf[LabeledXhtml]))
+    copyPropertiesAndFields(f)
   }
 
 }

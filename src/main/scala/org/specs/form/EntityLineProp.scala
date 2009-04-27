@@ -25,10 +25,10 @@ class EntityLineProp[E, T](override val label: String,
                     val entity: Property[E], constraint: Option[MatcherConstraint[T]]) extends 
   LineProp[T](label, expectedValue, entity.map(function(_)), constraint) {
 
-  override def copy = {
+  override def copy: EntityLineProp[E, T] = {
     val e = Property[E]()
     new EntityLineProp[E, T](label, expectedValue, function, e, 
-                                     constraint.map(c => new MatcherConstraint(e.map(function(_)).optionalValue, c.executor))).asInstanceOf[this.type]
+                                     constraint.map(c => new MatcherConstraint(e.map(function(_)).optionalValue, c.executor)))
   }
 }
 object EntityLineProp {

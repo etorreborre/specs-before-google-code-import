@@ -79,7 +79,26 @@ class fieldsFormSpec extends HtmlSpecification("Fields form") with JUnit {
    { new Person().toHtml }  
   </textile>
 }
+class bagFormSpec extends HtmlSpecification("Bag form") with JUnit {
+  case class Customer(name: String, age: Int)
+  case class CustomerLine(name: String, age: Int) extends EntityLineForm[Customer] {
+    // the prop method accepts a function here, taking the proper attribute on the "Entity"
+    prop("Name", (_:Customer).name)(name)
+    prop("Age", (_:Customer).age)(age)
+  }
+  class Customers(actualCustomers: Seq[Customer]) extends BagForm[Customer](actualCustomers)
+  
+  // usage example
+ "A Bag Form" is <textile> {   
+  new Customers(List(Customer("Eric", 36), Customer("Bob", 27))) {
+    tr(CustomerLine("Eric", 36))
+    tr(CustomerLine("Eric", 38))
+    tr(CustomerLine("Bob", 27))
+  }.report
+ }  
+  </textile>
 
+}
 class formSampleSpec extends PersonForms with JUnit {
   "Forms can be used in a Literate specification" is <textile>
 

@@ -24,7 +24,7 @@ import org.specs.util.Property
 class LineProp[T](override val label: String,
                   expectedValue: Property[T], 
                   actual: Property[T], constraint: Option[MatcherConstraint[T]]) extends MatcherProp[T](label, expectedValue, actual, constraint) {
-  override def copy = new LineProp(label, expectedValue, actual, constraint).asInstanceOf[this.type]
+  override def copy = new LineProp(label, expectedValue, actual, constraint)
   override def toXhtml = decorateValueCell(valueCell)
   override def toEmbeddedXhtml = decorateValueCell(valueCell)
 }

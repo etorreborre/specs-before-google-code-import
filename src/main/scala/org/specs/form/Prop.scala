@@ -72,7 +72,7 @@ class Prop[T](val label: String,
               var expected: Property[T],
               var actual: Property[T], constraint: Option[Constraint[T]]) 
               extends DefaultExecutable with LabeledXhtml with ValueFormatter[T] with Copyable {
-  override def copy: this.type = (new Prop[T](label, expected, actual, constraint)).asInstanceOf[this.type]
+  override def copy: Prop[T] = new Prop[T](label, expected, actual, constraint)
 
   /**
    * The apply method sets the expected value and returns the Prop

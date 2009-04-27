@@ -43,19 +43,19 @@ class EntityLineForm[T] extends LineForm {
     a.map(e => entityProperties.foreach(_.entity(e)))
     this 
   }
-  def testWith(a: T): this.type = testWith(Some(a))
-  def testWith(a: Option[T]): this.type = {
-    val c: this.type = copy
+  def testWith(a: T): EntityLineForm[T] = testWith(Some(a))
+  def testWith(a: Option[T]): EntityLineForm[T] = {
+    val c = copy
     a.map(c.entityIs(_))
     a.map(e => c.entityProperties.foreach(_.entity(e)))
     c
   }
     
-  override def copy: this.type = {
+  override def copy = {
     val form = new EntityLineForm[T]
-    this.lineProperties.foreach(p => form.lineProperties.append(p.copy))
-    this.properties.foreach(p => form.properties.append(p.copy))
+    this.lineProperties.foreach(p => form.lineProperties.append(p.copy.asInstanceOf[LabeledXhtml]))
+    this.properties.foreach(p => form.properties.append(p.copy.asInstanceOf[FormProperty]))
     this.fields.foreach(f => form.fields.append(f.copy))
-    form.asInstanceOf[this.type]
+    form
   }
 }

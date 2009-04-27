@@ -62,18 +62,18 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     f.delegate = this.factory
     super.form(f)
   }
-  override def copy = {
+  override def copy: Form = {
     val form = new Form(label, factory)
-    copyPropertiesAndFields(form).asInstanceOf[this.type]
+    copyPropertiesAndFields(form)
   }
   def copyPropertiesAndFields[F <: Form](form: F) = {
-    this.properties.foreach(p => form.properties.append(p.copy))
+    this.properties.foreach(p => form.properties.append(p.copy.asInstanceOf[FormProperty]))
     this.fields.foreach(f => form.fields.append(f.copy))
     form
   }
 }
 trait Copyable {
-  def copy: this.type = this
+  def copy = this
 }
      
 trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable {
