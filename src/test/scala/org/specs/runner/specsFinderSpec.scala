@@ -24,10 +24,10 @@ import org.specs.runner._
 class specsFinderSpec extends Specification with Init with JUnit {
 
   "A specs finder" should {
-    doBefore { () => {
+    doBefore {
       finder.defaultExtension = ".scala"
       finder.reset
-    } }
+    }
     "not find the name of a specification in the file is not a .scala file" in {
       finder.addFile("fileName", packageDeclaration + specificationContent)
       finder.specificationNames("path", ".*") mustBe Nil
