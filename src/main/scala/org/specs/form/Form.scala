@@ -67,30 +67,29 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     copyPropertiesAndFields(form)
   }
   def copyPropertiesAndFields[F <: Form](form: F) = {
-    this.properties.foreach(p => form.properties.append(p.copy.asInstanceOf[FormProperty]))
+    this.properties.foreach(p => form.properties.append(p.copy))
     this.fields.foreach(f => form.fields.append(f.copy))
     form
   }
 }
-trait Copyable {
-  def copy = this
-}
-     
-trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable {
+trait Copyable[+T] { self : T with Copyable[T] => 
+  def copy : T with Copyable[T] = this 
+}    
+trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable[FormEnabled] {
   /** @return the title if set or build a new one based on the class name (by uncamelling it) */
   def title: String
   /** implementation of the HasLabel trait */
   lazy val label = title
   /** alias for properties or forms held by this Form */
-  type FormProperty = DefaultExecutable with LabeledXhtml with Copyable
+  type FormProperty = DefaultExecutable with LabeledXhtml
   /** Props or Forms held by this Form */
-  val properties: ListBuffer[FormProperty] = new ListBuffer
+  val properties: ListBuffer[FormProperty with Copyable[FormProperty]] = new ListBuffer
   /** Fields held by this Form */
-  val fields: ListBuffer[Field[_]] = new ListBuffer
+  val fields: ListBuffer[Field[_] with Copyable[Field[_]]] = new ListBuffer
   /**
    * add a Prop to the Form.
    */
-  def add(p: FormProperty): this.type = { properties.append(p); this }
+  def add(p: FormProperty with Copyable[FormProperty]): this.type = { properties.append(p); this }
   /**
    * add a Field to the Form.
    */

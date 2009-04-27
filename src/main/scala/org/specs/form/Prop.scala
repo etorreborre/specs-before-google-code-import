@@ -71,7 +71,7 @@ import util.Property
 class Prop[T](val label: String,
               var expected: Property[T],
               var actual: Property[T], constraint: Option[Constraint[T]]) 
-              extends DefaultExecutable with LabeledXhtml with ValueFormatter[T] with Copyable {
+              extends DefaultExecutable with LabeledXhtml with ValueFormatter[T] with Copyable[Prop[T]] {
   override def copy: Prop[T] = new Prop[T](label, expected, actual, constraint)
 
   /**

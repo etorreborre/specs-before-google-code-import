@@ -53,8 +53,8 @@ class EntityLineForm[T] extends LineForm {
     
   override def copy = {
     val form = new EntityLineForm[T]
-    this.lineProperties.foreach(p => form.lineProperties.append(p.copy.asInstanceOf[LabeledXhtml]))
-    this.properties.foreach(p => form.properties.append(p.copy.asInstanceOf[FormProperty]))
+    this.lineProperties.foreach(p => form.lineProperties.append(p.copy))
+    this.properties.foreach(p => form.properties.append(p.copy))
     this.fields.foreach(f => form.fields.append(f.copy))
     form
   }

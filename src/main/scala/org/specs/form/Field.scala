@@ -26,7 +26,7 @@ import org.specs.util.Property
  * 
  * Note that the value is not evaluated until explicitly queried
  */
-class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable {
+class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] {
   override def copy: Field[T] = new Field(label, value)
   /**
    * set a new value on the field. 

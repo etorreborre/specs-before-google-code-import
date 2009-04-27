@@ -94,4 +94,4 @@ trait Layout extends IncludeExclude[LabeledXhtml] {
   def resetLayout() = rowValues = new ListBuffer
 }
 /** alias type */
-trait LabeledXhtml extends HasLabel with ToXhtml with Copyable
+trait LabeledXhtml extends HasLabel with ToXhtml with Copyable[LabeledXhtml]
