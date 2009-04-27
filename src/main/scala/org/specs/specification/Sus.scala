@@ -79,6 +79,8 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
 
   /** add an example to the list of examples. */
   def addExample(e: Example) = examples = examples ::: List(e)
+  
+  /** create a new example with a description and add it to the current Sus. */
   def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
     val ex = new Example(ExampleDescription(desc), lifeCycle)
     addExample(ex)

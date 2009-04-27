@@ -23,7 +23,7 @@ import org.specs.matcher._
 import org.specs.runner._
 
 class mockParametersSpec extends MatchersSpecification with MovieGuardMock with JUnit {
-  "Mock parameters" should { usingBefore { () => {clearExample} }
+  "Mock parameters" should { doBefore { clearExample }
     "provide a recordAndReturn method allowing to specify a stubbed return value: def mockedMethod = recordAndReturn(true)" in {
       alwaysOkGuard
       expect(atLeastOneOf) {

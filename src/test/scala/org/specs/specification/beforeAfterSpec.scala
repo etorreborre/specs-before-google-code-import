@@ -14,7 +14,7 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
 import org.specs.io.mock.MockOutput
@@ -40,15 +40,16 @@ class beforeAfterSpec extends Specification with JUnit {
       }
       badSpec.isOk must beTrue
     }
-    "deprecated - have each example using the usingBefore method before being executed" in {
-      beforeEx.execute
-      beforeEx.messages mustContain "before called 1"
-      beforeEx.messages mustContain "before called 2"
-    }
-    "deprecated - not execute its test if the usingBefore method fails" in {
-      beforeExampleFailing.execute
-      beforeExampleFailing.messages must containMatch("1 error")
-      beforeExampleFailing.messages must notContainMatch("tested")
+    "stack the doBefore actions by default" in {
+      object s extends Specification with MockOutput {
+        var i = ""
+        "this system" should { 
+          doBefore(i += "a") 
+          doBefore(i += "b")
+          "stack before methods" in { 1 must_== 1 }
+        }
+      }
+      s.reportSpecs.i must_== "ab"
     }
   }
   "A specification with after clauses" should {
@@ -67,16 +68,6 @@ class beforeAfterSpec extends Specification with JUnit {
         doAfter {}
       }
       badSpec.isOk must beTrue
-    }
-    "deprecated - have each example using the usingAfter method after being executed" in {
-      afterEx.execute
-      afterEx.messages mustContain "after called 1"
-      afterEx.messages mustContain "after called 2"
-    }
-    "deprecated - not execute its test if the usingAfter method fails" in {
-      afterExampleFailing.execute
-      afterExampleFailing.messages must containMatch("1 error")
-      afterExampleFailing.messages must notContainMatch("tested")
     }
   }
   "A system under test" can {
@@ -173,27 +164,6 @@ object doBeforeExampleFailing extends beforeAfterSpecification {
     reportSpecs
   }
 }
-object beforeEx extends beforeAfterSpecification {
-  override def executeSpec = {
-    "A specification" should {
-      var beforeCalls = 0
-      usingBefore { () => beforeCalls += 1; println("before called " + beforeCalls) }
-      "have example 1 ok" in { true }
-      "have example 2 ok" in { true }
-    }
-    reportSpecs
-  }
-}
-object beforeExampleFailing extends beforeAfterSpecification {
-  override def executeSpec = {
-    "A specification" should {
-      var beforeCalls = 0
-      usingBefore { () => error("before error") }
-      "have example 1 ok" in { }
-    }
-    reportSpecs
-  }
-}
 object doAfterExample extends beforeAfterSpecification {
   override def executeSpec = {
     var afterCalls = 0
@@ -209,27 +179,6 @@ object doAfterExampleFailing extends beforeAfterSpecification {
       var afterCalls = 0
     "A specification" should { doAfter { println("after");error("after error") }
       "have example 1 ok" in {  }
-    }
-    reportSpecs
-  }
-}
-object afterEx extends beforeAfterSpecification {
-  override def executeSpec = {
-    "A specification" should {
-      var afterCalls = 0
-      usingAfter { () => afterCalls += 1; println("after called " + afterCalls) }
-      "have example 1 ok" in { true }
-      "have example 2 ok" in { true }
-    }
-    reportSpecs
-  }
-}
-object afterExampleFailing extends beforeAfterSpecification {
-  override def executeSpec = {
-    "A specification" should {
-      var afterCalls = 0
-      usingAfter { () => error("after error") }
-      "have example 1 ok" in { }
     }
     reportSpecs
   }

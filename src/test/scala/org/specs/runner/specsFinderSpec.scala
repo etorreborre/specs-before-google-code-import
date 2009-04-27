@@ -24,7 +24,7 @@ import org.specs.runner._
 class specsFinderSpec extends Specification with Init with JUnit {
 
   "A specs finder" should {
-    usingBefore { () => {
+    doBefore { () => {
       finder.defaultExtension = ".scala"
       finder.reset
     } }
