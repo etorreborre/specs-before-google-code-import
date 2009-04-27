@@ -85,7 +85,7 @@ trait BeforeAfter extends BaseSpecification { outer =>
    */
   def until(predicate: =>Boolean) = {
     currentSus.untilPredicate = Some(() => {
-      predicate || currentSus.untilPredicate.map(p => p()).getOrElse(true)
+      predicate || currentSus.untilPredicate.map(p => p()).getOrElse(false)
     })
   }
 
