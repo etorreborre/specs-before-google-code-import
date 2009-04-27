@@ -55,10 +55,12 @@ class lineFormSpec extends spex.Specification {
       stringSize.entityIs("Helloooooo")
       val stringSize2 = stringSize.testWith("World")
       stringSize must !=(stringSize2)
-      stringSize.p.actualValue.get must_== 10
+
       stringSize2.entity.isDefined must beTrue
       stringSize2.entity.get must_== "World"
       stringSize2.execute.isOk must beTrue
+      stringSize2.rows aka "table rows" must not be empty
+      stringSize2.rows(0) aka "table first row" must not be empty
     }
   }
 }

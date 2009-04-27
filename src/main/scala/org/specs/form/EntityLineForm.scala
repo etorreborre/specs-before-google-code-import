@@ -27,6 +27,7 @@ class EntityLineForm[T] extends LineForm {
   def prop[S](s: String, f:(T => S)): LineProp[S] = {
     val p: EntityLineProp[T, S] = new EntityLineProp[T, S](label, Property[S](), f, entity, Some(new MatcherConstraint(entity.map(f(_)).optionalValue, executor)))
     entityProperties.append(p)
+    lineProperties.append(p)
     properties.append(p)
     p
   }
