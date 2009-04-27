@@ -62,7 +62,10 @@ trait BagFormEnabled[T] extends TableFormEnabled {
     val i = unmatchedExpectedLines.size
     if (i > 0) { 
       th3("There ".bePlural(i) + " " + i + " unmatched expected line".plural(i), Status.Failure)
-      unmatchedExpectedLines.foreach { (line: EntityLineForm[T]) => trs(line.entityIs(None).reset().rows) }
+      unmatchedExpectedLines.foreach { (line: EntityLineForm[T]) => {
+          trs(line.testWith(None).reset().rows) 
+        }
+      }
     }
     val j = unmatchedActual.size
     if (j > 0) { 

@@ -69,28 +69,28 @@ import util.Property
  *
  */
 class Prop[T](val label: String,
-              var expected: Option[T],
-              actual: =>Option[T], constraint: Option[Constraint[T]]) extends Property(Some(expected)) 
-              with DefaultExecutable with LabeledXhtml with ValueFormatter[T] {
+              var expected: Property[T],
+              var actual: Property[T], constraint: Option[Constraint[T]]) 
+              extends DefaultExecutable with LabeledXhtml with ValueFormatter[T] with Copyable {
+  override def copy: this.type = (new Prop[T](label, expected, actual, constraint)).asInstanceOf[this.type]
 
   /**
    * The apply method sets the expected value and returns the Prop
    */
-  def apply(expected: T): Prop[T] = {
-    super.apply(Some(expected))
-    this.expected = Some(expected)
+  def apply(e: T): Prop[T] = {
+    expected(e)
     this
   }
-
+  def actualValue = actual.optionalValue
   /** 
    * shortcut method for this().get returning the contained expected value.
    * @return the expected value if set and throws an exception otherwise
    */
-  def get: T = this().get
+  def get: T = expected.get
 
   /** execute the constraint set on this property, with the expected value */
   protected def executeThis = constraint.map { c => 
-    c.execute(expected)
+    c.execute(expected.optionalValue)
   }
 
   /**
@@ -102,7 +102,7 @@ class Prop[T](val label: String,
     label + ": " + this.actual.map(format(_)).getOrElse("_") + " (expected: " + expected.map(format(_)).getOrElse("_") + ")"
   }
   /** format the expected value if set or else the actual value. */
-  private[form] def formattedValue = decorateValue(format(this().orElse(actual)))
+  private[form] def formattedValue = decorateValue(format(expected.orElse(actual).optionalValue))
   /** @return the status of the execution or value if the cell hasn't been executed. */
   override def statusClass = if (executed) super.statusClass else "info"
   /**
@@ -146,18 +146,17 @@ class Prop[T](val label: String,
    * When embedded in an Html table, a Prop doesn't need a new <td/> cell.
    */
   override def toEmbeddedXhtml = toXhtml
-  
 }
 /**
  * Companion object containing default factory methods
  */
 case object Prop {
-  def apply[T](label: String, value: =>T, toCheck: => Any): Prop[T] = new Prop(label, None, Some(value), Some(AnyConstraint(() => toCheck)))
-  def apply[T](label: String, value: =>T, f: (T, T) => Any): Prop[T] = new Prop(label, None, Some(value), Some(FunctionConstraint(value, f)))
-  def apply[T](label: String, value: =>T, c: Constraint[T]): Prop[T] = new Prop(label, None, Some(value), Some(c))
-  def apply[T](label: String, value: =>T, c: MatcherConstraint[T]): MatcherProp[T] = new MatcherProp(label, None, Some(value), Some(c))
-  def apply[T](label: String, value: =>T): MatcherProp[T] = new MatcherProp(label, None, Some(value), None)
-  def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, None, None, None)
+  def apply[T](label: String, value: =>T, toCheck: => Any): Prop[T] = new Prop(label, Property[T](), Property(value), Some(AnyConstraint(() => toCheck)))
+  def apply[T](label: String, value: =>T, f: (T, T) => Any): Prop[T] = new Prop(label, Property[T](), Property(value), Some(FunctionConstraint(value, f)))
+  def apply[T](label: String, value: =>T, c: Constraint[T]): Prop[T] = new Prop(label, Property[T](), Property(value), Some(c))
+  def apply[T](label: String, value: =>T, c: MatcherConstraint[T]): MatcherProp[T] = new MatcherProp(label, Property[T](), Property(value), Some(c))
+  def apply[T](label: String, value: =>T): MatcherProp[T] = new MatcherProp(label, Property[T](), Property(value), None)
+  def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, Property[T](), Property[T](), None)
 }
 
 /**

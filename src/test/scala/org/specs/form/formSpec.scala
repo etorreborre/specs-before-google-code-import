@@ -65,6 +65,12 @@ class formSpec extends HtmlSpecification with PersonForms with JUnit { persons =
       form.firstName.label must_== "First Name"
       form.firstName.get must_== "Eric"
     }
+    "have a labelled field" in {
+      val form = new Form {
+        val name = field("Name", "")
+      }
+      form.name("Eric").get must_== "Eric"
+    }
     "embedded another following form as if it was a property" in {
       val form = new PersonForm("person", person) {
         tr(firstName("Eric"), new AddressForm("home", persons.address) {

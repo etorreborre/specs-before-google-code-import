@@ -38,7 +38,7 @@ abstract case class Constraint[T]() extends {
  * The executor function is usually an expression like: <code>(m: Matcher[T]) => actual must m</code>
  * which will actually trigger the constraint. 
  */
-case class MatcherConstraint[T](executor: (Matcher[T]) => Any) extends Constraint[T] {
+class MatcherConstraint[T](actual: =>Option[T], val executor: Function2[T, Matcher[T], Any]) extends Constraint[T] {
   private var matcher: T => Matcher[T] = (t: T) => new BeEqualTo(t)
   def matchesWith(m: T => Matcher[T]) = {
     matcher = m
@@ -49,7 +49,7 @@ case class MatcherConstraint[T](executor: (Matcher[T]) => Any) extends Constrain
    * and passing this to the executor function.
    */
   def execute(expected: Option[T]) = expected.map { exp => 
-    executor(matcher(exp)) 
+    actual.map(executor(_, matcher(exp))) 
   }
 }
 /**

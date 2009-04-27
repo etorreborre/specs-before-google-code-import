@@ -21,11 +21,7 @@ import scala.xml._
 /**
  * This class represent properties which can be updated and retrieved using customized getter and setter functions
  */
-class Property[T](init: =>Option[T]) {
-  /**
-   * raw value of the property
-   */
-  private var value: () => T = () => init.get
+class Property[T](var value: () => Option[T]) {
 
   /**
    * setter function used to set the property value. The default is the identity function
@@ -42,48 +38,94 @@ class Property[T](init: =>Option[T]) {
    */
   private var toStringer: T => String = (v: T) => v.toString
 
+  /** change the value */
+  def withValue(init: =>T): this.type = updateValue(Some(init))
+  /** change the value */
+  def updateValue(init: =>Option[T]): this.type = {
+    value = () => init
+    this
+  }
+  def optionalValue = value()
   /**
    * @returns a value using the getter function
    */
-  def apply(): T = getter(value())
-  def apply[S <% T](newValue: =>S): this.type = update(newValue)
-
+  def get: T = getter(optionalValue.get)
+  /**
+   * @returns a value using the getter function
+   */
+  def apply(): T = get
+  def apply(newValue: =>T): this.type = update(newValue)
   /**
    * updates the value using the setter function
    */
-  def update[S <% T](newValue: =>T): this.type = { value = () => setter(newValue); this }
+  def update(newValue: =>T): this.type = withValue(newValue)
   /**
    * updates the value using the setter function, forcing the new value to be evaluated.
    * This avoids stack overflow errors when doing property(property() + 1) for example
    */
-  def forceUpdate[S <% T](newValue: T): this.type = { value = () => setter(newValue); this }
+  def forceUpdate(newValue: T): this.type = withValue(newValue)
 
   /**
    * sets a new getter function
    */
-  def onGet(newGetter: T => T) = { getter = newGetter; this }
+  def onGet(newGetter: T => T): this.type = { getter = newGetter; this }
 
   /**
    * sets a new setter function
    */
-  def onSet(newSetter: T => T) = { setter = newSetter; this }
+  def onSet(newSetter: T => T): this.type = { setter = newSetter; this }
 
   /**
    * sets a new display function
    */
-  def onToString(newToStringer: T => String) = { toStringer = newToStringer; this }
+  def onToString(newToStringer: T => String): this.type = { toStringer = newToStringer; this }
 
   /**
    * @returns the string value using the stringer function
    */
-  override def toString = toStringer(value())
+  override def toString = toStringer(get)
+  
+  /** @return an iterator containing the value if present */
+  def elements = optionalValue.elements
+  /** return the property with the value being filtered according to a predicate */
+  def filter(p: T => Boolean): this.type = { 
+    val v = value() 
+    value = () => v.filter(p)
+    this 
+  }
+  /** option-like flatMap */
+  def flatMap[U](f: T => Option[U]): Property[U] = new Property(() => optionalValue.flatMap(f))
+  /** option-like foreach */
+  def foreach(f: T => Unit): Unit = optionalValue.foreach(f)
+  /** option-like getOrElse */
+  def getOrElse[U >: T](other: U): U = optionalValue.getOrElse(other)
+  /** option-like isDefined */
+  def isDefined = optionalValue.isDefined
+  /** option-like isEmpty */
+  def isEmpty = optionalValue.isEmpty
+  /** option-like map */
+  def map[U](f: T => U): Property[U] = new Property(() => optionalValue.map(f(_)))
+  /** option-like orElse */
+  def orElse[U >: T](other: => Property[U]): Property[U] = new Property(() => optionalValue.orElse(other.optionalValue))
+  /** option-like toLeft */
+  def toLeft[R](right: R) = optionalValue.toLeft(right)
+  /** option-like toRight */
+  def toRight[L](left: L) = optionalValue.toRight(left)
+  
+  
+  override def equals(other: Any) = {
+    other match {
+      case o: this.type => o.optionalValue == this.optionalValue
+      case _ => false
+    }
+  }
 }
 /**
  * Companion object to create properties with possibly no initial value
  */
 object Property {
-  def apply[T](i: T) = new Property(Some(i))
-  def apply[T]() = new Property[T](None)
+  def apply[T](i: =>T) = new Property(() => Some(i))
+  def apply[T]() = new Property[T](() => None)
 }
 
 object Properties extends Properties

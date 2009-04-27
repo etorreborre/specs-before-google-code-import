@@ -26,18 +26,20 @@ import org.specs.util.Property
  * 
  * Note that the value is not evaluated until explicitly queried
  */
-class Field[T](val label: String, value: =>T) extends Property(Some(value)) with LabeledXhtml with ValueFormatter[T] {
-  
+class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable {
+  override def copy = new Field(label, value).asInstanceOf[this.type]
   /**
    * set a new value on the field. 
    */
-  override def apply[S <% T](value: =>S): this.type = {
-    super.apply(value)
+  def apply(v: =>T): this.type = {
+    value(v)
     this
   }
+  /** @return the field value */
+  def apply() = value()
 
   /** shortcut method for this().apply() returning the contained value. */
-  def get: T = this()
+  def get: T = value.get
 
   /** @return label: value */
   override def toString = label + ": " + this.get
@@ -54,7 +56,7 @@ class Field[T](val label: String, value: =>T) extends Property(Some(value)) with
   /** don't add a supplementary <td> when embbedding the xhtml */
   override def toEmbeddedXhtml = toXhtml
   /** transforms this typed Field as a Field containing the toString of the value*/
-  def toStringField = new Field(label, value.toString)
+  def toStringField = Field(label, value.toString)
 }
 /**
  * Factory methods for creating Fields. Fields values can also be concatenated to produce "summary" fields.
@@ -68,13 +70,13 @@ class Field[T](val label: String, value: =>T) extends Property(Some(value)) with
  * concatenatedFields2.toString == label: hello, world
  */
 case object Field {
-  def apply[T](label: String, value: =>T): Field[T] = new Field(label, value)
+  def apply[T](label: String, value: =>T): Field[T] = new Field(label, Property(value))
   def apply[T](label: String, value1: Field[T], values: Field[T]*): Field[String] = Field(label, "/", value1, values:_*)
   def apply[T](label: String, separator: String, value1: Field[T], values: Field[T]*): Field[String] = {
     if (values.isEmpty)
-      new Field(label, value1.get.toString)
+      Field(label, value1.get.toString)
     else
-      new Field(label, (value1 :: values.toList).map(_.get).mkString(separator))
+      Field(label, (value1 :: values.toList).map(_.get).mkString(separator))
   }
 }
 

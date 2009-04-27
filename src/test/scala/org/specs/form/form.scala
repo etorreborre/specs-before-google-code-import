@@ -22,6 +22,8 @@ import org.specs._
 object formSpecifications extends Specification {
   "The form specifications" areSpecifiedBy (
     new bagFormSpec,
+    new dataTableFormSpec,
+    new entityLinePropSpec,
     new fieldSpec,
     new formSpec,
     new lineFormSpec,

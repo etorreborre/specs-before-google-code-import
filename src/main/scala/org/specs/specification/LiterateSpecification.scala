@@ -100,8 +100,11 @@ trait LiterateProperties extends Properties with ExpectableFactory {
   def displayField[T](label: String, value: =>T) = {
     field(label, value).toHtml
   }
+  /** default execution function with a matcher */
+  def executor[T] = (a: T, m: Matcher[T]) => a must m 
+
   def prop[T](label: String, actual: =>T): MatcherProp[T] = {
-    Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
+    Prop(label, actual, new MatcherConstraint(Some(actual), executor[T]))
   }
   def displayProp[T](label: String, actual: =>T)(expected: T) = {
     prop(label, actual)(expected).display_!

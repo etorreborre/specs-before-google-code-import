@@ -32,7 +32,7 @@ trait TableFormEnabled extends FormEnabled {
   /** this variable becomes false when there is no more need to insert a header row in the table */
   private var unsetHeader = true
   /** automatically transform a value into a Field for easier declaration of tr(...) lines */
-  implicit def toField[T](a: T) = new Field("", a)
+  implicit def toField[T](a: T) = Field("", a)
   /**
    * adds properties in a line form 
    */

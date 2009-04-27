@@ -26,6 +26,38 @@ class propertySpec extends spex.Specification {
       p({fail("must not be thrown"); 2}) must not (throwA[FailureException])
       p() must throwA[FailureException]
     }
+    "behave like an Option" in {
+      "have an elements method" >> {
+        Property(1).elements.toList must_== List(1)
+      }
+      "have a isDefined method" in {
+        Property(1).isDefined must beTrue
+        Property[Int]().isDefined must beFalse
+      }
+      "have a isEmpty method" in {
+        Property(1).isEmpty must beFalse
+        Property[Int]().isEmpty must beTrue
+      }
+      "have a filter method" in {
+        Property(1).filter(_ > 0).isDefined must beTrue
+        Property(1).filter(_ < 0).isDefined must beFalse
+      }
+      "have a flatMap method" in {
+        Property(1).flatMap((i:Int) => Some(i)).get must_== 1
+      }
+      "have a foreach method" in {
+        var i = 0
+        Property(1).foreach(i += _)
+        i must_== 1
+      }
+      "have a getOrElse method" in {
+        Property(1).getOrElse(0) must_== 1
+        Property[Int]().getOrElse(0) must_== 0
+      } 
+      "have a map method" in {
+        Property(1).map(_.toString).get must_== "1"
+      }
+    }
   }
 
 }

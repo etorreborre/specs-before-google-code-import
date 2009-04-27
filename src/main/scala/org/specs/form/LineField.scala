@@ -17,11 +17,15 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.form
-
+import org.specs.util.Property
 /**
  * A LineField is a Field which is displayed on a line without its lable
  */
-class LineField[T](override val label: String, actual: =>T) extends Field(label, actual) {
+class LineField[T](override val label: String, actual: Property[T]) extends Field(label, actual) {
+  override def copy = new LineField(label, actual).asInstanceOf[this.type]
   override def toXhtml = valueCell
   override def toEmbeddedXhtml = valueCell
+}
+object LineField {
+  def apply[T](label: String, actual: =>T) = new LineField(label, Property(actual))
 }

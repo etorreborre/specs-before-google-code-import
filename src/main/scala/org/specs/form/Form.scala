@@ -29,6 +29,7 @@ import org.specs._
 import org.specs.xml.Xhtml._
 import org.specs.util.ExtendedString._
 import org.specs.util.Classes._
+import org.specs.util.Property
 /**
  * This trait defines Forms which are used to group and display Props properties together.
  *
@@ -61,14 +62,27 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     f.delegate = this.factory
     super.form(f)
   }
+  override def copy = {
+    val form = new Form(label, factory)
+    copyPropertiesAndFields(form).asInstanceOf[this.type]
+  }
+  def copyPropertiesAndFields[F <: Form](form: F) = {
+    this.properties.foreach(p => form.properties.append(p.copy))
+    this.fields.foreach(f => form.fields.append(f.copy))
+    form
+  }
 }
-trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory {
+trait Copyable {
+  def copy: this.type = this
+}
+     
+trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable {
   /** @return the title if set or build a new one based on the class name (by uncamelling it) */
   def title: String
   /** implementation of the HasLabel trait */
   lazy val label = title
   /** alias for properties or forms held by this Form */
-  type FormProperty = DefaultExecutable with LabeledXhtml
+  type FormProperty = DefaultExecutable with LabeledXhtml with Copyable
   /** Props or Forms held by this Form */
   val properties: ListBuffer[FormProperty] = new ListBuffer
   /** Fields held by this Form */
@@ -89,12 +103,15 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
    * }
    */
   def set(f: this.type => Any): this.type = { f(this); this }
+
+  /** default execution function with a matcher */
+  def executor[T]: Function2[T, Matcher[T], org.specs.specification.Result[T]] = (a: T, m: Matcher[T]) => (a must m) 
   /**
    * factory method for creating a property linked to an actual value.
    * Using this method adds the property to the Form
    */
   def prop[T](label: String, actual: =>T): MatcherProp[T] = {
-    val p = Prop(label, actual, MatcherConstraint((m:Matcher[T]) => actual must m))
+    val p: MatcherProp[T] = Prop(label, actual, new MatcherConstraint(Some(actual), executor[T]))
     add(p)
     p
   }
@@ -104,7 +121,7 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
    * Using this method adds the property to the Form
    */
   def field[T](label: String, value: =>T): Field[T] = {
-    val f = Field(label, value)
+    val f = new Field(label, Property(value))
     add(f)
     f
   }
@@ -136,7 +153,7 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
    * Using this method adds the property to the Form.
    */
   def propIterable[T](label: String, actual: =>Iterable[T]): MatcherPropIterable[T] = {
-    val matcherConstraint: MatcherConstraint[Iterable[T]] = new MatcherConstraint[Iterable[T]](m => actual must m)
+    val matcherConstraint: MatcherConstraint[Iterable[T]] = new MatcherConstraint[Iterable[T]](Some(actual), executor)
     val p = PropIterable(label, actual, matcherConstraint)
     p.matchesWith(new HaveTheSameElementsAs(_))
     add(p)
@@ -212,7 +229,6 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
     propertiesAndFields.foreach(_.decorateValuesWith(x)) 
     this 
   }
-
 }
 /**
  * Some Forms can be declared as building an element of type T

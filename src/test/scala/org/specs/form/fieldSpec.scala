@@ -44,6 +44,9 @@ class fieldSpec extends Specification {
       val f = Field("Result", 1.12).valueBgcolor("#FF6699").toXhtml(1)
       f must ==/(<td class="none" bgcolor="#FF6699">1.12</td>)
     }
+    "update its value with the apply method" in {
+      Field("label", 1)(2)() must_== 2
+    }
   }
   "A Field" can {
     "concanate other fields" in {
