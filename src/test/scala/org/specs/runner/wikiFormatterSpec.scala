@@ -56,11 +56,16 @@ class wikiFormatterSpec extends Specification with JUnit {
     "set a mouseout function to close the tooltip for the example" in {
       descWithStatus must include("onmouseout=\"hideToolTip();\"")
       descWithStatus must include("a description")
-      descWithStatus must beMatching("==\\<ex.*\\>.*\\<\\/ex\\>==")
+      descWithStatus must beMatching("\\<ex.*\\>.*\\<\\/ex\\>")
     }
     "leave the example description" in {
       descWithStatus must include("a description")
     }
+  }
+  "A Textile formatter" should { 
+    val exampleDesc = "a description"
+    val example = new Example("a description", this).in { 1 must_== 1 }
+    val descWithStatus = new TextileFormatter().setStatus(exampleDesc, List(example))
     "enclose the description with ex tags protected by wiki markup" in {
       descWithStatus must beMatching("==\\<ex.*\\>a description\\<\\/ex\\>==")
     }
