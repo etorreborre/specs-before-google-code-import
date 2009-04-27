@@ -26,7 +26,7 @@ import org.specs.matcher._
 import org.specs.runner._
 import org.specs.form._
 import org.specs.execute._
-
+import org.specs.runner.DescriptionFormatter
 /**
  * This trait supports writing literate specifications for acceptance testing.
  * 
@@ -168,6 +168,7 @@ trait LiterateShortcuts extends ExpectableFactory with BaseSpecification with Fa
   def consoleOutput(messages: Seq[String]): String = messages.map("> " + _.toString).mkString("\n")
 }
 trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification {
+  private val descriptionFormatter = new DescriptionFormatter()
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e
@@ -194,7 +195,7 @@ trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification
         val exNodes = content.\("ex")
         exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
           val (node, example) = pair
-          example.exampleDescription = if (content.exists(_.label == "wiki")) WikiExampleDescription(node.first.text) else ExampleDescription(node.first.text)
+          example.exampleDescription = descriptionFormatter.makeExampleDescription(content, node)
           List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
         }
         sus.literateDescription = Some(content)

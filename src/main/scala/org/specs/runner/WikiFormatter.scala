@@ -33,12 +33,13 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
         "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
         "onmouseout=\"hideToolTip();\""
       }
-      def toReplace = "==<ex class=\"" + example.statusClass + "\" " + onmouse(example) + ">" +
-                      format(example.description) + "</ex>=="
+      def toReplace = escapeHtml("<ex class=\"" + example.statusClass + "\" " + onmouse(example) + ">" +
+                      format(example.description) + "</ex>")
       result = result.replace(example.description.toString, toReplace)
     }
     result
   }
+  def escapeHtml(s: String) = s
   def format(desc: String): String = {
 	val parsed = parseToHtml(desc)
     if (parsed contains "<p>") {
@@ -80,5 +81,9 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     text
   }
 }
-class TextileFormatter extends WikiFormatter
+class TextileFormatter extends WikiFormatter {
+  override def escapeHtml(s: String) = "=="+s+"=="
+}
 case class WikiExampleDescription(override val desc: String) extends ExampleDescription(desc)
+case class TextileExampleDescription(override val desc: String) extends ExampleDescription(desc)
+case class MarkdownExampleDescription(override val desc: String) extends ExampleDescription(desc)

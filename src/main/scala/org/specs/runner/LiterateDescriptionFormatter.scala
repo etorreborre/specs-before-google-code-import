@@ -44,9 +44,23 @@ class DescriptionFormatter extends LiterateDescriptionFormatter {
   override def formatDesc(ex: Example): Node = {
     ex.exampleDescription match {
       case desc: WikiExampleDescription =>  formatter("wiki").formatDesc(ex)
+      case desc: TextileExampleDescription =>  formatter("textile").formatDesc(ex)
+      case desc: MarkdownExampleDescription =>  formatter("markdown").formatDesc(ex)
       case _ =>  new Text(ex.exampleDescription.format)
     }
   }
+  /** create an example description which may be processed differently depending on the markup language */
+  def makeExampleDescription(content: Elem, node: NodeSeq) = {
+   if (content.exists(_.label == "wiki")) 
+     WikiExampleDescription(node.first.text) 
+   else if (content.exists(_.label == "textile")) 
+     TextileExampleDescription(node.first.text) 
+   else if (content.exists(_.label == "markdown")) 
+     MarkdownExampleDescription(node.first.text) 
+   else ExampleDescription(node.first.text)
+  }
+  
+  
 }
 class TextFormatter extends LiterateDescriptionFormatter {
   def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)

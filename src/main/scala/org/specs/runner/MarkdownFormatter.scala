@@ -24,5 +24,4 @@ class MarkdownFormatter extends WikiFormatter {
      val markup = new MarkdownProcessor
      "<div>" + markup.markdown(s) + "</div>"
   }
-
 }
