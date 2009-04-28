@@ -183,7 +183,7 @@ trait ScalaCheckParameters {
    *  <li>maxDiscarded == maxDiscardedTests
    *  <li>minSize and maxSize keep their name <code><ul>
    */
-  private [matcher] val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
+  val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
 
   /** This variable is used to track if we need to add an expectation each time a property is evaluated */
   private var countExpectations = true
