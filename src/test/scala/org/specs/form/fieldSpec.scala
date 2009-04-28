@@ -17,38 +17,64 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.form
-import spex._
 import Field._
+import org.specs.util.Property
 
-class fieldSpec extends Specification {
+class fieldSpec extends spex.Specification {
   "A Field" should {
+    "update its value with the apply method and get it with the get method" in {
+      Field("label", 1)(2).get must_== 2
+    }
+    "not evaluate its value until it is explicitly required" in {
+      var evaluated = false
+      val field = Field("label", { evaluated = true; 1 })
+      evaluated must be(false)
+      field.get
+      evaluated must be(true)
+    }
+    "use the apply() method as an alias for get to get the Field value" in {
+      Field("label", 1)() must_== 1
+    }
     "have a toString method displaying the label and value" in {
       Field("label", "value").toString must_== "label: value"
     }
-    "a toString method formatting Doubles properly" in {
+    "have a toString method formatting Doubles properly" in {
       Field("label", 1.2345).toString must_== "label: 1.2345"
     }
-    "allow a to set a success style attribute to decorate the value" in {
-      val f = Field("Result", 1.12).successValue.toXhtml(1)
-      f must ==/(<td class="success">1.12</td>)
+    "have a toXhtml method returning the formatted value in a <td> cell" in {
+      Field("label", 1.2345).toXhtml.toList must ==(<td>label</td><td class="info">1.2345</td>.toList) 
     }
-    "allow a to set both a success style attribute and a bold style to decorate the value" in {
-      val f = Field("Result", 1.12).boldValue.successValue.toXhtml(1)
-      f must ==/(<td class="success"><b>1.12</b></td>)
+    "have a toXhtml method omitting the label if it is empty" in {
+      Field(1.2345).toXhtml.toList must ==(<td class="info">1.2345</td>.toList) 
     }
-    "allow a to set an attribute, like bgcolor, on a value cell" in {
-      val f = Field("Result", 1.12).valueCellAttribute("bgcolor", "#FF6699").toXhtml(1)
-      f must ==/(<td class="info" bgcolor="#FF6699">1.12</td>)
+    "have an equals method comparing labels and values" in {
+      Field("l", 1.23) must_== Field("l", 1.23)
+      Field("n", 1.23) must_!= Field("l", 1.23)
+      Field("l", 1.23) must_!= Field("l", 1.22)
     }
-    "allow a to set the bg color of a cell, setting the class attribute to 'none'" in {
-      val f = Field("Result", 1.12).valueBgcolor("#FF6699").toXhtml(1)
-      f must ==/(<td class="none" bgcolor="#FF6699">1.12</td>)
-    }
-    "update its value with the apply method" in {
-      Field("label", 1)(2)() must_== 2
+    "have a toStringField method converting a Field[T] to a Field[String] using the value toString method" in {
+      Field(1.23).toStringField must ==(Field("1.23"))
     }
   }
   "A Field" can {
+    "set a success style attribute to decorate the value" in {
+      val f = Field("Result", 1.12).successValue.toXhtml(1)
+      f must ==/(<td class="success">1.12</td>)
+    }
+    "set both a success style attribute and a bold style to decorate the value" in {
+      val f = Field("Result", 1.12).boldValue.successValue.toXhtml(1)
+      f must ==/(<td class="success"><b>1.12</b></td>)
+    }
+    "set an attribute, like bgcolor, on a value cell" in {
+      val f = Field("Result", 1.12).valueCellAttribute("bgcolor", "#FF6699").toXhtml(1)
+      f must ==/(<td class="info" bgcolor="#FF6699">1.12</td>)
+    }
+    "set the bg color of a cell, setting the class attribute to 'none'" in {
+      val f = Field("Result", 1.12).valueBgcolor("#FF6699").toXhtml(1)
+      f must ==/(<td class="none" bgcolor="#FF6699">1.12</td>)
+    }
+  }
+  "The Field object" can {
     "concanate other fields" in {
       val f1 = Field("f1", "value1")
       val f2 = Field("f2", "value2")

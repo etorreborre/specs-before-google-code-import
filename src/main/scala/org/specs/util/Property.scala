@@ -128,7 +128,7 @@ class Property[T](var value: () => Option[T]) {
   
   override def equals(other: Any) = {
     other match {
-      case o: this.type => o.optionalValue == this.optionalValue
+      case o: Property[_] => o.optionalValue == optionalValue
       case _ => false
     }
   }

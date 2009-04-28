@@ -72,8 +72,13 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     form
   }
 }
-trait Copyable[+T] { self : T with Copyable[T] => 
-  def copy : T with Copyable[T] = this 
+/** 
+ * This trait declares that an instance can return a copy of itself via the copy method.
+ * It is especially used to copy EntityLineForms when testing different combinations
+ * on a BagForm
+ */        
+trait Copyable[+T] { this : T with Copyable[T] => 
+  def copy = this 
 }    
 trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable[FormEnabled] {
   /** @return the title if set or build a new one based on the class name (by uncamelling it) */

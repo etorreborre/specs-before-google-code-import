@@ -21,12 +21,15 @@ import org.specs.util.Property
 
 /**
  * A Field is a property which is used only to display input values or output values.
+ * The apply method can be used to retrieve the Fields value:<code>
+ *   val f = Field(label, 1)
+ *   f() must_== 1
+ * </code>
  * 
- * val f = Field(label, 1)
- * 
- * Note that the value is not evaluated until explicitly queried
+ * The value is stored in a Property object so it will not be evaluated until explicitly queried.
  */
-class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] {
+class Field[T](val label: String, val value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] {
+  /** @return a copy of this Field with the same value */
   override def copy: Field[T] = new Field(label, value)
   /**
    * set a new value on the field. 
@@ -36,27 +39,32 @@ class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with 
     this
   }
   /** @return the field value */
-  def apply() = value()
-
-  /** shortcut method for this().apply() returning the contained value. */
-  def get: T = value.get
-
-  /** @return label: value */
+  def apply(): T = value()
+  /** alias for apply() */
+  def get: T = apply()
+  /** @return "label: value" */
   override def toString = label + ": " + this.get
-  
-  /** return the value <td> cell */
+  /** return the value in a <td> cell, formated and decorated */
   protected def valueCell = <td class="info">{ decorateValue(format(this.get)) }</td>
-  /** return the value <td> cell */
+  /** return the value <td> cell with a td cell for the label if it is not empty */
   override def toXhtml = {
     if (label.isEmpty) 
       decorateValueCell(valueCell)
     else
       decorateLabelCell(<td>{decorateLabel(label)}</td>) ++ decorateValueCell(valueCell)
   }
-  /** don't add a supplementary <td> when embbedding the xhtml */
+  /** don't add a supplementary <td> when embedding the xhtml */
   override def toEmbeddedXhtml = toXhtml
-  /** transforms this typed Field as a Field containing the toString of the value*/
+  /** transforms this typed Field as a Field containing the toString value of the Fields value*/
   def toStringField = Field(label, value.toString)
+  
+  override def equals(a: Any): Boolean = {
+    a match {
+      case f: Field[_] => f.label == label && f.value == value
+      case _ => false 
+    }
+  }
+  override def hashCode = label.hashCode + value.hashCode
 }
 /**
  * Factory methods for creating Fields. Fields values can also be concatenated to produce "summary" fields.
@@ -70,6 +78,7 @@ class Field[T](val label: String, value: Property[T]) extends LabeledXhtml with 
  * concatenatedFields2.toString == label: hello, world
  */
 case object Field {
+  def apply[T](value: =>T): Field[T] = new Field("", Property(value))
   def apply[T](label: String, value: =>T): Field[T] = new Field(label, Property(value))
   def apply[T](label: String, value1: Field[T], values: Field[T]*): Field[String] = Field(label, "/", value1, values:_*)
   def apply[T](label: String, separator: String, value1: Field[T], values: Field[T]*): Field[String] = {
