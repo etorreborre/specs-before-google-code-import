@@ -24,5 +24,5 @@ import org.specs.SystemContexts
 import org.specs.runner._
 import org.specs.util.DataTables
 
-
-class Specification extends org.specs.Specification with Mockito with Sugar with SystemContexts with JUnit with DataTables with ScalaCheck //with ScalaTest 
+class Specification extends org.specs.Specification with Mockito with Sugar 
+  with SystemContexts with JUnit with DataTables with ScalaCheck with ScalaTest 
