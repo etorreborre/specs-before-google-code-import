@@ -32,15 +32,15 @@ class dataRowUnit extends Specification with DataTables with JUnit with SystemCo
       datarow.toString must_== "|1|2|3|"
     }
     "have a toHtml method setting success if the row hasn't failed" in { datarow: DR =>
-      datarow.toHtml must \\("tr", Map("class"->"success"))
+      datarow.toXhtml must \\("tr", Map("class"->"success"))
     }
     "have a toHtml method setting failure if the row has failed" in { datarow: DR =>
       datarow.addFailure(new FailureException("failed"))
-      datarow.toHtml must \\("tr", Map("class"->"failure"))
+      datarow.toXhtml must \\("tr", Map("class"->"failure"))
     }
     "have a toHtml method setting error if the row has an error" in { datarow: DR =>
       datarow.addError(new java.lang.Error("error"))
-      datarow.toHtml must \\("tr", Map("class"->"error"))
+      datarow.toXhtml must \\("tr", Map("class"->"error"))
     }
   }
   "a data row" should {

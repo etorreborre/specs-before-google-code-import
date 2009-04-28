@@ -32,15 +32,14 @@ class dataTableUnit extends Specification with DataTables with JUnit {
     }
     "be just a datatable if appended a function" in {
       var total = 0
-      val data = "a"|"b"|"c"|
-                  1 ! 2 ! 3 |> { (a: Int, b: Int, c: Int) => 
-                    total = a + b + c
+      val data = "a" | "b" |
+                  1  ! 2   |> { (a: Int, b: Int) => 
+                    total = a + b
                   }
       data.getClass.getName must beMatching("DataTable")
-      data.header.toString aka "the table header" must_== "|a|b|c|"
-      data.rows.size aka "the number of rows" must_== 2
-      data.execute.toHtml must_== ""
-      total must_== 6
+      data.header.toString aka "the table header" must_== "|a|b|"
+      data.rows.size aka "the number of rows" must_== 1
+      total must_== 3
     }
     "be a datatable if it has at least 2 rows" in {
       val data = "a"|"b"|"c"|
@@ -111,15 +110,15 @@ class dataTableUnit extends Specification with DataTables with JUnit {
        datatable.whenFailing { t => () } |> { (a:Int,b:Int,c:Int) => a + b  must_== c }
        datatable.rows must have((r: AbstractDataRow) => !r.isOk)
     }
-    "show the status of the row when using the toHtml method" in {
+    "show the status of the row when using the toXhtml method" in {
        val datatable =  "a"|"b"|"c"|
                          1 ! 2 ! 4 |
                          1 ! 2 ! 3 |
 
        datatable.whenFailing { t => () } |> { (a,b,c) => a + b  must_== c }
-       datatable.rows(0).toHtml must \\("tr", Map("class"->"failure"))
+       datatable.rows(0).toXhtml must \\("tr", Map("class"->"failure"))
     }
-    "have a toHtml method displaying the rows in an html table" in {
+    "have a toXhtml method displaying the rows in an html table" in {
        val datatable = "a"|"b"|"c"|
                         1 ! 2 ! 3 |
                         1 ! 2 ! 3 |
@@ -127,14 +126,14 @@ class dataTableUnit extends Specification with DataTables with JUnit {
 
        datatable.whenFailing { t => () } |>  { (a,b,c) => a + b  must_== c }
 
-       datatable.toHtml must beEqualToIgnoringSpace(<table class="dataTable">
+       datatable.toXhtml must beEqualToIgnoringSpace(<table class="dataTable">
          <tr><th>a</th><th>b</th><th>c</th></tr>
          <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
          <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
          <tr class="success"><td>1</td><td>2</td><td>3</td></tr>
        </table>)
     }
-    "have a toHtml method showing the failure messages if any" in {
+    "have a toXhtml method showing the failure messages if any" in {
        val datatable = "a"|"b"|"c"|
                         1 ! 2 ! 3 |
                         1 ! 2 ! 4 |
@@ -142,7 +141,7 @@ class dataTableUnit extends Specification with DataTables with JUnit {
 
        datatable.whenFailing { t => () } |>  { (a,b,c) => a + b  must_== c }
 
-       datatable.toHtml must beEqualToIgnoringSpace(<table class="dataTable">
+       datatable.toXhtml must beEqualToIgnoringSpace(<table class="dataTable">
          <tr><th>a</th><th>b</th><th>c</th><th><img src="images/icon_failure_sml.gif"/></th></tr>
          <tr class="success"><td>1</td><td>2</td><td>3</td><td/></tr>
          <tr class="failure"><td>1</td><td>2</td><td>4</td><td>'3' is not equal to '4'</td></tr>

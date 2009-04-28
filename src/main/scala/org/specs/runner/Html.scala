@@ -295,7 +295,7 @@ trait Html extends File {
    */
   def failure(f: FailureException): NodeSeq = {
     f match {
-      case DataTableFailureException(table) => table.toHtml
+      case DataTableFailureException(table) => table.toXhtml
       case regular => exceptionText(regular)
     }
   }
