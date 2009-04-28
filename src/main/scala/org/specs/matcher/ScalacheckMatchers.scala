@@ -83,10 +83,10 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * Usage: <code>property must pass</code>
     */
     def pass(implicit params: Parameters) = new Matcher[Prop](){
-     def apply(p: => Prop) = checkProperty(p)(params)
+      def apply(p: => Prop) = checkProperty(p)(params)
     }
 
-   def checkFunction[T](g: Gen[T])(f: T => Boolean)(p: Parameters) = {
+   private [matcher] def checkFunction[T](g: Gen[T])(f: T => Boolean)(p: Parameters) = {
       // create a scalacheck property which states that the function must return true
       // for each generated value
       val prop = forAllProp(g)(a => if (f(a)) proved else falsified)
@@ -97,7 +97,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * generation parameters <code>p</code>. <code>p</code> is transformed into a scalacheck parameters
     * and indicates if the generation should be verbose or not
     */
-   def checkProperty(prop: Prop)(p: Parameters) = {
+   private [matcher] def checkProperty(prop: Prop)(p: Parameters) = {
      checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, 1, 1), p.verbose)
    }
 
@@ -105,7 +105,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    * checks if the property is true for each generated value, and with the specified
    * scalacheck parameters. If verbose is true, then print the results on the console
    */
-  def checkScalaCheckProperty(prop: Prop)(params: Params, verbose: Boolean) = {
+  private [matcher] def checkScalaCheckProperty(prop: Prop)(params: Params, verbose: Boolean) = {
      // will print the result of each test if verbose = true
      def printResult(succeeded: Int, discarded: Int): Unit = {
        if (!verbose) return
@@ -141,9 +141,9 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    }
    // depending on the result, return the appropriate success status and messages
    // the failure message indicates a counter-example to the property
-   protected [matcher] def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
-   protected [matcher] def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
-   protected [matcher] def afterNShrinks(args: List[Arg]) = {
+   private [matcher] def noCounterExample(n: Int) = "The property passed without any counter-example " + afterNTries(n)
+   private [matcher] def afterNTries(n: Int) = "after " + (if (n == 1) n + " try" else n + " tries")
+   private [matcher] def afterNShrinks(args: List[Arg]) = {
      if (args.forall(_.shrinks == 0))
        ""
      else
@@ -155,7 +155,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
       }.mkString(" - shrinked (", ",", ")")
    }
 
-   protected [matcher] def counterExample(args: List[Arg]) = {
+   private [matcher] def counterExample(args: List[Arg]) = {
      if (args.size == 1)
        args.map(a => if (a.arg == null) "null" else a.arg.toString).mkString("'", "", "'")
      else if (args.exists(_.arg.toString.isEmpty))
@@ -183,7 +183,7 @@ trait ScalaCheckParameters {
    *  <li>maxDiscarded == maxDiscardedTests
    *  <li>minSize and maxSize keep their name <code><ul>
    */
-  val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
+  private [matcher] val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
 
   /** This variable is used to track if we need to add an expectation each time a property is evaluated */
   private var countExpectations = true
@@ -191,10 +191,10 @@ trait ScalaCheckParameters {
   def expectProperties() = { countExpectations = true; this }
   /** declare that no expectation should be added each time a property is evaluated */
   def dontExpectProperties() = { countExpectations = false; this }
-  def shouldCountExpectations = countExpectations
+  private [matcher] def shouldCountExpectations = countExpectations
   /**
    * Default values for ScalaCheck parameters
-	 */
+   */
   def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100)
 
   /**
