@@ -27,8 +27,8 @@ class dataTableHeaderUnit extends Specification with DataTables with JUnit {
     "print out the column names separated by |" in {
       tableHeader.toString must_== "|a|b|c|"
     }
-    "have a toHtml method" in {
-      tableHeader.toHtml must_== <tr><th>a</th><th>b</th><th>c</th></tr>
+    "have a toXhtml method" in {
+      tableHeader.toXhtml must_== <tr><th>a</th><th>b</th><th>c</th></tr>
     }
   }
 }
