@@ -55,13 +55,14 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
     val parsed = parser.parseToHtml(s)
     debug("parsed is \n" + parsed)
     val replaced = parsed.
+    replace("<br/>", "").
     replace("&#8220;", "\"").
     replace("&#8221;", "\"").
     replace("&#8216;", "'").
     replace("&#8217;", "'").
     replaceGroups("(<code>((.)*)</code>)", (s: String) =>
-      s.replace("<br/>", "<br></br>").
-      replace("&amp;quot;", "\"")
+        s.replace("<br/>", "<br></br>").
+        replace("&amp;quot;", "\"")
     )
     debug("replaced is \n" + replaced)
     replaced
