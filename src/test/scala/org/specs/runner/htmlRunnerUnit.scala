@@ -30,22 +30,22 @@ class htmlRunnerUnit extends Specification with DataTables with JUnit {
                 1    !  1   ! 2        |
                 3    !  1   ! 5        | { (a: Int, b: Int, c: Int) =>
                     a + b must_== c  }
-  def html = { try { table.execute } catch { case _ => } ; table.toHtml }
-  "the toHtml function" should {
+  def xhtml = { try { table.execute } catch { case _ => } ; table.toXhtml }
+  "the toXhtml function" should {
     "create an html table for a DataTable" in {
-      html must \\(<table class="dataTable"></table>)
+      xhtml must \\(<table class="dataTable"></table>)
     }
     "create a header for the DataTable" in {
-      html must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
+      xhtml must (\\(<th>a</th>) and \\(<th>b</th>) and \\(<th>result</th>))
     }
     "create a row for each result" in {
-      html must (\\(<td>1</td>) and \\(<td>1</td>) and \\(<td>2</td>))
+      xhtml must (\\(<td>1</td>) and \\(<td>1</td>) and \\(<td>2</td>))
     }
     "create an icon for a failure" in {
-      html must \\(<img src="images/icon_failure_sml.gif"/>)
+      xhtml must \\(<img src="images/icon_failure_sml.gif"/>)
     }
     "create a cell with the failure message" in {
-      html must \\(<tr class="failure"/>) \\(<td>'4' is not equal to '5'</td>)
+      xhtml must \\(<tr class="failure"/>) \\(<td>'4' is not equal to '5'</td>)
     }
   }
   "the sanitize function" should {
