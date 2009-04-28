@@ -46,6 +46,16 @@ class xhtmlSpec extends spex.Specification {
           <tr><td>4/14/2009</td><td>-10</td><td><b>A</b>B</td></tr>
         </table>) must ==(3)
     }
-
+    "have a maxColSize function" in {
+      maxColSize(<table>
+        <tr> 
+          <th>Messages</th> 
+        </tr> 
+        <tr> 
+          <td class="info"></td> 
+          <td class="info">RECEIPT</td> 
+        </tr> 
+      </table>) must_== 2
+    }
   }
 }
