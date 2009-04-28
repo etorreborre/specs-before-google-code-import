@@ -30,6 +30,18 @@ class dataTableUnit extends Specification with DataTables with JUnit {
 
       data.getClass.getName must beMatching("DataRow")
     }
+    "be just a datatable if appended a function" in {
+      var total = 0
+      val data = "a"|"b"|"c"|
+                  1 ! 2 ! 3 |> { (a: Int, b: Int, c: Int) => 
+                    total = a + b + c
+                  }
+      data.getClass.getName must beMatching("DataTable")
+      data.header.toString aka "the table header" must_== "|a|b|c|"
+      data.rows.size aka "the number of rows" must_== 2
+      data.execute.toHtml must_== ""
+      total must_== 6
+    }
     "be a datatable if it has at least 2 rows" in {
       val data = "a"|"b"|"c"|
                   1 ! 2 ! 3 |

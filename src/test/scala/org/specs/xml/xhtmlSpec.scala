@@ -46,7 +46,7 @@ class xhtmlSpec extends spex.Specification {
           <tr><td>4/14/2009</td><td>-10</td><td><b>A</b>B</td></tr>
         </table>) must ==(3)
     }
-    "have a maxColSize function" in {
+    "have a maxColSize function computing the max size even with empty cells" in {
       maxColSize(<table>
         <tr> 
           <th>Messages</th> 

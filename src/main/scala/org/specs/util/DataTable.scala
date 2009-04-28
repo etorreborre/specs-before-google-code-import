@@ -121,8 +121,17 @@ trait AbstractDataRow extends DefaultResults {
   var header: TableHeader = new TableHeader(Nil, true)
   var shouldExecute = false;
   def valuesList: List[Any]
+  override def toString = valuesList.mkString("|", "|", "|")
+  def result = statusAsText + toString + (if (isOk) "" else " ") + issues.map(_.getMessage).mkString(",")
+  def toHtml = {
+    <tr class={statusClass}>{
+      valuesList.map((v:Any) => <td>{v.toString}</td>)}{
+      if (header.isOk) NodeSeq.Empty else <td>{issues.map(_.getMessage)}</td>
+    }</tr>
+  }
+  def execute[T0, R](f: Function1[T0, R]): R
 }
-abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
+abstract class DataRow[T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
                        +T11, +T12, +T13, +T14, +T15, +T16, +T17, +T18, +T19](val values: (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)) extends AbstractDataRow {
   def | = this
   def |[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9,
@@ -131,6 +140,11 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
     val table = DataTable(header, List(this, {row.header_=(header); row}), shouldExecute)
     header.setTable(table)
     table
+  }
+  def |[R](function: Function1[T0, R]) = {
+    val table = DataTable(header, List(this), false)
+    header.setTable(table)
+    table.|(function)
   }
   def |>[S0 >: T0, S1 >: T1, S2 >: T2, S3 >: T3, S4 >: T4, S5 >: T5, S6 >: T6, S7 >: T7, S8 >: T8, S9 >: T9,
         S10 >: T10, S11 >: T11, S12 >: T12, S13 >: T13, S14 >: T14,
@@ -146,14 +160,7 @@ abstract class DataRow[+T0, +T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9, +T10,
            l = l:::List(e)
     l
   }
-  override def toString = valuesList.mkString("|", "|", "|")
-  def result = statusAsText + toString + (if (isOk) "" else " ") + issues.map(_.getMessage).mkString(",")
-  def toHtml = {
-    <tr class={statusClass}>{
-      valuesList.map((v:Any) => <td>{v.toString}</td>)}{
-      if (header.isOk) NodeSeq.Empty else <td>{issues.map(_.getMessage)}</td>
-    }</tr>
-  }
+
 }
 trait ExecutableDataTable extends HasResults {
   def execute: this.type
@@ -185,9 +192,9 @@ trait ExecutableDataTable extends HasResults {
  * <li/>The function must have the same parameter types as the types of the rows (However the function can have less parameters than the number of row cells)
  * </ul>
  */
-case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](header: TableHeader, rows: List[DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]], var shouldExecute: Boolean) extends ExecutableDataTable { outer =>
+case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](header: TableHeader, rows: List[AbstractDataRow], var shouldExecute: Boolean) extends ExecutableDataTable { outer =>
 
-  type AbstractDataRow = DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]
+//  type AbstractDataRow = DataRow[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]
   /**
    * This function can be overriden to provide another behaviour upon table failure
    */
@@ -288,9 +295,9 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * apply a function of one argument to the table
    */
-  def |[R](f: Function1[T0, R]) = {
+  def |[S0 >: T0, R](f: Function1[S0, R]) = {
 
-    function = new Function0[DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]]() {       def apply(): DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] = {rows foreach {r => executeRow(r, f(r.values._1))}; outer }    }
+    function = new Function0[DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19]]() {       def apply(): DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19] = {rows foreach {r => executeRow(r, r.execute(f))}; outer }    }
     if (shouldExecute) execute else this
   }
   def |>[R](f: Function2[T0, T1, R]) = {shouldExecute = true; this.|(f)}
@@ -409,6 +416,7 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   }
 }
 case class DataRow1[T0](v0: T0) extends DataRow((v0, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)) {
+  def execute[R](f: Function1[T0, R]) = f(values._1)
   def ![T](v: T) = DataRow2[T0, T](v0, v)
 }
 case class DataRow2[T0, T1](v0: T0, v1: T1) extends DataRow((v0, v1, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)) {
