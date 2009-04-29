@@ -72,7 +72,7 @@ class LineForm extends Form {
   
   override def copy: LineForm = {
     val f = new LineForm
-    this.lineProperties.foreach(p => f.lineProperties.append(p.copy.asInstanceOf[LabeledXhtml]))
+    this.lineProperties.foreach(p => f.lineProperties.append(p.copy))
     copyPropertiesAndFields(f)
   }
 

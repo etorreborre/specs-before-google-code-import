@@ -48,6 +48,11 @@ trait ToXhtml extends DecoratedXhtml {
     else
       xhtml.toString
   }
+  def copy(c: ToXhtml) = {
+    c.valignment(valignment())
+    c.statusCode(statusCode())
+    super.copy(c)
+  }
 }
 trait DecoratedXhtml {
   /** this functions will decorate the labels on the field/property/form */
@@ -116,6 +121,11 @@ trait DecoratedXhtml {
   def infoLabels: this.type = labelCellAttribute("class", "info")
   def infoLabel: this.type = infoLabels
 
+  def preValues: this.type = decorateValuesWith((s:Node) => <pre>{s}</pre>)
+  def preValue: this.type = preValues
+  def preLabels: this.type = decorateLabelsWith((s:Node) => <pre>{s}</pre>)
+  def preLabel: this.type = preLabels
+  def pre: this.type = { preLabels.preValues }
   def italicValues: this.type = decorateValuesWith((s:Node) => <i>{s}</i>)
   def italicValue: this.type = italicValues
   def italicLabels: this.type = decorateLabelsWith((s:Node) => <i>{s}</i>)
@@ -131,4 +141,10 @@ trait DecoratedXhtml {
   def strikeLabels: this.type = decorateLabelsWith((s:Node) => <s>{s}</s>)
   def strikeLabel: this.type = strikeLabels
   def strike: this.type = { strikeLabels.strikeValues }
+
+  def copy(c: DecoratedXhtml) = {
+    def copyList[T](l: List[T]) = l.foldLeft(Nil:List[T]) { (res, cur) => cur :: res }.reverse
+    c.labelsDecorators = copyList(labelsDecorators)
+    c.valuesDecorators = copyList(valuesDecorators)
+  }
 }

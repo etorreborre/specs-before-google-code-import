@@ -22,7 +22,11 @@ import org.specs.util.Property
  * A LineField is a Field which is displayed on a line without its lable
  */
 class LineField[T](override val label: String, actual: Property[T]) extends Field(label, actual) {
-  override def copy: LineField[T] = new LineField(label, actual)
+  override def copy: LineField[T] = {
+    val f = new LineField(label, actual)
+    super.copy(f)
+    f
+  }
   override def toXhtml = valueCell
   override def toEmbeddedXhtml = valueCell
 }

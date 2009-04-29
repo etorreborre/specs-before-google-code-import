@@ -72,7 +72,17 @@ class Prop[T](val label: String,
               var expected: Property[T],
               var actual: Property[T], constraint: Option[Constraint[T]]) 
               extends DefaultExecutable with LabeledXhtml with ValueFormatter[T] with Copyable[Prop[T]] {
-  override def copy: Prop[T] = new Prop[T](label, expected, actual, constraint)
+  
+  override def copy: Prop[T] = {
+    val p = new Prop[T](label, expected, actual, constraint)
+    super[ValueFormatter].copy(p)
+    p
+  }
+  def copy(p: Prop[T]) = {
+    super[ValueFormatter].copy(p)
+    super[LabeledXhtml].copy(p)
+  } 
+    
 
   /**
    * The apply method sets the expected value and returns the Prop
@@ -157,6 +167,7 @@ case object Prop {
   def apply[T](label: String, value: =>T, c: MatcherConstraint[T]): MatcherProp[T] = new MatcherProp(label, Property[T](), Property(value), Some(c))
   def apply[T](label: String, value: =>T): MatcherProp[T] = new MatcherProp(label, Property[T](), Property(value), None)
   def apply[T](label: String): MatcherProp[T] = new MatcherProp(label, Property[T](), Property[T](), None)
+  def apply[T](value: =>T): MatcherProp[T] = new MatcherProp("", Property[T](), Property[T](value), None)
 }
 
 /**

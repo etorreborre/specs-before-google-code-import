@@ -142,5 +142,12 @@ class propSpec extends Specification with JUnit with Mockito with SystemContexts
       Prop("Result", 1).formatterIs((i: Int) => "["+i.toString+"]").toXhtml(1) must ==/(<td class="info">[1]</td>)
     }
   }
-
+  "A copied Prop" should {
+    "copy its value formatter" in {
+      val p: Prop[Int] = Prop(1)
+      p.formatterIs((s:Int) => "v: " + s.toString)
+      val c = p.copy
+      c.formattedValue.toString must_== "v: 1"
+    }
+  }
 }

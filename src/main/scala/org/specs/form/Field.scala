@@ -30,7 +30,16 @@ import org.specs.util.Property
  */
 class Field[T](val label: String, val value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] {
   /** @return a copy of this Field with the same value */
-  override def copy: Field[T] = new Field(label, value)
+  override def copy: Field[T] = {
+    val f = new Field(label, value)
+    copy(f)
+    f
+  }
+  def copy(f: Field[T]) = {
+    super[ValueFormatter].copy(f)
+    super[LabeledXhtml].copy(f)
+  }
+  
   /**
    * set a new value on the field. 
    */

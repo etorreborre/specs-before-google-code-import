@@ -50,6 +50,9 @@ trait ValueFormatter[T] {
     }
     this 
   }
+  def copy(c: ValueFormatter[T]) = {
+    c.formatter = this.formatter
+  }
 }
 /**
  * Formatter for an Iterable
@@ -105,5 +108,9 @@ trait ValuesFormatter[T] {
       case Some(x) => function(x)
     }
     this 
+  }
+  def copy(c: ValuesFormatter[T]) = {
+    c.valueFormatter = valueFormatter
+    c.valuesFormatter = valuesFormatter
   }
 }

@@ -27,8 +27,10 @@ class EntityLineProp[E, T](override val label: String,
 
   override def copy: EntityLineProp[E, T] = {
     val e = Property[E]()
-    new EntityLineProp[E, T](label, expectedValue, function, e, 
+    val p = new EntityLineProp[E, T](label, expectedValue, function, e, 
                                      constraint.map(c => new MatcherConstraint(e.map(function(_)).optionalValue, c.executor)))
+    super.copy(p)
+    p
   }
 }
 object EntityLineProp {
