@@ -23,7 +23,7 @@ import scala.xml._
 
 trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wiki {
   def format(desc: Elem, examples: Iterable[Example]): Node = {
-    val parsed = parseToHtml(setStatus(desc.toString, examples))
+    val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
       XML.loadString(parsed)
     } catch {
