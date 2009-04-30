@@ -49,6 +49,7 @@ trait TableFormEnabled extends FormEnabled {
           props.foreach(p => properties.append(p.asInstanceOf[FormProperty with Copyable[FormProperty]]))
 
         }
+        lineForm.formatterIs(genericFormatter)
         this.tr(lineForm)
       }
     }

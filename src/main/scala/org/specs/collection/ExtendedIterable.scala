@@ -145,7 +145,9 @@ object ExtendedIterable {
     values
     var result: List[List[(A, B)]] = Nil
     for (v <- values) {
-      if (!result.exists { listOfPairs => listOfPairs.forall(p => v.exists(_ == p)) }) {
+      if (!result.exists { listOfPairs =>
+        v.forall(p => listOfPairs.exists(_ == p)) 
+      }) {
         result = v :: result
       }
     }
