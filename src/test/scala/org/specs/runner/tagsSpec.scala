@@ -17,10 +17,11 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.runner
-import org.specs.specification.LiterateSpecification
+import org.specs.literate._
+import org.specs._
 import org.specs.specification._
 
-class tagsSpec extends LiterateSpecification with Fixtures with JUnit {
+class tagsSpec extends HtmlSpecification with Fixtures {
 
 <t>Tags can be attached to examples to classify them.
 
@@ -65,7 +66,7 @@ class tagsSpec extends LiterateSpecification with Fixtures with JUnit {
 
 </t> isSus
 }
-trait Fixtures extends LiterateSpecification {
+trait Fixtures extends LiterateSpecification { this: LiterateSpecification =>
    object mySpec extends Specification with ScalaCheck {
      "example 1" in { 1 must_== 2 }
      "example 2" in {

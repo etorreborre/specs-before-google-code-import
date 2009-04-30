@@ -20,7 +20,7 @@ package org.specs.specification
 import org.specs._
 import org.specs.runner._
 
-class contextSpec extends LiterateSpecification("Contexts specification") with ContextDefinitions with Wiki with Html with JUnit {
+class contextSpec extends HtmlSpecification("Contexts specification") with ContextDefinitions {
   override def htmlDir = "."
 
   "Contexts" ->> <wiki>

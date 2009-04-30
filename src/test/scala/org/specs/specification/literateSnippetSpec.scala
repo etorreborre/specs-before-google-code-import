@@ -19,9 +19,8 @@
 package org.specs.specification
 import org.specs._
 import org.specs.util._
-import org.specs.runner._
 
-class literateSnippetSpec extends LiterateSpecification("Literate snippet") with Html with Examples with JUnit { <wiki>
+class literateSnippetSpec extends HtmlSpecification("Literate snippet") with Examples { <wiki>
 
 h3. Declaration
 

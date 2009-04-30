@@ -18,8 +18,7 @@
  */
 package org.specs.runner
 import org.specs._
-import org.specs.specification._
-import org.specs.runner._
+import org.specs.literate._
 import org.specs.util._
 import scala.collection.mutable._
 import org.specs.io.mock.MockOutput

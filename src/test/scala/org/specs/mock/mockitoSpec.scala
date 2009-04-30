@@ -18,11 +18,10 @@
  */
 package org.specs.mock
 import org.specs._
-import org.specs.specification._
-import org.specs.runner._
+import org.specs.literate._
 import org.specs.execute._
 
-class mockitoSpec extends LiterateSpecification("Mockito Specification") with MockitoSpecification {
+class mockitoSpec extends HtmlSpecification("Mockito Specification") with MockitoSpecification {
   <wiki>
 Mockito is a Java library for mocking.
 
@@ -183,5 +182,5 @@ Speficic { linkTo(returnValues) } can be returned on unstubbed methods.
   include(spies)
   include(returnValues)
 }
-trait MockitoSpecification extends Mockito with Expectations with LiterateSnippets with Wiki with Html with JUnit { this: Specification =>
+trait MockitoSpecification extends Mockito with Expectations with LiterateSnippets with Wiki { this: Specification =>
 }

@@ -18,6 +18,7 @@
  */
 package org.specs.specification
 import org.specs.util._
+import org.specs.literate._
 
 trait Snippets extends ScalaInterpreter {
   def format(code: String): String = code

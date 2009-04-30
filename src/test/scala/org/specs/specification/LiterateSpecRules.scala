@@ -18,10 +18,12 @@
  */
 package org.specs.specification
 import org.specs.Sugar._
+import org.specs._
+import org.specs.literate._
 import org.specs.util._
 import org.specs.runner._
 
-trait LiterateSpecRules extends LiterateSpecification with AllProperties with Wiki {
+trait LiterateSpecRules extends HtmlSpecification with AllProperties {
 
    object example1 extends LiterateSpecification  {
      <text>{"1 must be 1" in {1 must_== 1}}</text> isSus  }

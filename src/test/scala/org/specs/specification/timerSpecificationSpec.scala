@@ -24,7 +24,7 @@ import org.specs.util._
 import scala.xml._
 import org.specs.Sugar._
 
-class timerSpecificationSpec extends TimerSpecificationActionWords with JUnit {
+class timerSpecificationSpec extends TimerSpecificationActionWords {
   "The timer specification" is <p>
    A Simple timer is an object which can measure time. Let's create a timer.
    When a timer is stopped{stop}, the timer should {"fail to return the elapsed time" in failTime} then
@@ -35,7 +35,7 @@ class timerSpecificationSpec extends TimerSpecificationActionWords with JUnit {
 </p>
 }
 
-class TimerSpecificationActionWords extends LiterateSpecification {
+class TimerSpecificationActionWords extends HtmlSpecification {
   val simpleTimer = new SimpleTimer
   class Person {var name: String = ""; def setName(n: String) = name = n}
   val person = new Person;

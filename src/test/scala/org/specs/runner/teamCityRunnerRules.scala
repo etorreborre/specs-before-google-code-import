@@ -21,7 +21,7 @@ import org.specs.specification._
 import org.specs.io.mock._
 import org.specs.util.Property
 
-class teamCityRunnerRules extends LiterateSpecification("Team city runner") with Wiki with JUnit with Html {
+class teamCityRunnerRules extends HtmlSpecification("Team city runner") {
   override def htmlDir = "target"
   detailedDiffs()
   def clearDetails(messages: Seq[String]) = messages.map(_.replaceAll("details='.*'", "details='exception stacktrace'"))

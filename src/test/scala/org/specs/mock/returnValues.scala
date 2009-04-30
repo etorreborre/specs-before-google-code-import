@@ -17,11 +17,10 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.mock
-import org.specs.specification._
-import org.specs.runner._
+import org.specs._
 
 object returnValues extends returnValues
-class returnValues extends LiterateSpecification("Return values") with MockitoSpecification {
+class returnValues extends HtmlSpecification("Return values") with MockitoSpecification {
 <wiki>
 
 h3. Return values

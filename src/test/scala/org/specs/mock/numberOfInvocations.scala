@@ -17,11 +17,10 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.mock
-import org.specs.specification._
-import org.specs.runner._
+import org.specs._
 
 object numberOfInvocations extends numberOfInvocations
-class numberOfInvocations extends LiterateSpecification("Number of invocations") with MockitoSpecification {
+class numberOfInvocations extends HtmlSpecification("Number of invocations") with MockitoSpecification {
 <wiki>
 {"""import org.specs.Specification
   import org.specs.mock.Mockito

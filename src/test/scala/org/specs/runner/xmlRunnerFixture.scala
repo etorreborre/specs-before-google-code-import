@@ -17,11 +17,12 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.runner
+import org.specs._
 import org.specs.specification._
 import org.specs.util.Property
 import scala.xml._
 
-trait RunnerFixture extends LiterateSpecification with RunnerTestData {
+trait RunnerFixture extends HtmlSpecification with RunnerTestData {
   def createSimpleSpecRunner = runner = simpleSpecRunner
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpecs.shh }

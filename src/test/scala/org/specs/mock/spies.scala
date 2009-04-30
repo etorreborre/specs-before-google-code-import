@@ -17,11 +17,10 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.mock
-import org.specs.specification._
-import org.specs.runner._
+import org.specs._
 
 object spies extends spies
-class spies extends LiterateSpecification("Spies") with MockitoSpecification { <wiki>
+class spies extends HtmlSpecification("Spies") with MockitoSpecification { <wiki>
 {"""import org.specs.Specification
   import org.specs.mock.Mockito
   import org.mockito.Mock
