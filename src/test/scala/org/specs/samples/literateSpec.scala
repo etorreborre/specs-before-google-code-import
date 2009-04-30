@@ -79,7 +79,7 @@ class fieldsFormSpec extends HtmlSpecification("Fields form") with JUnit {
    { new Person().toHtml }  
   </textile>
 }
-class bagFormSpec extends HtmlSpecification("Bag form") with JUnit {
+class bagFormSpecification extends HtmlSpecification("Bag form") with JUnit {
   case class Customer(name: String, age: Int)
   case class CustomerLine(name: String, age: Int) extends EntityLineForm[Customer] {
     // the prop method accepts a function here, taking the proper attribute on the "Entity"
