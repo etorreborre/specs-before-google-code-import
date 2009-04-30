@@ -98,7 +98,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * and indicates if the generation should be verbose or not
     */
    private [matcher] def checkProperty(prop: Prop)(p: Parameters) = {
-     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, 1, 1), p.verbose)
+     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, p(workers), p(wrkSize)), p.verbose)
    }
 
   /**
@@ -183,7 +183,7 @@ trait ScalaCheckParameters {
    *  <li>maxDiscarded == maxDiscardedTests
    *  <li>minSize and maxSize keep their name <code><ul>
    */
-  val (minSize, maxSize, maxDiscarded, minTestsOk) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk)
+  val (minSize, maxSize, maxDiscarded, minTestsOk, workers, wrkSize) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk, 'workers, 'wrkSize)
 
   /** This variable is used to track if we need to add an expectation each time a property is evaluated */
   private var countExpectations = true
@@ -195,7 +195,7 @@ trait ScalaCheckParameters {
   /**
    * Default values for ScalaCheck parameters
    */
-  def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100)
+  def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100, workers->1, wrkSize->20)
 
   /**
    * This object is used to set parameters but nothing will be printed to the console<br>
