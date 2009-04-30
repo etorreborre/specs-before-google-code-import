@@ -20,21 +20,22 @@ package org.specs.literate
 import org.specs.Sugar._
 import org.specs._
 import org.specs.util._
-import org.specs.runner._
 
 trait LiterateSpecRules extends HtmlSpecification with AllProperties {
 
-   object example1 extends LiterateSpecification  {
-     <text>{"1 must be 1" in {1 must_== 1}}</text> isSus  }
-   object example2 extends LiterateSpecification  {
-     <wiki>In this example <ex>*1 must be 1*</ex> { 1 must_== 1  } </wiki> isSus  }
-   object example3 extends LiterateSpecification  {
-     <html><ex><i>this example is not yet implemented</i></ex> { notImplemented }</html> isSus  }
+   object example1 extends LiterateSpecification with Text {
+     <t>{"1 must be 1" in {1 must_== 1}}</t> isSus  }
+   object example2 extends LiterateSpecification with Textile {
+     <t>In this example <ex>*1 must be 1*</ex> { 1 must_== 1  } </t> isSus  }
+   object example3 extends LiterateSpecification with Html {
+     <t><ex><i>this example is not yet implemented</i></ex> { notImplemented }</t> isSus  }
+   object example5 extends LiterateSpecification with Markdown {
+     <t><ex>_1 must be 1_</ex> { 1 must_== 1  }</t> isSus  }
    object example4 extends LiterateSpecification  {
-     <text>
+     <t>
      <ex tags="included">this example is included</ex> { 1 must_== 1 }
      <ex>this example is not included</ex> { 1 must_== 0 }
-     </text> isSus  }
+     </t> isSus  }
 
    def exampleOk = checkSuccess(example1)
    def taggedExample = checkSuccess(example2)
@@ -45,13 +46,15 @@ trait LiterateSpecRules extends HtmlSpecification with AllProperties {
    def checkSkipped(s: Specification) = {
      s.systems.flatMap(_.examples).flatMap(_.skipped).size aka "the number of skipped" must_== 1
    }
-   def desc(s: Specification) = new HtmlRunner().formattedDescription(s.systems.first).get.toString aka "the formatted description"
+   def desc(s: Specification) = s.systems.first.literateDesc.toString aka "the formatted description"
    def isText = desc(example1) must include("1 must be 1")
-   def isWiki = desc(example2) must include("<strong>1 must be 1</strong>")
+   def isTextile = desc(example2) must include("<strong>1 must be 1</strong>")
+   def isMarkdown = desc(example5) must include("<em>1 must be 1</em>")
    def isHtml = desc(example3) must include("<i>this example is not yet implemented</i>")
    def taggedExamples = {
      example4.successes.size aka "the number of successes" must_== 1
    }
+   
    import org.specs.util.AllProperties._
 
    def hello(name: String): String = "hello " + name

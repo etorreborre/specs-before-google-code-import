@@ -20,7 +20,7 @@ package org.specs.literate
 import org.specs.specification._
 import scala.xml._
 
-trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification with WikiFormatter {
+trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification with WikiFormatter { outer =>
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e
@@ -50,7 +50,7 @@ trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification
           example.exampleDescription = makeExampleDescription(node)
           List("tag", "tags") foreach { tagName => addTag(node, example, tagName) }
         }
-        sus.literateDescription = Some(content)
+        sus.literateDescription = Some(LiterateDescription(outer.format(content, sus.examples)))
       } catch {
         case t => forExample("The system could not be evaluated").addError(t)
       }

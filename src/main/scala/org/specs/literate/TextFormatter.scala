@@ -20,8 +20,8 @@ package org.specs.literate
 import scala.xml._
 import org.specs.specification._
 
-trait Text extends TextFormatter with Wiki
+trait Text extends TextFormatting with Wiki
 class TextFormatter extends TextFormatting
 trait TextFormatting extends LiterateDescriptionFormatter {
-  def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
+  override def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
 }

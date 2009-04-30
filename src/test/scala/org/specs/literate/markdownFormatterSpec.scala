@@ -30,7 +30,7 @@ class markdownFormatterSpec extends spex.Specification {
     }
     "format the description of example as some xml text" in {
       val example = new Example("", null)
-      example.exampleDescription = new Markdown(){}.makeExampleDescription(<ex>"a description"</ex>)
+      example.exampleDescription = new Markdown(){}.makeExampleDescription(<ex>a description</ex>)
       new MarkdownFormatter().formatDesc(example) must_== <t>a description</t>
     }
     "format single quotes as single quotes" in {

@@ -63,12 +63,12 @@ It is possible to mark an example as not implemented yet:
 
 h3. Formatting
 
-The format of the description can be indicated with different tags. The tags are then used by Runners to know how to interpret
-the text of the description.
+The format of the description is done by mixing-in the appropriate trait: Textile (default), Markdown, Html, Text. 
 
-* <ex>The text format @"text"@ indicates text interpreted as simple text</ex>{isText}
-* <ex>The wiki format @"wiki"@ indicates text interpreted as a markup language</ex>{isWiki}
-* <ex>The html format @"html"@ indicates text interpreted as a html</ex>{isHtml}
+* <ex>The Text trait indicates text interpreted as simple text</ex>{isText}
+* <ex>The Textile trait indicates text interpreted as Textile markup language</ex>{isTextile}
+* <ex>The Markdown trait indicates text interpreted as Markdown markup language</ex>{isMarkdown}
+* <ex>The Html trait indicates text interpreted as a html</ex>{isHtml}
 
 h3. Properties
 

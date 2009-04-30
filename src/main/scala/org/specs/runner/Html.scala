@@ -24,8 +24,6 @@ import org.specs.util._
 import org.specs.ExtendedThrowable._
 import org.specs.xml.NodeFunctions._
 import org.specs.execute._
-import org.specs.literate.DescriptionFormatter
-
 /**
  * The Html trait outputs the results of a specification execution as an html
  * file in a given output directory.
@@ -34,8 +32,6 @@ import org.specs.literate.DescriptionFormatter
  * contains all examples description with their execution status: error, failure, success, skipped.
  */
 trait Html extends File {
-  val descriptionFormatter = new DescriptionFormatter()
-
   /** definition of the file name of a specification. */
   override def fileName(spec: BaseSpecification): String = HtmlNamingFunction.default(spec)
 
@@ -125,10 +121,6 @@ trait Html extends File {
     }
     <a href={filePath}>{spec.name} </a>
   }
-  
-  /** @return a formatted string depending on the type of literate description: text, wiki or html. */
-  def formattedDescription(sus: Sus): Option[Node] = sus.literateDescription map (descriptionFormatter.format(_, sus.examples))
-
   /**
    * returns a table with the name of all systems, with their status,
    * possibly shortened if the system's description is too long.
@@ -194,7 +186,7 @@ trait Html extends File {
   def susTable(sus: Sus, spec: Specification): NodeSeq = {
     anchorName(susName(sus, spec)) ++
     susHeader(sus) ++
-    literateDesc(sus) ++
+    sus.literateDesc ++
     examplesTable(sus)
   }
 
@@ -226,10 +218,6 @@ trait Html extends File {
       case _ => NodeSeq.Empty
     }
   }
-  def literateDesc(sus: Sus): NodeSeq = sus.literateDescription match {
-    case None => NodeSeq.Empty
-    case Some(desc) => formattedDescription(sus).get
-  }
   /** create an up arrow with an anchor ref to the top. */
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
 
@@ -247,18 +235,15 @@ trait Html extends File {
   def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     example.subExamples.toList match {
       case Nil => exampleRow(example, alternation, fullSuccess)
-      case subexamples => <h4>{formattedDesc(example)}</h4> ++ exampleRows(subexamples, fullSuccess)
+      case subexamples => <h4>{example.exampleDescription.toXhtml}</h4> ++ exampleRows(subexamples, fullSuccess)
     }
-  }
-  def formattedDesc(ex: Example) = {
-    descriptionFormatter.formatDesc(ex)
   }
   /**
    * create a row for an example with its status, description and message.
    */
   def exampleRow(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     <tr class={if (alternation) "b" else "a"}>
-      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {formattedDesc(example)}</td>{message(example, fullSuccess)}
+      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {example.exampleDescription.toXhtml}</td>{message(example, fullSuccess)}
     </tr>
   }
 

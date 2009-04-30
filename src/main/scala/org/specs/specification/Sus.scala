@@ -62,6 +62,10 @@ case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec
     copyDefAndSubExamples(e, ExampleWithContext(context.newInstance, e.exampleDescription, this))
   }
 } 
+/** support class representing the formatted literate description of a SUS */
+case class LiterateDescription(desc: Node) {
+  def toXhtml: NodeSeq = desc
+}
 case class Sus(description: String, parent: BaseSpecification) extends ExampleLifeCycle 
                                       with Tagged with HasResults {
 
@@ -72,8 +76,9 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
    * instead of using several examples, a whole text with embedded expectations can be used to
    * specify the Sus
    */
-  var literateDescription: Option[Elem] = None
-
+  var literateDescription: Option[LiterateDescription] = None
+  /** @return an xhtml description of the sus */
+  def literateDesc: NodeSeq = literateDescription.map(_.toXhtml).getOrElse(NodeSeq.Empty)
   /** examples describing the sus behaviour */
   var examples = List[Example]()
 

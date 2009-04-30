@@ -17,16 +17,9 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.literate
-import scala.xml._
-import org.specs.specification.ExampleDescription
 
 trait Textile extends TextileFormatting with TextileWiki
 class TextileFormatter extends TextileFormatting
 trait TextileFormatting extends WikiFormatter {
   override def escapeHtml(s: String) = "=="+s+"=="
-  /** create an example description which may be processed differently depending on the markup language */
-  override def makeExampleDescription(node: NodeSeq): ExampleDescription = {
-    TextileExampleDescription(node.first.text) 
-  }
-
 }

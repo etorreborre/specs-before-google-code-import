@@ -20,8 +20,8 @@ package org.specs.literate
 import scala.xml._
 import org.specs.specification._
 
-trait HtmlWiki extends HtmlFormatter with Wiki
+trait Html extends HtmlFormatting with Wiki
 class HtmlFormatter extends HtmlFormatting
 trait HtmlFormatting extends LiterateDescriptionFormatter {
-  def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
+  override def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
 }

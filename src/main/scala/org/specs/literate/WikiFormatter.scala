@@ -68,7 +68,7 @@ trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wi
     replaced
   }
 
-  def format(desc: Elem): Node = format(desc, Nil)
+  override def format(desc: Elem): Node = format(desc, Nil)
   
   def format(desc: Elem, examples: Iterable[Example]): Node = {
     val parsed = parseToHtml(setStatus(desc.child.text, examples))
@@ -81,8 +81,4 @@ trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wi
   override def formatDesc(ex: Example): Node = {
     XML.loadString("<t>" + format(ex.exampleDescription.toString) + "</t>")
   }
-  case class WikiExampleDescription(override val desc: String) extends ExampleDescription(desc)
-  case class TextileExampleDescription(override val desc: String) extends ExampleDescription(desc)
-  case class MarkdownExampleDescription(override val desc: String) extends ExampleDescription(desc)
-
 }

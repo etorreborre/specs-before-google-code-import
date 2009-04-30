@@ -24,29 +24,29 @@ import org.specs.runner._
 
 class descriptionFormatterSpec extends Specification with JUnit {
 
-  "A description formatter" should {
-    "format a description as text if it has the text tag" in {
-      format(<text>Hello world</text>).text must_==
-        "Hello world"
+  "A text formatter" should {
+    "format a description as text" in {
+      textFormatter.format(<t>Hello world</t>).text must_== "Hello world"
+    }
+  }
+  "A Textile formatter" should {
+    "format a description as textile markup" in {
+      textileFormatter.format(<t>h1. Hello world</t>) must \\("h1")
     }
     detailedDiffs()
-    "format a description as wiki markup if it has the wiki tag" in {
-      format(<wiki>h1. Hello world</wiki>) must \\("h1")
-    }
-    "format a description as html if it has the html tag" in {
-      format(<html>This is some <i>html</i> text</html>) must \\("i")
-    }
-  }
-  "A wiki description formatter" should {
     val example = new Example("example desc", this).in { 1 must_== 1 }
     "set the status of the example descriptions depending on the example status" in {
-      wikiFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)) must (
-        include("""this is the <ex class="success" """) and
-        include("</ex> to be highlighted")
-      )
+      textileFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)).toString must 
+        include("""this is the ==<ex class="success" """) and
+        include("</ex>== to be highlighted")
     }
   }
-  def formatter = new DescriptionFormatter()
-  def format(node: Elem) = formatter.format(node, Nil)
-  def wikiFormatter = new WikiFormatter {}
+  "An html formatter" should {
+    "format a description as html" in {
+      htmlFormatter.format(<t>This is some <i>html</i> text</t>) must \\("i")
+    }
+  }
+  def textFormatter = new TextFormatter
+  def textileFormatter = new TextileFormatter
+  def htmlFormatter = new HtmlFormatter
 }

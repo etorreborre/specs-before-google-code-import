@@ -199,9 +199,12 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
 /**
  * Description of the example
  */
-case class ExampleDescription(desc: String) {
+case class ExampleDescription(desc: String, toXhtml: Node) {
   override def toString = desc
   def format: String = desc.toString
+}
+object ExampleDescription {
+  def apply(desc: String): ExampleDescription = ExampleDescription(desc, <ex>{desc}</ex>)
 }
 /**
  * This class encapsulates the execution of an example
