@@ -21,7 +21,7 @@ import org.specs.specification._
 import org.specs.util._
 import scala.xml._
 
-class xmlRunnerSpec extends RunnerFixture with JUnit { "The specification for the XML runner" is <html>
+class xmlRunnerSpec extends RunnerFixture { "The specification for the XML runner" is <t>
 
   A specification can be run by a XML runner object. The XML runner object is responsible for
   collecting the results of sub-specifications, systems under test and examples and organize
@@ -43,45 +43,56 @@ class xmlRunnerSpec extends RunnerFixture with JUnit { "The specification for th
 <p/> 2. XML content
 
 <p/>  Running an XML runner on a specification should create an xml structure:
+
+  
 <ul>
-<li> {"containing an element for the specification:\n" +
-  <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"></spec>.as(xml) in checkXml }</li>
+  { <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"/>.as(xml) }
+  <li>{"containing an element for the specification:" in checkXml }</li> 
+    { xml().toString }<p/>
+  
+  { <sus description="the sus" expectations="3" failures="1" errors="1"/>.as(xml).as(xml) }
+  <li>{ "containing an element for the system under test"  in checkXml }</li>
+    { xml().toString }<p/>
+  
+  { <example description="have one ok example" expectations="0" failures="0" errors="0"></example>.as(xml).as(xml) }
+  <li>{ "containing an element for the ok example test" in checkXml }</li>
+   { xml().toString }<p/>
+  
+  { <example expectations="1" failures="1" description="have one ko example" errors="0">
+          <failure location="xmlRunnerFixture.scala:66">'1' is not the same as '2'</failure>
+    </example>.as(xml).as(xml) }
+  <li>{ "containing an element for the ko example test containing the failure" in checkXml }</li>
+    { xml().toString }<p/>
+  
+  { <example description="have an example with an error" expectations="1" failures="0" errors="1">
+      <error location="xmlRunnerFixture.scala:67">error message</error>
+    </example>.as(xml).as(xml) }
+  <li>{ "containing an element for the ko example test containing the exception" in checkXml }</li>
+    { xml().toString }<p/>
 
-<li> {"containing an element for the system under test:\n" +
-  <sus description="the sus" expectations="3" failures="1" errors="1"></sus>.as(xml) in checkXml }</li>
-
-<li> {"containing an element for the ok example test:\n" +
-  <example description="have one ok example" expectations="0" failures="0" errors="0"></example>.as(xml) in checkXml }</li>
-
-<li> {"containing an element for the ko example test containing the failure:\n" +
-  <example expectations="1" failures="1" description="have one ko example" errors="0">
-          <failure location="xmlRunnerFixture.scala:65">'1' is not the same as '2'</failure>
-    </example>.as(xml) in checkXml }</li>
-
-<li> {"containing an element for the ko example test containing the exception:\n" +
-  <example description="have an example with an error" expectations="1" failures="0" errors="1">
-      <error location="xmlRunnerFixture.scala:66">error message</error>
-    </example>.as(xml) in checkXml }</li>
-
-<li> {"containing an element for the example containing a sub-example:\n" +
-  <example expectations="0" failures="0" description="have one sub-example" errors="0">
+  { <example expectations="0" failures="0" description="have one sub-example" errors="0">
           <example expectations="1" failures="0" description="a sub-example" errors="0"></example>
-    </example>.as(xml) in checkXml }</li>
+    </example>.as(xml)}
+  <li>{ "containing an element for the example containing a sub-example"  in checkXml }</li>
+    { xml().toString }<p/>
 </ul>
 <p/>
   If the XML runner is run on a composite specification{executeCompositeSpecRunner},
-  it must then create a specification element containing the sub-specifications <ul>
-
-<li><ex>with one node for the first sub-specification</ex>
-     { <spec name="compositeSpec" description="compositeSpec" expectations="6" failures="2" errors="2"/> as xml}{checkXml}
-<li><ex>with another node for the other sub-specification</ex></li>
-     { <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"/> as xml}{checkXml} </li>
-</ul>
+  it must then create a specification element containing the sub-specifications 
+<ul>
+  { <spec name="compositeSpec" description="compositeSpec" expectations="6" failures="2" errors="2"/> as xml }
+  <li><ex>with one node for the first sub-specification</ex>{ checkXml }</li>
+    { xml().toString }<p/>
+    
+  { <spec name="sp1" description="sp1" expectations="3" failures="1" errors="1"/> as xml }
+  <li><ex>with another node for the other sub-specification</ex></li>{ checkXml }
+  { xml().toString }<p/>
+</ul >
 
 <p/>  3. Console reporting
 
 <p/> The XML runner object should {"output the results of the specification in the console" in checkConsole},
      as if it was a ConsoleRunner if it has been added the Console trait.
 
-</html>
+</t>
 }

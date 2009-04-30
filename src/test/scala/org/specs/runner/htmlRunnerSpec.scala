@@ -18,7 +18,7 @@
  */
 package org.specs.runner
 
-class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with Html with JUnit { "Html Runner Specification" is <wiki>
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") { "Html Runner Specification" is <t>
 
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:
@@ -102,5 +102,5 @@ h4. Breadcrumbs
 <ex>When the current specification has some parent specifications, they must be displayed a the top in a breadcrumb fashion, providing
 links to access the parent specifications</ex>{breadcrumbs}
 
-</wiki>
+</t>
 }

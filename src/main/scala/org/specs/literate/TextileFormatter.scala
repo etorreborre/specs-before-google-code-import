@@ -17,9 +17,31 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.literate
+import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
+import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
+import org.specs.util.ExtendedString._
 
 trait Textile extends TextileFormatting with TextileWiki
 class TextileFormatter extends TextileFormatting
 trait TextileFormatting extends WikiFormatter {
   override def escapeHtml(s: String) = "=="+s+"=="
+  override protected def parseToHtml(s: String) = {
+    debug("before is \n" + s)
+    val parser = new MarkupParser()
+    parser.setMarkupLanguage(new TextileLanguage())
+    val parsed = parser.parseToHtml(s)
+    debug("parsed is \n" + parsed)
+    val replaced = parsed.
+    replace("<br/>", "").
+    replace("&#8220;", "\"").
+    replace("&#8221;", "\"").
+    replace("&#8216;", "'").
+    replace("&#8217;", "'").
+    replaceGroups("(<code>((.)*)</code>)", (s: String) =>
+        s.replace("<br/>", "<br></br>").
+        replace("&amp;quot;", "\"")
+    )
+    debug("replaced is \n" + replaced)
+    replaced
+  }
 }

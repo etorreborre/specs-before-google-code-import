@@ -235,7 +235,7 @@ trait Html extends File {
   def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
     example.subExamples.toList match {
       case Nil => exampleRow(example, alternation, fullSuccess)
-      case subexamples => <h4>{example.exampleDescription.toXhtml}</h4> ++ exampleRows(subexamples, fullSuccess)
+      case subexamples => <h4>{example.exampleDescription.toXhtml.text}</h4> ++ exampleRows(subexamples, fullSuccess)
     }
   }
   /**

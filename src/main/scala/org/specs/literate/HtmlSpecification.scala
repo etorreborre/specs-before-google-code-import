@@ -22,7 +22,7 @@ import org.specs.runner._
 /**
  * LiterateSpecification with Html reporting
  */      
-class HtmlSpecification extends LiterateSpecification with Html with Textile with JUnit {
+class HtmlSpecification extends LiterateSpecification with runner.Html with Textile with JUnit {
   def this(n: String) = { 
     this()
     name = n

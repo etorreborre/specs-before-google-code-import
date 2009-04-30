@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.util.Property
 import scala.xml._
 
-trait RunnerFixture extends HtmlSpecification with RunnerTestData {
+trait RunnerFixture extends HtmlSpecification with RunnerTestData with literate.Html {
   def createSimpleSpecRunner = runner = simpleSpecRunner
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpecs.shh }
@@ -64,7 +64,7 @@ object sp1 extends Specification {
     "the sus" should {
       "have one ok example" in { 1 mustBe 1 }
       "have one ko example" in { 1 mustBe 2 }
-      "have an example with an exception" in { throw new Error("error message") }
+      "have an example with an error" in { throw new Error("error message") }
       "have one sub-example" in { "a sub-example" in { 1 mustBe 1 } }
     }
   }

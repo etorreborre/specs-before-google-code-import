@@ -20,22 +20,22 @@ package org.specs.literate
 import org.specs.log.ConsoleLog
 import org.specs.specification._
 import scala.xml._
-import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
-import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
-import org.specs.util.ExtendedString._
 
 trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wiki {
+  def format(desc: Elem, examples: Iterable[Example]): Node = {
+    val parsed = parseToHtml(setStatus(desc.toString, examples))
+    try {
+      XML.loadString(parsed)
+    } catch {
+      case e => Text(e.getMessage + "\\n" + parsed)
+    }
+  }
   def setStatus(desc: String, examples: Iterable[Example]) = {
     var result = desc
     examples foreach { example =>
-      def onmouse(example: Example) = {
-        var function = if (example.hasIssues) "showExampleMessage('" + example.statusClass.capitalize + "','" else "showExampleDesc('"
-        "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
-        "onmouseout=\"hideToolTip();\""
-      }
       def toReplace = escapeHtml("<ex class=\"" + example.statusClass + "\" " + onmouse(example) + ">" +
                       format(example.description) + "</ex>")
-      result = result.replace(example.description.toString, toReplace)
+      result = result.replace(example.exampleDescription.format, toReplace)
     }
     result
   }
@@ -48,37 +48,16 @@ trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wi
     } else
       parsed
   }
-  protected def parseToHtml(s: String) = {
-    debug("before is \n" + s)
-    val parser = new MarkupParser()
-    parser.setMarkupLanguage(new TextileLanguage())
-    val parsed = parser.parseToHtml(s)
-    debug("parsed is \n" + parsed)
-    val replaced = parsed.
-    replace("<br/>", "").
-    replace("&#8220;", "\"").
-    replace("&#8221;", "\"").
-    replace("&#8216;", "'").
-    replace("&#8217;", "'").
-    replaceGroups("(<code>((.)*)</code>)", (s: String) =>
-        s.replace("<br/>", "<br></br>").
-        replace("&amp;quot;", "\"")
-    )
-    debug("replaced is \n" + replaced)
-    replaced
-  }
+  protected def parseToHtml(s: String) = s
 
   override def format(desc: Elem): Node = format(desc, Nil)
   
-  def format(desc: Elem, examples: Iterable[Example]): Node = {
-    val parsed = parseToHtml(setStatus(desc.child.text, examples))
-    try {
-      XML.loadString(parsed)
-    } catch {
-      case e => {println(parsed);Text(e.getMessage + "\\n" + parsed)}
-    }
-  }
   override def formatDesc(ex: Example): Node = {
     XML.loadString("<t>" + format(ex.exampleDescription.toString) + "</t>")
+  }
+  private def onmouse(example: Example) = {
+    var function = if (example.hasIssues) "showExampleMessage('" + example.statusClass.capitalize + "','" else "showExampleDesc('"
+    "onmouseover=\"" + function + System.identityHashCode(example) +"',event)\" " +
+    "onmouseout=\"hideToolTip();\""
   }
 }

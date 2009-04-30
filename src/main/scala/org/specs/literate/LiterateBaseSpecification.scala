@@ -44,7 +44,7 @@ trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification
       try {      
         val content = e
         val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
-        val exNodes = content.\("ex")
+        val exNodes = content.\\("ex")
         exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>
           val (node, example) = pair
           example.exampleDescription = makeExampleDescription(node)

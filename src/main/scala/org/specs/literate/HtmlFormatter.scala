@@ -22,6 +22,15 @@ import org.specs.specification._
 
 trait Html extends HtmlFormatting with Wiki
 class HtmlFormatter extends HtmlFormatting
-trait HtmlFormatting extends LiterateDescriptionFormatter {
-  override def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
+trait HtmlFormatting extends WikiFormatter {
+  override def escapeHtml(s: String) = s
+  override  def format(desc: Elem, examples: Iterable[Example]): Node = {
+    val toLoad = "<t>" + setStatus(desc.toString, examples) + "</t>"
+    try {
+      XML.loadString(toLoad)
+    } catch {
+      case e => Text(e.getMessage + "\n" + toLoad)
+    }
+  }
+
 }
