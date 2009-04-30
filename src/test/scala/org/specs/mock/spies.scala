@@ -17,7 +17,7 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.mock
-import org.specs._
+import org.specs._ 
 
 object spies extends spies
 class spies extends HtmlSpecification("Spies") with MockitoSpecification { <wiki>

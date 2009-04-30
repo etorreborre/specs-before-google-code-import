@@ -21,6 +21,7 @@ import scala.xml._
 import org.specs.specification._
 
 trait Text extends TextFormatter with Wiki
-class TextFormatter extends LiterateDescriptionFormatter {
+class TextFormatter extends TextFormatting
+trait TextFormatting extends LiterateDescriptionFormatter {
   def format(desc: Elem, examples: Iterable[Example]) = Group(desc.child)
 }

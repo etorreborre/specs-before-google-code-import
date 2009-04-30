@@ -68,7 +68,7 @@ and <ex>calling the mocked list @contains@ method with a valid argument must ret
   }
   args2.successes""" snip it }
   { >("example 1")}
-
+ 
 <ex>Instead of Hamcrest matchers, a specs matcher can be used</ex>:{"""
   object args3 extends Specification with Mockito {
     val mockedList = mock[List[String]]

@@ -18,11 +18,11 @@
  */
 package org.specs
 import org.specs.literate._
-import org.specs.runner.Html
+import org.specs.runner._
 /**
  * LiterateSpecification with Html reporting
  */      
-class HtmlSpecification extends LiterateSpecification with Html with Wiki {
+class HtmlSpecification extends LiterateSpecification with Html with Textile with JUnit {
   def this(n: String) = { 
     this()
     name = n

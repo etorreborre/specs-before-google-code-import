@@ -19,16 +19,17 @@
 package org.specs.literate
 import com.petebevin.markdown.MarkdownProcessor
 import scala.xml._
+import org.specs.specification.ExampleDescription
 
-trait Markdown extends MarkdownFormatter with MarkdownWiki
-
-class MarkdownFormatter extends WikiFormatter {
+trait Markdown extends MarkdownFormatting with MarkdownWiki
+class MarkdownFormatter extends MarkdownFormatting
+trait MarkdownFormatting extends WikiFormatter {
   override protected def parseToHtml(s: String) = {
      val markup = new MarkdownProcessor
      "<div>" + markup.markdown(s) + "</div>"
   }
   /** create an example description which may be processed differently depending on the markup language */
-  override def makeExampleDescription(node: NodeSeq) = {
+  override def makeExampleDescription(node: NodeSeq): ExampleDescription = {
     MarkdownExampleDescription(node.first.text) 
   }
 }
