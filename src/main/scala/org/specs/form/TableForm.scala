@@ -41,7 +41,13 @@ trait TableFormEnabled extends FormEnabled {
       case List(t: Tabs) => super.tr(t)
       case _ => {
         val lineForm = new LineForm {
-          override val lineProperties = { val l = new ListBuffer[LabeledXhtml](); l.appendAll(props); l }
+          override val lineProperties = { 
+            val l = new ListBuffer[LabeledXhtml]()
+            l.appendAll(props)
+            l 
+          }
+          props.foreach(p => properties.append(p.asInstanceOf[FormProperty with Copyable[FormProperty]]))
+
         }
         this.tr(lineForm)
       }

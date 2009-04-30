@@ -18,7 +18,7 @@
  */
 package org.specs.form
 import org.specs.util.Property
-
+import org.specs.execute.DefaultExecutable
 /**
  * A Field is a property which is used only to display input values or output values.
  * The apply method can be used to retrieve the Fields value:<code>
@@ -28,7 +28,7 @@ import org.specs.util.Property
  * 
  * The value is stored in a Property object so it will not be evaluated until explicitly queried.
  */
-class Field[T](val label: String, val value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] {
+class Field[T](val label: String, val value: Property[T]) extends LabeledXhtml with ValueFormatter[T] with Copyable[Field[T]] with DefaultExecutable {
   /** @return a copy of this Field with the same value */
   override def copy: Field[T] = {
     val f = new Field(label, value)
@@ -39,7 +39,8 @@ class Field[T](val label: String, val value: Property[T]) extends LabeledXhtml w
     super[ValueFormatter].copy(f)
     super[LabeledXhtml].copy(f)
   }
-  
+  /** executing a field does nothing */
+  override def executeThis = this
   /**
    * set a new value on the field. 
    */
@@ -91,10 +92,12 @@ case object Field {
   def apply[T](label: String, value: =>T): Field[T] = new Field(label, Property(value))
   def apply[T](label: String, value1: Field[T], values: Field[T]*): Field[String] = Field(label, "/", value1, values:_*)
   def apply[T](label: String, separator: String, value1: Field[T], values: Field[T]*): Field[String] = {
-    if (values.isEmpty)
+    val f = if (values.isEmpty)
       Field(label, value1.get.toString)
     else
       Field(label, (value1 :: values.toList).map(_.get).mkString(separator))
+    value1.copy(f)
+    f
   }
 }
 

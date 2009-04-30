@@ -62,5 +62,12 @@ class lineFormSpec extends spex.Specification {
       stringSize2.rows aka "table rows" must not be empty
       stringSize2.rows(0) aka "table first row" must not be empty
     }
+    "decorate all fields and properties when decorated" in {
+      val form = new EntityLineForm[String]{
+        val p = prop((_:String).size)(5)
+      }.italic
+      form.p.toXhtml must \\("i")
+    }
+
   }
 }

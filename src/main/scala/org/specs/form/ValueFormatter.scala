@@ -103,11 +103,10 @@ trait ValuesFormatter[T] {
    * change the value formatter to display the value differently. This formatter displays "" for a missing value
    */
   def formatterIs(function: T => String): this.type = { 
-    valueFormatter = (t: Option[T]) => t match {
+    formatValueWith((t: Option[T]) => t match {
       case None => ""
       case Some(x) => function(x)
-    }
-    this 
+    })
   }
   def copy(c: ValuesFormatter[T]) = {
     c.valueFormatter = valueFormatter

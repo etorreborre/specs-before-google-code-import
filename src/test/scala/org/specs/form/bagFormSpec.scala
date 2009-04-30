@@ -89,5 +89,14 @@ class bagFormSpec extends org.specs.Specification with JUnit {
       form.execute.matchedActual aka "matched actual lines" must have size 2 
       form.execute.unmatchedExpectedLines aka "unmatched expected lines" must have size 1
     }
+    "decorate all fields and properties when decorated" in {
+      val form = new BagForm(actual) {
+        val p = PersonLine("Eric", 36)
+        p
+        tr(p)
+      }.italic
+      form.p.toXhtml must \\("i")
+    }
+
   }
 }

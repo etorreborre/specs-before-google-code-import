@@ -24,6 +24,18 @@ class propIterableSpec extends spex.Specification {
       PropIterable("label", List(1.234, 2.456)).toString must_== "label: 1.234, 2.456 (expected: _)"
     }
   }
+  "An iterable Prop" should {
+    "be able to change its value formatter" in {
+      val p = PropIterable("label", List(1, 2))
+      p.formatterIs((i:Int) => "v: "+i.toString)
+      p.formattedValue.toString must_== "v: 1, v: 2"
+    }
+    "be able to change its value formatter" in {
+      val p = PropIterable(List(1))
+      p.formatterIs((i:Int) => "v: "+i.toString)
+      p.formattedValue.toString must_== "v: 1"
+    }
+  }
   "An iterable property toXhtml method" should {
     val l = List(1.234, 2.345)
     "display one value only if there is only one" in {

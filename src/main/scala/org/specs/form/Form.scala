@@ -71,23 +71,6 @@ class Form(val titleString: Option[String], val factory: ExpectableFactory) exte
     this.fields.foreach(f => form.fields.append(f.copy))
     form
   }
-  override def decorateLabelsWith(x: Node => Node): this.type = { 
-    (properties.toList ::: fields.toList).foreach(_.decorateLabelsWith(x))
-    this
-  }
-  override def decorateValuesWith(x: Node => Node): this.type = { 
-    (properties.toList ::: fields.toList).foreach(_.decorateValuesWith(x))
-    this
-  }
-  override def decorateValuesCellsWith(x: Node => Node): this.type = { 
-    (properties.toList ::: fields.toList).foreach(_.decorateValuesCellsWith(x))
-    this
-  }
-  override def decorateLabelsCellsWith(x: Node => Node): this.type = { 
-    (properties.toList ::: fields.toList).foreach(_.decorateLabelsCellsWith(x))
-    this
-  }
-
 }
 /** 
  * This trait declares that an instance can return a copy of itself via the copy method.
@@ -249,6 +232,16 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   override def decorateValuesWith(x: Node => Node): this.type = {
     propertiesAndFields.foreach(_.decorateValuesWith(x)) 
     this 
+  }
+  /** decorate all the properties held by this form */
+  override def decorateValuesCellsWith(x: Node => Node): this.type = { 
+    propertiesAndFields.foreach(_.decorateValuesCellsWith(x)) 
+    this
+  }
+  /** decorate all the properties held by this form */
+  override def decorateLabelsCellsWith(x: Node => Node): this.type = { 
+    propertiesAndFields.foreach(_.decorateLabelsCellsWith(x)) 
+    this
   }
 }
 /**

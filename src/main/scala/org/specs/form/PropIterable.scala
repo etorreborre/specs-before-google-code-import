@@ -30,8 +30,23 @@ class MatcherPropIterable[T](override val label: String,
 
   override def copy: MatcherPropIterable[T] = {
     val p = new MatcherPropIterable(label, expectedIt, actual, constraint)
+    super[MatcherProp].copy(p)
     super[ValuesFormatter].copy(p)
     p
+  }
+  /**
+   * change the value formatter to display the value differently
+   */
+  override def formatWith(function: Option[Iterable[T]] => String): this.type = { 
+    formatIterableWith(function)
+    super.formatWith(function)
+  }
+  /**
+   * change the value formatter to display the value differently. This formatter displays "" for a missing value
+   */
+  override def formatterIs(function: T => String): this.type = {
+    super[ValuesFormatter].formatterIs(function)
+    super.formatterIs(function)
   }
 
   /** apply method with multiple args for better readability */
@@ -58,6 +73,7 @@ class MatcherPropIterable[T](override val label: String,
  * Companion object containing default factory methods
  */
 case object PropIterable {
+  def apply[T](value: =>Iterable[T]): MatcherPropIterable[T] = PropIterable.apply("", value)
   def apply[T](label: String, value: =>Iterable[T]): MatcherPropIterable[T] = new MatcherPropIterable(label, Property[Iterable[T]](), Property(value), None)
   def apply[T](label: String, value: =>Iterable[T], c: MatcherConstraint[Iterable[T]]): MatcherPropIterable[T] = new MatcherPropIterable(label, Property[Iterable[T]](), Property(value), Some(c))
 }

@@ -87,5 +87,13 @@ class fieldSpec extends spex.Specification {
 
       Field("label", ", ", f1, f2).toString must_== "label: value1, value2"
     }
+    "copy the value formatter and decorators of the first field to the other fields" in {
+      val f1 = Field("f1", "value1")
+      f1.bold
+      val f2 = Field("f2", "value2")
+
+      val f3 = Field("label", f1, f2)
+      f3.toXhtml must \\("b")
+    }
   }
 }

@@ -19,10 +19,12 @@
 package org.specs.form
 import org.specs.util.Property
 import org.specs.matcher.Matcher
+import scala.collection.mutable._
+import scala.xml._
 
 class EntityLineForm[T] extends LineForm {
   var entity: Property[T] = Property[T]()
-  val entityProperties = new scala.collection.mutable.ListBuffer[EntityLineProp[T, _]]
+  val entityProperties = new ListBuffer[EntityLineProp[T, _]]
   /** add a new LineProp to that line */
   def prop[S](s: String, f:(T => S)): LineProp[S] = {
     val p: EntityLineProp[T, S] = new EntityLineProp[T, S](label, Property[S](), f, entity, Some(new MatcherConstraint(entity.map(f(_)).optionalValue, executor)))
@@ -56,6 +58,7 @@ class EntityLineForm[T] extends LineForm {
     this.lineProperties.foreach(p => form.lineProperties.append(p.copy))
     this.properties.foreach(p => form.properties.append(p.copy))
     this.fields.foreach(f => form.fields.append(f.copy))
+    super.copy(form)
     form
   }
 }

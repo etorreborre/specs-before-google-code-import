@@ -39,12 +39,15 @@ trait BagFormEnabled[T] extends TableFormEnabled {
   val bag: Seq[T]
   /** list of declared lines which are expected but not received as actual */
   private val expectedEntities = new ListBuffer[EntityLineForm[T]]
-  def expectedLines = expectedEntities.toList 
+  def expectedLines = expectedEntities.toList
   private var unsetHeader = true
 
   override def tr[F <: Form](l: F): F = {
     l match {
-      case entityLine: EntityLineForm[T] => expectedEntities.append(entityLine)
+      case entityLine: EntityLineForm[T] => {
+        expectedEntities.append(entityLine)
+        properties.append(entityLine)
+      }
       case _ => super[TableFormEnabled].tr(l)
     }
     l
