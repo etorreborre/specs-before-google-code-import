@@ -140,6 +140,10 @@ class formSpec extends HtmlSpecification with PersonForms with JUnit with org.sp
         form.italic
         form.italic.toXhtml must \\("i")
       }
+      "format its values when changed formatter" in { (form: Form with AProp) =>
+        form.formatterIs(s => "v: "+s.toString)
+        form.p.formattedValue.toString must_== "v: 1"
+      }
     }
   }
 }

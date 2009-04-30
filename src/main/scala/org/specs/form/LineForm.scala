@@ -21,6 +21,7 @@ import scala.collection.mutable._
 import scala.xml._
 import org.specs.xml.NodeFunctions._
 import org.specs.util.Property
+import org.specs.execute.DefaultExecutable
 /**
  * A LineForm is a set of LineProps or LineFields which are displayed on the same line.
  * 
@@ -64,7 +65,6 @@ class LineForm extends Form {
     }
     super.rows
   }
-  override def propertiesAndFields = lineProperties.toList ::: super.propertiesAndFields
   /** extract a header from all the property labels */
   def header = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
@@ -72,7 +72,9 @@ class LineForm extends Form {
   
   override def copy: LineForm = {
     val f = new LineForm
-    this.lineProperties.foreach(p => f.lineProperties.append(p.copy))
+    this.lineProperties.foreach { (p: LabeledXhtml) => 
+      f.lineProperties.append(p.copy)
+    }
     copyPropertiesAndFields(f)
   }
 
