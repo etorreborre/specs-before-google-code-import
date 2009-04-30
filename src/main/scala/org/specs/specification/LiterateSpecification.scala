@@ -267,6 +267,7 @@ trait Wiki extends Properties with Links {
   override def relativeLink(desc: String, path: String) = {
     "\"" + desc + "\":" + path
   }
+  def escapeMarkup = (s: String) => s
 }
 trait Textile extends Wiki
 trait Markdown extends Wiki {
@@ -285,6 +286,8 @@ trait Markdown extends Wiki {
   def relativeLink(desc: String, path: String, title: String) = {
     "[" + desc + "](" + path + " " + title + ")"
   }
+  private val markdownSpecialCharacters = List("\\", "`", "*", "_", "{", "}", "[", "]", "(", ")", "#", "+", "-", ".", "!")
+  override def escapeMarkup = (s: String) => markdownSpecialCharacters.foldLeft(s) { (res, cur) => res.replace(cur, "\\" + cur) }
 }
 trait Links {
   def pathLink(desc: String, path: String) = desc + " (See: " + path + ")"
