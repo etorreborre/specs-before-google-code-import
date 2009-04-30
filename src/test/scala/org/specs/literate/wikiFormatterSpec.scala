@@ -24,7 +24,7 @@ import scala.xml._
 class wikiFormatterSpec extends spex.Specification {
   "A wiki formatter" should {
     def formatString(s: String): String = new WikiFormatter(){}.format(s)
-    def formatElem(e: Elem): Node = new WikiFormatter(){}.format(e)
+    def formatElem(e: Elem): Node = new TextileFormatter(){}.format(e)
 
     "return a string as it is if isn't some html text" in {
       formatString("a description") must_== "a description"
