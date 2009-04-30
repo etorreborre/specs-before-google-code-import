@@ -22,6 +22,6 @@ import org.specs.util._
 
 trait SnipIt extends Snippets with Wiki {
   val it: Property[Snippet] = Property(Snippet(""))
-  override def format(code: String) = code >@
+  override def formatCode(code: String) = code >@
   override def execute(it: Property[Snippet]) = super[Snippets].execute(it) >@
 }

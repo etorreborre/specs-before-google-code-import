@@ -21,23 +21,23 @@ import org.specs.util._
 import org.specs.literate._
 
 trait Snippets extends ScalaInterpreter {
-  def format(code: String): String = code
+  def formatCode(code: String): String = code
   implicit def asSnippet(s: java.lang.String) = new SnippetAdder(Snippet(s))
   class SnippetAdder(snippet: Snippet) {
 	def add(prop: Property[Snippet]): String = addTo(prop)
 	def addTo(prop: Property[Snippet]): String = {
 	  prop.forceUpdate(prop.get ++ snippet)
-	  format(snippet.snippet)
+	  formatCode(snippet.snippet)
 	}
 	def prelude(prop: Property[Snippet]): String = {
 	  prop.get.prelude(snippet.snippet)
-	  format(snippet.snippet)
+	  formatCode(snippet.snippet)
 	}
 	def snip(prop: Property[Snippet]): String = {
 	  val newSnippet = Snippet(snippet.snippet)
 	  newSnippet.prelude(prop.get.prelude)
 	  prop(newSnippet) 
-	  format(snippet.snippet)
+	  formatCode(snippet.snippet)
 	}
   }
 

@@ -23,7 +23,7 @@ class TextileFormatter extends WikiFormatter {
   override def escapeHtml(s: String) = "=="+s+"=="
   /** create an example description which may be processed differently depending on the markup language */
   override def makeExampleDescription(node: NodeSeq) = {
-   TextileExampleDescription(node.first.text) 
+    TextileExampleDescription(node.first.text) 
   }
 
 }
