@@ -113,8 +113,8 @@ class bagFormSpec extends org.specs.Specification with JUnit {
         "Bob"  ! 42    | { (name, age) =>
           tr(PersonLine(name, age))
         }
-      }.formatterIs(s => "v: " + s.toString)
-      println(form.execute.toXhtml)
+      }.execute.formatterIs(s => "v: " + s.toString)
+      form.properties(0).asInstanceOf[Form].properties(0).asInstanceOf[Prop[_]].formattedValue.toString must_== "v: Eric"
     }
 
   }

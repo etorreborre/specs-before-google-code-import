@@ -61,6 +61,7 @@ trait BagFormEnabled[T] extends TableFormEnabled {
    * upon execution a new row will be added to notify the user of unmatched lines
    */
   override def executeThis = {
+    matchedLines.foreach(_.genericFormatterIs(genericFormatter))
     addLines(matchedLines)
     val i = unmatchedExpectedLines.size
     if (i > 0) { 
