@@ -146,4 +146,12 @@ class formSpec extends HtmlSpecification with PersonForms with JUnit with org.sp
       }
     }
   }
+  "A form with an embedded form" should {
+    "pass on the generic value formatter" in {
+      val f = new Form {
+        val n = form(new Form { val p = prop(1) })
+      }.formatterIs(s => "v: "+s.toString)
+      f.n.p.formattedValue.toString must_== "v: 1"
+    }
+  }
 }

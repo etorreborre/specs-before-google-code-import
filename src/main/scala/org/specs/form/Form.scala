@@ -102,7 +102,10 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   val fields: ListBuffer[Field[_] with Copyable[Field[_]]] = new ListBuffer
   /** alias for genericFormatterIs */
   def formatterIs(f: (String =>  String)): this.type = {
-    genericFormatterIs(f)
+    this.genericFormatterIs(f)
+  }
+  override def genericFormatterIs(f: (String =>  String)) = {
+    super.genericFormatterIs(f)
     propertiesAndFields.foreach(_.genericFormatterIs(f))
     this
   }
