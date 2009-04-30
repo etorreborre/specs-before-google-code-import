@@ -16,10 +16,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs.specification
+package org.specs.literate
 import org.specs.Sugar._
 import org.specs._
-import org.specs.literate._
 import org.specs.util._
 import org.specs.runner._
 

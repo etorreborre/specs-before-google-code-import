@@ -27,8 +27,6 @@ object specificationSpecifications extends Specification {
 		new calculatorSpec,
         new contextSpec,
         new exampleSpec,
-        new literateSpec,
-        new literateSnippetSpec,
         new specificationSpec,
         new sugarSpec,
 		new taggedSpec,
@@ -37,6 +35,5 @@ object specificationSpecifications extends Specification {
 }
 object specificationUnits extends Specification {
     "The specification unit tests" areSpecifiedBy (
-        new literateSpecUnit,
         new specificationsUnit)
 }

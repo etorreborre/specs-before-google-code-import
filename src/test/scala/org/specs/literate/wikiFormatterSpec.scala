@@ -16,16 +16,15 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs.runner
+package org.specs.literate
 import org.specs._
 import org.specs.specification._
 import scala.xml._
-import org.specs.Sugar._
 
-class wikiFormatterSpec extends Specification with JUnit {
+class wikiFormatterSpec extends spex.Specification {
   "A wiki formatter" should {
-    def formatString(s: String): String = new WikiFormatter().format(s)
-    def formatElem(e: Elem): Node = new WikiFormatter().format(e)
+    def formatString(s: String): String = new WikiFormatter(){}.format(s)
+    def formatElem(e: Elem): Node = new WikiFormatter(){}.format(e)
 
     "return a string as it is if isn't some html text" in {
       formatString("a description") must_== "a description"
@@ -45,7 +44,7 @@ class wikiFormatterSpec extends Specification with JUnit {
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"
     val example = new Example("a description", this).in { 1 must_== 1 }
-    val descWithStatus = new WikiFormatter().setStatus(exampleDesc, List(example))
+    val descWithStatus = new WikiFormatter(){}.setStatus(exampleDesc, List(example))
 
     "set the example status as an xml attribute" in {
       descWithStatus must include("<ex class=\"success\"")
@@ -65,7 +64,7 @@ class wikiFormatterSpec extends Specification with JUnit {
   "A Textile formatter" should { 
     val exampleDesc = "a description"
     val example = new Example("a description", this).in { 1 must_== 1 }
-    val descWithStatus = new TextileFormatter().setStatus(exampleDesc, List(example))
+    val descWithStatus = new TextileFormatter(){}.setStatus(exampleDesc, List(example))
     "enclose the description with ex tags protected by wiki markup" in {
       descWithStatus must beMatching("==\\<ex.*\\>a description\\<\\/ex\\>==")
     }

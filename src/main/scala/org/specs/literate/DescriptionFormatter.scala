@@ -14,18 +14,29 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
-package org.specs.specification
-import org.specs.form._
+package org.specs.literate
+import org.specs.util.Classes._
+import scala.xml._
+import org.specs.specification._
 
-class literateSpecUnit extends spex.Specification { outer =>
-  "a literate spec can include forms with a report method" in {
-    object l extends HtmlSpecification { 
-      new Form {
-        prop(1)(1)
-      }.report
+class DescriptionFormatter extends WikiFormatter {
+  def className(name: String) = "org.specs.literate." + name.toLowerCase.capitalize + "Formatter"
+  def formatter(n: String) = createObject[LiterateDescriptionFormatter](className(n)) match {
+    case Some(f) =>  f
+    case None => new TextFormatter
+  }
+  
+  override def format(desc: Elem, examples: Iterable[Example]) = {
+    formatter(desc.label).format(desc, examples)
+  }
+  override def formatDesc(ex: Example): Node = {
+    ex.exampleDescription match {
+      case desc: WikiExampleDescription =>  formatter("wiki").formatDesc(ex)
+      case desc: TextileExampleDescription =>  formatter("textile").formatDesc(ex)
+      case desc: MarkdownExampleDescription =>  formatter("markdown").formatDesc(ex)
+      case _ =>  super.formatDesc(ex)
     }
-    l.examples must have size 1
   }
 }

@@ -26,6 +26,7 @@ import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import org.specs.execute._
 import org.specs.util.Plural._
+import org.specs.literate._
 /**
  * This trait reports the result of a specification on a simple <code>Output</code>
  * which must support <code>print</code>-like methods

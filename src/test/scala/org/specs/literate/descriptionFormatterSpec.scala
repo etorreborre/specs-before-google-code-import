@@ -14,31 +14,39 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.literate
-import org.specs.form._
+import scala.xml._
+import org.specs.Sugar._
 import org.specs.specification._
-import org.specs.util.Properties
-import org.specs.matcher._
-/**
- * This trait adds shortcut to declare properties in the specification text
- */
-trait LiterateProperties extends Properties with ExpectableFactory {
-  def field[T](label: String, value: =>T): Field[T] = {
-    Field(label, value)
-  }
-  def displayField[T](label: String, value: =>T) = {
-    field(label, value).toHtml
-  }
-  /** default execution function with a matcher */
-  def executor[T] = (a: T, m: Matcher[T]) => a must m 
+import org.specs.runner._
 
-  def prop[T](label: String, actual: =>T): MatcherProp[T] = {
-    Prop(label, actual, new MatcherConstraint(Some(actual), executor[T]))
+class descriptionFormatterSpec extends Specification with JUnit {
+
+  "A description formatter" should {
+    "format a description as text if it has the text tag" in {
+      format(<text>Hello world</text>).text must_==
+        "Hello world"
+    }
+    detailedDiffs()
+    "format a description as wiki markup if it has the wiki tag" in {
+      format(<wiki>h1. Hello world</wiki>) must \\("h1")
+    }
+    "format a description as html if it has the html tag" in {
+      format(<html>This is some <i>html</i> text</html>) must \\("i")
+    }
   }
-  def displayProp[T](label: String, actual: =>T)(expected: T) = {
-    prop(label, actual)(expected).display_!
+  "A wiki description formatter" should {
+    val example = new Example("example desc", this).in { 1 must_== 1 }
+    "set the status of the example descriptions depending on the example status" in {
+      wikiFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)) must (
+        include("""this is the <ex class="success" """) and
+        include("</ex> to be highlighted")
+      )
+    }
   }
+  def formatter = new DescriptionFormatter()
+  def format(node: Elem) = formatter.format(node, Nil)
+  def wikiFormatter = new WikiFormatter {}
 }
-

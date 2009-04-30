@@ -16,7 +16,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs.specification
+package org.specs.literate
 import org.specs.runner._
 
 class literateSpec extends LiterateSpecRules with Html with JUnit {

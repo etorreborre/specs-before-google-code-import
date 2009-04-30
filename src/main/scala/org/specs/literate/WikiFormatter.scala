@@ -14,9 +14,9 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
-package org.specs.runner
+package org.specs.literate
 import org.specs.log.ConsoleLog
 import org.specs.specification._
 import scala.xml._
@@ -24,7 +24,7 @@ import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
 import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
 import org.specs.util.ExtendedString._
 
-class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
+trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wiki {
   def setStatus(desc: String, examples: Iterable[Example]) = {
     var result = desc
     examples foreach { example =>
@@ -41,7 +41,7 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
   }
   def escapeHtml(s: String) = s
   def format(desc: String): String = {
-	val parsed = parseToHtml(desc)
+    val parsed = parseToHtml(desc)
     if (parsed contains "<p>") {
       val p1 = parsed.substring(parsed.indexOf("<p>") + 3, parsed.size)
       p1.substring(0, p1.indexOf("</p>"))
@@ -69,6 +69,7 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
   }
 
   def format(desc: Elem): Node = format(desc, Nil)
+  
   def format(desc: Elem, examples: Iterable[Example]): Node = {
     val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
@@ -77,14 +78,11 @@ class WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog {
       case e => {println(parsed);Text(e.getMessage + "\\n" + parsed)}
     }
   }
-  override def formatDesc(ex: Example) = {
-    val text =  XML.loadString("<t>" + format(ex.exampleDescription.toString) + "</t>")
-    text
+  override def formatDesc(ex: Example): Node = {
+    XML.loadString("<t>" + format(ex.exampleDescription.toString) + "</t>")
   }
+  case class WikiExampleDescription(override val desc: String) extends ExampleDescription(desc)
+  case class TextileExampleDescription(override val desc: String) extends ExampleDescription(desc)
+  case class MarkdownExampleDescription(override val desc: String) extends ExampleDescription(desc)
+
 }
-class TextileFormatter extends WikiFormatter {
-  override def escapeHtml(s: String) = "=="+s+"=="
-}
-case class WikiExampleDescription(override val desc: String) extends ExampleDescription(desc)
-case class TextileExampleDescription(override val desc: String) extends ExampleDescription(desc)
-case class MarkdownExampleDescription(override val desc: String) extends ExampleDescription(desc)
