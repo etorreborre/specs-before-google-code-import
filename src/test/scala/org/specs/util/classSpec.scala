@@ -17,16 +17,20 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.util
-import org.specs._
-import org.specs.runner._
 import org.specs.util.Classes._
 
-class classSpec extends Specification with JUnit {
+class classSpec extends spex.Specification {
   "the class name of a full name with package should only return the last name" in {
     className("org.specs.MyName") must_== "MyName"
   }
   "the class name of an internal class should only return the last name" in {
     class ThisClassName
     className(classOf[ThisClassName].getName) must_== "ThisClassName"
+  }
+  "the class name of an Int should be Integer" in {
+    getClassName(1) must_== "Integer"
+  }
+  "the class name of a String should be String" in {
+    getClassName("1") must_== "String"
   }
 }

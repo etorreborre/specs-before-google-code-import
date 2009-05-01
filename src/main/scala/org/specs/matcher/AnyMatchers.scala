@@ -87,8 +87,8 @@ trait AnyBaseMatchers {
       var dy = d(y)
       var qx = q(x)
       if (dy == qx) {
-        dy = dy + ": " + className(y)
-        qx = qx + ": " + className(x)
+        dy = dy + ": " + getClassName(y)
+        qx = qx + ": " + getClassName(x)
       }
       import org.specs.Products._
       val failureMessage = details match {
@@ -627,8 +627,8 @@ class BeEqualTo[T](a: =>T) extends Matcher[T] {
     var dy = d(y)
     var qx = q(x)
     if (dy == qx) {
-      dy = dy + ": " + className(y)
-      qx = qx + ": " + className(x)
+      dy = dy + ": " + getClassName(y)
+      qx = qx + ": " + getClassName(x)
     }
     (x == y, dy + " is equal to " + qx, dy + " is not equal to " + qx)
   }

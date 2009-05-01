@@ -73,7 +73,7 @@ object Classes {
   /**
    * @return the class name without the package name of any object
    */
-  def className[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
+  def getClassName[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
 }
 
 /**
