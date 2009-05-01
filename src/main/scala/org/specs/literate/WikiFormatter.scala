@@ -25,7 +25,7 @@ trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wi
   def format(desc: Elem, examples: Iterable[Example]): Node = {
     val parsed = parseToHtml(setStatus(desc.child.text, examples))
     try {
-      XML.loadString(parsed)
+      XML.loadString("<html>" + parsed.replace("<?xml version='1.0' encoding='utf-8' ?>", "") + "</html>").child(0)
     } catch {
       case e => Text(e.getMessage + "\\n" + parsed)
     }
@@ -35,7 +35,10 @@ trait WikiFormatter extends LiterateDescriptionFormatter with ConsoleLog with Wi
     examples foreach { example =>
       def toReplace = escapeHtml("<ex class=\"" + example.statusClass + "\" " + onmouse(example) + ">" +
                       format(example.description) + "</ex>")
-      result = result.replace(example.exampleDescription.format, toReplace)
+      if (result.contains(example.exampleDescription.format))
+        result = result.replace(example.exampleDescription.format, toReplace)
+      else
+        result = result.replace(example.exampleDescription.toString, toReplace)
     }
     result
   }

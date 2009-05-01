@@ -97,7 +97,7 @@ class htmlRunnerRules(name: String) extends HtmlSpecification(name) with XmlProp
 }
 import org.specs.specification._
 
-object specification extends LiterateSpecification("Sample Specification") {
+object specification extends LiterateSpecification("Sample Specification") with Textile {
     include(subSpecification)
     "this literate sus" is
 <wiki>h1. A h1 title

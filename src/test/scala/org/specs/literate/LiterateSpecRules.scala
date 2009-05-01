@@ -27,8 +27,8 @@ trait LiterateSpecRules extends HtmlSpecification with AllProperties {
      <t>{"1 must be 1" in {1 must_== 1}}</t> isSus  }
    object example2 extends LiterateSpecification with Textile {
      <t>In this example <ex>*1 must be 1*</ex> { 1 must_== 1  } </t> isSus  }
-   object example3 extends LiterateSpecification with Html {
-     <t><ex><i>this example is not yet implemented</i></ex> { notImplemented }</t> isSus  }
+   object example3 extends LiterateSpecification with literate.Html {
+     <html><i><ex>this example is not yet implemented</ex></i> { notImplemented }</html> isSus  }
    object example5 extends LiterateSpecification with Markdown {
      <t><ex>_1 must be 1_</ex> { 1 must_== 1  }</t> isSus  }
    object example4 extends LiterateSpecification  {
@@ -50,7 +50,7 @@ trait LiterateSpecRules extends HtmlSpecification with AllProperties {
    def isText = desc(example1) must include("1 must be 1")
    def isTextile = desc(example2) must include("<strong>1 must be 1</strong>")
    def isMarkdown = desc(example5) must include("<em>1 must be 1</em>")
-   def isHtml = desc(example3) must include("<i>this example is not yet implemented</i>")
+   def isHtml = desc(example3) must include("<i><ex") and include ("</ex></i>")
    def taggedExamples = {
      example4.successes.size aka "the number of successes" must_== 1
    }

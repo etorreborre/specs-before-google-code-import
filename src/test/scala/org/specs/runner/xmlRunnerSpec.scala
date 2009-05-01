@@ -73,7 +73,7 @@ class xmlRunnerSpec extends RunnerFixture { "The specification for the XML runne
   { <example expectations="0" failures="0" description="have one sub-example" errors="0">
           <example expectations="1" failures="0" description="a sub-example" errors="0"></example>
     </example>.as(xml)}
-  <li>{ "containing an element for the example containing a sub-example"  in checkXml }</li>
+  <li>{ "containing an element for the example containing a sub-example" in checkXml }</li>
     { xml().toString }<p/>
 </ul>
 <p/>

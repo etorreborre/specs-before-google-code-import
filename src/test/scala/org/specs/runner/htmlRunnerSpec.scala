@@ -18,7 +18,7 @@
  */
 package org.specs.runner
 
-class htmlRunnerSpec extends htmlRunnerRules("Html Runner") { "Html Runner Specification" is <t>
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with literate.Textile { "Html Runner Specification" is <t>
 
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:
@@ -68,16 +68,19 @@ h4. DataTables
 h4. Literate descriptions
 
 <ex>Literate descriptions should be displayed above their table</ex>{literateDesc}
+
 <ex>In a literate description the example description which succeeded must be highlighted in green</ex>{greenHighlight}
 
 <ex>If the example contains a DataTableFailureException, then the table rows showing the results must be displayed</ex>
+
 {""""
-    "A calculator can add integers" inTable
+  "A calculator can add integers" inTable
     "a" | "b" | "c" |
      1  !  2  !  3  |
      2  !  2  !  5  |
-     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must_== calc.add(a, b) }
-"""}
+     2  !  6  !  8  |> { (a:Int,b:Int,c:Int) => c must (==calc.add(a, b)) }
+
+""" >@}
 
 h3. Summary
 

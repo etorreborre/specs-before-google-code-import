@@ -19,32 +19,34 @@
 package org.specs.literate
 import org.specs.runner._
 
-class literateSpec extends LiterateSpecRules with Html with JUnit {
+class literateSpec extends LiterateSpecRules with Textile {
   override def htmlDir = "target"
-
-  <wiki> h3. Description
+  <t> 
+h3. Description
 
 A literate specification is a text embedded in xml tags.
 
 h3. Code inside the text description
 
-A literate specification can execute code by enclosing it in accolades: {"{ (1 + 1) }"}.
+A literate specification can execute code by enclosing it in accolades: {"{ (1 + 1) }" >@}.
 It is possible to silence the code being executed by using several functions, for example the @shh@ function:
-   {"{ (1 + 1).shh }"}{ (1 + 1).shh }
-or the {"@<|@"} operator at the end of any expression: {"{ 1 + 1 <| }"}{ 1 + 1 <| }
+  
+   {"{ (1 + 1).shh }" >@}{ (1 + 1).shh }
+
+or the {"@<|@"} operator at the end of any expression: {"{ 1 + 1 <| }" >@}{ 1 + 1 <| }
 
 h3. Examples
 
 h4. Named examples
 
 <ex>An expectation can be included in a literate specification as part of an example</ex>, like this:
- @"1 must be 1"@ @{"in {1 must_== 1}"}@ {exampleOk}
+ {""" "1 must be 1" in { 1 must be(1) } """ >@} {exampleOk}
 
 h4. Anonymous examples
 
 <ex>The description from an example can also come from part of the description enclosed with an @ex@ xml tag</ex>, like that:
 
-* {"@<ex>1 must be 1</ex> { 1 must_== 1  }@"}{taggedExample}
+* {"@<ex>1 must be == to 1</ex> { 1 must be_==(1)  }@"}{taggedExample}
 
 h4. Tags
 
@@ -73,9 +75,11 @@ The format of the description is done by mixing-in the appropriate trait: Textil
 h3. Properties
 
 <ex>Part of the text can be stored as properties and reused later as expected values</ex>:
-  { """<ex>After prompting for a name like {"Peter".a}, the system must greet the visitor with the person name: {"hello Peter".it}{ it must be_==(hello(a))  }</ex>""" >@ }
+  
+  { """After prompting for a name like {"Peter".a}, the system must greet the visitor with the person name: {"hello Peter".it}{ it must be_==(hello(a)) }""" >@ }
+
 gives:
    {"<ex class=\"success\">"}After prompting for a name like _{"Peter".a}_, the system must greet the visitor with the person name: _{"hello Peter".it}_{ it must be_==(hello(a)) }{"</ex>"}
 
-</wiki> isSus
+</t> isSus
 }
