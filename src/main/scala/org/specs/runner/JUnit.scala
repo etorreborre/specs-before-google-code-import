@@ -180,15 +180,15 @@ class ExampleTestCase(example: Example, description: String) extends TestCase(de
     def report(ex: Example, context: String) = {
       ex.ownFailures foreach {
         failure: FailureException =>
-                result.addFailure(this, new SpecAssertionFailedError(ContextualizedThrowable(failure, context)))
+                result.addFailure(this, new SpecAssertionFailedError(UserError(failure, context)))
       }
       ex.ownSkipped foreach {
         skipped: SkippedException =>
-                result.addFailure(this, new SkippedAssertionError(ContextualizedThrowable(skipped, context)))
+                result.addFailure(this, new SkippedAssertionError(UserError(skipped, context)))
       }
       ex.ownErrors foreach {
         error: Throwable =>
-                result.addError(this, new SpecError(ContextualizedThrowable(error, context)))
+                result.addError(this, new SpecError(UserError(error, context)))
       }
     }
     report(example, "")
@@ -197,9 +197,14 @@ class ExampleTestCase(example: Example, description: String) extends TestCase(de
   }
 }
 
-case class ContextualizedThrowable(t: Throwable, context: String) extends Throwable {
+case class UserError(t: Throwable, context: String) extends Throwable {
   setStackTrace(t.getStackTrace)
-  override def getMessage = context + t.getMessage
+  override def getMessage = {
+    t match {
+      case f: FailureException => context + t.getMessage
+      case _ => t.getClass.getName + ": " + context + t.getMessage
+    }
+  }
 }
 
 /**

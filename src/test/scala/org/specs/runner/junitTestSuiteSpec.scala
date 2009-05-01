@@ -72,7 +72,7 @@ class junitTestSuiteSpec extends Specification with JUnit {
       suite(that.throwsAnException).run(result)
       result.errors verifies(_.hasMoreElements)
       val error = result.errors.nextElement.asInstanceOf[TestFailure]
-      error.exceptionMessage must_== "new Error"
+      error.exceptionMessage must_== "java.lang.Exception: new Error"
       error.trace.split("\n")(0) must include(error.exceptionMessage)
       error.trace.split("\n")(1) must (beMatching("TestSpec") and beMatching("consoleReporterSpec.scala:\\d"))
     }
