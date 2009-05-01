@@ -23,6 +23,7 @@ import org.specs.matcher.MatcherUtils.{q, matches}
 import org.specs.matcher.PatternMatchers._
 import org.specs.ExtendedThrowable._
 import org.specs.util.EditDistance._
+import org.specs.util.Classes._
 import org.specs.collection.ExtendedIterable._
 import scala.collection.immutable.{Set => Removed}
 import scala.collection.Set
@@ -83,12 +84,18 @@ trait AnyBaseMatchers {
   def is_==(a: =>Any)(implicit details: Detailed) = new Matcher[Any](){
     def apply(v: =>Any) = {
       val (x, y) = (a, v)
+      var dy = d(y)
+      var qx = q(x)
+      if (dy == qx) {
+        dy = dy + ": " + className(y)
+        qx = qx + ": " + className(x)
+      }
       import org.specs.Products._
       val failureMessage = details match {
-        case full: fullDetails => EditMatrix(d(y), q(x)).showDistance(full.separators).toList.mkString(" is not equal to ")
-        case no: noDetails => d(y) + " is not equal to " + q(x)
+        case full: fullDetails => EditMatrix(dy, qx).showDistance(full.separators).toList.mkString(" is not equal to ")
+        case no: noDetails => dy + " is not equal to " + qx
       }
-      ((x == y), d(y) + " is equal to " + q(x), failureMessage)
+      ((x == y), dy + " is equal to " + qx, failureMessage)
     }
   }
   /**
@@ -617,6 +624,12 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
 class BeEqualTo[T](a: =>T) extends Matcher[T] {
   def apply(v: =>T) = {
     val (x, y) = (a, v)
-    (x == y, d(y) + " is equal to " + q(x), d(y) + " is not equal to " + q(x))
+    var dy = d(y)
+    var qx = q(x)
+    if (dy == qx) {
+      dy = dy + ": " + className(y)
+      qx = qx + ": " + className(x)
+    }
+    (x == y, dy + " is equal to " + qx, dy + " is not equal to " + qx)
   }
 }

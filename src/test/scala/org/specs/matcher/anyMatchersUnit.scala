@@ -70,6 +70,11 @@ class anyMatchersUnit extends MatchersSpecification {
     "be resilient to a null value" in {
       expectation("name" must be_==(null)) must failWith("'name' is not equal to 'null'")
     }
+    "provide the type of the objects in the failure message when their toString method return the same value" in {
+      val d: Double = 0.1
+      val f: Float = 0.1f
+      expectation(f must_== d) must failWith("'0.1': Float is not equal to '0.1': Double")
+    }
   }
   "An 'beEqualTo' matcher" should {
     "be ok if comparing 2 objects which are equals with ==" in {

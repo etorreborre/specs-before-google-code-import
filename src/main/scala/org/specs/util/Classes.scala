@@ -71,9 +71,9 @@ object Classes {
       result
   }
   /**
-   refdata.bondDefinition$$anonfun$1$$anon$1
-refdata.BondDescriptionForm$FixedCoupon
+   * @return the class name without the package name of any object
    */
+  def className[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
 }
 
 /**

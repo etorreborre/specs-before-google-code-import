@@ -61,7 +61,7 @@ class Expectable[T](value: => T) {
   /** state variable storing how the next matcher should be applied, negated or not */
   private var nextMatcherMustBeNegated = false
   /** set the state variable declaring that the next match should be negated, in the case of an xor combination to force a fail for example */
-  def nextSignificantMatchMustBeNegated() = { nextMatcherMustBeNegated = true; this }
+  private[specification] def nextSignificantMatchMustBeNegated() = { nextMatcherMustBeNegated = true; this }
   /** previous previous messages in the case of or-ed matchers*/
   private var matchMessages: List[String] = Nil
   /** add a previous message in the case of or-ed matchers*/
@@ -75,7 +75,7 @@ class Expectable[T](value: => T) {
    * The expectation listener gets notified of a new expectation with a fresh copy of this expectable.
    * The matcher gets
    */
-  def applyMatcher(m: => Matcher[T]): Result[T] = {
+  private[specification] def applyMatcher(m: => Matcher[T]): Result[T] = {
     val failureTemplate = FailureException("")
     val matcher = m
     matcher match {
