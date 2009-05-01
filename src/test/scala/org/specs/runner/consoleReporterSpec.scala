@@ -86,6 +86,9 @@ class consoleReporterSpec extends Specification with JUnit {
       specWithOneExample(that.isSkippedBecauseOfAFaultyMatcher) mustContainMatch "o "
     }
     "report the literal description of a sus if it is set"  in {
+      specWithOneExample(that.isOk).toList must not containMatch("(  ,)")
+    }
+    "not report the literal description of a sus if it is set"  in {
       new SpecWithLiterateDescription(that.isOk).run mustContainMatch "Some text with embedded expectations"
     }
     "report the reason for a skipped example" in {

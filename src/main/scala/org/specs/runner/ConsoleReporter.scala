@@ -154,7 +154,8 @@ trait OutputReporter extends Reporter with Output {
    */
   def printSus(sus: Sus, padding: String) = {
     println(padding + sus.description + " " + sus.verb + sus.skippedSus.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
-    println(padding, sus.literateDesc.text)
+    if (!sus.literateDesc.isEmpty) 
+      println(padding, sus.literateDesc.text)
     reportExamples(sus.examples, padding)
     println("")
   }
