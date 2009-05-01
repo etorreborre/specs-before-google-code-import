@@ -27,7 +27,7 @@ class objectMatchersSpec extends MatchersSpecification {
     }
     "provide a 'must_!=' matcher 'name' must_!= 'name2'" in {
       "string" must_!= "string2"
-      expectation("string" must_!= "string") must failWith("'string' is equal to 'string'")
+      expectation("string" must_!= "string") must failWith("'string': String is equal to 'string': String")
     }
     "provide a 'must be' matcher: o1 must be(o2) if they are the same object " +
       "('must eq' cannot be used because it overrides the eq matcher from Object) [alias: mustBe, mustEq]" in {
