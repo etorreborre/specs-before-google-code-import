@@ -73,7 +73,7 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
    * <li>split on . and reverse: [MyClass, pack1, com]
    * <li>take the last element: MyClass</ul>
    */
-  def createDescription(s: String) = s.
+  private[specs] def createDescription(s: String) = s.
     split("\\$").reverse.
     dropWhile(isInteger(_))(0).
     split("\\.").

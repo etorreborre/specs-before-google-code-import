@@ -26,7 +26,6 @@ import org.specs.util.Classes._
  * This trait adds Tabulations to a table
  */
 trait Tabs extends Layout { outer => 
-  
   /** case class for creating a group of tabs */
   case class tabs() extends Layoutable with LabeledXhtml {
     val label = className(this.getClass).uncamel
