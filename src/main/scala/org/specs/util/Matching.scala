@@ -33,20 +33,35 @@ trait Matching {
     
     // brutal force approach
     // create all possible combinations and take the least costly
-    var existingEdges = Map[(A, B), E]()
-    val combined: List[List[(A, B, E)]] = combine(firstSet, secondSet).map { (l: List[(A, B)]) => 
-      l.map { (e: (A, B)) => 
-        val (a, b) = e
-        if (existingEdges.isDefinedAt(e))
-          (a, b, existingEdges(e))
-        else {
-          val newEdge = edgeFunction(a, b)
-          existingEdges = existingEdges.update(e, newEdge)
-          (a, b, newEdge)
+    firstSet match {
+      case Nil => Nil
+      case a :: rest => {
+        bestMatch(a, secondSet, edgeFunction, edgeWeight) match {
+          case None => Nil
+          case Some((b, e, remainingSecondSet)) => (a, b, e) :: bestMatch(rest, remainingSecondSet, edgeFunction, edgeWeight)
         }
       }
+      case _ => Nil
     }
-    def graphWeight(graph: List[(A, B, E)]) = graph.foldLeft(0)((total: Int, e: (A, B, E)) => total + edgeWeight(e._3))
-    combined.maxElement((l:List[(A, B, E)]) => graphWeight(l)).getOrElse(Nil)
+  }
+  def bestMatch[A, B, E](a: A, 
+                         secondSet: Seq[B], 
+                         edgeFunction: Function1[(A, B), E], 
+                         edgeWeight: E => Int): Option[(B, E, Seq[B])] = {
+    var existingEdges = Map[(A, B), E]()
+    def edge(a: A, b: B) = {
+      if (existingEdges.isDefinedAt((a, b)))
+        existingEdges((a, b))
+      else {
+        val newEdge = edgeFunction(a, b)
+        existingEdges = existingEdges.update((a, b), newEdge)
+        newEdge
+      }
+    }
+    secondSet.toList.maxElement((b: B) => edgeWeight(edge(a, b))) match {
+      case None => None
+      case Some(max) => Some((max, edge(a, max), secondSet.toList.removeFirst(_ == max)))
+    }
   }
 }
+
