@@ -65,8 +65,8 @@ class bagFormSpec extends org.specs.Specification with JUnit {
       val form = new BagForm(actual) {
         th2("Name", "Age")
         tr(PersonLine("Eric", 36)) 
-        tr(PersonLine("Eric", 36)) 
         tr(PersonLine("Bob",  40)) 
+        tr(PersonLine("Eric", 36)) 
       }
       form.execute.expectedLines aka "expected lines" must have size 3
       form.execute.matchedLines aka "matched lines" must have size 2
@@ -79,8 +79,8 @@ class bagFormSpec extends org.specs.Specification with JUnit {
       val form = new BagForm(actual) {
         th2("Name", "Age")
         tr(PersonLine("Eric", 36)) 
-        tr(PersonLine("Eric", 38)) 
         tr(PersonLine("Bob",  40)) 
+        tr(PersonLine("Eric", 38)) 
       }
       form.execute.expectedLines aka "expected lines" must have size 3
       form.execute.matchedLines aka "matched lines" must have size 2
