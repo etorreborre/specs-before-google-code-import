@@ -27,7 +27,7 @@ class bagFormSpec extends org.specs.Specification with JUnit {
   }
   val actual = List(Person("Eric", 36), Person("Bob", 40))
   
-  "A set form" should {
+  "A bag form" should {
     "match all rows if there are the same number of rows than entities" in {
       val form = new DataTableBagForm("Persons", actual) {
         "Name" | "Age" |
@@ -116,6 +116,27 @@ class bagFormSpec extends org.specs.Specification with JUnit {
       }.execute.formatterIs(s => "v: " + s.toString)
       form.properties(0).asInstanceOf[Form].properties(0).asInstanceOf[Prop[_]].formattedValue.toString must_== "v: Eric"
     }
-
+  }
+  "A bag form" should {
+    "not be ok if there are missing actual rows" in {
+      val form = new DataTableBagForm("Persons", actual) {
+        "Name" | "Age" |
+        "Bob"  ! 40    | { (name:String, age:Int) =>
+          tr(PersonLine(name, age))
+        }
+      }
+      form.execute.isOk must be (false)
+    }
+  }
+  "A bag form" can {
+    "check only a subset of the expected rows with isIncomplete" in {
+      val form = new DataTableBagForm("Persons", actual) {
+        "Name" | "Age" |
+        "Bob"  ! 40    | { (name:String, age:Int) =>
+          tr(PersonLine(name, age))
+        }
+      }
+      form.isIncomplete.execute.isOk must be(true)
+    }
   }
 }

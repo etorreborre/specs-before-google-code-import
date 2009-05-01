@@ -23,6 +23,7 @@ import org.specs.util.Plural._
 import org.specs.util.Matching._
 import org.specs.execute.Status
 import org.specs.collection.ExtendedList._
+import org.specs.execute.FailureException
 /**
  * A BagForm is a TableForm containing a Bag of LineForms
  * and using a Bag of values as the actual values.
@@ -37,6 +38,12 @@ class BagForm[T](title: Option[String], val bag: Seq[T]) extends TableForm(title
 }
 trait BagFormEnabled[T] extends TableFormEnabled {
   val bag: Seq[T]
+  /** true if all actual rows are to be expected */
+  private var complete = true
+  /** set the complete flag */
+  def setComplete(c: Boolean): this.type = { complete = c; this }
+  /** this won't create a failure if there are unmatched actual rows */
+  def isIncomplete: this.type = setComplete(false)
   /** list of declared lines which are expected but not received as actual */
   private val expectedEntities = new ListBuffer[EntityLineForm[T]]
   def expectedLines = expectedEntities.toList
@@ -72,9 +79,12 @@ trait BagFormEnabled[T] extends TableFormEnabled {
       }
     }
     val j = unmatchedActual.size
-    if (j > 0) { 
-      th3("There ".bePlural(j) + " " + j + " unmatched actual line".plural(j), Status.Failure)
+    if (j > 0 && complete) {
+      val message = "There ".bePlural(j) + " " + j + " unmatched actual line".plural(j)
+      addFailure(new FailureException(message))
+      th3(message, Status.Failure)
       unmatchedActual.foreach { (actual: T) => th3(actual.toString) }
+      throw new FailureException(message)
     }
     this
   }
