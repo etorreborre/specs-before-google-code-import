@@ -33,7 +33,7 @@ class wikiFormatterSpec extends spex.Specification {
       val example = new Example("", this).in { 1 must_== 1 }
       val formatter = new WikiFormatter(){}
       example.exampleDescription = formatter.makeExampleDescription(<ex>a description</ex>)
-      formatter.formatDesc(example) must_== <t><ex>a description</ex></t>
+      formatter.formatDesc(example) must_== <t>a description</t>
     }
     "format single quotes as single quotes inside brackets when using html escape convention ==" in {
       formatElem(<t>==['a description']==</t>) must \\(<p>['a description']</p>)

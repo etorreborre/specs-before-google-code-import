@@ -214,7 +214,7 @@ class consoleReporterSpec extends Specification with JUnit {
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
 }
-abstract class TestSpecification extends LiterateSpecification with Console with MockOutput {
+abstract class TestSpecification extends LiterateSpecification with Console with MockOutput with Textile {
   override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
   val success = () => true mustBe true
