@@ -69,6 +69,8 @@ class LineForm extends Form {
   def header = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
   override def toXhtml = reduce(lineProperties, { (p: LabeledXhtml) => p.toXhtml })
+  /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
+  override def toEmbeddedXhtml = toXhtml
   
   override def copy: LineForm = {
     val f = new LineForm

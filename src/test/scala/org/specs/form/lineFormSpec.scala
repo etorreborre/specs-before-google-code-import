@@ -62,6 +62,14 @@ class lineFormSpec extends spex.Specification {
       stringSize2.rows aka "table rows" must not be empty
       stringSize2.rows(0) aka "table first row" must not be empty
     }
+    "have a toEmbeddedXhtml method returning the properties on the same row without labels" in {
+      val form = new EntityLineForm[String]{
+        val p = prop((_:String).size)(5)
+        val p2 = prop((_:String).size)(5)
+        tr(p, p2)
+      }
+      form.toEmbeddedXhtml must ==/(scala.xml.Group(<td class="info">5</td><td class="info">5</td>))
+    }
     "decorate all fields and properties when decorated" in {
       val form = new EntityLineForm[String]{
         val p = prop((_:String).size)(5)

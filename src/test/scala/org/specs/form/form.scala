@@ -27,6 +27,7 @@ object formSpecifications extends Specification {
     new fieldSpec,
     new formSpec,
     new lineFormSpec,
+    new linePropSpec,
     new propSpec,
     new propIterableSpec
   )
