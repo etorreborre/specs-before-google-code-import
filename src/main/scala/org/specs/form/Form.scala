@@ -89,7 +89,7 @@ trait Copyable[+T] { this : T with Copyable[T] =>
   def copy = this 
 }    
 trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable with ExpectableFactory with Copyable[FormEnabled] 
- with GenericFormatter {
+ with GenericFormatter { outer =>
   /** @return the title if set or build a new one based on the class name (by uncamelling it) */
   def title: String
   /** implementation of the HasLabel trait */
@@ -153,6 +153,16 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   def form[F <: Form](f: F): F = {
     add(f)
     f
+  }
+  /** implicit def allowing to write new Form {...}.formTr */
+  implicit def formInRow[F <: Form](f: F) = new FormInRow(f: F)
+  /** implicit def allowing to write new Form {...}.formTr */
+  class FormInRow[F <: Form](f: F) {
+    def formTr: F = {
+      outer.form(f)
+      outer.tr(f)
+      f
+    }
   }
   /** create a field with no label */
   def field[T](value: =>T): Field[T] = field("", value)
