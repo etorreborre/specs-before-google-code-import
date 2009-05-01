@@ -77,8 +77,10 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
    * specify the Sus
    */
   var literateDescription: Option[LiterateDescription] = None
-  /** @return an xhtml description of the sus */
+  /** @return an xhtml literate description of the sus */
   def literateDesc: NodeSeq = literateDescription.map(_.toXhtml).getOrElse(NodeSeq.Empty)
+    /** @return a String literate description of the sus */
+  def literateDescText: String = literateDesc(0).text
   /** examples describing the sus behaviour */
   var examples = List[Example]()
 
