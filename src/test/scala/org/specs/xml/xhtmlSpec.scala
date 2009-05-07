@@ -21,22 +21,24 @@ import Xhtml._
 
 class xhtmlSpec extends spex.Specification {
   "The Xhtml object" should {
-    "have a spanLastTd function setting a colspan on each last td of a row" in {
+    "have a spanLastTd function setting a colspan on each last td of a row, except the last one" in {
       val updated = Xhtml.spanLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
         </table>)
-      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
+      updated must \\(<th>person</th>, Map("colspan"->"4"))
+      updated must not(\\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
-    "have a spanLastTd function setting a colspan on each last td of a row - 2" in {
+    "have a spanLastTd function setting a colspan on each last td of a row, except the last one - 2" in {
       val updated = Xhtml.spanLastTd(
         <table class="dataTable">
           <tr><th>person</th></tr>
           <tr><td>First Name</td><td><b>Eric</b></td></tr>
           <tr><td>First Name</td><td>Eric</td><td>Last Name</td><td>Torreborre</td></tr>
         </table>)
-      updated must (\\(<th>person</th>, Map("colspan"->"4")) and \\(<td>Torreborre</td>, Map("colspan"->"4")))
+      updated must \\(<th>person</th>, Map("colspan"->"4"))
+      updated must not(\\(<td>Torreborre</td>, Map("colspan"->"4")))
     }
   }
   "The Xhtml object" should {

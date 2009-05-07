@@ -36,8 +36,8 @@ object Xhtml {
       case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
       case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
       /** don't set a colspan on the last cell of the biggest row */
-      case <th>{ b }</th> :: otherThs if (nodes.toList.size <= spanSize) => nodes.toList.first ++ spanLastTd(otherThs, spanSize)
-      case <td>{ b }</td> :: otherTds if (nodes.toList.size <= spanSize) => nodes.toList.first ++ spanLastTd(otherTds, spanSize)
+      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.first ++ spanLastTd(otherThs, spanSize)
+      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.first ++ spanLastTd(otherTds, spanSize)
       case List(<table>{ x @ _*}</table>) => <table>{spanLastTd(x, spanSize)}</table> % nodes.toList.first.attributes
       case <tr>{ y @ _*}</tr> :: otherRows => <tr>{spanLastTd(y, spanSize)}</tr> ++ spanLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ spanLastTd(other, spanSize)
