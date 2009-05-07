@@ -29,7 +29,7 @@ class dataTableFormSpec extends spex.Specification {
            tr(field(a), field(b), prop(a + b)(sum))
          }
       }
-      (f.toXhtml \("tr"))(1) must ==/(<tr><th>a</th><th>b</th><th colspan="3">sum</th></tr>)
+      (f.toXhtml \("tr"))(1) must ==/(<tr><th>a</th><th>b</th><th>sum</th></tr>)
     }
   }
 }
