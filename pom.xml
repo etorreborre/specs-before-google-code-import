@@ -29,7 +29,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.scala-tools.testing</groupId>
   <artifactId>specs</artifactId>
-  <version>1.5.0-SNAPSHOT</version>
+  <version>1.5.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <description>specs is a Behaviour-Driven-Design
@@ -315,7 +315,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           <jvmArgs>
             <jvmArg>-Xmx512m</jvmArg>
           </jvmArgs>
-          <vscaladocVersion>1.2-SNAPSHOT</vscaladocVersion>
+        <!--  <vscaladocVersion>1.2-SNAPSHOT</vscaladocVersion> -->
           <scalaVersion>${scala.version}</scalaVersion>
         </configuration>
       </plugin>
@@ -338,11 +338,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <distributionManagement>
         <repository>
           <id>hudson.scala-tools.org</id>
-          <url>file://home/scala-tools.org/www/repo-snapshots</url>
+          <url>file:///home/scalatools/hudson/www/repo-snapshots</url>
         </repository>
         <snapshotRepository>
           <id>hudson.scala-tools.org</id>
-          <url>file://home/scala-tools.org/www/repo-snapshots</url>
+          <url>file:///home/scalatools/hudson/www/repo-snapshots</url>
           <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
