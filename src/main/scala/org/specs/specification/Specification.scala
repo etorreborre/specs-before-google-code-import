@@ -26,7 +26,6 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
-import org.junit.runner.RunWith
 import org.specs.execute._
 
 /**
@@ -41,7 +40,6 @@ import org.specs.execute._
  * be collected with the corresponding methods
  *
  */
-@RunWith(classOf[JUnitSuiteRunner])
 abstract class Specification extends Expectations with FailOrSkip with Console with SpecsFilter 
                with Contexts {
 
