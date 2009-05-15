@@ -48,7 +48,7 @@ Then, other languages, like <ex>French and German should be supported too</ex>
 
  </textile>
 }
-class tabsSpec extends HtmlSpecification("Tabs sample") {
+class tabsSpec extends HtmlSpecificationWithJUnit("Tabs sample") {
  class ClubMember extends Form {
    new tabs() {
      new tab("Contact details") {
@@ -68,7 +68,7 @@ class tabsSpec extends HtmlSpecification("Tabs sample") {
   </textile>
 }
 
-class fieldsFormSpec extends HtmlSpecification("Fields form") {
+class fieldsFormSpec extends HtmlSpecificationWithJUnit("Fields form") {
  class Person extends Form {
    val firstName = field("First name", "Eric")
    val lastName = field("Last name", "Torreborre")
@@ -127,7 +127,7 @@ trait PersonBusinessEntities {
   }
   case class Address(number: Int, street: String)
 }
-trait PersonForms extends HtmlSpecification with PersonBusinessEntities {
+trait PersonForms extends HtmlSpecificationWithJUnit with PersonBusinessEntities {
 
   case class PersonForm(t: String, p: Person) extends Form(t) {
     def this(p: Person) = this("Customer", p)
