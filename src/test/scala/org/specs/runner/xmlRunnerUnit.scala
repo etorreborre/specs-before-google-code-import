@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.util.DataTables
 import org.specs.Sugar._
 
-class xmlRunnerUnit extends Specification with DataTables with Html with JUnit {
+class xmlRunnerUnit extends SpecificationWithJUnit with DataTables with Html {
   override def htmlDir = "target"
 
   "An xml runner" should {

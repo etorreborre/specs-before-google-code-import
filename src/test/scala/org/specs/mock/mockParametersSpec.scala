@@ -22,7 +22,7 @@ import org.specs.Sugar._
 import org.specs.matcher._
 import org.specs.runner._
 
-class mockParametersSpec extends MatchersSpecification with MovieGuardMock with JUnit {
+class mockParametersSpec extends MatchersSpecification with MovieGuardMock {
   "Mock parameters" should { doBefore { clearExample }
     "provide a recordAndReturn method allowing to specify a stubbed return value: def mockedMethod = recordAndReturn(true)" in {
       alwaysOkGuard

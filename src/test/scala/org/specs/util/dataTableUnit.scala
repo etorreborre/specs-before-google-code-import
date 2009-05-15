@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.runner._
 import org.specs.execute._
 
-class dataTableUnit extends Specification with DataTables with JUnit {
+class dataTableUnit extends SpecificationWithJUnit with DataTables {
   "a data table" should {
     "be just a datarow if it has one single row" in {
       val data = "a"|"b"|"c"|

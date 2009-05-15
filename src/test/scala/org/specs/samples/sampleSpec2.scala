@@ -43,7 +43,7 @@ object allSpecififcation extends Specification {
 }
 
 
-class helloWorldSpec extends Specification("Hello world") with JUnit with ScalaTest {
+class helloWorldSpec extends SpecificationWithJUnit("Hello world") with ScalaTest {
   "'hello world' has 11 characters" in {
      "hello world".size mustBe 11
   }

@@ -23,7 +23,7 @@ import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.execute._
 
-class MatchersSpecification extends Specification with JUnit {
+class MatchersSpecification extends SpecificationWithJUnit {
   var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sus("", this))
   def clearExample = { reported = new Example("", new Sus("", this)) }
   def failWith(message: String) = is_==(message)

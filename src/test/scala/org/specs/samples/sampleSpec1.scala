@@ -22,7 +22,7 @@ import org.specs.io.mock._
 import org.junit.runner._
 
 object sampleSpec1 extends sampleSpec1
-class sampleSpec1 extends Specification with JUnit {
+class sampleSpec1 extends SpecificationWithJUnit {
   "A sample specification1" should {
     "return something" in {
       "hello" mustNotBe "world"

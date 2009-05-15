@@ -22,7 +22,7 @@ import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.ExtendedThrowable._
 
-class extendedThrowableUnit extends Specification with ExceptionSamples with JUnit {
+class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples {
 
   "an extended Throwable with location methods" ->- ex should provide {
     "a location method extracting the name of the file and the line from an exception" in {

@@ -48,7 +48,7 @@ Then, other languages, like <ex>French and German should be supported too</ex>
 
  </textile>
 }
-class tabsSpec extends HtmlSpecification("Tabs sample") with JUnit {
+class tabsSpec extends HtmlSpecification("Tabs sample") {
  class ClubMember extends Form {
    new tabs() {
      new tab("Contact details") {
@@ -68,7 +68,7 @@ class tabsSpec extends HtmlSpecification("Tabs sample") with JUnit {
   </textile>
 }
 
-class fieldsFormSpec extends HtmlSpecification("Fields form") with JUnit {
+class fieldsFormSpec extends HtmlSpecification("Fields form") {
  class Person extends Form {
    val firstName = field("First name", "Eric")
    val lastName = field("Last name", "Torreborre")
@@ -79,7 +79,7 @@ class fieldsFormSpec extends HtmlSpecification("Fields form") with JUnit {
    { new Person().toHtml }  
   </textile>
 }
-class bagFormSpecification extends HtmlSpecification("Bag form") with JUnit {
+class bagFormSpecification extends HtmlSpecification("Bag form") {
   case class Customer(name: String, age: Int)
   case class CustomerLine(name: String, age: Int) extends EntityLineForm[Customer] {
     // the prop method accepts a function here, taking the proper attribute on the "Entity"
@@ -99,7 +99,7 @@ class bagFormSpecification extends HtmlSpecification("Bag form") with JUnit {
   </textile>
 
 }
-class formSampleSpec extends PersonForms with JUnit {
+class formSampleSpec extends PersonForms {
   "Forms can be used in a Literate specification" is <textile>
 
 This is a Person form, checking that the initials are set properly on a Person object:

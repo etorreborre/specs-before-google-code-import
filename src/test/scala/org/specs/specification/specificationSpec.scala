@@ -24,7 +24,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.specification._
 import org.specs.execute._
 
-class specificationSpec extends Specification with JUnit {
+class specificationSpec extends SpecificationWithJUnit {
   "A specification" isSpecifiedBy (basicFeatures, advancedFeatures)
 }
 

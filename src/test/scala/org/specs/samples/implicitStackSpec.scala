@@ -20,7 +20,7 @@ package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
 
-class implicitStackSpec extends StackSpecification with JUnit with SystemContexts {
+class implicitStackSpec extends StackSpecification with SystemContexts {
   "An empty stack" should {
     implicit val stackIsEmpty = systemContext { new SampleStack(10) }
     

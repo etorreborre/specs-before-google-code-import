@@ -27,7 +27,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 import org.specs.execute._
 
-class consoleReporterSpec extends Specification with JUnit {
+class consoleReporterSpec extends SpecificationWithJUnit {
   "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")

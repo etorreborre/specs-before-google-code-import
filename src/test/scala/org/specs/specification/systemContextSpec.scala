@@ -20,7 +20,7 @@ package org.specs.specification
 import org.specs._
 import org.specs.runner._
 
-class systemContextSpec extends Specification with JUnit with SystemContexts {
+class systemContextSpec extends SpecificationWithJUnit with SystemContexts {
   case class System(name: String) {
     var variable = ""
   }

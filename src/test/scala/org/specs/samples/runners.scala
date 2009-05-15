@@ -45,7 +45,7 @@ class spec10 extends Specification with ScalaTest {
   1 must_== 1
   2 must_== 2
 }
-class spec11Test extends Specification with JUnit with ScalaTest {
+class spec11Test extends SpecificationWithJUnit with ScalaTest {
   1 must_== 1
   2 must_== 2
 }

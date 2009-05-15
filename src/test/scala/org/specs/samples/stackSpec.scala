@@ -20,7 +20,7 @@ package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
 
-class stackSpec extends StackSpecification with JUnit with SystemContexts {
+class stackSpec extends StackSpecification with SystemContexts {
   "An empty stack" definedAs(empty) should {
     "throw an exception when sent #top" in { stack: LimitedStack[Int] =>
       stack.top must throwA[NoSuchElementException]
@@ -64,7 +64,7 @@ class stackSpec extends StackSpecification with JUnit with SystemContexts {
   }
 }
 
-class StackSpecification extends Specification {
+class StackSpecification extends SpecificationWithJUnit {
   case class SampleStack(stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
     def this(capacity: Int) = this(capacity, 0)
     var lastItemAdded = 0

@@ -26,7 +26,7 @@ import org.specs.specification._
 import org.specs.util._
 import scala.xml._
 
-class propSpec extends Specification with JUnit with Mockito with SystemContexts with Sugar with DataTables {
+class propSpec extends SpecificationWithJUnit with Mockito with SystemContexts with Sugar with DataTables {
   "A property" should {
     "return the expected value with the get method" in {
       Prop("label", 1)(2).get must ==(2)

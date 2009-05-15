@@ -26,4 +26,10 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
  *
  */
 @RunWith(classOf[JUnitSuiteRunner])
-abstract class SpecificationWithJUnit extends Specification with JUnit
+abstract class SpecificationWithJUnit extends Specification with JUnit {
+  /**
+   * Alternate constructor with the name of the specification
+   */
+  def this(n: String) = { this(); name = n; description = n; this }
+
+}

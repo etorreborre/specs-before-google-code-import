@@ -21,7 +21,7 @@ import org.specs.collection.ExtendedList._
 import org.specs.Products._
 import org.specs.runner._
 
-class extendedListUnit extends TestData with JUnit {
+class extendedListUnit extends TestData {
   "A removeFirst predicate function" should {
     "remove nothing if the list is empty" in {
       (Nil: List[String]).removeFirst(_ == "a") must_== Nil
@@ -90,7 +90,7 @@ import org.specs._
 import scalacheck.Gen._
 import org.specs.ScalaCheck
 
-trait TestData extends Specification with Sugar with ScalaCheck {
+trait TestData extends SpecificationWithJUnit with Sugar with ScalaCheck {
    val prefixesAndPrefix = for (list <- listOf(elements(1, 2, 3, 4));
                                 n <- choose(0, list.size-1);
                                 val prefix = list.take(n))

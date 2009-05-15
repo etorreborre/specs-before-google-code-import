@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.runner._
 import org.specs.specification._
 
-class defaultResultsSpec extends Specification with JUnit with SystemContexts {
+class defaultResultsSpec extends SpecificationWithJUnit with SystemContexts {
   def defaultResults = systemContext { new DefaultResults {} }
   val f = new FailureException("")
   val e = new java.lang.Error("error")

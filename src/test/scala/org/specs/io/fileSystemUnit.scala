@@ -19,7 +19,7 @@
 package org.specs.io
 import org.specs.runner._
 
-class fileSystemUnit extends TestData with JUnit {
+class fileSystemUnit extends TestData {
   "A file system" should {
     "provide a globToPattern function returning the regex pattern corresponding to a glob definition" in {
       paths must pass { matchingPath: MatchingPath =>
@@ -35,7 +35,7 @@ import java.util.regex._
 import org.specs._
 import org.specs.Sugar._
 
-trait TestData extends Specification with FileSystem with ConsoleOutput with ScalaCheck {
+trait TestData extends SpecificationWithJUnit with FileSystem with ConsoleOutput with ScalaCheck {
   case class MatchingPath(path: String, glob: String)
   def paths = for { glob <- elements("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
                     path <- elements(pathsMatchingGlob(glob):_*)

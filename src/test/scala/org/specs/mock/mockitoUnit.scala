@@ -20,7 +20,7 @@ package org.specs.mock
 import org.specs._
 import org.specs.runner._
 
-class mockitoUnit extends Specification with Mockito with JUnit {
+class mockitoUnit extends SpecificationWithJUnit with Mockito {
   import java.util.List
   val m1 = mock[List[String]]
   val m2 = mock[List[String]]

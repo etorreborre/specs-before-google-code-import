@@ -24,7 +24,7 @@ import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.execute._
 
-class htmlRunnerUnit extends Specification with DataTables with JUnit {
+class htmlRunnerUnit extends SpecificationWithJUnit with DataTables {
   val table = "a"    | "b"  | "result" |
                 1    !  1   ! 2        |
                 1    !  1   ! 2        |

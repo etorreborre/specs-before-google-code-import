@@ -21,7 +21,7 @@ import org.specs.io.mock.MockFileSystem
 import org.specs.io.ConsoleOutput
 import org.specs.runner._
 
-class specsFinderSpec extends Specification with Init with JUnit {
+class specsFinderSpec extends SpecificationWithJUnit with Init {
 
   "A specs finder" should {
     doBefore {

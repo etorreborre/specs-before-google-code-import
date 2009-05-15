@@ -21,7 +21,7 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.mock._
 
-class mockerUnit extends Specification with Sugar with ProtocolTypes with JUnit {
+class mockerUnit extends SpecificationWithJUnit with Sugar with ProtocolTypes {
   object mocker extends Mocker { def addExpectation = null }
   class MockedClass { def method = (); def a = (); def b = (); def c = () }
   "A mocker" should {
