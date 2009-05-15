@@ -16,31 +16,23 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs.runner
-import org.specs.specification._
-import org.specs.io.mock._
-import org.specs.util.Property
+package org.specs
 
-class teamCityRunnerRules extends HtmlSpecificationWithJUnit("Team city runner") {
-  override def htmlDir = "target"
-  detailedDiffs()
-  def clearDetails(messages: Seq[String]) = messages.map(_.replaceAll("details='.*'", "details='exception stacktrace'"))
-  val message: Property[String] = Property("")
-  val messages: Property[List[String]] = Property[List[String]](Nil)
-  def messageMustBeCreated = clearDetails(runSpec.messages) must contain(message())
-  def messagesMustBeCreated = clearDetails(runSpec.messages) must containInOrder(messages())
-
-  def runSpec = (new TeamCityRunner(testingSpecification) with MockOutput).reportSpecs
-}
-object testingSpecification extends Specification("specification name") {
-  "sus1 description" should {
-    "good example" in { true must beTrue }
-    "failed example" in { true must beFalse }
-    "exception example" in { throw new Error("error") }
-    "sub examples" >> {
-      "good sub" in { true must beTrue }
-      "bad sub1" in { true must beFalse }
-      "bad sub2" in { false must beTrue }
-    }
+import org.junit.runner.RunWith
+import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+/**
+ * LiterateSpecification with Html reporting, runnable as a JUnit suite, where each 
+ * system is a Test suite and each example a test.
+ */
+@RunWith(classOf[JUnitSuiteRunner])
+abstract class SpecificationWithJUnit extends HtmlSpecification with JUnit {
+  /**
+   * Alternate constructor with the name of the specification
+   */
+  def this(n: String) = { 
+    this()
+    name = n
+    description = n
+    this 
   }
 }

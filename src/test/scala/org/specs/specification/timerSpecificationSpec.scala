@@ -35,7 +35,7 @@ class timerSpecificationSpec extends TimerSpecificationActionWords {
 </p>
 }
 
-class TimerSpecificationActionWords extends HtmlSpecification {
+class TimerSpecificationActionWords extends HtmlSpecificationWithJUnit {
   val simpleTimer = new SimpleTimer
   class Person {var name: String = ""; def setName(n: String) = name = n}
   val person = new Person;

@@ -26,7 +26,7 @@ import org.specs.util._
 import org.specs.io.mock._
 import scala.xml._
 
-class htmlRunnerRules(name: String) extends HtmlSpecification(name) with XmlProperties {
+class htmlRunnerRules(name: String) extends HtmlSpecificationWithJUnit(name) with XmlProperties {
   override def htmlDir = "target"
 
   def title = run must \\(<title>{specification.name}</title>)

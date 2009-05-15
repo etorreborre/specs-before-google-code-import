@@ -19,12 +19,10 @@
 package org.specs
 import org.specs.literate._
 import org.specs.runner._
-import org.junit.runner.RunWith
 /**
  * LiterateSpecification with Html reporting
  */
-@RunWith(classOf[JUnitSuiteRunner])
-class HtmlSpecification extends LiterateSpecification with runner.Html with Textile with JUnit {
+class HtmlSpecification extends LiterateSpecification with runner.Html with Textile {
   def this(n: String) = { 
     this()
     name = n

@@ -28,7 +28,7 @@ import org.specs.Sugar._
 import org.specs.specification._
 import org.junit.runner.RunWith
 
-class formSpec extends HtmlSpecification with PersonForms with org.specs.SystemContexts { persons =>
+class formSpec extends HtmlSpecificationWithJUnit with PersonForms with org.specs.SystemContexts { persons =>
   val address = Address(37, "Nando-cho")
   val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
 

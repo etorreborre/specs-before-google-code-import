@@ -21,7 +21,7 @@ import org.specs.Sugar._
 import org.specs._
 import org.specs.util._
 
-trait LiterateSpecRules extends HtmlSpecification with AllProperties {
+trait LiterateSpecRules extends HtmlSpecificationWithJUnit with AllProperties {
 
    object example1 extends LiterateSpecification with Text {
      <t>{"1 must be 1" in {1 must_== 1}}</t> isSus  }

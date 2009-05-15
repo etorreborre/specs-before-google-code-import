@@ -23,7 +23,7 @@ import org.specs.specification._
 import org.specs.util.DataTables
 import org.specs.runner._
 
-class calculatorSpec extends HtmlSpecification("Calculator Specification") with DataTables {
+class calculatorSpec extends HtmlSpecificationWithJUnit("Calculator Specification") with DataTables {
   val calc = new Object { def add(x: Int, y: Int): Int = x + y }
 
 "A literate specification for a calculator" ->> <wiki>

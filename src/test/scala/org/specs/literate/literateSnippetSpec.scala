@@ -20,7 +20,7 @@ package org.specs.literate
 import org.specs._
 import org.specs.util._
 
-class literateSnippetSpec extends HtmlSpecification("Literate snippet") with Examples with LiterateSnippets { <wiki>
+class literateSnippetSpec extends HtmlSpecificationWithJUnit("Literate snippet") with Examples with LiterateSnippets { <wiki>
 
 h3. Declaration
 

@@ -21,7 +21,7 @@ import org.specs.literate._
 import org.specs._
 import org.specs.specification._
 
-class tagsSpec extends HtmlSpecification with Fixtures {
+class tagsSpec extends HtmlSpecificationWithJUnit with Fixtures {
 
 <t>Tags can be attached to examples to classify them.
 

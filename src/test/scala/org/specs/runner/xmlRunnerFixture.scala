@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.util.Property
 import scala.xml._
 
-trait RunnerFixture extends HtmlSpecification with RunnerTestData with literate.Html {
+trait RunnerFixture extends HtmlSpecificationWithJUnit with RunnerTestData with literate.Html {
   def createSimpleSpecRunner = runner = simpleSpecRunner
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpecs.shh }
