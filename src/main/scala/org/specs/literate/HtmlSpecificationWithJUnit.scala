@@ -25,7 +25,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
  * system is a Test suite and each example a test.
  */
 @RunWith(classOf[JUnitSuiteRunner])
-abstract class SpecificationWithJUnit extends HtmlSpecification with JUnit {
+abstract class HtmlSpecificationWithJUnit extends HtmlSpecification with JUnit {
   /**
    * Alternate constructor with the name of the specification
    */
