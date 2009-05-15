@@ -20,7 +20,7 @@ package org.specs.util
 import org.specs._
 import org.specs.runner._
 
-class timerSpec extends Specification with JUnit {
+class timerSpec extends SpecificationWithJUnit {
   "A timer" should {
     "display 0 seconds if not stopped after being created" in {
       TestTimer().hms must_== "0 second"

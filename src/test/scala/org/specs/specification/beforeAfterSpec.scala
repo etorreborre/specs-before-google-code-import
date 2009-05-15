@@ -22,7 +22,7 @@ import org.specs.runner._
 import org.specs._
 import org.specs.runner._
 
-class beforeAfterSpec extends Specification with JUnit {
+class beforeAfterSpec extends SpecificationWithJUnit {
   "A specification with before clauses" should {
     "have each example using the doBefore method before being executed" in {
       doBeforeExample.execute

@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.runner._
 import org.specs.util.Property
 
-class snippetSpec extends Specification with JUnit with Snippets {
+class snippetSpec extends SpecificationWithJUnit with Snippets {
   "A snippet" should {
     "have a prelude method" in {
       val s = Snippet("").prelude("prelude")

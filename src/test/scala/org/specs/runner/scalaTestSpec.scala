@@ -26,7 +26,7 @@ import org.scalatest._
 import org.specs.mock.JMocker
 import scala.collection.immutable._
 
-class scalaTestSpec extends Specification with ScalaTestMocks with JUnit {
+class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
   "A ScalaTest runner" should {
     "create a ScalaTest suite named after the specification description" in {
       val spec = new SimpleSpecification(that.isOk)

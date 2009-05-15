@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.runner._
 import org.specs.util.ExtendedString._
 
-class extendedStringSpec extends Specification with JUnit with DataTables {
+class extendedStringSpec extends SpecificationWithJUnit with DataTables {
   "the uncapitalize function" should {
     "lower-case only the first letter of a string" in {
       "Hello".uncapitalize must_== "hello"

@@ -23,7 +23,7 @@ import org.specs.runner._
 import org.specs.mock.Mockito
 import org.specs.execute._
 
-class notifierSpec extends Specification with JUnit with Mockito {
+class notifierSpec extends SpecificationWithJUnit with Mockito {
   var notifier = mock[Notifier]
   "A notifier for a specification" should beNotifiedOf { 
     doBefore { 

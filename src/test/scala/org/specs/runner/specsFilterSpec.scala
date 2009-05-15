@@ -20,7 +20,7 @@ package org.specs.runner
 import org.specs.Specification
 import org.specs.runner._
 
-class specsFilterSpec extends Specification with JUnit {
+class specsFilterSpec extends SpecificationWithJUnit {
   "a specs filter" should {
     "filter the SUS of the specification according to a regular expression" in {
       object spec extends Specification {

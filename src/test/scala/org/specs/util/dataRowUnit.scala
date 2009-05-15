@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.runner._
 import org.specs.execute._
 
-class dataRowUnit extends Specification with DataTables with JUnit with SystemContexts {
+class dataRowUnit extends SpecificationWithJUnit with DataTables with SystemContexts {
   type DR = DataRow3[Int, Int, Int]
   val newRow = new SystemContext[DR]() {
     def newSystem = DataRow3[Int, Int, Int](1, 2, 3)

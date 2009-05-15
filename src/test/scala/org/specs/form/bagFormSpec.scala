@@ -19,7 +19,7 @@
 package org.specs.form
 import org.specs.runner._
 
-class bagFormSpec extends org.specs.Specification with JUnit {
+class bagFormSpec extends org.specs.SpecificationWithJUnit {
   case class Person(name: String, age: Int)
   case class PersonLine(name: String, age: Int) extends EntityLineForm[Person] {
     prop((_:Person).name)(name)

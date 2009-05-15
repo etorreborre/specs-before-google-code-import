@@ -26,7 +26,7 @@ import org.specs.runner._
 import org.hamcrest.core._
 import org.specs.matcher._
 
-class jmockSpec extends Specification with JUnit {
+class jmockSpec extends SpecificationWithJUnit {
   "The jMock integration".isSpecifiedBy(jmockGoodSpecification, jmockBadSpecification, countingNamingSchemeSpecification)
 }
 object jmockGoodSpecification extends Mocked {

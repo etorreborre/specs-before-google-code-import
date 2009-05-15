@@ -18,16 +18,18 @@
  */
 package org.specs
 
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import org.junit.runner.RunWith
-
+import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 /**
- * This class can be executed as a JUnit test suite.
- * Each system under specification will be a TestSuite and each example will be a TestCase.
+ * This class is a Specification which is runnable as a JUnit suite, where each 
+ * system is a Test suite and each example a test.
  *
  */
 @RunWith(classOf[JUnitSuiteRunner])
 abstract class SpecificationWithJUnit extends Specification with JUnit {
+  /**
+   * Alternate constructor with the name of the specification
+   */
+  def this(n: String) = { this(); name = n; description = n; this }
 
 }
-

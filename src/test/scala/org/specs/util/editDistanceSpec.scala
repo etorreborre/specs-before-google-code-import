@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.runner._
 import org.specs.matcher._
 
-class editDistanceSpec extends Specification with EditDistance with DataTables with JUnit {
+class editDistanceSpec extends SpecificationWithJUnit with EditDistance with DataTables {
   "The edit distance" should {
     "return 0 if there's no insertions" in {
       editDistance("kitte", "kitte") must_== 0

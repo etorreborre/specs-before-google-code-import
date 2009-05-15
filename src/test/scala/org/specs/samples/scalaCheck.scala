@@ -22,7 +22,7 @@ import org.specs.runner._
 import org.specs.specification._
 import org.specs.matcher._
 
-class stringSpec extends Specification("String") with ScalaCheck with JUnit {
+class stringSpec extends SpecificationWithJUnit("String") with ScalaCheck {
 
    "startsWith" verifies ((a: String, b: String) => (a + b).startsWith(a)).set(minTestsOk->25)
    "endsWith" verifies { (a: String, b: String) => (a + b).endsWith(b) }

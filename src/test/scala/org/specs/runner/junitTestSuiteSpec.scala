@@ -27,7 +27,7 @@ import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.specs.specification._
 
-class junitTestSuiteSpec extends Specification with JUnit {
+class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
       object S1 extends Specification { 1 must_== 1 }

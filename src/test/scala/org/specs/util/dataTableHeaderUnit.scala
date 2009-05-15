@@ -20,7 +20,7 @@ package org.specs.util
 import org.specs.Specification
 import org.specs.runner._
 
-class dataTableHeaderUnit extends Specification with DataTables with JUnit {
+class dataTableHeaderUnit extends SpecificationWithJUnit with DataTables {
   "a data table header" should {
     val tableHeader = "a"|"b"|"c"|
 

@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.runner._
 import org.specs.io.mock._
 
-class fileWriterSpec extends Specification with JUnit {
+class fileWriterSpec extends SpecificationWithJUnit {
   "A FileWriter" should {
     doAfter { new java.io.File("filePath").delete }
     "write inside a file" in {

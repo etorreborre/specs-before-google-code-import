@@ -22,7 +22,7 @@ import org.specs.execute._
 import org.specs.runner._
 import org.specs.util._
 
-class exampleSpec extends Specification with JUnit {
+class exampleSpec extends SpecificationWithJUnit {
   setSequential()
   "An example" should {
     "not be executed if not asked for results" in {

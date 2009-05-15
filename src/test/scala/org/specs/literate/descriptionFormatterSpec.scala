@@ -22,7 +22,7 @@ import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.runner._
 
-class descriptionFormatterSpec extends Specification with JUnit {
+class descriptionFormatterSpec extends SpecificationWithJUnit {
 
   "A text formatter" should {
     "format a description as text" in {

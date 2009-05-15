@@ -21,7 +21,7 @@ import org.specs.runner._
 import org.specs.matcher._
 import org.specs.specification._
 
-class objectGraphSpec extends Specification with ObjectGraphMatchers with JUnit {
+class objectGraphSpec extends SpecificationWithJUnit with ObjectGraphMatchers {
   "The following object graphs" should {
     "match when they are the same" in {
       val foo = new Foo("2")

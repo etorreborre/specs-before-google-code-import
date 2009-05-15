@@ -24,7 +24,7 @@ import org.specs.xml.NodeFunctions._
 import scala.xml.NodeSeq._
 import scala.xml._
 
-class extendedNodeUnit extends Specification with JUnit {
+class extendedNodeUnit extends SpecificationWithJUnit {
   "An isSpaceNode function" should {
     "return false for a node with a simple label" in {
       <a/>.isSpaceNode mustBe false

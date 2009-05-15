@@ -22,7 +22,7 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.runner._
 
-class extendedIterableUnit extends IterableData with JUnit with ScalaCheck {
+class extendedIterableUnit extends IterableData with ScalaCheck {
   "A sameElementsAs function" should returnTrue {
     "if 2 lists of lists contain the same elements in a different order" in {
       List(List(1), List(2, 3)) must haveSameElementsAs(List(List(3, 2), List(1)))
@@ -128,7 +128,7 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.Sugar._
 
-trait IterableData extends Specification with Sugar with ScalaCheck {
+trait IterableData extends SpecificationWithJUnit with Sugar with ScalaCheck {
   def returnTrue = addToSusVerb("return true")
 
   val sameIterables = for (i0 <- listOf(elements(1, 2, 3));

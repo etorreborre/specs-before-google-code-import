@@ -20,7 +20,7 @@ package org.specs.io
 import org.specs._
 import org.specs.runner._
 
-class fileSystemSpec extends Specification with JUnit {
+class fileSystemSpec extends SpecificationWithJUnit {
 
   "A FileSystem" should {
     "list all files in a directory with filePaths()" in {

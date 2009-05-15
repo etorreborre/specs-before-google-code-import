@@ -20,7 +20,7 @@ package org.specs.util
 import org.specs._
 import org.specs.runner._
 
-class scalaInterpreterSpec extends Specification with JUnit with ScalaInterpreter {
+class scalaInterpreterSpec extends SpecificationWithJUnit with ScalaInterpreter {
   detailedDiffs()
   "A Scala interpreter" should {
     "interpret a simple expression 1 + 1 to 2" in {

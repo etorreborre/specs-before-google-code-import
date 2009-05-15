@@ -20,7 +20,7 @@ package org.specs.util
 import org.specs._
 import org.specs.runner._
 
-class includeExcludeSpec extends Specification with JUnit {
+class includeExcludeSpec extends SpecificationWithJUnit {
   val includeExclude = new DefaultIncludeExclude[String]
   "An object mixing the IncludeExclude trait" should { doBefore(includeExclude.reset())
     "filter out elements which are excluded" in {

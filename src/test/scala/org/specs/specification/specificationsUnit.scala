@@ -28,7 +28,7 @@ import scala.collection.mutable._
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
-class specificationsUnit extends Specification with ScalaCheck with JUnit {
+class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
 
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {

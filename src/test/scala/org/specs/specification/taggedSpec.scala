@@ -20,7 +20,7 @@ package org.specs.specification
 import org.specs.matcher._
 import org.specs.runner._
 
-class taggedSpec extends Specification with JUnit{
+class taggedSpec extends SpecificationWithJUnit {
   "A tagged object" should { createTagged.before
     "be accepted if there is no tag added" in {
       tagged must beAccepted
