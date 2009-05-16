@@ -34,7 +34,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       notifier.runStarting(5) was called
     }
     "the start of a system" in {
-      notifier.systemStarting("system1") was called
+      notifier.systemStarting("system1 should") was called
     }
     "the start of an example" in {
       notifier.exampleStarting("ex1-1") was called

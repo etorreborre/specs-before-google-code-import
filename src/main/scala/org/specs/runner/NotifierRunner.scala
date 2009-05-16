@@ -60,10 +60,10 @@ class NotifierRunner(val specs: Seq[Specification], val notifiers: List[Notifier
     this
   }
   def reportSystem(system: Sus): this.type = {
-    notifiers.foreach { _.systemStarting(system.description) }
+    notifiers.foreach { _.systemStarting(system.descriptionSentence) }
     for (example <- system.examples)
       reportExample(example)
-    notifiers.foreach { _.systemCompleted(system.description) }
+    notifiers.foreach { _.systemCompleted(system.descriptionSentence) }
     this
   }
   def reportExample(example: Example): this.type = {
