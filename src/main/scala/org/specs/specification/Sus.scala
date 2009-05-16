@@ -158,7 +158,10 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
   def expectationsNb = examples.foldLeft(0)(_ + _.expectationsNb)
 
   /** @return a description of this sus with all its examples (used for the ConsoleReporter) */
-  def pretty(tab: String) = tab + description + " " + verb + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
+  def pretty(tab: String) = tab + descriptionSentence + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
+  
+  /** @return the description and verb of this sus */
+  def descriptionSentence = description + " " + verb
   
   /** forwards the call to the "parent" cycle */
   override def until = { parent.until && this.untilPredicate.getOrElse(() => true)() }
