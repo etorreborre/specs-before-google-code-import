@@ -52,7 +52,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       notifier.exampleSkipped("ex2-3") was called
     }
     "the end of a system" in {
-      notifier.systemCompleted("system1") was called
+      notifier.systemCompleted("system1 should") was called
     }
   }
   val s = new Specification {
