@@ -132,10 +132,10 @@ object ExtendedList { outer =>
      */
     def min(f: T => Int) = outer.min(l, f)
     /** @returns the difference of 2 lists but only removing elements once */
-    def difference(list2: List[T]): List[T] = outer.difference(l, list2)
+    def subtract(list2: List[T]): List[T] = outer.subtract(l, list2)
   }
   /** @returns the difference of 2 lists but only removing elements once */
-  def difference[A](list1: List[A], list2: List[A]): List[A] = {
+  def subtract[A](list1: List[A], list2: List[A]): List[A] = {
     list1 match {
       case Nil => Nil
       case a :: Nil => if (list2.contains(a)) Nil else list1
@@ -143,9 +143,9 @@ object ExtendedList { outer =>
         if (list2.isEmpty)
           list1
         else if (list2.exists((x: A) => a == x)) 
-          difference(rest, difference(list2, List(a))) 
+          subtract(rest, subtract(list2, List(a))) 
         else 
-          a :: difference(rest, list2)
+          a :: subtract(rest, list2)
       } 
     }
   }

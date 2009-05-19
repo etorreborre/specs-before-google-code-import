@@ -52,7 +52,7 @@ class extendedIterableUnit extends IterableData with ScalaCheck {
     }
   }
   "A containsInOrder function" should {
-    "check that one iterable is contained inside another one, in order" in {
+    "check that one iterable is contained inside another one, in the same order" in {
       List(1, 2, 3).containsInOrder(1, 3) must beTrue
       List(1, 2, 3).containsInOrder(2, 1) must beFalse
     }
@@ -66,58 +66,15 @@ class extendedIterableUnit extends IterableData with ScalaCheck {
         set2   <- Gen.vectorOf(size2, Gen.elements("Ann", "Bess", "Clara"))
   } yield (Set(set1:_*), Set(set2:_*)) 
 
-  "A combine function" should {
-    "combine 2 sets returning the list of possible associations between the 2 sets" >> {
-      "each list size must have the minimum size of both sets" in {
-        sets must pass { s: (Set[String], Set[String]) => val (set1, set2) = s
-          combine(set1, set2).forall(_ must have size(min(set1.size, set2.size)))
-        }
-      }
-    }
-    "combine 2 simple sets" in {
-      val set1 = Set("Art", "Bill")
-      val set2 = Set("Ann", "Bess")
-      combine(set1, set2) must have the sameElementsAs(List(
-        List(("Art", "Ann"), ("Bill", "Bess")),
-        List(("Art", "Bess"), ("Bill", "Ann"))
-      )) 
-    }
-    "combine 2 simple sets with 2 and 3 elements" in {
-      val set1 = List("Art", "Bill", "Chris")
-      val set2 = List("Ann", "Bess")
-      combine(set1, set2) must have size 6
-    }
-    "combine 2 simple sets with 3 and 2 elements" in {
-      val set1 = List("Art", "Bill", "Chris")
-      val set2 = List("Ann", "Bess")
-      combine(set1, set2) must have the sameElementsAs(
-        List(("Art", "Ann"), ("Bill", "Bess")),
-        List(("Art", "Bess"), ("Bill", "Ann")),
-        List(("Art", "Ann"), ("Chris", "Bess")),
-        List(("Art", "Bess"), ("Chris", "Ann")),
-        List(("Bill", "Ann"), ("Chris", "Bess")),
-        List(("Bill", "Bess"), ("Chris", "Ann"))
-      )
-    }
-    "combine 2 simple sets with 3 elements each" in {
-      val set1 = List("Art", "Bill", "Chris")
-      val set2 = List("Ann", "Bess", "Clara")
-      combine(set1, set2) must have size 6
-    }
-    "combine 2 sets with duplicates" in {
-      combine(List("Ar", "Ar", "Charles"), 
-              List("An", "An")).flatMap(x=>x) must contain(("Charles", "An"))
-    }
-  }
-  "A difference method" should {
+  "A subtract method" should {
     "remove one element" in {
-       List(1, 2).difference(List(2)) must_== List(1)
+       List(1, 2).subtract(List(2)) must_== List(1)
     }
     "remove all elements only once" in {
-       List(1, 2).difference(List(1, 2)) must_== List()
+       List(1, 2).subtract(List(1, 2)) must_== List()
     }
     "remove elements only once" in {
-       List(1, 2, 2).difference(List(2)) must_== List(1, 2)
+       List(1, 2, 2).subtract(List(2)) must_== List(1, 2)
     }
   }
 }

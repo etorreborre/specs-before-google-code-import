@@ -96,8 +96,8 @@ trait BagFormEnabled[T] extends TableFormEnabled {
   def matchedLines = matches.map(_._3).map((t: (EntityLineForm[T], T)) => (t._1:EntityLineForm[T]).entityIs(t._2).execute)
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
-  def unmatchedExpectedLines = expectedLines.difference(matchedExpectedLines)
-  def unmatchedActual = bag.toList.difference(matchedActual)
+  def unmatchedExpectedLines = expectedLines.subtract(matchedExpectedLines)
+  def unmatchedActual = bag.toList.subtract(matchedActual)
 
   private def addLines(lines: List[LineForm]): this.type = {
     lines.foreach { line => 

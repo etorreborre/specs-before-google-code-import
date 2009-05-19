@@ -137,20 +137,4 @@ object ExtendedIterable {
        def sameElementsAs(that: Any): Boolean = x == that
     }
   }
-  def combine[A, B](firstSet: Iterable[A], secondSet: Iterable[B]): List[List[(A, B)]] = {
-    val values = for { 
-          a  <- everyOrder(firstSet.toList)
-          b  <- everyOrder(secondSet.toList)
-    } yield List(a.zip(b):_*)
-    values
-    var result: List[List[(A, B)]] = Nil
-    for (v <- values) {
-      if (!result.exists { listOfPairs =>
-        v.forall(p => listOfPairs.exists(_ == p)) 
-      }) {
-        result = v :: result
-      }
-    }
-    result
-  }
 }
