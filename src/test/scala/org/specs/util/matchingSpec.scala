@@ -18,7 +18,6 @@
  */
 package org.specs.util
 import Matching.bestMatch
-import org.specs.collection.ExtendedIterable.combine
 import org.specs.collection.ExtendedList.listToExtendedList
 import scala.Math._
 import org.scalacheck.{ Prop, Gen }
