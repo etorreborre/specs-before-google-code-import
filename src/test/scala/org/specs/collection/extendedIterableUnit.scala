@@ -67,13 +67,13 @@ class extendedIterableUnit extends IterableData with ScalaCheck {
   } yield (Set(set1:_*), Set(set2:_*)) 
 
   "A subtract method" should {
-    "remove one element" in {
+    "be able to remove one element L(1, 2).subtract(L(2)) == L(1)" in {
        List(1, 2).subtract(List(2)) must_== List(1)
     }
-    "remove all elements only once" in {
+    "be able to remove all elements L(1, 2).subtract(L(1, 2)) == Nil" in {
        List(1, 2).subtract(List(1, 2)) must_== List()
     }
-    "remove elements only once" in {
+    "remove an element only once L(1, 2, 2).subtract(L(2)) == L(1, 2)" in {
        List(1, 2, 2).subtract(List(2)) must_== List(1, 2)
     }
   }
