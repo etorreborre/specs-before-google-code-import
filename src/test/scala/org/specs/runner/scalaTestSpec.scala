@@ -19,7 +19,8 @@
 package org.specs.runner
 
 import org.specs.io.mock.MockOutput
-import org.specs.runner._
+import org.specs.specification._
+import org.specs._
 import org.specs.runner._
 import org.specs.Sugar._
 import org.scalatest._
@@ -93,7 +94,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
     } tag("functional")
   }
 }
-trait ScalaTestMocks extends JMocker with Contexts {
+trait ScalaTestMocks extends JMocker with Contexts { this: BaseSpecification =>
    var reporter = mock[org.scalatest.Reporter]
    var stopper = mock[org.scalatest.Stopper]
    val c = beforeContext {

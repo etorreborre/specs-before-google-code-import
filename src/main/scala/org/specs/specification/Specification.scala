@@ -40,7 +40,7 @@ import org.specs.execute._
  * be collected with the corresponding methods
  *
  */
-abstract class Specification extends Expectations with FailOrSkip with Console with SpecsFilter 
+abstract class Specification extends BaseSpecification with Expectations with FailOrSkip with Console with SpecsFilter 
                with Contexts {
 
   /** A specification is its own specs holder. */

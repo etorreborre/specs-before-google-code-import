@@ -106,7 +106,7 @@ use the system and its as parameters in { (s: System, c: Context) =>
     executedContexts(1) must_== "context1"
   }
 }
-trait ContextDefinitions extends SystemContexts {
+trait ContextDefinitions extends SystemContexts { this: BaseSpecification => 
   case class SpecificationWithSharedContext() extends Specification {
     var sharedCounter = 0
     val sharedContext = beforeContext { sharedCounter = sharedCounter + 1 }

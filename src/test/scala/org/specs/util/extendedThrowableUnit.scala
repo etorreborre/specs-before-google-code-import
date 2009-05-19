@@ -72,7 +72,7 @@ class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples
   }
   def provide = addToSusVerb("provide")
 }
-trait ExceptionSamples extends Contexts {
+trait ExceptionSamples extends Contexts { this: BaseSpecification => 
   var e: Exception = _
   var e2: Exception = _
   val ex = beforeContext {

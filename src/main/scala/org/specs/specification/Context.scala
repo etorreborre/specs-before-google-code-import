@@ -34,7 +34,7 @@ import org.specs.execute._
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
  * each system under test being specified.
  */
-trait BeforeAfter extends BaseSpecification { outer =>
+trait BeforeAfter { outer: BaseSpecification =>
   /** 
    * adds a "before" function to the last sus being defined 
    */
@@ -112,7 +112,7 @@ trait BeforeAfter extends BaseSpecification { outer =>
     def afterSpec = outer.doAfterSpec(actions)
   }
 }
-trait Contexts extends BeforeAfter {
+trait Contexts extends BeforeAfter { this: BaseSpecification =>
   /** Factory method to create a context with beforeAll only actions */
   def contextFirst(actions: => Any) = new Context { first(actions) }
 
@@ -192,7 +192,7 @@ abstract class SystemContext[S] extends Context with java.lang.Cloneable {
   def before(s: S) = {}
   def newInstance: SystemContext[S] = this.clone.asInstanceOf[SystemContext[S]]
 }
-trait SystemContexts extends Contexts {
+trait SystemContexts extends Contexts { this: BaseSpecification => 
   class SystemContextCaller(s: String) {
     def withSome[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
     def withAn[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
