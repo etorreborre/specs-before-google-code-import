@@ -22,11 +22,11 @@ import org.specs.Products._
 import org.specs.runner._
 
 class extendedListUnit extends TestData {
-  "A removeFirst predicate function" should {
+  "A removeFirst function" should {
     "remove nothing if the list is empty" in {
       (Nil: List[String]).removeFirst(_ == "a") must_== Nil
     }
-    "remove the first element met if the list contains it" in {
+    "remove only the first element of a list satisfying the predicate" in {
       List("a", "b", "c", "b").removeFirst(_ == "b") must_== List("a", "c", "b")
     }
   }
@@ -34,35 +34,35 @@ class extendedListUnit extends TestData {
     "remove nothing if the source list is empty" in {
       (Nil: List[String]).removeFirstSeq(List()) must_== Nil
     }
-    "remove the all elements matching a sequence if the list starts with that sequence" in {
+    "remove the first subsequence of the list matching a the sequence passed as a parameter" in {
       List("a", "b", "c", "b", "c").removeFirstSeq(List("a", "b")) must_== List("c", "b", "c")
     }
-    "remove only the first subsequence corresponding to the list parameter" in {
+    "remove *only* the first subsequence" in {
       List("a", "b", "c", "b", "c").removeFirstSeq(List("b", "c")) must_== List("a", "b", "c")
     }
   }
   "A function returning every order of a list" should {
     "return a list with one permutations for a list with one element" in {
-      everyOrder(("a")) must beLike { case List(List("a")) => ok }
+      everyOrder(("a")) must be like { case List(List("a")) => ok }
     }
     "return a list of 2 permutations for a list with two elements" in {
-      everyOrder(("a", "b")) must beLike { case List(List("a", "b"), List("b", "a")) => ok }
+      everyOrder(("a", "b")) must be like { case List(List("a", "b"), List("b", "a")) => ok }
     }
     "return a list of 6 permutations for a list with 3 elements" in {
-      everyOrder(("a", "b", "c")) must (contain(List("a", "b", "c")) and
-                                        contain(List("c", "b", "a")) and
-                                        contain(List("c", "a", "b")) and
-                                        contain(List("b", "c", "a")) and
-                                        contain(List("b", "a", "c")) and
-                                        contain(List("a", "c", "b")))
+      everyOrder(("a", "b", "c")) must contain(List("a", "b", "c")) and
+                                       contain(List("c", "b", "a")) and
+                                       contain(List("c", "a", "b")) and
+                                       contain(List("b", "c", "a")) and
+                                       contain(List("b", "a", "c")) and
+                                       contain(List("a", "c", "b"))
     }
   }
   "A function mixing an element with a list" should {
     "create 2 couples with a list of one element" in {
-      mix("a", List("b")) must beLike { case List(List("a", "b"), List("b", "a")) => ok }
+      mix("a", List("b")) must be like { case List(List("a", "b"), List("b", "a")) => ok }
     }
     "create 3 lists with a list of 2 elements" in {
-      mix("a", List("b", "c")) must beLike { case List(List("a", "b", "c"),
+      mix("a", List("b", "c")) must be like { case List(List("a", "b", "c"),
                                                        List("b", "a", "c"),
                                                        List("b", "c", "a")) => ok }
     }
@@ -80,7 +80,7 @@ class extendedListUnit extends TestData {
     }
   }
   "A maxElement function" should {
-    "return the maximum element of a list" in {
+    "return the maximum element of a list, according to a valuation function" in {
       List("a", "bb", "ccc").maxElement(_.size) must_== Some("ccc")
     }
   }
