@@ -140,6 +140,21 @@ object Property {
   def apply[T](i: =>T) = new Property(() => Some(i))
   def apply[T]() = new Property[T](() => None)
 }
+/**
+ * This class is a Property which can be reinitialized with its first value
+ * 
+ */
+class ReinitProperty[T](var initValue: () => Option[T]) extends Property(initValue) {
+  /** @return the Property with its original initial value */
+  def reinit: this.type = { initValue().map(v => this.update(v)); this }
+}
+/**
+ * Companion object to create reinitializable properties with possibly no initial value
+ */
+object ReinitProperty {
+  def apply[T](i: =>T) = new ReinitProperty(() => Some(i))
+  def apply[T]() = new ReinitProperty[T](() => None)
+}
 
 object Properties extends Properties
 trait Properties {
