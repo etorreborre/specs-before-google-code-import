@@ -26,6 +26,7 @@ object specificationSpecifications extends Specification {
         new beforeAfterSpec,
 		new calculatorSpec,
         new contextSpec,
+        new contextPropertiesSpec,
         new exampleSpec,
         new specificationSpec,
         new sugarSpec,

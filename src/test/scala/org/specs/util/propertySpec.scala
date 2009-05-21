@@ -68,5 +68,12 @@ class propertySpec extends spex.Specification {
       }
     }
   }
-
+  "A reinitializable property" should { 
+    "return its initial value when reinitialized" in {
+      val p = ReinitProperty(0)
+      p() must_== 0
+      p(1).apply() must_== 1
+      p.reinit.apply() must_== 0
+    }
+  }
 }

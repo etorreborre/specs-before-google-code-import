@@ -59,10 +59,13 @@ trait BeforeAfter { outer: BaseSpecification =>
   def doBefore(actions: =>Any) = usingBefore(() => actions)
 
   /** adds a "firstActions" function to the last sus being defined */
-  def doFirst(actions: =>Any) = currentSus.firstActions = stackActions(() => actions, currentSus.firstActions)
-
+  def doFirst(actions: =>Any) = stackFirstActions(currentSus, actions)
+  /** adds "firstActions" to a sus */
+  def stackFirstActions(sus: Sus, actions: =>Any) = sus.firstActions = stackActions(() => actions, sus.firstActions)
   /** adds a "lastActions" function to the last sus being defined */
-  def doLast(actions: =>Any) = currentSus.lastActions = reverseStackActions(() => actions, currentSus.lastActions)
+  def doLast(actions: =>Any) = stackLastActions(currentSus, actions) 
+  /** adds "lastActions" to a sus */
+  def stackLastActions(sus: Sus, actions: =>Any) = sus.lastActions = reverseStackActions(() => actions, currentSus.lastActions)
 
   /** adds a "beforeSpec" function to the current specification */
   def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => actions, beforeSpec)
