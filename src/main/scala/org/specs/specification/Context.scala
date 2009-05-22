@@ -38,7 +38,8 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** 
    * adds a "before" function to the last sus being defined 
    */
-  private def usingBefore(actions: () => Any) = currentSus.before = stackActions(actions, currentSus.before)
+  private def usingBefore(actions: () => Any) = stackBeforeActions(currentSus, actions)
+  def stackBeforeActions(sus: Sus, actions: () => Any) = sus.before = stackActions(actions, sus.before)
   
   /** @return a function with actions being executed after the previous actions. */
   private def stackActions(actions: () => Any, previousActions: Option[() => Any]) = {

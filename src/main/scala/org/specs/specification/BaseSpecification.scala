@@ -130,12 +130,11 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   implicit def specify(desc: String): Sus = {
     addSus(new Sus(desc, this))
   }
-  private def addSus(sus: Sus): Sus = {
+  private[specs] def addSus(sus: Sus): Sus = {
     systems = systems:::List(sus)
     if (this.isSequential)
       systems.last.setSequential
     systems.last
-
   }
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
