@@ -1,10 +1,11 @@
 package org.specs.specification
+import org.specs.util.ReinitProperty
 import scala.collection.mutable.ListBuffer
 import org.specs.util.ReinitProperty
 
-trait ContextProperties { this: BeforeAfter with BaseSpecification =>
-  private[specification] val exampleProperties: ListBuffer[ReinitProperty[_]] = new ListBuffer[ReinitProperty[_]] 
-  private[specification] val susProperties: ListBuffer[ReinitProperty[_]] = new ListBuffer[ReinitProperty[_]] 
+trait ContextProperties extends BaseSpecification { this: BeforeAfter =>
+  private val exampleProperties = new ListBuffer[ReinitProperty[_]]
+  private val susProperties = new ListBuffer[ReinitProperty[_]]
   def exampleProp[T](t: T) = { 
     val p = ReinitProperty(t)
     exampleProperties.append(p)
@@ -15,6 +16,10 @@ trait ContextProperties { this: BeforeAfter with BaseSpecification =>
     susProperties.append(p)
     p
   }
-  doBeforeSpec(systems.foreach { sus => stackFirstActions(sus, susProperties.foreach(_.reinit)) })
-  doBefore(exampleProperties.foreach(_.reinit))
+  override def addSus(sus: Sus): Sus = {
+    exampleProperties.foreach { p => stackBeforeActions(sus, () => p.reinit) }
+    susProperties.foreach { p => stackFirstActions(sus, p.reinit) }
+    super.addSus(sus)
+  }
+
 }
