@@ -7,6 +7,7 @@ trait ContextProperties extends BaseSpecification { this: BeforeAfter =>
   implicit def toExamplePropertyBeforeExample[T](t: =>T) = new ExamplePropertyBeforeExample(t)
   class ExamplePropertyBeforeExample[T](t: =>T) {
     def beforeEx = exampleProp(t)
+    def beforeExample = beforeEx
   }
   implicit def toSusPropertyBeforeExample[T](t: =>T) = new SusPropertyBeforeSus(t)
   class SusPropertyBeforeSus[T](t: =>T) {
@@ -16,12 +17,18 @@ trait ContextProperties extends BaseSpecification { this: BeforeAfter =>
   private val susProperties = new ListBuffer[ReinitProperty[_]]
   def exampleProp[T](t: T) = { 
     val p = ReinitProperty(t)
-    exampleProperties.append(p)
+    if (!systems.isEmpty)
+      stackBeforeActions(currentSus, () => p.reinit)
+    else
+      exampleProperties.append(p)
     p
   }
   def susProp[T](t: T) = { 
     val p = ReinitProperty(t)
-    susProperties.append(p)
+    if (!systems.isEmpty)
+      stackFirstActions(currentSus, p.reinit)
+    else
+      susProperties.append(p)
     p
   }
   override def addSus(sus: Sus): Sus = {
@@ -29,5 +36,4 @@ trait ContextProperties extends BaseSpecification { this: BeforeAfter =>
     susProperties.foreach { p => stackFirstActions(sus, p.reinit) }
     super.addSus(sus)
   }
-
 }
