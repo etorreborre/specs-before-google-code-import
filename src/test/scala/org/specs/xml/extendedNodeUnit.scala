@@ -23,6 +23,7 @@ import org.specs.xml.ExtendedNode._
 import org.specs.xml.NodeFunctions._
 import scala.xml.NodeSeq._
 import scala.xml._
+import java.lang.UnsupportedOperationException
 
 class extendedNodeUnit extends SpecificationWithJUnit {
   "An isSpaceNode function" should {
@@ -35,6 +36,9 @@ class extendedNodeUnit extends SpecificationWithJUnit {
     "return true for a node containing a newline and spaces" in {
       <a>
         </a>.child.last.isSpaceNode mustBe true
+    }
+    "not fail with a Group" in {
+      Group(<a/><b/>).isSpaceNode must not throwA(new UnsupportedOperationException)
     }
   }
 
