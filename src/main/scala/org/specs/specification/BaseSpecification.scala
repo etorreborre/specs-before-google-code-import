@@ -55,7 +55,7 @@ import org.specs.execute._
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListener with Tagged 
+trait BaseSpecification extends SpecificationSystems with ExampleLifeCycle with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification { outer =>
 
   /** description of the specification */
@@ -115,31 +115,6 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
    */
   implicit def declare(d: String): BaseSpecification = { name = d; this }
 
-  /** list of systems under test */
-  var systems : List[Sus] = Nil
-
-  /**
-   * implicit definition allowing to declare a new system under test described by a string <code>desc</code><br>
-   * Usage: <code>"my system under test" should {}</code><br>
-   * Alternatively, it could be created with:
-   * <code>specify("my system under test").should {}</code>
-   */
-  implicit def specify[S](context: SystemContext[S], desc: String) : Sus = {
-    addSus(new SusWithContext(context, desc, this))
-  }
-  implicit def specify(desc: String): Sus = {
-    addSus(new Sus(desc, this))
-  }
-  private[specs] def addSus(sus: Sus): Sus = {
-    systems = systems:::List(sus)
-    if (this.isSequential)
-      systems.last.setSequential
-    systems.last
-  }
-
-  /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
-  protected[this] def currentSus = if (!systems.isEmpty && !systems.last.isSpecified) systems.last else specify("specifies")
-
   /** Return all the systems for this specification, including the ones from the sub-specifications (recursively). */
   def allSystems: List[Sus] = {
     systems ::: subSpecifications.foldRight(Nil: List[Sus]) { (s, result) => s.allSystems ::: result }
@@ -170,16 +145,6 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
    */
   def lastExample: Option[Example] = example
 
-  /**
-   * add a textual complement to the sus verb.
-   * For example, it is possible to declare:
-   * <code>"the system" should provide {...}</code>
-   * if the following function is declared:
-   * <code>def provide = addToSusVerb("provide")</code>
-   */
-  def addToSusVerb(complement: String) = new Function1[Example, Example] {
-    def apply(e: Example) = { currentSus.verb += " " + complement; e }
-  }
   /**
    * utility method to track the last example list being currently defined.<br>
    * It is either the list of examples associated with the current sus, or
@@ -291,6 +256,45 @@ trait BaseSpecification extends ExampleLifeCycle with ExampleExpectationsListene
   override def taggedComponents = this.subSpecifications ++ this.systems
   
   override def toString = name
+}
+/**
+ * This trait abstracts the building and storing of the systems of a Specification.
+ */
+trait SpecificationSystems { this: BaseSpecification =>
+  /** list of systems under test */
+  var systems : List[Sus] = Nil
+
+  /**
+   * implicit definition allowing to declare a new system under test described by a string <code>desc</code><br>
+   * Usage: <code>"my system under test" should {}</code><br>
+   * Alternatively, it could be created with:
+   * <code>specify("my system under test").should {}</code>
+   */
+  implicit def specify[S](context: SystemContext[S], desc: String) : Sus = {
+    addSus(new SusWithContext(context, desc, this))
+  }
+  implicit def specify(desc: String): Sus = {
+    addSus(new Sus(desc, this))
+  }
+  private[specs] def addSus(sus: Sus): Sus = {
+    systems = systems:::List(sus)
+    if (this.isSequential)
+      systems.last.setSequential
+    systems.last
+  }
+
+  /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
+  protected[this] def currentSus = if (!systems.isEmpty && !systems.last.isSpecified) systems.last else specify("specifies")
+  /**
+   * add a textual complement to the sus verb.
+   * For example, it is possible to declare:
+   * <code>"the system" should provide {...}</code>
+   * if the following function is declared:
+   * <code>def provide = addToSusVerb("provide")</code>
+   */
+  def addToSusVerb(complement: String) = new Function1[Example, Example] {
+    def apply(e: Example) = { currentSus.verb += " " + complement; e }
+  }
 }
 /**
  * This trait adds the possibility to declare an included specification as "linked" in order to 
