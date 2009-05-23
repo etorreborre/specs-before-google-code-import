@@ -3,7 +3,7 @@ import org.specs.util.ReinitProperty
 import scala.collection.mutable.ListBuffer
 import org.specs.util.ReinitProperty
 
-trait ContextProperties extends BaseSpecification { this: BeforeAfter =>
+trait ContextProperties extends SpecificationSystems { this: BeforeAfter with BaseSpecification =>
   implicit def toExamplePropertyBeforeExample[T](t: =>T) = new ExamplePropertyBeforeExample(t)
   class ExamplePropertyBeforeExample[T](t: =>T) {
     def beforeEx = exampleProp(t)
