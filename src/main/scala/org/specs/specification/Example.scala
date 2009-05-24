@@ -254,7 +254,7 @@ class ExampleExecution(example: Example, val expectations: () => Any) {
   }
   /** execute the example, setting a flag to make sure that it is only executed once */
   def execute = {
-    if (!executed){
+    if (!executed) {
       toRun()
       executed = true
     }
