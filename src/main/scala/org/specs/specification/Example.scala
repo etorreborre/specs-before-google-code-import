@@ -125,7 +125,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
 
   /** execute the example, checking the expectations. */
-  def execute: Unit =  execution.execute
+  def execute = cycle.executeExample(this)
 
   def before = {}
   def after = {}
@@ -194,11 +194,11 @@ object ExampleDescription {
 class ExampleExecution(example: Example, val expectations: () => Any) {
   /** function containing the expectations to be run */
   private var toRun: () => Any = () => {
-      if (example.isAccepted) {
-        execution()
-        while (!example.cycle.until) execution()
-      } else
-        example.addSkipped(new SkippedException("not tagged for execution"))
+    if (example.isAccepted) {
+      execution()
+      while (!example.cycle.until) execution()
+    } else
+      example.addSkipped(new SkippedException("not tagged for execution"))
   }
 
   /** flag used to memorize if the example has already been executed once. In that case, it will not be re-executed */

@@ -43,10 +43,11 @@ statistics = false
 finalStatisticsOnly = true
 colorize = true
 examplesWithoutExpectationsMustBePending = false
+oneSpecInstancePerExample = false
 """
       configuration.addFile("configuration.properties", props)
       val c = configuration.getConfiguration("configuration.properties")
-      (c.stacktrace, c.statistics, c.examplesWithoutExpectationsMustBePending).foreach(_ must beFalse)
+      (c.stacktrace, c.statistics, c.examplesWithoutExpectationsMustBePending, c.oneSpecInstancePerExample).foreach(_ must beFalse)
       (c.failedAndErrorsOnly, c.finalStatisticsOnly, c.colorize).foreach(_ must beTrue)
     }
   }

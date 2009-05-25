@@ -37,6 +37,8 @@ trait Configuration extends ConfigurationFactory {
   def colorize = false
   /** this value controls if examples without expectations should be marked as PENDING examples */
   def examplesWithoutExpectationsMustBePending = true
+  /** this value controls if examples should be executed in a separate specification instance to avoid side effects */
+  def oneSpecInstancePerExample = true
 }
 trait ConfigurationFactory extends FileSystem {
   /** @return the default configuration class */
@@ -71,6 +73,7 @@ trait ConfigurationFactory extends FileSystem {
         override def finalStatisticsOnly = boolean(properties, "finalStatisticsOnly", super.finalStatisticsOnly)
         override def colorize = boolean(properties, "colorize", super.colorize)
         override def examplesWithoutExpectationsMustBePending = boolean(properties, "examplesWithoutExpectationsMustBePending", super.examplesWithoutExpectationsMustBePending)
+        override def oneSpecInstancePerExample = boolean(properties, "oneSpecInstancePerExample", super.oneSpecInstancePerExample)
       })
     }
     catch {
