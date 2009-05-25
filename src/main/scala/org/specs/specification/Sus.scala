@@ -174,7 +174,12 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
       firstActions.map(_.apply)
     before.foreach {_.apply()}
   }
-  
+  /** forwards the call to the "parent" cycle */
+  override def executeExample(ex: Example): this.type = { 
+    parent.executeExample(ex) 
+    this
+  }
+
   /** forwards the call to the "parent" cycle */
   override def beforeTest(ex: Example) = { parent.beforeTest(ex) }
 
