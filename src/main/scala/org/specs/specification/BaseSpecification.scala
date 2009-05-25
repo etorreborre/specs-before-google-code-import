@@ -55,7 +55,7 @@ import org.specs.execute._
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait BaseSpecification extends SpecificationSystems with ExampleLifeCycle with ExampleExpectationsListener with Tagged 
+trait BaseSpecification extends SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification { outer =>
 
   /** description of the specification */
