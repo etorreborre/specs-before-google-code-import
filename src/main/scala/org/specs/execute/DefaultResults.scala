@@ -23,9 +23,9 @@ import scala.collection.mutable.ListBuffer
  * Default implementation for the HasResults trait using lists.
  */
 trait DefaultResults extends HasResults {
-  private val thisFailures: ListBuffer[FailureException] = new ListBuffer
-  private val thisErrors: ListBuffer[Throwable] = new ListBuffer
-  private val thisSkipped: ListBuffer[SkippedException] = new ListBuffer
+  protected val thisFailures: ListBuffer[FailureException] = new ListBuffer
+  protected val thisErrors: ListBuffer[Throwable] = new ListBuffer
+  protected val thisSkipped: ListBuffer[SkippedException] = new ListBuffer
   
   /**
    * reset the results to no issues.
@@ -48,4 +48,13 @@ trait DefaultResults extends HasResults {
   def errors: List[Throwable] = thisErrors.toList
   /** @return the list of skipped */
   def skipped: List[SkippedException] = thisSkipped.toList
+  /** copy the results of another HasResult object */
+  override def copyResults(other: HasResults): this.type = {
+    reset()
+    other.failures.foreach(addFailure(_))
+    other.errors.foreach(addError(_))
+    other.skipped.foreach(addSkipped(_))
+    this
+  }
+  
 }

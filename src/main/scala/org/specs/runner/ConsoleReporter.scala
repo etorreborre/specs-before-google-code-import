@@ -201,7 +201,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportExample(example: Example, padding: String) = {
     def status(example: Example) = {
-      if (example.errors.size + example.failures.size > 0)
+      if (example.hasFailureOrErrors)
         failureColored("x")
       else if (example.skipped.size > 0)
         skipColored("o")

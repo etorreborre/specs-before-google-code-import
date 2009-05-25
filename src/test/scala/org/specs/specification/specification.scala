@@ -29,6 +29,7 @@ object specificationSpecifications extends Specification {
         new contextPropertiesSpec,
         new exampleSpec,
         new specificationSpec,
+        new specificationExecutorSpec,
         new sugarSpec,
 		new taggedSpec,
 	    new timerSpecificationSpec

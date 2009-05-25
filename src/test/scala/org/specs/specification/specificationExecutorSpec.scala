@@ -1,20 +1,20 @@
 package org.specs.specification
 
 class specificationExecutorSpec extends spex.Specification {
-  "A specification executor find method" should {
-    val executor = new SpecificationExecutor(spec)
-    "return None if no example with the same description exists in a specification" in {
-      executor.find(spec, new Example("something", this)) must beNone 
-    }
-  }
   "A specification executor" should {
-    val executor = new SpecificationExecutor(spec)
-    "execute the example of a specification" in {
-      executor.execute(spec.examples(1))
+    val executor = spec 
+    "have a cloneSpecification method creating a new instance of a given specification" in {
+      val c = getClass.getClassLoader.loadClass("org.specs.specification.spec$").newInstance
+      c must notBeNull
+      executor.cloneSpecification must be some
+    }
+    "execute a specification by cloning it and executing example by example" in {
+      executor.executeExample(spec.examples(1))
       spec.examples(1).failures must be empty
     }
   }
-  object spec extends spex.Specification {
+}
+object spec extends spex.Specification {
     var i = 0
     "sus1" should {
       "ex1" in { i must_== 0; i = i + 1 }
@@ -25,4 +25,5 @@ class specificationExecutorSpec extends spex.Specification {
       "ex2" in { addExpectation }
     }
   }
-}
+
+

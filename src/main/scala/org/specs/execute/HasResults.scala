@@ -67,6 +67,8 @@ trait HasResults {
   def hasIssues = !issues.isEmpty
   /** @return true if there are no issues */
   def isOk = issues.isEmpty
+  /** copy the results of another HasResult object */
+  def copyResults(other: HasResults): this.type = this
 }
 object Status extends Enumeration("success", "failure", "error", "skipped", "info") {
   type Status = Value
