@@ -24,5 +24,36 @@ object specificationWithChangedConfiguration extends spex.Specification {
     "be incremented by the first example" in { i must_== 1 }
   }
 }
+object specificationWithMockito extends spex.Specification {
+  var l = mock[java.util.List[String]]
+  val d = new CalledInOrderMatcher      
+  "When using the Mockito trait" should {
+    "mocks should be setup ok" in { 
+      l.get(0) returns "hello"
+      l.get(0) must_== "hello"
+    }
+  }
+}
+object specificationWithANestedSpecification extends spex.Specification {
+  "When executing a specification with a nested spec, there" should {
+    "be no instantiation issue" in { 0 must_== 0 }
+  }
+  object s1 extends spex.Specification {
+    0 must_== 0
+  }
+  include(s1)
+}
+object specificationWithANestedCaseClassSpecification extends spex.Specification {
+  "When executing a specification with a case spec, there" should {
+    "be no instantiation issue" in { 0 must_== 0 }
+  }
+  case class caseClassSpecification() extends spex.Specification {
+    "When executing a specification with a case spec, there" should {
+      "be no instantiation issue" in { 0 must_== 0 }
+    }
+  }
+  include(new caseClassSpecification)
+}
+
 
 

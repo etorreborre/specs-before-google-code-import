@@ -116,9 +116,9 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
     }
   }
   def shared = new SystemContext[SpecificationWithSharedContext] {
-    def newSystem = SpecificationWithSharedContext()
+    def newSystem = new SpecificationWithSharedContext
   }
-  case class SpecificationWithSystemContext() extends Specification with SystemContexts {
+  class SpecificationWithSystemContext extends Specification with SystemContexts {
     var system1: System = _
     case class System() {
       var counter = 0
@@ -149,11 +149,11 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
     }
   }
   def systemContexts = new SystemContext[SpecificationWithSystemContext] {
-    def newSystem = SpecificationWithSystemContext()
+    def newSystem = new SpecificationWithSystemContext()
   }
 
   var executedContexts: List [String] = Nil
-  case class SpecificationWithSystemContextAndSharedExamples() extends Specification with SystemContexts {
+  class SpecificationWithSystemContextAndSharedExamples extends Specification with SystemContexts {
     case class System()
     case class NamedContext(name: String) extends SystemContext[System] {
       def newSystem = System()
@@ -172,6 +172,6 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
     }
   }
   def sharedExamples = new SystemContext[SpecificationWithSystemContextAndSharedExamples] {
-    def newSystem = SpecificationWithSystemContextAndSharedExamples()
+    def newSystem = new SpecificationWithSystemContextAndSharedExamples()
   }
 }

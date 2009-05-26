@@ -125,7 +125,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
 
   /** execute the example, checking the expectations. */
-  def execute = cycle.executeExample(this)
+  def execute = if (!execution.executed) cycle.executeExample(this)
 
   def before = {}
   def after = {}
@@ -159,6 +159,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   /** @return the example description */
   override def toString = description.toString
 
+  def executeThis = execution.execute
   /** reset in order to be able to run the example again */
   def resetForExecution: this.type = {
     execution.resetForExecution
@@ -202,8 +203,7 @@ class ExampleExecution(example: Example, val expectations: () => Any) {
   }
 
   /** flag used to memorize if the example has already been executed once. In that case, it will not be re-executed */
-  private[this] var executed = false
-
+  private[specification] var executed = false
   val execution = () => {
     var failed = false
     // try the "before" methods. If there is an exception, add an error and return the current example

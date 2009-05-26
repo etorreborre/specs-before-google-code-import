@@ -38,14 +38,67 @@ object Classes {
    */
   def createObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
     try {
-     return Some(getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[T])
+      val c = loadClass(className, printMessage, printStackTrace)
+      return c.map(_.newInstance.asInstanceOf[T])
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not load class " + className)
+        if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not instantiate class " + className)
         if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
       }
     }
     return None
+  }
+  /**
+   * Load a class, given the class name
+   */
+  private[util] def loadClass(className: String, printMessage: Boolean, printStackTrace: Boolean): Option[Class[_]] = {
+    try {
+      return Some(getClass.getClassLoader.loadClass(className))
+    } catch {
+      case e => {
+        if (printMessage || System.getProperty("debugLoadClass") != null) scala.Console.println("Could not load class " + className)
+        if (printStackTrace || System.getProperty("debugLoadClass") != null) e.printStackTrace()
+      }
+    }
+    return None
+  }
+  /**
+   * Try to create an instance of a given class by using whatever constructor is available
+   * and trying to instantiate the first parameter recursively if there is a parameter for that constructor.
+   * 
+   * This is useful to instantiate nested classes which are referencing their outer class in their constructor
+   */
+  def tryToCreateObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
+    loadClass(className, printMessage, printStackTrace) match {
+      case None => None
+      case Some(c: Class[_]) => {
+        try {
+          val constructors = c.getDeclaredConstructors.toList
+          if (constructors.isEmpty)
+            None
+          else if (constructors.toList(0).getParameterTypes.isEmpty)
+            Some(c.newInstance)
+          else if (constructors.toList(0).getParameterTypes.size == 1) {
+            val outerClassName = getOuterClassName(c)
+            tryToCreateObject[Object](outerClassName, true, true).map(constructors(0).newInstance(_).asInstanceOf[T])
+          }
+          else
+            None
+        } catch {
+          case e => {
+            if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not instantiate class " + className)
+            if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
+            return None
+          }
+        }
+      }
+    }
+  }
+  /**
+   * @return the outer class name for a given class
+   */
+  def getOuterClassName(c: Class[_]): String = {
+    c.getDeclaredConstructors.toList(0).getParameterTypes.toList(0).getName
   }
   /**
    * @return the class name without the package name
