@@ -49,6 +49,7 @@ package org.specs.literate
 class LiterateSpecification extends Specification with LiterateBaseSpecification with LiterateSpecificationLinks 
       with LiterateDataTables with LiterateForms with LiterateProperties with LiterateShortcuts {
   setSequential()
+  oneSpecInstancePerExample = false
 
   def this(n: String) = { this(); name = n; description = n; this }
 

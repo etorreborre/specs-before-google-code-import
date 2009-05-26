@@ -24,7 +24,7 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
   import java.util.List
   val m1 = mock[List[String]]
   val m2 = mock[List[String]]
-  val d: CalledMatcher = new CalledInOrderMatcher      
+  val d = new CalledInOrderMatcher      
   "A mock call" should {
     "change its verification mode when applied one of the times, atLeast,... methods" in {
       (m1.get(0) on m1).times(2).verifInOrderMode.toString must_== org.mockito.Mockito.times(2).toString

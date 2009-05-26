@@ -18,6 +18,7 @@
  */
 package org.specs.util
 import org.specs.util.Classes._
+import org.specs.specification.BaseSpecification
 
 class classSpec extends spex.Specification {
   "the class name of a full name with package should only return the last name" in {
@@ -32,5 +33,12 @@ class classSpec extends spex.Specification {
   }
   "the class name of a String should be String" in {
     getClassName("1") must_== "String"
+  }
+  "A tryToCreateObject function" should {
+    "try to create an instance using the first available constructor" in {
+      class spec extends spex.Specification
+      val s = new spec
+      tryToCreateObject[BaseSpecification](s.getClass.getName, true, true) must not be none
+    }
   }
 }
