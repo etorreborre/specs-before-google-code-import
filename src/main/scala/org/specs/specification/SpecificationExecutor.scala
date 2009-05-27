@@ -18,8 +18,9 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
   private lazy val specsExamples = this.examples
   /** execute an example by cloning the specification and executing the cloned example */
   override def executeExample(example: Example): this.type = {
-    if (oneSpecInstancePerExample) {
-      if (specsExamples.contains(example)) {
+    var executed = false 
+    try {
+      if (oneSpecInstancePerExample && specsExamples.contains(example)) {
         val i  = specsExamples.indexOf(example)
         cloneSpecification match {
           case None => example.executeThis
@@ -27,13 +28,14 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
             val cloned = s.examples(examples.indexOf(example))
             cloned.executeThis
             example.copyResults(cloned)
+            executed = true
           }
         }
       }
-    }
-    else { 
+    } catch { case _ => }
+    if (!executed)
       example.execution.execute
-    }
+    
     this
   }
   /** @return a clone of the specification */

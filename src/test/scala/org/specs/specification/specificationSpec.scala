@@ -144,6 +144,7 @@ object advancedFeatures extends SpecificationWithSamples {
         }
       }
       object compositeSpec extends TestSpec with SharedExamples {
+        oneSpecInstancePerExample = false
         "A system under test" should { "share examples with another spec" in sharedExamples }
       }
       compositeSpec.description must_== "compositeSpec"
@@ -201,6 +202,7 @@ trait SpecificationWithSamples extends Specification {
     }
   }
   case class oneEx(behaviours: List[(that.Value)]) extends TestSpec {
+    def this() = this(Nil)
     "This system under test" can {
       "have example 1 ok" in {
         expectations(behaviours).foreach { _.apply }
