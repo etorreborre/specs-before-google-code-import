@@ -98,6 +98,12 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     addExample(ex)
     ex
   }
+  def copyExecutionResults(other: Example) = {
+    this.copyResults(other)
+    this.expectationsNumber = other.expectationsNumber
+    this.subExs = other.subExs
+    this.execution.executed = true
+  }
 
   /** @return the subexamples, executing the example if necessary */
   def subExamples = {execute; subExs}

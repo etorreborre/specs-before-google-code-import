@@ -24,7 +24,6 @@ import org.specs.Sugar._
 
 class xmlRunnerUnit extends SpecificationWithJUnit with DataTables with Html {
   override def htmlDir = "target"
-
   "An xml runner" should {
     "create an xml file in the default directory if nothing is specified" in {
        xRunner.reportSpecs
