@@ -23,6 +23,8 @@ import org.specs._
 import org.specs.runner._
 
 class beforeAfterSpec extends SpecificationWithJUnit {
+  oneSpecInstancePerExample = false
+
   "A specification with before clauses" should {
     "have each example using the doBefore method before being executed" in {
       doBeforeExample.execute
@@ -36,12 +38,14 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "be executed even if the doBefore clause is not declared inside a sus" in {
       object badSpec extends Specification {
+        oneSpecInstancePerExample = false
         doBefore {}
       }
       badSpec.isOk must beTrue
     }
     "stack the doBefore actions by default" in {
       object s extends Specification with MockOutput {
+        oneSpecInstancePerExample = false
         var i = ""
         "this system" should { 
           doBefore(i += "a") 
@@ -65,6 +69,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "work even if the doAfter clause is not declared inside a sus" in {
       object badSpec extends Specification {
+        oneSpecInstancePerExample = false
         doAfter {}
       }
       badSpec.isOk must beTrue
@@ -139,6 +144,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
 }
 
 trait beforeAfterSpecification extends Specification with Console with MockOutput with Contexts {
+  oneSpecInstancePerExample = false
   def execute = { systems = Nil; executeSpec }
   def executeSpec
   override val specs = List(this)
