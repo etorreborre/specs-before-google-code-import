@@ -28,6 +28,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
             val cloned = s.examples(examples.indexOf(example))
             cloned.executeThis
             example.copyResults(cloned)
+            example.expectationsNumber = cloned.expectationsNumber 
             executed = true
           }
         }
