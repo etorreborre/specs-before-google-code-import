@@ -80,7 +80,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   def description = exampleDescription.toString
 
   /** number of <code>Assert</code> objects which refer to that Example */
-  private var expectationsNumber = 0
+  protected[specification] var expectationsNumber = 0
 
   /** @return the number of expectations, executing the example if necessary */
   def expectationsNb = { execute; expectationsNumber }

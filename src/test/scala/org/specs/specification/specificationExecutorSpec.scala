@@ -7,7 +7,18 @@ class specificationExecutorSpec extends spex.Specification {
       this.cloneSpecification must be some
     }
   }
-  include(specificationWithASharedVariable, specificationWithChangedConfiguration)
+  "A executed specification, with one spec instance per example" should {
+    "mention the right number of expectations" in {
+      specificationWithASharedVariable.failures // execute the specification
+      val example = specificationWithASharedVariable.examples(0)
+      example.expectationsNb must_== 1
+    }
+  }
+  include(specificationWithASharedVariable, 
+          specificationWithChangedConfiguration,
+          specificationWithMockito,
+          specificationWithANestedSpecification,
+          specificationWithANestedCaseClassSpecification)
 }
 object specificationWithASharedVariable extends spex.Specification {
   var i = 0
