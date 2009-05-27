@@ -222,13 +222,13 @@ trait OutputReporter extends Reporter with Output {
         case f: FailureException => ""
         case e => e.getClass.getName + ": "
       }
-	    example.skipped.toList ::: example.failures.toList ::: example.errors.toList foreach { f: Throwable =>
-	      if (f.getMessage != null)
-	        println(padding + "  " + errorType(f) + f.getMessage.replaceAll("\n", "\n" + padding + "  ") + parens(f))
-	      else
-	        println(padding + errorType(f) + parens(f))
-	    }
-	    if (stacktrace() && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
+      example.skipped.toList ::: example.failures.toList ::: example.errors.toList foreach { f: Throwable =>
+	    if (f.getMessage != null)
+	      println(padding + "  " + errorType(f) + f.getMessage.replaceAll("\n", "\n" + padding + "  ") + parens(f))
+	    else
+	      println(padding + errorType(f) + parens(f))
+	  }
+	  if (stacktrace() && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
     }
   }
   /** @return true if the results should be printed

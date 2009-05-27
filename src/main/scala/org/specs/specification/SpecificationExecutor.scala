@@ -13,7 +13,7 @@ import org.specs.util.{ Configuration }
 trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =>
   /** this variable can be changed to allow sharing variables between examples */
   var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
-
+  def shareVariables() = oneSpecInstancePerExample = false
   /** cache the specification examples to avoid querying again and again the specification */
   private lazy val specsExamples = this.examples
   /** execute an example by cloning the specification and executing the cloned example */
@@ -27,8 +27,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
           case Some(s) => {
             val cloned = s.examples(examples.indexOf(example))
             cloned.executeThis
-            example.copyResults(cloned)
-            example.expectationsNumber = cloned.expectationsNumber 
+            example.copyExecutionResults(cloned)
             executed = true
           }
         }

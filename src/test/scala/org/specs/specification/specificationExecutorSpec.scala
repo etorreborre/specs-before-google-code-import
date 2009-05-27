@@ -8,10 +8,19 @@ class specificationExecutorSpec extends spex.Specification {
     }
   }
   "A executed specification, with one spec instance per example" should {
+    "execute examples only once" in {
+      specWithCountedExamples.failures // execute the specification
+      examplesExecutionCounter.nb must_== 2
+    }
     "mention the right number of expectations" in {
       specificationWithASharedVariable.failures // execute the specification
       val example = specificationWithASharedVariable.examples(0)
       example.expectationsNb must_== 1
+    }
+    "include all subexamples" in {
+      specificationWithASharedVariable.failures // execute the specification
+      val example = specificationWithASharedVariable.examples(2)
+      example.subExamples.size must_== 2
     }
   }
   include(specificationWithASharedVariable, 
@@ -20,12 +29,29 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithANestedSpecification,
           specificationWithANestedCaseClassSpecification)
 }
+object specWithCountedExamples extends spex.Specification {
+  "first ex" in {
+    1 must_== 1
+    examplesExecutionCounter.nb += 1
+  }
+  "second ex" in {
+    1 must_== 1
+    examplesExecutionCounter.nb += 1
+  }
+}
 object specificationWithASharedVariable extends spex.Specification {
   var i = 0
   "When executing each example, a shared variable" should {
     "be set to its initial value: 0" in { i must_== 0; i = i + 1 }
     "still be set to its initial value: 0" in { i must_== 0 }
+    "be possibly used in subexamples" >> {
+      "here" >> { i must_== 0 }
+      "there" >> { i must_== 0 }
+    }
   }
+}
+object examplesExecutionCounter {
+  var nb = 0
 }
 object specificationWithChangedConfiguration extends spex.Specification {
   this.oneSpecInstancePerExample = false
