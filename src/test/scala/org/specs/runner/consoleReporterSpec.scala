@@ -28,7 +28,11 @@ import org.specs.util.ExtendedString._
 import org.specs.execute._
 
 class consoleReporterSpec extends SpecificationWithJUnit {
-  "A console reporter" should {
+  include(new reporterSpecification, new consoleTraitSpecification)
+}
+class reporterSpecification extends TestSpecs {
+  shareVariables()
+  "A console reporter" should { clean.before
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
     }
@@ -110,6 +114,8 @@ class consoleReporterSpec extends SpecificationWithJUnit {
       spec.run mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
+}
+class consoleTraitSpecification extends TestSpecs {
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
       val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput
@@ -118,6 +124,7 @@ class consoleReporterSpec extends SpecificationWithJUnit {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
+  shareVariables()
   "A console trait" can { clean.before
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
       runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
@@ -175,6 +182,8 @@ class consoleReporterSpec extends SpecificationWithJUnit {
       runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
     }
   }
+}
+trait TestSpecs extends spex.Specification {
   def runWith(args: String*): List[String] = {
     specRunner.args = args.toArray
     specRunner.reportSpecs
