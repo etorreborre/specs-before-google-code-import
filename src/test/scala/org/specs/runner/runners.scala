@@ -21,6 +21,7 @@ import org.specs._
 
 object runnerSpecifications extends Specification {
     "The Runners specifications" areSpecifiedBy (
+        new consoleReporterSpec,
         new htmlRunnerSpec,
         new junitTestSuiteSpec,
         new notifierSpec,
