@@ -11,14 +11,11 @@ import org.specs.util.{ Configuration }
  * will always return the same examples in the same order
  */
 trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =>
-  /** this variable can be changed to allow sharing variables between examples */
-  var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
-  def shareVariables() = oneSpecInstancePerExample = false
   /** cache the specification examples to avoid querying again and again the specification */
   private lazy val specsExamples = this.examples
   /** execute an example by cloning the specification and executing the cloned example */
   override def executeExample(example: Example): this.type = {
-    var executed = false 
+    var executed = false
     try {
       if (oneSpecInstancePerExample && specsExamples.contains(example)) {
         val i  = specsExamples.indexOf(example)
@@ -40,6 +37,6 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
   }
   /** @return a clone of the specification */
   private[specification] def cloneSpecification = {
-    tryToCreateObject[BaseSpecification](getClass.getName, true, false)
+    tryToCreateObject[BaseSpecification](getClass.getName, false, false)
   }
 }

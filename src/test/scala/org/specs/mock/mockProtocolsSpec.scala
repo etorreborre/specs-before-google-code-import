@@ -22,6 +22,7 @@ import org.specs.matcher._
 import org.specs.Sugar._
 
 class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
+  shareVariables()
   "Mock protocols" should { doBefore { clearExample; button.init() }
    "provide an 'expect oneOf' protocol checking if one call exactly has been made" in {
      var protocol = expect(oneOf) { mock.on; mock.off }

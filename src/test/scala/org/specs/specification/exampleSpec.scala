@@ -24,7 +24,7 @@ import org.specs.util._
 
 class exampleSpec extends SpecificationWithJUnit {
   setSequential()
-  this.oneSpecInstancePerExample = false
+  shareVariables()
   "An example" should {
     "not be executed if not asked for results" in {
       ex.hasBeenExecuted must beFalse
@@ -68,7 +68,7 @@ class exampleSpec extends SpecificationWithJUnit {
     }
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
       object s extends Specification { 
-        this.oneSpecInstancePerExample = false
+        shareVariables()
         "this is a pending example" in {}
       }
       s.skipped must_== List(new SkippedException("PENDING: not yet implemented"))
@@ -77,7 +77,7 @@ class exampleSpec extends SpecificationWithJUnit {
     "has examplesWithoutExpectationsMustBePending=false" in {
       Configuration.config = new Configuration { override val examplesWithoutExpectationsMustBePending = false }
       object s extends Specification { 
-        this.oneSpecInstancePerExample = false
+        shareVariables()
         "this is a pending example" in {} 
       }
       s.skipped must be empty
@@ -85,7 +85,7 @@ class exampleSpec extends SpecificationWithJUnit {
   }
 }
 object copiedExamples extends Specification {
-  this.oneSpecInstancePerExample = false
+  shareVariables()
   var executed = ""
   val e1 = Example(ExampleDescription("description"), this) in { executed = "e1" }
   val e2 = Example(ExampleDescription("description2"), this) in { executed = "e2" }
@@ -93,7 +93,7 @@ object copiedExamples extends Specification {
   e2.execute
 }
 object ex extends Specification {
-  this.oneSpecInstancePerExample = false
+  shareVariables()
   var hasBeenExecuted = false
   var subexample: Example = null
   val testExample = new Example("ex", this) in {
