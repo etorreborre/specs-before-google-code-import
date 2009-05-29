@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.runner._
 
 class fileSystemSpec extends SpecificationWithJUnit {
-  oneSpecInstancePerExample = false
+  shareVariables()
   "A FileSystem" should {
     "list all files in a directory with filePaths()" in {
       fs.filePaths("./src/test/scala/org/specs/io") mustContainMatch "fileSystemSpec"

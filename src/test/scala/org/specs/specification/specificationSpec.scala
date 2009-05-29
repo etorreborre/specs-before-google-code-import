@@ -144,7 +144,7 @@ object advancedFeatures extends SpecificationWithSamples {
         }
       }
       object compositeSpec extends TestSpec with SharedExamples {
-        oneSpecInstancePerExample = false
+        shareVariables()
         "A system under test" should { "share examples with another spec" in sharedExamples }
       }
       compositeSpec.description must_== "compositeSpec"

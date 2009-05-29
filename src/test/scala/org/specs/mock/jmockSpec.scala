@@ -271,7 +271,7 @@ object jmockGoodSpecification extends Mocked {
 }
 
 object jmockBadSpecification extends BadMocked {
-  "The JMocker trait" should {
+  "The JMocker trait" should { 
     "provide a 'one' method failing if no method is called" in {
        expect { one(list).size }
     }
@@ -349,6 +349,7 @@ trait BadMocked extends Mocked {
   }
 }
 trait Mocked extends Specification with JMocker with ExampleLifeCycle with ClassMocker {
+  shareVariables()
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false
@@ -365,6 +366,6 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
     scalaList = mockAs[List[String]]("scalaList")
     list = mock[java.util.List[Object]]
   }
-  override def beforeTest(ex: Example) = createMocks
+  override def beforeTest(ex: Example) = { createMocks }
 }
 

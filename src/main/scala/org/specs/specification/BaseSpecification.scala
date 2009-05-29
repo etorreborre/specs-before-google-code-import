@@ -22,6 +22,7 @@ import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import scala.reflect.Manifest
 import org.specs.execute._
+import org.specs.util.Configuration
 /**
  * This trait provides a structure to a specification.<br>
  * A specification is composed of:<ul>
@@ -56,7 +57,7 @@ import org.specs.execute._
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
 trait BaseSpecification extends SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
-  with HasResults with LinkedSpecification { outer =>
+  with HasResults with LinkedSpecification with SpecificationConfiguration { outer =>
 
   /** description of the specification */
   var description = createDescription(getClass.getName)
@@ -327,4 +328,12 @@ trait LinkedSpecification { this: BaseSpecification =>
    * @return the unlinked specifications
    */
   def unlinkedSpecifications = this.partitionLinkedSpecifications._2 
+}
+trait SpecificationConfiguration { this: BaseSpecification =>
+  private[specification] var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
+  /** 
+   * override this method to use the same specification object to execute Examples, effectively sharing
+   * variables between them. 
+   */
+  def shareVariables() = oneSpecInstancePerExample = false
 }

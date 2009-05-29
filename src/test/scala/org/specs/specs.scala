@@ -36,6 +36,7 @@ object allSpecifications extends Specification {
     formSpecifications,
     ioSpecifications,
     matcherSpecifications,
+    mockSpecifications,
     samplesSpecifications,
 	specificationSpecifications,
     runnerSpecifications,

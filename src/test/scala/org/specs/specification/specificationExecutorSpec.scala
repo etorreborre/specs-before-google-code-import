@@ -54,9 +54,9 @@ object examplesExecutionCounter {
   var nb = 0
 }
 object specificationWithChangedConfiguration extends spex.Specification {
-  this.oneSpecInstancePerExample = false
+  shareVariables()
   var i = 0
-  "When executing each example with oneSpecInstancePerExample = false, a shared variable" should {
+  "When executing each example with shareVariables(), a shared variable" should {
     "be set to its initial value: 0" in { i must_== 0; i = i + 1 }
     "be incremented by the first example" in { i must_== 1 }
   }
