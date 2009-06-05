@@ -72,7 +72,10 @@ The number of invocations can be checked with different methods on the @called@ 
     mockedList.add("one") was called
     mockedList had noMoreCalls
   }.failures.first""" snip it }
-{ >("The mock was called: No interactions wanted") }
+{ execute(it) must (include("The mock was called: No interactions wanted") and 
+    include("Undesired invocation:") and
+    include("list.add(\"two\");"))
+}
 
 </wiki> isSus
 }

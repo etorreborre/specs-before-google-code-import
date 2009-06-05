@@ -258,7 +258,7 @@ trait InteractionMatchers extends ExpectableFactory {
       try { 
         mocker.verifyNoMoreInteractions(m)
       } catch {
-        case e => result = (false, "The method wasn't called anymore", "The mock was called:" + e.getMessage.replace("\n", " "))
+        case e => result = (false, "The method wasn't called anymore", "The mock was called:" + e.getMessage.replace("\n", " ") + e.getCause.getMessage)
       }
       result
     }
