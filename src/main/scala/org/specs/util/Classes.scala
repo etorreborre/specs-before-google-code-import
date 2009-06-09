@@ -18,13 +18,18 @@
  */
 
 package org.specs.util
-
+import org.specs.io.Output
+import org.specs.io.ConsoleOutput
 /**
  * This object provides simple functions to instantiate classes.
  */
-object Classes {
-  
-  /**
+object Classes extends Classes
+
+/**
+ * This trait provides utility functions for classes.
+ */
+trait Classes extends ConsoleOutput {
+    /**
    * Create an instance of a given class.
    */
   def createObject[T](className: String): Option[T] = createObject[T](className, false)
@@ -42,7 +47,7 @@ object Classes {
       return c.map(_.newInstance.asInstanceOf[T])
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not instantiate class " + className)
+        if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className)
         if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
       }
     }
@@ -56,7 +61,7 @@ object Classes {
       return Some(getClass.getClassLoader.loadClass(className))
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugLoadClass") != null) scala.Console.println("Could not load class " + className)
+        if (printMessage || System.getProperty("debugLoadClass") != null) println("Could not load class " + className)
         if (printStackTrace || System.getProperty("debugLoadClass") != null) e.printStackTrace()
       }
     }
@@ -86,7 +91,7 @@ object Classes {
             None
         } catch {
           case e => {
-            if (printMessage || System.getProperty("debugCreateObject") != null) scala.Console.println("Could not instantiate class " + className)
+            if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className)
             if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
             return None
           }
@@ -127,17 +132,5 @@ object Classes {
    * @return the class name without the package name of any object
    */
   def getClassName[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
-}
 
-/**
- * This trait provides utility functions for classes.
- */
-trait Classes {
-  /**
-   * This method is used to determine for example if the JUnit runner is executed from Maven or within Eclipse.
-   * In the first the test case names don't need to have the hashcode example.
-   * 
-   * @return true if the this current piece of code contains name in its stacktrace.
-   */
-  def isExecutedFrom(name: String) = new Exception().getStackTrace().exists(_.toString contains name)
 }

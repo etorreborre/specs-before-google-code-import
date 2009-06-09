@@ -23,7 +23,7 @@ import org.junit.runner.Description
 import org.junit.runner.Description._
 import org.junit.runner.manipulation._
 import org.junit.runner.notification._
-import org.specs.util.Classes
+import org.specs.util.Stacktraces
 
 /**
  * The JUnitSuiteRunner provides a JUnit4 annotation to run <code>JUnitSuite</code> test suites created from specifications
@@ -73,7 +73,7 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
  * If the test is executed from Maven, its description can be simplified and not include
  * the test hashcode.
  */
-trait TestDescription extends Classes {
+trait TestDescription extends Stacktraces {
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /** return true if the current test is executed with Intellij */

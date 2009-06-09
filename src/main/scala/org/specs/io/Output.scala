@@ -35,7 +35,7 @@ trait Output {
   /**
    * flushes the content if necessary
    */
-  def flush()
+  def flush() = {}
 
   /**
    * prints stacktraces

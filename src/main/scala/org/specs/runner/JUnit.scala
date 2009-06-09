@@ -22,7 +22,7 @@ import org.specs.specification._
 import _root_.junit.framework._
 import _root_.org.junit.runner._
 import org.specs.collection.JavaCollectionsConversion._
-import org.specs.util.Classes
+import org.specs.util.Stacktraces
 import org.specs.execute._
 
 /**
@@ -136,7 +136,7 @@ class JUnit4(val specifications: Specification*) extends JUnit {
  * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
  * run the example during the initialization time.
  */
-class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Classes {
+class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Stacktraces {
 
   /**return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
