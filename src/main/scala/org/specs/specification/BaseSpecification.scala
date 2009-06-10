@@ -118,7 +118,11 @@ trait BaseSpecification extends SpecificationSystems with SpecificationExecutor 
 
   /** Return all the systems for this specification, including the ones from the sub-specifications (recursively). */
   def allSystems: List[Sus] = {
-    systems ::: subSpecifications.foldRight(Nil: List[Sus]) { (s, result) => s.allSystems ::: result }
+    systems ::: subSpecifications.flatMap(_.allSystems)
+  }
+  /** Return all the examples for this specification, including the subexamples (recursively). */
+  def allExamples: List[Example] = {
+    systems.flatMap(_.allExamples) ::: subSpecifications.flatMap(_.allExamples)
   }
 
   /**
@@ -257,6 +261,7 @@ trait BaseSpecification extends SpecificationSystems with SpecificationExecutor 
   override def taggedComponents = this.subSpecifications ++ this.systems
   
   override def toString = name
+  
 }
 /**
  * This trait abstracts the building and storing of the systems of a Specification.
