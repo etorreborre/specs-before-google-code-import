@@ -12,7 +12,7 @@ import org.specs.util.{ Configuration }
  */
 trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =>
   /** cache the specification examples to avoid querying again and again the specification */
-  private lazy val specsExamples = this.examples
+  private lazy val specsExamples = this.allExamples
   /** execute an example by cloning the specification and executing the cloned example */
   override def executeExample(example: Example): this.type = {
     var executed = false
@@ -22,7 +22,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
         cloneSpecification match {
           case None => example.executeThis
           case Some(s) => {
-            val cloned = s.examples(examples.indexOf(example))
+            val cloned = s.allExamples(examples.indexOf(example))
             cloned.executeThis
             example.copyExecutionResults(cloned)
             executed = true

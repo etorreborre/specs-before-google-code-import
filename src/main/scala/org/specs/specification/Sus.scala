@@ -84,6 +84,9 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
   /** examples describing the sus behaviour */
   var examples = List[Example]()
 
+  /** Return all the examples for this system, including the subexamples (recursively). */
+  def allExamples = examples.flatMap(_.allExamples)
+  
   /** add an example to the list of examples. */
   def addExample(e: Example) = examples = examples ::: List(e)
   
@@ -166,6 +169,10 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
   /** forwards the call to the "parent" cycle */
   override def until = { parent.until && this.untilPredicate.getOrElse(() => true)() }
 
+  override def setCurrentExample(ex: Option[Example]) = {
+    super.setCurrentExample(ex)
+    parent.setCurrentExample(ex)
+  }
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)

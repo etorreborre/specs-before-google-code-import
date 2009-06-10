@@ -211,8 +211,8 @@ trait SpecificationWithSamples extends Specification {
   }
   case class SpecWithTwoEx(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
     "This system under test" should {
-      "have example 2.1 ok" in { expectations(behaviours1).head.apply }
-      "have example 2.2 ok" in { expectations(behaviours2).last.apply }
+      "have example 2.1 ok" in { expectations(behaviours1).head.apply; () }
+      "have example 2.2 ok" in { expectations(behaviours2).last.apply; () }
     }
   }
   case class twoSystems(behaviours1: List[(that.Value)], behaviours2: List[(that.Value)]) extends TestSpec {
