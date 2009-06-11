@@ -106,13 +106,13 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
 
   /** @return the subexamples, executing the example if necessary */
-  def subExamples = {execute; subExs}
+  def subExamples = subExs
   /** @return this example if it doesn't have subexamples or return the subexamples */
-  def allExamples = {
+  def allExamples: List[Example] = {
     if (subExs.isEmpty)
       List(this)
     else
-        subExs.toList
+      subExs.flatMap(_.allExamples).toList
   }
 
   def doTest[T](expectations: => T) = cycle.executeTest(this, expectations)
@@ -136,12 +136,13 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
   def in(example: =>Example): Unit = {
     cycle.setCurrentExample(Some(this))
-    example
+    execution = new ExampleExecution(this, () => example)
+    execution.execute
     cycle.setCurrentExample(None)
   }
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
-  def >>(example: Example) = in(example)
+  def >>(example: =>Example) = in(example)
 
   /** execute the example, checking the expectations. */
   def execute = if (!execution.executed) cycle.executeExample(this)

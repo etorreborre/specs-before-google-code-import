@@ -29,15 +29,15 @@ class teamCityRunnerRules extends HtmlSpecificationWithJUnit("Team city runner")
   val messages: Property[List[String]] = Property[List[String]](Nil)
   def messageMustBeCreated = clearDetails(runSpec.messages) must contain(message())
   def messagesMustBeCreated = clearDetails(runSpec.messages) must containInOrder(messages())
-
   def runSpec = (new TeamCityRunner(testingSpecification) with MockOutput).reportSpecs
-}
+} 
 object testingSpecification extends Specification("specification name") {
+
   "sus1 description" should {
     "good example" in { true must beTrue }
     "failed example" in { true must beFalse }
     "exception example" in { throw new Error("error") }
-    "sub examples" >> {
+    "sub examples" in {
       "good sub" in { true must beTrue }
       "bad sub1" in { true must beFalse }
       "bad sub2" in { false must beTrue }

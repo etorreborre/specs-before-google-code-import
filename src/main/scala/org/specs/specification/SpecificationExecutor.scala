@@ -22,8 +22,8 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
         cloneSpecification match {
           case None => example.executeThis
           case Some(s) => {
-            val cloned = s.allExamples(examples.indexOf(example))
-            cloned.executeThis
+            val cloned = s.allExamples(i)
+            cloned.execution.execute
             example.copyExecutionResults(cloned)
             executed = true
           }
