@@ -21,25 +21,6 @@ import org.specs.util.Classes
 
 class executionPathSpec extends spex.Specification with Classes {
   shareVariables()
-  "An activation path" should {
-    "have a ::: method to append 2 paths" in {
-      (ActivationPath(List(0, 1)) ::: ActivationPath(List(2, 3))) must_== ActivationPath(List(0, 1, 2, 3)) 
-    }
-    "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      s.childrenNodes(0).childrenNodes(0).childrenNodes(0).pathFromRoot must_== ActivationPath(List(0, 0, 0, 0))
-    }
-    "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      s.childrenNodes(0).childrenNodes(1).childrenNodes(1).pathFromRoot must_== ActivationPath(List(0, 0, 1, 1))
-    }
-  }
-  "An activation node" should {
-    "not be activated if its activation path is empty" in {
-      new ActivationNode(ActivationPath(Nil)).activated must beFalse
-    }
-    "be activated if its activation path is not empty" in {
-      new ActivationNode(ActivationPath(1)).activated must beTrue
-    }
-  }
   val spec = new Specification {
     "this system" should {
       "have one ex" in {
@@ -50,6 +31,25 @@ class executionPathSpec extends spex.Specification with Classes {
         "with one sub21" in { 1 must_== 1 }
         "with one sub22" in { 1 must_== 1 }
       }
+    }
+  }
+  "An activation path" should {
+    "have a ::: method to append 2 paths" in {
+      (ActivationPath(List(0, 1)) ::: ActivationPath(List(2, 3))) must_== ActivationPath(List(0, 1, 2, 3)) 
+    }
+    "have a pathFromRoot method returning the path of the element in the tree of elements" in {
+      spec.childrenNodes(0).childrenNodes(0).childrenNodes(0).pathFromRoot must_== ActivationPath(List(0, 0, 0, 0))
+    }
+    "have a pathFromRoot method returning the path of the element in the tree of elements" in {
+      spec.childrenNodes(0).childrenNodes(1).childrenNodes(1).pathFromRoot must_== ActivationPath(List(0, 0, 1, 1))
+    }
+  }
+  "An activation node" should {
+    "not be activated if its activation path is empty" in {
+      new ActivationNode(ActivationPath(Nil)).activated must beFalse
+    }
+    "be activated if its activation path is not empty" in {
+      new ActivationNode(ActivationPath(1)).activated must beTrue
     }
   }
   "An Example" should {
@@ -118,32 +118,4 @@ trait ActivationTree[T <: ActivationTree[T]] {
 case class ActivationPath(path: List[Int]) {
   def this(i: Int) = this(List(i))
   def :::(other: ActivationPath) = ActivationPath(other.path ::: path)
-}
-case class Ex(label: String) extends ActivationNode {
-  def add(ex: Ex) = addChild(ex)
-}
-case class Sys() extends ActivationNode {
-  val label = "sys"
-  def add(ex: Ex) = addChild(ex)
-}  
-case class Spec() extends ActivationNode {
-  val label = "spec"
-  def add(sys: Sys) = addChild(sys)
-}
-object s extends activatedSpec
-class activatedSpec extends Spec {
-  add(new Sys() {
-    add {
-      new Ex("ex1") {
-        add(new Ex("sub11")) 
-        add(new Ex("sub12")) 
-      }
-    }
-    add {
-      new Ex("ex2") {
-        add(new Ex("sub21")) 
-        add(new Ex("sub22")) 
-      }
-    }
-  })
 }

@@ -12,7 +12,7 @@ class isolatedExamples extends spex.Specification {
       } 
       "b2" in { 
         x += 1 
-        x must_== 4 
+        x must_== 3 
       } 
     } 
     "c" in { 

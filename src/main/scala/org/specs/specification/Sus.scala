@@ -140,28 +140,26 @@ case class Sus(description: String, parent: BaseSpecification) extends Activatio
   def can(ex: =>Example) = { verb = "can"; specifyExamples(ex) }
 
   private def specifyExamples(ex: =>Example) = {
-    execution = () => {
-      parent.setCurrentSus(Some(this))
-      try { ex } catch {
-        case e: SkippedException => skippedSus = Some(e)
-        case FailureException(m) => failedSus = Some(m)
-      }
-      isSpecified = true
-    }
+    setExecution(ex)
     this
   }
 
-  /** alternately there may be no example given yet */
-  def should(noExampleGiven: =>Unit): Unit = { 
-    verb = "should"
+  private def setExecution(a: =>Any): Unit = {
     execution = () => {
       parent.setCurrentSus(Some(this))
+      parent.setCurrentExample(None)
       try { ex } catch {
         case e: SkippedException => skippedSus = Some(e)
         case FailureException(m) => failedSus = Some(m)
       }
       isSpecified = true
+      parent.setCurrentSus(None)
     }
+  }
+  /** alternately there may be no example given yet */
+  def should(noExampleGiven: =>Unit): Unit = { 
+    verb = "should"
+    setExecution(noExampleGiven)
   }
   
   /** @return true if there are only successes */
