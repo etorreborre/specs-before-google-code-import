@@ -8,7 +8,7 @@ class isolatedExamples extends spex.Specification {
       x += 1 
       "b1" in {
         x += 1 
-        x must_== 3 
+        x must_== 3
       } 
       "b2" in { 
         x += 1 
@@ -30,12 +30,12 @@ class isolatedExamples extends spex.Specification {
       } 
       "e2" in { 
         x += 1 
-        x must_== 4 
+        x must_== 3
       } 
     } 
-    "f" in { 
-      x += 1 
-      x must_== 2
-    } 
-  } 
+//    "f" in { 
+//      x += 1 
+//      x must_== 2
+//    } 
+  }
 }

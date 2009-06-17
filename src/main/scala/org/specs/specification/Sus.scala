@@ -148,7 +148,7 @@ case class Sus(description: String, parent: BaseSpecification) extends Activatio
     execution = () => {
       parent.setCurrentSus(Some(this))
       parent.setCurrentExample(None)
-      try { ex } catch {
+      try { a } catch {
         case e: SkippedException => skippedSus = Some(e)
         case FailureException(m) => failedSus = Some(m)
       }

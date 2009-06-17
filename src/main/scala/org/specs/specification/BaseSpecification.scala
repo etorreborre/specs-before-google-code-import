@@ -140,7 +140,6 @@ class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with 
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
   implicit def forExample(desc: String) = {
-    println("creating "+desc +" in "+exampleContainer)
     exampleContainer.createExample(desc, currentLifeCycle)
   }
 

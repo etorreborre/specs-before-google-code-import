@@ -18,8 +18,6 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
     var executed = false
     try {
       if (oneSpecInstancePerExample && specsExamples.contains(example)) {
-        println("parent of" + example+" is"+example.parentNode)
-        println("cycle of" + example+" is"+example.cycle)
         val path  = example.pathFromRoot
         cloneSpecification(path) match {
           case None => example.executeThis

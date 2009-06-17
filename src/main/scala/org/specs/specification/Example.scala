@@ -104,7 +104,6 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   def copyExecutionResults(other: Example) = {
     this.copyResults(other)
     this.expectationsNumber = other.expectationsNumber
-    this.subExs = other.subExs
     this.execution.executed = true
   }
 
@@ -156,7 +155,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   def >>(example: =>Example) = in(example)
 
   /** execute the example, checking the expectations. */
-  def execute = if (!execution.executed) cycle.executeExample(this)
+  def execute = if (!execution.executed && subExamples.isEmpty) cycle.executeExample(this)
 
   def before = {}
   def after = {}
