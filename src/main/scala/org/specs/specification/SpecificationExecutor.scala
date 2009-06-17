@@ -18,25 +18,34 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
     var executed = false
     try {
       if (oneSpecInstancePerExample && specsExamples.contains(example)) {
-        val i  = specsExamples.indexOf(example)
-        cloneSpecification match {
+        val path  = example.pathFromRoot
+        cloneSpecification(path) match {
           case None => example.executeThis
           case Some(s) => {
-            val cloned = s.allExamples(i)
-            cloned.execution.execute
-            example.copyExecutionResults(cloned)
+            val cloned = s.getExample(path)
+            cloned match {
+              case None => throw PathException(path + "not found for " + example)
+              case Some(c) => {
+                c.execution.execute
+                example.copyExecutionResults(c)
+              }
+            }
             executed = true
           }
         }
       }
-    } catch { case _ => }
+    } catch { 
+      case e: PathException => throw e
+      case _ => ()
+    }
     if (!executed)
       example.execution.execute
     
     this
   }
   /** @return a clone of the specification */
-  private[specification] def cloneSpecification = {
+  private[specification] def cloneSpecification(path: ActivationPath) = {
     tryToCreateObject[BaseSpecification](getClass.getName, false, false)
   }
 }
+case class PathException(m: String) extends Exception(m)

@@ -56,8 +56,10 @@ import org.specs.util.Configuration
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-trait BaseSpecification extends SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
+class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification with SpecificationConfiguration { outer =>
+    
+  def this() = this(ActivationPath(List(0)))    
 
   /** description of the specification */
   var description = createDescription(getClass.getName)
@@ -124,7 +126,13 @@ trait BaseSpecification extends SpecificationSystems with SpecificationExecutor 
   def allExamples: List[Example] = {
     systems.flatMap(_.allExamples) ::: subSpecifications.flatMap(_.allExamples)
   }
-
+  /** @return the example for a given Activation path */
+  def getExample(path: ActivationPath): Option[Example] = {
+    path match {
+      case ActivationPath(0 :: i :: rest) if systems.size > i => systems(i).getExample(ActivationPath(rest))
+      case _ => None
+    }
+  }
   /**
    * implicit definition allowing to declare a new example described by a string <code>desc</code><br>
    * Usage: <code>"return 0 when asked for (0+0)" in {...}</code><br>
@@ -155,13 +163,13 @@ trait BaseSpecification extends SpecificationSystems with SpecificationExecutor 
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined
    */
-  protected[this] def exampleContainer: Any {def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example} = {
+  protected[specification] def exampleContainer: Any {def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example} = {
     example match {
       case Some(e) => e
       case None => currentSus
     }
   }
-  protected[this] def currentLifeCycle: ExampleLifeCycle = {
+  protected[specification] def currentLifeCycle: ExampleLifeCycle = {
     example match {
       case Some(e) => e.cycle
       case None => currentSus
@@ -196,7 +204,7 @@ trait BaseSpecification extends SpecificationSystems with SpecificationExecutor 
   /**
    * add examples coming from another specification
    */
-  def addExamples(examples: List[Example]) = currentSus.examples = currentSus.examples ::: examples
+  def addExamples(examples: List[Example]) = currentSus.exampleList = currentSus.exampleList ::: examples
   
   /** @return true if it contains the specification recursively */
   def contains(s: Any): Boolean = {
@@ -283,14 +291,20 @@ trait SpecificationSystems { this: BaseSpecification =>
     addSus(new Sus(desc, this))
   }
   private[specs] def addSus(sus: Sus): Sus = {
-    systems = systems:::List(sus)
+    addChild(sus)
+    systems = systems ::: List(sus)
     if (this.isSequential)
       systems.last.setSequential
-    systems.last
+    sus
   }
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
-  protected[this] def currentSus = if (!systems.isEmpty && !systems.last.isSpecified) systems.last else specify("specifies")
+  protected[this] def currentSus = {
+    sus match {
+      case None => specify("specifies")
+      case Some(s) => s
+    }
+  }
   /**
    * add a textual complement to the sus verb.
    * For example, it is possible to declare:

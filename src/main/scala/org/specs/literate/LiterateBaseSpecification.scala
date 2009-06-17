@@ -20,7 +20,7 @@ package org.specs.literate
 import org.specs.specification._
 import scala.xml._
 
-trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification with WikiFormatter { outer =>
+trait LiterateBaseSpecification extends BaseSpecification with ExpectableFactory with WikiFormatter { outer =>
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e

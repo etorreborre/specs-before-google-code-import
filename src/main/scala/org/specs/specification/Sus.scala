@@ -66,7 +66,7 @@ case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec
 case class LiterateDescription(desc: Node) {
   def toXhtml: NodeSeq = desc
 }
-case class Sus(description: String, parent: BaseSpecification) extends ExampleLifeCycle 
+case class Sus(description: String, parent: BaseSpecification) extends ActivationNode with ExampleLifeCycle 
                                       with Tagged with HasResults {
 
   /** default verb used to define the behaviour of the sus */
@@ -82,13 +82,20 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
     /** @return a String literate description of the sus */
   def literateDescText: String = literateDesc(0).text
   /** examples describing the sus behaviour */
-  var examples = List[Example]()
+  var exampleList = List[Example]()
 
+  def examples = {
+    execute
+    exampleList
+  }
   /** Return all the examples for this system, including the subexamples (recursively). */
   def allExamples = examples.flatMap(_.allExamples)
   
   /** add an example to the list of examples. */
-  def addExample(e: Example) = examples = examples ::: List(e)
+  def addExample(e: Example) = {
+    addChild(e)
+    exampleList = exampleList ::: List(e)
+  }
   
   /** create a new example with a description and add it to the current Sus. */
   def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
@@ -114,11 +121,16 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
   var skippedSus: Option[Throwable] = None
   var failedSus: Option[String] = None
   var isSpecified = false
+  private var execution = () => ()
+  private var executed = false
+  private def execute = if (!executed) {
+    executed = true
+    execution()
+  }
   /** default way of defining the behaviour of a sus */
   def should(ex: =>Example) = {
     verb = "should"
     specifyExamples(ex)
-    isSpecified = true
     this
   }
   /** header for the full sus description: description + " " + verb */
@@ -128,18 +140,28 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
   def can(ex: =>Example) = { verb = "can"; specifyExamples(ex) }
 
   private def specifyExamples(ex: =>Example) = {
-    try { ex } catch {
-      case e: SkippedException => skippedSus = Some(e)
-      case FailureException(m) => failedSus = Some(m)
+    execution = () => {
+      parent.setCurrentSus(Some(this))
+      try { ex } catch {
+        case e: SkippedException => skippedSus = Some(e)
+        case FailureException(m) => failedSus = Some(m)
+      }
+      isSpecified = true
     }
     this
   }
 
   /** alternately there may be no example given yet */
-  def should(noExampleGiven: Unit) = { 
+  def should(noExampleGiven: =>Unit): Unit = { 
     verb = "should"
-    isSpecified = true
-    this 
+    execution = () => {
+      parent.setCurrentSus(Some(this))
+      try { ex } catch {
+        case e: SkippedException => skippedSus = Some(e)
+        case FailureException(m) => failedSus = Some(m)
+      }
+      isSpecified = true
+    }
   }
   
   /** @return true if there are only successes */
@@ -220,5 +242,13 @@ case class Sus(description: String, parent: BaseSpecification) extends ExampleLi
     e.subExs.foreach { subEx => cloned.addExample(this.cloneExample(subEx)) }
     e.copyExecutionTo(cloned)
   }
+  /** @return the example for a given Activation path */
+  def getExample(path: ActivationPath): Option[Example] = {
+    path match {
+      case ActivationPath(i :: rest) => examples(i).getExample(ActivationPath(rest))
+      case _ => None
+    }
+  }
+
 }
 

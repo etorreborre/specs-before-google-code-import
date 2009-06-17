@@ -4,7 +4,7 @@ import org.specs.util.Configuration
 class specificationExecutorSpec extends spex.Specification {
   "A specification executor" should { 
     "have a cloneSpecification method creating a new instance of a given specification" in {
-      this.cloneSpecification must be some
+      this.cloneSpecification(ActivationPath()) must be some
     }
   }
   "A executed specification, with one spec instance per example" should {

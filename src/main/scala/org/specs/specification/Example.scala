@@ -74,7 +74,7 @@ case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc:
     copyExecutionTo(ExampleWithContext(context, exampleDesc, cyc))
   }
 }
-case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends Tagged with DefaultResults {
+case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends ActivationNode with Tagged with DefaultResults {
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   def description = exampleDescription.toString
@@ -89,10 +89,13 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   def addExpectation = { expectationsNumber += 1; this }
 
   /** sub-examples created inside the <code>in</code> method */
-  var subExs = new Queue[Example]
+  private[specification] var subExs = new Queue[Example]
 
   /** add a new sub-example to this example */
-  def addExample(e: Example) = subExs += e
+  def addExample(e: Example) = {
+    addChild(e)
+    subExs += e
+  }
   def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
     val ex = new Example(ExampleDescription(desc), lifeCycle)
     addExample(ex)
@@ -106,7 +109,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
 
   /** @return the subexamples, executing the example if necessary */
-  def subExamples = subExs
+  def subExamples = { createExamples; subExs }
   /** @return this example if it doesn't have subexamples or return the subexamples */
   def allExamples: List[Example] = {
     if (subExs.isEmpty)
@@ -114,7 +117,14 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     else
       subExs.flatMap(_.allExamples).toList
   }
-
+  private var examplesCreation = () => ()
+  private var examplesCreated = false
+  private def createExamples = {
+    if (!examplesCreated) {
+      examplesCreated = true
+      examplesCreation()
+    }
+  }
   def doTest[T](expectations: => T) = cycle.executeTest(this, expectations)
 
   /** encapsulates the expectations to execute */
@@ -135,10 +145,11 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     this
   }
   def in(example: =>Example): Unit = {
-    cycle.setCurrentExample(Some(this))
-    execution = new ExampleExecution(this, () => example)
-    execution.execute
-    cycle.setCurrentExample(None)
+    examplesCreation = () => {
+      cycle.setCurrentExample(Some(this))
+      example
+      cycle.setCurrentExample(None)
+    }
   }
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
@@ -197,6 +208,14 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   def copyExecutionTo[E <: Example](e: E): E = {
     e.execution = new ExampleExecution(e, execution.expectations)
     e
+  }
+  /** @return the example for a given Activation path */
+  def getExample(path: ActivationPath): Option[Example] = {
+    path match {
+      case ActivationPath(Nil) => Some(this)
+      case ActivationPath(i :: rest) if !this.subExamples.isEmpty => this.subExamples(i).getExample(ActivationPath(rest))
+      case _ => None
+    }
   }
 }
 /**
