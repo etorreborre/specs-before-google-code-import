@@ -74,7 +74,7 @@ case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc:
     copyExecutionTo(ExampleWithContext(context, exampleDesc, cyc))
   }
 }
-case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends ActivationNode with Tagged with DefaultResults {
+case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults {
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   def description = exampleDescription.toString
@@ -209,10 +209,10 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     e
   }
   /** @return the example for a given Activation path */
-  def getExample(path: ActivationPath): Option[Example] = {
+  def getExample(path: TreePath): Option[Example] = {
     path match {
-      case ActivationPath(Nil) => Some(this)
-      case ActivationPath(i :: rest) if !this.subExamples.isEmpty => this.subExamples(i).getExample(ActivationPath(rest))
+      case TreePath(Nil) => Some(this)
+      case TreePath(i :: rest) if !this.subExamples.isEmpty => this.subExamples(i).getExample(TreePath(rest))
       case _ => None
     }
   }

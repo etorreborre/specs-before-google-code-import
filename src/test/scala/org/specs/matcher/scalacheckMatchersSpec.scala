@@ -58,8 +58,8 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     }
   }
   "A ScalaCheck property" should {
-    "add new expectations during evaluation if isExpectation is on" in {
-      spec.expectationsNb must be_==(101)
+    "not add new expectations during evaluation if isExpectation is off" in {
+      spec.expectationsNb must be_==(1)
     }
     "add new expectations during evaluation if expectProperties is on (default)" in {
       specWithExpectProperties.expectationsNb must be_==(101)
@@ -72,9 +72,7 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     }
   }
   "Functions" can {
-    "be checked directly, without creating an example, using the verifies operator" in {
-      "startsWith" verifies { (a: String, b: String) => (a+b).startsWith(a) }
-    }
+    "be checked directly, without creating an example, using the verifies operator. startsWith" verifies { (a: String, b: String) => (a+b).startsWith(a) }
   }
 }
 object spec extends Specification with ScalaCheck {

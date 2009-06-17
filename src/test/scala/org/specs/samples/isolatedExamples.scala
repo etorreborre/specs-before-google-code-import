@@ -33,9 +33,9 @@ class isolatedExamples extends spex.Specification {
         x must_== 3
       } 
     } 
-//    "f" in { 
-//      x += 1 
-//      x must_== 2
-//    } 
+    "f" in { 
+      x += 1 
+      x must_== 2
+    } 
   }
 }

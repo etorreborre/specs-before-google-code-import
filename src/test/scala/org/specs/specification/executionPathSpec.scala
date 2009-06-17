@@ -33,23 +33,15 @@ class executionPathSpec extends spex.Specification with Classes {
       }
     }
   }
-  "An activation path" should {
+  "An tree path" should {
     "have a ::: method to append 2 paths" in {
-      (ActivationPath(List(0, 1)) ::: ActivationPath(List(2, 3))) must_== ActivationPath(List(0, 1, 2, 3)) 
+      (TreePath(List(0, 1)) ::: TreePath(List(2, 3))) must_== TreePath(List(0, 1, 2, 3)) 
     }
     "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      spec.childrenNodes(0).childrenNodes(0).childrenNodes(0).pathFromRoot must_== ActivationPath(List(0, 0, 0, 0))
+      spec.systems(0).examples(0).subExamples(0).pathFromRoot must_== TreePath(List(0, 0, 0, 0))
     }
     "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      spec.childrenNodes(0).childrenNodes(1).childrenNodes(1).pathFromRoot must_== ActivationPath(List(0, 0, 1, 1))
-    }
-  }
-  "An activation node" should {
-    "not be activated if its activation path is empty" in {
-      new ActivationNode(ActivationPath(Nil)).activated must beFalse
-    }
-    "be activated if its activation path is not empty" in {
-      new ActivationNode(ActivationPath(1)).activated must beTrue
+      spec.systems(0).examples(1).subExamples(1).pathFromRoot must_== TreePath(List(0, 0, 1, 1))
     }
   }
   "An Example" should {
@@ -68,54 +60,26 @@ class executionPathSpec extends spex.Specification with Classes {
       val sys = spec.systems(0)
       val ex = sys.examples(0)
       val subex = ex.subExamples(1)
-      ex.getExample(ActivationPath(1)) must_==(Some(subex))
+      ex.getExample(TreePath(1)) must_==(Some(subex))
     }
   }
   "A Sus" should {
     "have a getExample method returning the example at a given path" in {
       val sus = spec.systems(0)
-      println("it is "+sus.description)
-      println("it has "+sus.examples)
       val ex = sus.examples(1)
-      sus.getExample(ActivationPath(1)) must_== Some(ex)
+      sus.getExample(TreePath(1)) must_== Some(ex)
     }
   }
   "A specification" should {
-    "be activated by default" in {
-      s.activated must beTrue
-    }
     "have all activation paths set to a subexample" in {
-      spec.pathFromRoot must_== ActivationPath(0)
-      spec.systems(0).pathFromRoot must_== ActivationPath(List(0, 0))
-      spec.systems(0).examples(0).pathFromRoot must_== ActivationPath(List(0, 0, 0))
-      spec.systems(0).examples(0).subExamples(1).pathFromRoot must_== ActivationPath(List(0, 0, 0, 1))
+      spec.pathFromRoot must_== TreePath(0)
+      spec.systems(0).pathFromRoot must_== TreePath(List(0, 0))
+      spec.systems(0).examples(0).pathFromRoot must_== TreePath(List(0, 0, 0))
+      spec.systems(0).examples(0).subExamples(1).pathFromRoot must_== TreePath(List(0, 0, 0, 1))
     }
     "have a getExample method returning the example at a given path" in {
       val subex = spec.systems(0).examples(0).subExamples(1)
       spec.getExample(subex.pathFromRoot) must_== Some(subex)
     }
   }
-}
-class ActivationNode(var activationPath: ActivationPath) extends ActivationTree[ActivationNode] {
-  def this() = this(ActivationPath(List(0)))
-  def activated = !activationPath.path.isEmpty
-  def deactivate = activationPath = ActivationPath(Nil)
-}
-trait ActivationTree[T <: ActivationTree[T]] {
-  private[specification] var childrenNodes: List[T] = Nil
-  private[specification] var parentNode: Option[ActivationTree[T]] = None
-  
-  def pathFromRoot: ActivationPath = parentNode match {
-    case None => new ActivationPath(0)
-    case Some(p) => p.pathFromRoot ::: new ActivationPath(p.childrenNodes.indexOf(this))
-  } 
-    
-  def addChild(t: T) = {
-    childrenNodes = childrenNodes ::: List(t)
-    t.parentNode = Some(this)
-  }
-}
-case class ActivationPath(path: List[Int]) {
-  def this(i: Int) = this(List(i))
-  def :::(other: ActivationPath) = ActivationPath(other.path ::: path)
 }

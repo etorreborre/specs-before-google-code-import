@@ -17,12 +17,11 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.specification
-import org.specs.util.ExtendedString._
 import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import scala.reflect.Manifest
 import org.specs.execute._
-import org.specs.util.Configuration
+import org.specs.util._
 /**
  * This trait provides a structure to a specification.<br>
  * A specification is composed of:<ul>
@@ -56,11 +55,9 @@ import org.specs.util.Configuration
  * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
  * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
  */
-class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
+class BaseSpecification extends TreeNode with SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification with SpecificationConfiguration { outer =>
     
-  def this() = this(ActivationPath(List(0)))    
-
   /** description of the specification */
   var description = createDescription(getClass.getName)
 
@@ -127,9 +124,9 @@ class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with 
     systems.flatMap(_.allExamples) ::: subSpecifications.flatMap(_.allExamples)
   }
   /** @return the example for a given Activation path */
-  def getExample(path: ActivationPath): Option[Example] = {
+  def getExample(path: TreePath): Option[Example] = {
     path match {
-      case ActivationPath(0 :: i :: rest) if systems.size > i => systems(i).getExample(ActivationPath(rest))
+      case TreePath(0 :: i :: rest) if systems.size > i => systems(i).getExample(TreePath(rest))
       case _ => None
     }
   }
@@ -181,14 +178,16 @@ class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with 
 
   /** the afterAllSystems function will be invoked after all systems */
   var afterSpec: Option[() => Any] = None
-
+  private[specification] var executeOneExampleOnly = false
   /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
    */
   override def beforeExample(ex: Example) = {
     super.beforeExample(ex)
-    if (!systems.isEmpty && !systems.first.examples.isEmpty && systems.first.examples.first == ex)
+    if (!executeOneExampleOnly && 
+          !systems.isEmpty && 
+          !systems.first.examples.isEmpty && systems.first.examples.first == ex)
       beforeSpec.map(_.apply)
   }
 
@@ -197,7 +196,8 @@ class BaseSpecification(path: ActivationPath) extends ActivationNode(path) with 
    * last example of the last sus
    */
   override def afterExample(ex: Example) = {
-    if (!systems.isEmpty && !systems.last.examples.isEmpty && systems.last.examples.last == ex)
+    if (!executeOneExampleOnly && 
+          !systems.isEmpty && !systems.last.examples.isEmpty && systems.last.examples.last == ex)
       afterSpec.map(_.apply)
     super.afterExample(ex)
   }

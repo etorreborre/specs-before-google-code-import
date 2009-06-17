@@ -66,7 +66,7 @@ case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec
 case class LiterateDescription(desc: Node) {
   def toXhtml: NodeSeq = desc
 }
-case class Sus(description: String, parent: BaseSpecification) extends ActivationNode with ExampleLifeCycle 
+case class Sus(description: String, parent: BaseSpecification) extends TreeNode with ExampleLifeCycle 
                                       with Tagged with HasResults {
 
   /** default verb used to define the behaviour of the sus */
@@ -241,9 +241,9 @@ case class Sus(description: String, parent: BaseSpecification) extends Activatio
     e.copyExecutionTo(cloned)
   }
   /** @return the example for a given Activation path */
-  def getExample(path: ActivationPath): Option[Example] = {
+  def getExample(path: TreePath): Option[Example] = {
     path match {
-      case ActivationPath(i :: rest) => examples(i).getExample(ActivationPath(rest))
+      case TreePath(i :: rest) => examples(i).getExample(TreePath(rest))
       case _ => None
     }
   }
