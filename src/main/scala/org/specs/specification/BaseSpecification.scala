@@ -22,6 +22,7 @@ import org.specs.SpecUtils._
 import scala.reflect.Manifest
 import org.specs.execute._
 import org.specs.util._
+import org.specs.util.ExtendedString._
 /**
  * This trait provides a structure to a specification.<br>
  * A specification is composed of:<ul>

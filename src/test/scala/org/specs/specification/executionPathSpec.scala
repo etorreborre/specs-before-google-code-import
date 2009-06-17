@@ -17,7 +17,7 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.specification
-import org.specs.util.Classes
+import org.specs.util._
 
 class executionPathSpec extends spex.Specification with Classes {
   shareVariables()
