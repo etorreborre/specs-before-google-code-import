@@ -201,22 +201,13 @@ trait TestSpecs extends spex.Specification {
   def clean = {
     specTwoSystemsRunner.resetOptions()
     specRunner.resetOptions
-    spec.acceptAnyTag
-    spec.resetForExecution
+    taggedSpec.acceptAnyTag
+    taggedSpec.resetForExecution
     specTwoSystems.acceptAnyTag
     specTwoSystems.resetForExecution
     specRunner.messages.clear
   }
-  object spec extends Specification {
-    "this sus" should {
-      ("excluded" in { 1 must_== 1 }).tag("out")
-      ("included" in { 1 must_== 1 }).tag("in")
-      "failed" in { throw new FailureException("failed") }
-      "error" in { throw new java.lang.Error("error") }
-      "skipped" in { skip("skipped") }
-    }
-  }
-  object specRunner extends ConsoleRunner(spec) with MockOutput
+  object specRunner extends ConsoleRunner(taggedSpec) with MockOutput
   object specTwoSystems extends Specification {
     "this is system one" should { "do nothing" in { 1 must_== 1 } }
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
@@ -258,6 +249,15 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
     }
     reportSpecs
     messages
+  }
+}
+object taggedSpec extends Specification {
+  "this sus" should {
+    ("excluded" in { 1 must_== 1 }).tag("out")
+    ("included" in { 1 must_== 1 }).tag("in")
+    "failed" in { fail("failed"); 1 must_== 0 }
+    "error" in { error("error"); 1 must_== 1 }
+    "skipped" in { skip("skipped"); 1 must_== 1 }
   }
 }
 

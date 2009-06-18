@@ -117,11 +117,17 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
       subExs.flatMap(_.allExamples).toList
   }
   private var examplesCreation = () => ()
-  private var examplesCreated = false
+  private[specification] var examplesCreated = false
   private def createExamples = {
     if (!examplesCreated) {
       examplesCreated = true
-      examplesCreation()
+      try {
+        examplesCreation()
+      } catch {
+        case f: FailureException => addFailure(f)
+        case s: SkippedException => addSkipped(s)
+        case t: Throwable => addError(t)
+      }
     }
   }
   def doTest[T](expectations: => T) = cycle.executeTest(this, expectations)
