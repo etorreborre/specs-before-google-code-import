@@ -20,12 +20,12 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
         cloneSpecification match {
           case None => example.executeThis
           case Some(s) => {
-            s.tagWith(this)
             s.executeOneExampleOnly = true
             val cloned = s.getExample(path)
             cloned match {
               case None => throw PathException(path + "not found for " + example)
               case Some(c) => {
+                c.tagWith(this)
                 c.execution.execute
                 example.copyExecutionResults(c)
               }

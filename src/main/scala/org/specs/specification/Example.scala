@@ -102,13 +102,15 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     ex
   }
   def copyExecutionResults(other: Example) = {
-    this.copyResults(other)
+    this.hardCopyResults(other)
+    this.subExs = other.subExs
     this.expectationsNumber = other.expectationsNumber
+    other.childNodes.foreach(this.addChild(_))
     this.execution.executed = true
   }
 
   /** @return the subexamples, executing the example if necessary */
-  def subExamples = { createExamples; subExs }
+  def subExamples = { execute; subExs }
   /** @return this example if it doesn't have subexamples or return the subexamples */
   def allExamples: List[Example] = {
     if (subExs.isEmpty)
@@ -154,18 +156,23 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     this
   }
   def in(example: =>Example): Unit = {
-    examplesCreation = () => {
+    execution = new ExampleExecution(this, () => {
       cycle.setCurrentExample(Some(this))
       example
       cycle.setCurrentExample(None)
-    }
+    })
+//    examplesCreation = () => {
+//      cycle.setCurrentExample(Some(this))
+//      example
+//      cycle.setCurrentExample(None)
+//    }
   }
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
   def >>(example: =>Example) = in(example)
 
   /** execute the example, checking the expectations. */
-  def execute = if (!execution.executed && subExamples.isEmpty) cycle.executeExample(this)
+  def execute = if (!execution.executed) cycle.executeExample(this)
 
   def before = {}
   def after = {}
@@ -175,7 +182,9 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     executed
   }
   protected def skipIfNoExpectations() = {
-    if (this.expectationsNumber == 0 && this.subExs.isEmpty && Configuration.config.examplesWithoutExpectationsMustBePending)
+    if (this.expectationsNumber == 0 && 
+          this.subExs.isEmpty && //this.thisSkipped.isEmpty && this.thisFailures.isEmpty && this.thisErrors.isEmpty && 
+          Configuration.config.examplesWithoutExpectationsMustBePending)
       throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("(specification.Example|LiterateSpecification)")
   }
 

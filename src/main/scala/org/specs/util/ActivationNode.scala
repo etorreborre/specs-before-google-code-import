@@ -44,6 +44,7 @@ trait Tree[T <: Tree[T]] {
     childrenNodes = childrenNodes ::: List(t)
     t.parentNode = Some(this)
   }
+  def childNodes = childrenNodes
 }
 /**
  * List of nodes representing a path in a tree
