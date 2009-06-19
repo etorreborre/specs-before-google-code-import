@@ -144,7 +144,11 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
    * @return a new <code>Example</code>
    */
   def in(expectations: =>Any): this.type = {
-    execution = new ExampleExecution(this, () => expectations)
+    execution = new ExampleExecution(this, () => {
+      cycle.setCurrentExample(Some(this))
+      expectations
+      cycle.setCurrentExample(None)
+    })
     if (cycle.isSequential)
       execute
     this
