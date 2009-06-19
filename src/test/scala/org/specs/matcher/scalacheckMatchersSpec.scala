@@ -59,7 +59,7 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
   }
   "A ScalaCheck property" should {
     "not add new expectations during evaluation if isExpectation is off" in {
-      spec.expectationsNb must be_==(1)
+      spec.expectationsNb must be_==(101)
     }
     "add new expectations during evaluation if expectProperties is on (default)" in {
       specWithExpectProperties.expectationsNb must be_==(101)
