@@ -128,7 +128,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
     execution()
   }
   /** default way of defining the behaviour of a sus */
-  def should(ex: =>Example) = {
+  def should(ex: =>Any) = {
     verb = "should"
     specifyExamples(ex)
     this
@@ -137,9 +137,9 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   def header = description + " " + verb
   
   /** Alias method to describe more advanced or optional behaviour. This will change the verb used to report the sus behavior */
-  def can(ex: =>Example) = { verb = "can"; specifyExamples(ex) }
+  def can(ex: =>Any) = { verb = "can"; specifyExamples(ex) }
 
-  private def specifyExamples(ex: =>Example) = {
+  private def specifyExamples(ex: =>Any) = {
     setExecution(ex)
     this
   }

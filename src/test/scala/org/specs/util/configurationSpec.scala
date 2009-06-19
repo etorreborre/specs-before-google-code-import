@@ -55,7 +55,7 @@ oneSpecInstancePerExample = false
    "translate boolean properties from a properties file" in {
      val properties = new java.util.Properties
      properties.put("stacktrace", "true")
-     "a missing name returns the default value" >> {
+     "a missing name returns the default value" in {
        Configuration.boolean(properties, "missing", true) must beTrue
        Configuration.boolean(properties, "missing", false) must beFalse
      }
@@ -75,7 +75,7 @@ oneSpecInstancePerExample = false
          Configuration.boolean(properties, "stacktrace", true) must beFalse
        }
      }
-   }
+    }
   }
   val configuration = new Configuration with MockFileSystem
 }
