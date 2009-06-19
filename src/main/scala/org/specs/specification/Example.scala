@@ -118,20 +118,6 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     else
       subExs.flatMap(_.allExamples).toList
   }
-  private var examplesCreation = () => ()
-  private[specification] var examplesCreated = false
-  private def createExamples = {
-    if (!examplesCreated) {
-      examplesCreated = true
-      try {
-        examplesCreation()
-      } catch {
-        case f: FailureException => addFailure(f)
-        case s: SkippedException => addSkipped(s)
-        case t: Throwable => addError(t)
-      }
-    }
-  }
   def doTest[T](expectations: => T) = cycle.executeTest(this, expectations)
 
   /** encapsulates the expectations to execute */
@@ -146,26 +132,19 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
    * @return a new <code>Example</code>
    */
   def in(expectations: =>Any): this.type = {
+    setExecution(expectations)
+    this
+  }
+  def in(example: =>Example): Unit = setExecution(example)
+  
+  private def setExecution(a: =>Any): Unit = {
     execution = new ExampleExecution(this, () => {
       cycle.setCurrentExample(Some(this))
-      expectations
+      a
       cycle.setCurrentExample(None)
     })
     if (cycle.isSequential)
       execute
-    this
-  }
-  def in(example: =>Example): Unit = {
-    execution = new ExampleExecution(this, () => {
-      cycle.setCurrentExample(Some(this))
-      example
-      cycle.setCurrentExample(None)
-    })
-//    examplesCreation = () => {
-//      cycle.setCurrentExample(Some(this))
-//      example
-//      cycle.setCurrentExample(None)
-//    }
   }
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
