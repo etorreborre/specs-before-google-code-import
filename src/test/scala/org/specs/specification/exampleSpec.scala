@@ -43,8 +43,11 @@ class exampleSpec extends SpecificationWithJUnit {
     }
   }
   "A subexample must have the same lifecycle as its parent example" in {
-    ex.failures
-    ex.subexample.cycle mustBe ex.testExample.cycle
+    val example = new Example("ex", this)
+    example.in {
+     "subex" in { 1 must_== 1 }
+    }
+    example.subExamples(0).cycle mustBe example.cycle
   }
   "An example" should {
     "be able to copy its execution block to another example" in {
@@ -98,7 +101,6 @@ object ex extends Specification {
   var subexample: Example = null
   val testExample = new Example("ex", this) in {
     hasBeenExecuted = true
-    subexample = "subexample" in {}
   }
   override def failures = testExample.failures.toList
   def resetExample = { hasBeenExecuted = false; testExample.resetForExecution }
