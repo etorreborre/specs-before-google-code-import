@@ -191,10 +191,12 @@ object doAfterExampleFailing extends beforeAfterSpecification {
 }
 object specWithBeforeContext extends beforeAfterSpecification {
   var beforeIsCalled = false
-  val context1 = beforeContext(beforeIsCalled = true)
+  val context1 = beforeContext {
+    beforeIsCalled = true 
+  }
   override def executeSpec = {
     "A specification" ->- context1 should {
-      "have example 1 ok" in { }
+      "have example 1 ok" in { 1 must_== 1 }
     }
     reportSpecs
   }

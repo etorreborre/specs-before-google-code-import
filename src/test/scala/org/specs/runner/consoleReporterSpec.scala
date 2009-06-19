@@ -142,8 +142,8 @@ class consoleTraitSpecification extends TestSpecs {
       runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
       runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
     }
-    "not display the sus at all if all examples are ok with the -xOnly flag" in {
-      runWith("-acc", "in", "-xOnly") must notContainMatch("this sus")
+    "not display the sus at all if all examples are ok with the -xonly flag" in {
+      runWith("-acc", "in", "-xonly") must notContainMatch("this sus")
     }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
@@ -179,7 +179,8 @@ class consoleTraitSpecification extends TestSpecs {
       runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
     }
     "work with several tags separated by a comma" in {
-      runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
+      runWith("-acc", "in,out") must containMatch("\\+ included") 
+      runWith("-acc", "in,out") must containMatch("\\+ excluded")
     }
   }
 }

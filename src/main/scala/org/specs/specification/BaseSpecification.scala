@@ -296,6 +296,7 @@ trait SpecificationSystems { this: BaseSpecification =>
     systems = systems ::: List(sus)
     if (this.isSequential)
       systems.last.setSequential
+    setCurrentSus(Some(sus))
     sus
   }
 

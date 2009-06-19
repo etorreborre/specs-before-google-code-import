@@ -58,7 +58,6 @@ trait BeforeAfter { outer: BaseSpecification =>
 
   /** adds a "before" function to the last sus being defined */
   def doBefore(actions: =>Any) = usingBefore(() => actions)
-
   /** adds a "firstActions" function to the last sus being defined */
   def doFirst(actions: =>Any) = stackFirstActions(currentSus, actions)
   /** adds "firstActions" to a sus */
@@ -77,7 +76,8 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** 
    * adds an "after" function to the last sus being defined 
    */
-  private def usingAfter(actions: () => Any) = currentSus.after = reverseStackActions(actions, currentSus.after)
+  private def usingAfter(actions: () => Any) = stackAfterActions(currentSus, actions)
+  def stackAfterActions(sus: Sus, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
 
   /** 
    * adds an "after" function to the last sus being defined 
@@ -168,10 +168,10 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
   private def specifySus(context: Context, desc: String): Sus = {
     if (context == null) throw new NullPointerException("the context is null")
     val sus = specify(desc)
-    doFirst(context.firstActions())
-    doBefore(context.beforeActions())
-    doAfter(context.afterActions())
-    doLast(context.lastActions())
+    stackFirstActions(sus, context.firstActions())
+    stackBeforeActions(sus, context.beforeActions)
+    stackAfterActions(sus, context.afterActions)
+    stackLastActions(sus, context.lastActions())
     until(context.predicate())
     sus
   }
