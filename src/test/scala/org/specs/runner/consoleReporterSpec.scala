@@ -124,8 +124,10 @@ class consoleTraitSpecification extends TestSpecs {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
-  shareVariables()
   "A console trait" can { clean.before
+    "not display the sus at all if all examples are ok with the -xonly flag" in {
+      runWith("-acc", "in", "-xonly") must notContainMatch("this sus")
+    }
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
       runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
@@ -141,9 +143,6 @@ class consoleTraitSpecification extends TestSpecs {
     "accept a -xOnly (--failedOnly) argument to only show failed and error examples" in {
       runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
       runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
-    }
-    "not display the sus at all if all examples are ok with the -xonly flag" in {
-      runWith("-acc", "in", "-xonly") must notContainMatch("this sus")
     }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
@@ -175,12 +174,12 @@ class consoleTraitSpecification extends TestSpecs {
     }
   }
   "A console trait" should { clean.before
-    "print a warning message if a accept/reject argument is not followed by tags" in {
-      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
-    }
     "work with several tags separated by a comma" in {
       runWith("-acc", "in,out") must containMatch("\\+ included") 
       runWith("-acc", "in,out") must containMatch("\\+ excluded")
+    }
+    "print a warning message if a accept/reject argument is not followed by tags" in {
+      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
     }
   }
 }
