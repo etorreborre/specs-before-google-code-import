@@ -2,7 +2,7 @@ package org.specs.specification
 import org.specs.util.Configuration
 
 class specificationExecutorSpec extends spex.Specification {
-  "A executed specification, with one spec instance per example" should {
+  "An executed specification, with one spec instance per example" should {
     "execute examples only once" in {
       specWithCountedExamples.failures // execute the specification
       examplesExecutionCounter.nb must_== 2
@@ -12,8 +12,8 @@ class specificationExecutorSpec extends spex.Specification {
       val example = specificationWithASharedVariable.examples(0)
       example.expectationsNb must_== 1
     }
-    "include all subexamples" in {
-      specificationWithSubexamples.allExamples must have size(3)
+    "execute all subexamples" in {
+      specificationWithSubexamples.allExamples.flatMap(_.subExamples) must have size(3)
       specificationWithSubexamples.failures must have size(1)
     }
   }
