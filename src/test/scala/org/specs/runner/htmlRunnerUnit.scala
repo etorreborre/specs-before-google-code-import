@@ -25,6 +25,7 @@ import org.specs.specification._
 import org.specs.execute._
 
 class htmlRunnerUnit extends SpecificationWithJUnit with DataTables {
+  shareVariables()
   val table = "a"    | "b"  | "result" |
                 1    !  1   ! 2        |
                 1    !  1   ! 2        |

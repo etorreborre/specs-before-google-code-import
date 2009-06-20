@@ -296,14 +296,17 @@ trait SpecificationSystems { this: BaseSpecification =>
     systems = systems ::: List(sus)
     if (this.isSequential)
       systems.last.setSequential
-    setCurrentSus(Some(sus))
     sus
   }
 
   /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
   protected[this] def currentSus = {
     sus match {
-      case None => specify("specifies")
+      case None => {
+        val s = specify("specifies")
+        setCurrentSus(Some(s))
+        s
+      }
       case Some(s) => s
     }
   }
