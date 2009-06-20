@@ -227,7 +227,7 @@ object specWithRepeatedContext extends beforeAfterSpecification {
   val context1 = beforeContext(data += 1).until(data == 10)
   override def executeSpec = {
     "A specification" ->- context1 should {
-      "have example 1 ok" in { }
+      "have example 1 ok" in { println(data); 1 must_== 1 }
     }
     reportSpecs
   }

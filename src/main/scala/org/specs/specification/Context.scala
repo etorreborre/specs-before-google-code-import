@@ -87,12 +87,15 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** 
    * repeats examples according to a predicate 
    */
-  def until(predicate: =>Boolean) = {
-    currentSus.untilPredicate = Some(() => {
-      predicate || currentSus.untilPredicate.map(p => p()).getOrElse(false)
-    })
+  def until(predicate: =>Boolean): Unit = until(currentSus, predicate)
+ 
+  /** 
+   * repeats examples according to a predicate 
+   */
+  def until(sus: Sus, predicate: =>Boolean) = {
+    sus.untilPredicate = Some(() => { predicate })
   }
-
+  
   /** 
    * Syntactic sugar for before/after actions.<p>
    * Usage: <code>"a system" should { createObjects.before
@@ -172,7 +175,7 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
     stackBeforeActions(sus, context.beforeActions)
     stackAfterActions(sus, context.afterActions)
     stackLastActions(sus, context.lastActions())
-    until(context.predicate())
+    until(sus, context.predicate())
     sus
   }
 }
