@@ -21,9 +21,8 @@ import org.specs._
 import org.specs.runner._
 
 class contextSpec extends HtmlSpecificationWithJUnit("Contexts specification") with ContextDefinitions {
-  override def htmlDir = "."
 
-  "Contexts" ->> <wiki>
+"Contexts" is <textile>
 
 There are 2 types of contexts that can be set on a System under specification, to provide a way to manage the data that examples are using:
 * shared contexts: {linkTo("Shared contexts")}
@@ -35,13 +34,15 @@ On the other hand system contexts provide a way to specify a @SystemContext@ obj
 * the set of data the example is operating on is clearly defined as a "System"
 * examples can be executed in parallel because they don't share the same variables
 
-</wiki>
+</textile>
 
-"Shared contexts".definedAs(shared) ->> <wiki>
+{ s = new SpecificationWithSharedContext}
+
+"Shared contexts" is <textile>
 
 h4. Introduction
 
-Shared contexts are defined using the before/after methods on the Context class, to set or reset those variables before and after execution of the examples. They usually share variables defined on the specification object.
+ Shared contexts are defined using the before/after methods on the Context class, to set or reset those variables before and after execution of the examples. They usually share variables defined on the specification object.
 
 h4. Examples
 
@@ -49,9 +50,11 @@ h4. Examples
   exampleOk(0) }
 <ex>If two examples refer to the same variable, modifications made by the first example can be seen by the second one</ex>{
   exampleOk(1) }
-</wiki>
+</textile>
 
-"System contexts".definedAs(systemContexts) ->> <wiki>
+{ s = new SpecificationWithSystemContext() }
+
+"System contexts" is <textile>
 
 System contexts are defined by subclassing the @SystemContext@ class and by defining the @newISystem@ method which will provide a fresh instance of the system, in a specific context.
 The construction of the system and its initialization can be separated by doing the initialization of the system in the @newInstance@ method while overriding the @before@ method to set up specific variables on the system. This helps in defining a hierarchy of contexts differing only by their @before@ methods.
@@ -71,9 +74,11 @@ use the system and its as parameters in { (s: System, c: Context) =>
   ...
 }
 """ >@}{ parametersOk }
-</wiki>
+</textile>
 
-"System contexts with shared examples".definedAs(sharedExamples) ->> <wiki>
+{ s = new SpecificationWithSystemContextAndSharedExamples() }
+
+"System contexts with shared examples" is <textile>
 
 <ex>When examples are shared between SUS, each example should be executed with the SUS context it is executed in</ex>: {
 """
@@ -89,12 +94,12 @@ use the system and its as parameters in { (s: System, c: Context) =>
 """ >@
 }{ sharedExamplesMustHaveProperContexts }
 
-</wiki>
+</textile>
 
-
+  var s: Specification = new Specification(){}
 
   def parametersOk = exampleOk(2)
-  def exampleOk(i: Int) = eg { (s: Specification) =>
+  def exampleOk(i: Int) = eg {
     executeSpec(s)
     exampleIsOk(s.examples(i))
   }
@@ -148,9 +153,6 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
       }
     }
   }
-  def systemContexts = new SystemContext[SpecificationWithSystemContext] {
-    def newSystem = new SpecificationWithSystemContext()
-  }
 
   var executedContexts: List [String] = Nil
   class SpecificationWithSystemContextAndSharedExamples extends Specification with SystemContexts {
@@ -170,8 +172,5 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
     "the second sus".definedAs(context2) should {
       behave like "the first sus"
     }
-  }
-  def sharedExamples = new SystemContext[SpecificationWithSystemContextAndSharedExamples] {
-    def newSystem = new SpecificationWithSystemContextAndSharedExamples()
   }
 }

@@ -42,7 +42,8 @@ trait LiterateBaseSpecification extends BaseSpecification with ExpectableFactory
     /** associates every <ex> tag to an anonymous example */
     private def format(e: => Elem) = {
       try {      
-        val content = e
+        var content: Elem = <nothing/> 
+        sus.setExecution { content = e }
         val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
         val exNodes = content.\\("ex")
         exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>

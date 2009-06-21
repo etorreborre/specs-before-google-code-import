@@ -144,7 +144,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
     this
   }
 
-  private def setExecution(a: =>Any): Unit = {
+  private[specs] def setExecution(a: =>Any): Unit = {
     execution = () => {
       parent.setCurrentSus(Some(this))
       parent.setCurrentExample(None)
