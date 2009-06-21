@@ -64,16 +64,6 @@ h4. Examples
 <ex>A sus with a system context should pass a system instance to the examples.</ex>{ exampleOk(0) }
 <ex>Each example should get a fresh copy of the system in its specific context.</ex>{ exampleOk(1) }
 
-h4. Parameters
-
-<ex>Examples can either be given the system under specification or the system and its context</ex>: {
-"""use the system as a parameter in { s: System =>
-  ...
-}
-use the system and its as parameters in { (s: System, c: Context) =>
-  ...
-}
-""" >@}{ parametersOk }
 </textile>
 
 { s = new SpecificationWithSystemContextAndSharedExamples() }
@@ -124,32 +114,16 @@ trait ContextDefinitions extends SystemContexts { this: BaseSpecification =>
     def newSystem = new SpecificationWithSharedContext
   }
   class SpecificationWithSystemContext extends Specification with SystemContexts {
-    var system1: System = _
     case class System() {
       var counter = 0
     }
-    class SampleSystemContext extends SystemContext[System] {
-      var count = 0
-      def newSystem = new System()
-      override def before(s: System) = {
-        s.counter = s.counter + 1
-        count = 0
+    "In those example, the system is" should {
+      val system = new System
+      "the system has been passed to the example and initialized" in {
+        system.counter must_== 0
       }
-    }
-    def initializedWithASystem = new SampleSystemContext
-    "In those example, the system is".definedAs(initializedWithASystem) should {
-      "the system has be passed to the example and initialized" in { system: System =>
-        system1 = system
-        system.counter must_== 1
-      }
-      "the passed system was a fresh copy" in { system: System =>
-        system1 mustNotEq system
-        system.counter must_== 1
-      }
-      "the system and its context can be passed" in { (system: System, context: SampleSystemContext) =>
-        system must haveClass[System]
-        context must haveClass[SampleSystemContext]
-        context.count must_== 0
+      "the passed system was a fresh copy" in {
+        system.counter must_== 0
       }
     }
   }
