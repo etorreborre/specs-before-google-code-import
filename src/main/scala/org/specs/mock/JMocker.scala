@@ -455,7 +455,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     val lastExample: Example = addExpectation
     var result: Any = null
     expect { f(m) }
-    lastExample.in { result = f2(m) }.failures
+    lastExample.execute { result = f2(m) }
     result
   }
   /** 
