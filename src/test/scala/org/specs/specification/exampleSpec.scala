@@ -43,11 +43,11 @@ class exampleSpec extends SpecificationWithJUnit {
     }
   }
   "A subexample must have the same lifecycle as its parent example" in {
-    val example = new Example("ex", this)
-    example.in {
+    val e = forExample("example")
+    e in {
      "subex" in { 1 must_== 1 }
     }
-    example.subExamples(0).cycle mustBe example.cycle
+    e.subExamples(0).cycle mustBe e.cycle
   }
   "An example" should {
     "be able to copy its execution block to another example" in {
