@@ -47,6 +47,7 @@ object allSpecifications extends Specification {
 object allUnits extends Specification {
   "The unit tests" areSpecifiedBy (
 	collectionUnits,
+	formUnits,
 	ioUnits,
 	matcherUnits,
 	mockUnits,

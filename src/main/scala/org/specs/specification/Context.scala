@@ -228,9 +228,11 @@ trait SystemContexts extends Contexts { this: BaseSpecification =>
   private def specifySusWithContext[S](context: SystemContext[S], desc: String): Sus = {
     if (context == null) throw new NullPointerException("the context is null")
     val sus = specify(context, desc)
-    doFirst(context.firstActions())
-    doLast(context.lastActions())
-    until(context.predicate())
+    stackFirstActions(sus, context.firstActions())
+    stackBeforeActions(sus, context.beforeActions)
+    stackAfterActions(sus, context.afterActions)
+    stackLastActions(sus, context.lastActions())
+    until(sus, context.predicate())
     sus
   }
 

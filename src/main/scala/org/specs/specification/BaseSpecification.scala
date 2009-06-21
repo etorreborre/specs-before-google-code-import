@@ -360,4 +360,5 @@ trait SpecificationConfiguration { this: BaseSpecification =>
    * variables between them. 
    */
   def shareVariables() = oneSpecInstancePerExample = false
+  def dontShareVariables() = oneSpecInstancePerExample = true
 }
