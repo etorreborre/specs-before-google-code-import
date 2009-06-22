@@ -22,10 +22,9 @@ import org.specs.Sugar._
 import org.specs.mock._
 
 class mockerUnit extends SpecificationWithJUnit with Sugar with ProtocolTypes {
-  object mocker extends Mocker { def addExpectation = null }
+  val mocker = new Mocker { def addExpectation = null }
   class MockedClass { def method = (); def a = (); def b = (); def c = () }
   "A mocker" should {
-    doBefore { mocker.protocol.clear }
     "create a protocol when expecting calls" in {
       val protocol = mocker.expect {}
       protocol mustNotBe null

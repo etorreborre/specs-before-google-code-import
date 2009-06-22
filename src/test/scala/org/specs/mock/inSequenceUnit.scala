@@ -24,7 +24,7 @@ import scalacheck.Gen._
 import org.specs.collection.ExtendedList._
 
 class inSequenceUnit extends SpecificationWithJUnit with TestData with ScalaCheck {
-  "A protocol type 'inSequence'" should { clearCalls.before
+  "A protocol type 'inSequence'" should {
     "consume all if exp=m and rec=m" in {
       inAnyOrder.consume((e), (r)) must verify { t:Result => val (exp, rec) = t
         exp.forall(_.passes) && rec.forall(_.consumed)

@@ -23,7 +23,6 @@ import org.specs._
 import org.specs.runner._
 
 class beforeAfterSpec extends SpecificationWithJUnit {
-  shareVariables()
 
   "A specification with before clauses" should {
     "have each example using the doBefore method before being executed" in {
@@ -38,7 +37,6 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "be executed even if the doBefore clause is not declared inside a sus" in {
       object badSpec extends Specification {
-        shareVariables()
         doBefore {}
       }
       badSpec.isOk must beTrue
@@ -69,7 +67,6 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "work even if the doAfter clause is not declared inside a sus" in {
       object badSpec extends Specification {
-        shareVariables()
         doAfter {}
       }
       badSpec.isOk must beTrue
