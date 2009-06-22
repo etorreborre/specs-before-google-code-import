@@ -201,13 +201,13 @@ trait TestSpecs extends spex.Specification {
   def clean = {
     specTwoSystemsRunner.resetOptions()
     specRunner.resetOptions
-    taggedSpec.acceptAnyTag
-    taggedSpec.resetForExecution
+    specWithTags.acceptAnyTag
+    specWithTags.resetForExecution
     specTwoSystems.acceptAnyTag
     specTwoSystems.resetForExecution
     specRunner.messages.clear
   }
-  object specRunner extends ConsoleRunner(taggedSpec) with MockOutput
+  object specRunner extends ConsoleRunner(specWithTags) with MockOutput
   object specTwoSystems extends Specification {
     "this is system one" should { "do nothing" in { 1 must_== 1 } }
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
@@ -251,7 +251,7 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
     messages
   }
 }
-object taggedSpec extends Specification {
+object specWithTags extends Specification {
   "this sus" should {
     ("excluded" in { 1 must_== 1 }).tag("out")
     ("included" in { 1 must_== 1 }).tag("in")
