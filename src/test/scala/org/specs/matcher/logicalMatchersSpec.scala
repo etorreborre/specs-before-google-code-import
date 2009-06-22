@@ -20,7 +20,7 @@ package org.specs.matcher
 
 class logicalMatchersSpec extends MatchersSpecification {
 
-  "Logical matchers" should { clearExample.before
+  "Logical matchers" should {
     "provide a not function to negate a matcher. For example 'name' must not(beMatching('abc'))" in {
       "name" must not(beMatching("abc"))
       expectation("name" must not(beMatching("n"))) must failWith("'name' matches 'n'")

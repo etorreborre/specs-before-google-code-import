@@ -19,7 +19,7 @@
 package org.specs.matcher
 
 class stringMatchersSpec extends MatchersSpecification {
-  "String matchers" should { clearExample.before
+  "String matchers" should { 
     "provide a 'must_==/' matcher: 'hello' must_==/ 'HeLLo' " +
     "[alias: must beEqualToIgnoringCase]" in {
       "string" must_==/ "sTring"

@@ -20,7 +20,7 @@ package org.specs.matcher
 import org.specs.Sugar._
 
 class objectMatchersSpec extends MatchersSpecification {
-  "Object matchers" should { clearExample.before
+  "Object matchers" should { 
     "provide a 'must_==' matcher: 'name' must_== 'name'" in {
       "string" must_== "string"
       expectation("string" must_== "string2") must failWith("'string' is not equal to 'string2'")

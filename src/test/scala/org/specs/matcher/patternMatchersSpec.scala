@@ -20,7 +20,7 @@ package org.specs.matcher
 import org.specs.Sugar._
 
 class patternMatchersSpec extends MatchersSpecification {
-  "Pattern matchers" should { clearExample.before
+  "Pattern matchers" should { 
     "provide a beLike matcher using pattern matching: (1, 2) must beLike {case (1, _) => ok} " +
     "[ok is syntactic sugar for true from the Sugar trait]" in {
       "a" must beLike { case "a" => ok }
@@ -64,7 +64,7 @@ class patternMatchersSpec extends MatchersSpecification {
       Some(2) must be asNoneAs(Some(1))
     }
   }
-  "Pattern matchers" can { clearExample.before
+  "Pattern matchers" can {
     "specify a which clause to check additional properties: List('name').find {_ == 'name'} must beSome[String].which {_.size == 4}" in {
       List("name").find {_ == "name"} must beSome[String].which {_.size == 4}
     }
