@@ -40,28 +40,6 @@ import org.specs.execute._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-case class SusWithContext[S](context: SystemContext[S], desc: String, parentSpec: BaseSpecification) extends Sus(desc, parentSpec) {
-  override def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example = {
-    val newContext = context.newInstance
-    val ex = new ExampleWithContext[S](newContext, ExampleDescription(desc), this)
-    addExample(ex)
-    ex
-  }
-  override def beforeExample(ex: Example) = {
-    super.beforeExample(ex)
-    ex.before
-  }
-  override def executeTest(ex: Example, t: =>Any) = {
-    ex.execute(t)
-  }
-  override def afterExample(ex: Example) = {
-    ex.after
-    super.afterExample(ex)
-  }
-  override def cloneExample(e: Example) = {
-    copyDefAndSubExamples(e, ExampleWithContext(context.newInstance, e.exampleDescription, this))
-  }
-} 
 /** support class representing the formatted literate description of a SUS */
 case class LiterateDescription(desc: Node) {
   def toXhtml: NodeSeq = desc
@@ -234,7 +212,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   }
   /** clone the example, possibly attaching context information. */
   def cloneExample(e: Example): Example = {
-    copyDefAndSubExamples(e, Example(e.exampleDescription, this))
+    copyDefAndSubExamples(e, createExample(e.exampleDescription.toString, this))
   }
   def copyDefAndSubExamples(e: Example, cloned: Example) = {
     e.subExs.foreach { subEx => cloned.addExample(this.cloneExample(subEx)) }

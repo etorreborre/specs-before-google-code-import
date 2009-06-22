@@ -218,15 +218,15 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    *    behave like "A non-empty stack below full capacity"
    *    ...
    * </code>
-   * In this example we suppose that there is a system under test with the same name previously defined.
+   * In this example we suppose that there is a system under specification with the same name previously defined.
    * Otherwise, an Exception would be thrown, causing the specification failure at construction time.
    */
   object behave {
     def like(other: Sus): Example = {
-      val behaveLike = currentSus.createExample("behave like " + other.description.uncapitalize, currentSus)
-
-      other.examples.foreach { example =>
-         behaveLike.addExample(currentSus.cloneExample(example))
+      val behaveLike: Example = forExample("behave like " + other.description.uncapitalize)
+      other.examples.foreach { o => 
+        val e = behaveLike.createExample(o.description.toString, behaveLike.cycle)
+        e.execution = o.execution
       }
       behaveLike
     }
@@ -285,9 +285,6 @@ trait SpecificationSystems { this: BaseSpecification =>
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specify[S](context: SystemContext[S], desc: String) : Sus = {
-    addSus(new SusWithContext(context, desc, this))
-  }
   implicit def specify(desc: String): Sus = {
     addSus(new Sus(desc, this))
   }

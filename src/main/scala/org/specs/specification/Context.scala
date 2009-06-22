@@ -188,61 +188,6 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
  * beforeContext(initSystem).until(enoughTestsAreExecuted)
  * </pre>
  */
-abstract class SystemContext[S] extends Context with java.lang.Cloneable {
-  var systemOption: Option[S] = None
-  def init = systemOption = Some(newSystem)
-  def system: S = systemOption match {
-    case None => throw new FailureException("There is no system set on the context")
-    case Some(s) => s
-  }
-  def newSystem: S
-  def before(s: S) = {}
-  def newInstance: SystemContext[S] = this.clone.asInstanceOf[SystemContext[S]]
-}
-trait SystemContexts extends Contexts { this: BaseSpecification => 
-  class SystemContextCaller(s: String) {
-    def withSome[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
-    def withAn[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
-    def withA[T](context: SystemContext[T])(f: T => Any): Example = into(f)(context)
-    def into[T](f: T => Any)(implicit context: SystemContext[T]): Example = {
-      forExample(s).in(f(context.newSystem))
-    }
-  }
-  implicit def forExampleWithSystemContext(s: String) = new SystemContextCaller(s)
-  def systemContext[T](t: =>T) = new SystemContext[T] {
-    def newSystem = t
-  }
-  implicit def whenInSystemContext(s: String) = ToSystemContext(s) 
-
-  case class ToSystemContext(desc: String) {
-    def definedAs[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def isAn[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def isA[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def whenIn[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def whenIs[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def whenHas[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def whenHaving[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-    def when[S](context: SystemContext[S]): Sus = specifySusWithContext(context, desc)
-  }
-  
-  private def specifySusWithContext[S](context: SystemContext[S], desc: String): Sus = {
-    if (context == null) throw new NullPointerException("the context is null")
-    val sus = specify(context, desc)
-    stackFirstActions(sus, context.firstActions())
-    stackBeforeActions(sus, context.beforeActions)
-    stackAfterActions(sus, context.afterActions)
-    stackLastActions(sus, context.lastActions())
-    until(sus, context.predicate())
-    sus
-  }
-
-}
-
-object SystemContext {
-  def apply[S](s: => S) = new SystemContext[S] {
-    def newSystem = s
-  }
-}
 case class Context() {
   var firstActions: () => Any = () => () 
   var lastActions: () => Any = () => ()

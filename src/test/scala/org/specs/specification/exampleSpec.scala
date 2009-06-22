@@ -59,16 +59,6 @@ class exampleSpec extends SpecificationWithJUnit {
       e2.description must_== e1.description
       e2.cycle mustBe e1.cycle
     }
-    "be able to clone itself - for an example with context" in {
-      val context = new SystemContext[Any] {
-        def newSystem = "system"
-      }
-      val e1 = ExampleWithContext(context, ExampleDescription("description"), this)
-      val e2 = e1.clone
-      e2.description must_== e1.description
-      e2.cycle mustBe e1.cycle
-      e2.context mustBe e1.context
-    }
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
       object s extends Specification { 
         shareVariables()

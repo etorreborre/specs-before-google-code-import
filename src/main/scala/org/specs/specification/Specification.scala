@@ -41,7 +41,7 @@ import org.specs.execute._
  *
  */
 abstract class Specification extends BaseSpecification with Expectations with FailOrSkip with Console with SpecsFilter 
-               with Contexts with ContextProperties {
+               with Contexts {
 
   /** A specification is its own specs holder. */
   val specs = List(this)

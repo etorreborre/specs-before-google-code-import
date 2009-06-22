@@ -45,35 +45,6 @@ import org.specs.execute._
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
-case class ExampleWithContext[S](val context: SystemContext[S], var exampleDesc: ExampleDescription, cyc: ExampleLifeCycle) extends Example(exampleDesc, cyc) {
-  override def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
-    val ex = new ExampleWithContext(context, ExampleDescription(desc), lifeCycle)
-    addExample(ex)
-    ex
-  }
-  override def before = {
-    context.init
-    context.before(context.system)
-  }
-  override def after = {
-    context.after(context.system)
-  }
-  override def execute(t: => Any) = {
-    val test = t
-    var result: Any = test match {
-      case function: Function0[Any] => function()
-      case function: Function1[S, Any] => function(context.system)
-      case function: Function2[S, Context, Any] => function(context.system, context)
-      case _ => test
-    }
-    skipIfNoExpectations()
-    result
-  }
-  /** clone method to create a new example from this one. */
-  override def clone: ExampleWithContext[S] = {
-    copyExecutionTo(ExampleWithContext(context, exampleDesc, cyc))
-  }
-}
 case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults {
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 

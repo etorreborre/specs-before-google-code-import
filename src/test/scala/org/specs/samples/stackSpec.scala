@@ -19,65 +19,67 @@
 package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
+import org.specs.util._
 
-class stackSpec extends StackSpecification with SystemContexts {
-  "An empty stack" definedAs(empty) should {
-    "throw an exception when sent #top" in { stack: LimitedStack[Int] =>
+class stackSpec extends StackSpecification {
+  var stack = emptyStack 
+  "An empty stack" should {
+    "throw an exception when sent #top" in { 
       stack.top must throwA[NoSuchElementException]
     }
-    "throw an exception when sent #pop" in { stack: LimitedStack[Int] =>
+    "throw an exception when sent #pop" in { 
       stack.pop must throwA[NoSuchElementException]
     }
   }
-  "A non-empty stack below full capacity" definedAs(nonEmpty) should {
-    "not be empty" in { stack: SampleStack =>
+  "A non-empty stack below full capacity" should {
+    doBefore(stack = nonEmpty)
+    "not be empty" in { 
       stack verifies { !_.isEmpty }
     }
-    "return the top item when sent #top" in { stack: SampleStack =>
+    "return the top item when sent #top" in { 
       stack.top mustBe stack.lastItemAdded
     }
-    "not remove the top item when sent #top" in { stack: SampleStack =>
+    "not remove the top item when sent #top" in { 
       stack.top mustBe stack.lastItemAdded
       stack.top mustBe stack.lastItemAdded
     }
-    "remove the top item when sent #pop" in { stack: SampleStack =>
+    "return the top item when sent #pop" in { 
+      stack.pop mustBe stack.lastItemAdded
+    }
+    "remove the top item when sent #pop" in { 
       stack.pop mustBe stack.lastItemAdded
       if (!stack.isEmpty)
         stack.top mustNotBe stack.lastItemAdded
     }
-    "return the top item when sent #pop" in { stack: SampleStack =>
-      stack.pop mustBe stack.lastItemAdded
-    }
   }
-  "A stack below full capacity" definedAs(belowCapacity) should {
+  "A stack below full capacity" should {
+    doBefore(stack = belowCapacity)
     behave like "A non-empty stack below full capacity"
-    "add to the top when sent #push" in { stack: LimitedStack[Int] =>
+    "add to the top when sent #push" in { 
       stack push 3
       stack.top mustBe 3
     }
   }
-  "A full stack" definedAs(full) should {
+  "A full stack" should {
+    doBefore(stack = full)
     behave like "A non-empty stack below full capacity"
-    "throw an exception when sent #push" in { stack: LimitedStack[Int] =>
+    "throw an exception when sent #push" in {
       stack.push(11) must throwAn[Error]
     }
   }
 }
 
 class StackSpecification extends SpecificationWithJUnit {
-  case class SampleStack(stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
-    def this(capacity: Int) = this(capacity, 0)
+  case class SampleStack(name: String, stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
+    def this(name: String, capacity: Int) = this(name, capacity, 0)
     var lastItemAdded = 0
     for (i <- 1 to itemsNb) { this += i; lastItemAdded = i }
+    override def toString = name
   }
-  case class StackContext(capacity: Int, itemsNb: Int) extends SystemContext[SampleStack] {
-    def this(capacity: Int) = this(capacity, 0)
-    def newSystem = SampleStack(capacity, itemsNb)
-  }
-  val empty = new StackContext(10)
-  val full = StackContext(10, 10)
-  val nonEmpty = StackContext(10, 1)
-  val belowCapacity = StackContext(10, 3)
+  def emptyStack = new SampleStack("empty stack", 10)
+  def full = new SampleStack("full stack", 10, 10)
+  def nonEmpty = new SampleStack("non empty stack", 10, 2)
+  def belowCapacity = new SampleStack("below capacity stack", 10, 3)
 }
 
 class LimitedStack[T](val capacity: Int) extends scala.collection.mutable.Stack[T] {
