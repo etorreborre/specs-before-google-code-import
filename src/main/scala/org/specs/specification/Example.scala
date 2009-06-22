@@ -168,15 +168,6 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
     subExs.foreach(_.resetForExecution)
     this
   }
-  /** clone method to create a new example from this one. */
-  override def clone: Example = {
-    copyExecutionTo(Example(exampleDescription, cycle))
-  }
-
-  def copyExecutionTo[E <: Example](e: E): E = {
-    e.execution = new ExampleExecution(e, execution.expectations)
-    e
-  }
   /** @return the example for a given Activation path */
   def getExample(path: TreePath): Option[Example] = {
     path match {

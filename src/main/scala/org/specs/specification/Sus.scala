@@ -210,14 +210,6 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
     examples.foreach(_.resetForExecution)
     this
   }
-  /** clone the example, possibly attaching context information. */
-  def cloneExample(e: Example): Example = {
-    copyDefAndSubExamples(e, createExample(e.exampleDescription.toString, this))
-  }
-  def copyDefAndSubExamples(e: Example, cloned: Example) = {
-    e.subExs.foreach { subEx => cloned.addExample(this.cloneExample(subEx)) }
-    e.copyExecutionTo(cloned)
-  }
   /** @return the example for a given Activation path */
   def getExample(path: TreePath): Option[Example] = {
     path match {

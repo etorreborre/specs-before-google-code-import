@@ -50,15 +50,6 @@ class exampleSpec extends SpecificationWithJUnit {
     e.subExamples(0).cycle mustBe e.cycle
   }
   "An example" should {
-    "be able to copy its execution block to another example" in {
-      copiedExamples.executed must_== "e1"
-    }
-    "be able to clone itself" in {
-      val e1 = Example(ExampleDescription("description"), this)
-      val e2 = e1.clone
-      e2.description must_== e1.description
-      e2.cycle mustBe e1.cycle
-    }
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
       object s extends Specification { 
         shareVariables()
@@ -76,14 +67,6 @@ class exampleSpec extends SpecificationWithJUnit {
       s.skipped must be empty
     }
   }
-}
-object copiedExamples extends Specification {
-  shareVariables()
-  var executed = ""
-  val e1 = Example(ExampleDescription("description"), this) in { executed = "e1" }
-  val e2 = Example(ExampleDescription("description2"), this) in { executed = "e2" }
-  e1.copyExecutionTo(e2)
-  e2.execute
 }
 object ex extends Specification {
   shareVariables()
