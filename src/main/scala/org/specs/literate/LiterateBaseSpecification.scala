@@ -20,7 +20,7 @@ package org.specs.literate
 import org.specs.specification._
 import scala.xml._
 
-trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification with WikiFormatter { outer =>
+trait LiterateBaseSpecification extends BaseSpecification with ExpectableFactory with WikiFormatter { outer =>
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
     def isSus = toLiterateSus("") ->> e
@@ -42,7 +42,8 @@ trait LiterateBaseSpecification extends ExpectableFactory with BaseSpecification
     /** associates every <ex> tag to an anonymous example */
     private def format(e: => Elem) = {
       try {      
-        val content = e
+        var content: Elem = <nothing/> 
+        sus.setExecution { content = e }
         val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
         val exNodes = content.\\("ex")
         exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>

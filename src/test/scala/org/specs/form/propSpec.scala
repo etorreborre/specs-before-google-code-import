@@ -26,7 +26,7 @@ import org.specs.specification._
 import org.specs.util._
 import scala.xml._
 
-class propSpec extends SpecificationWithJUnit with Mockito with SystemContexts with Sugar with DataTables {
+class propSpec extends SpecificationWithJUnit with Mockito with Sugar with DataTables {
   "A property" should {
     "return the expected value with the get method" in {
       Prop("label", 1)(2).get must ==(2)
@@ -142,13 +142,13 @@ class propSpec extends SpecificationWithJUnit with Mockito with SystemContexts w
       Prop("Result", 1).formatterIs((i: Int) => "["+i.toString+"]").toXhtml(1) must ==/(<td class="info">[1]</td>)
     }
   }
-  Map("Prop" -> systemContext(Prop("l", 1, None)),
-      "MatcherProp" -> systemContext(Prop(1)),
-      "LineProp" -> systemContext(LineProp(1))
+  Map("Prop" -> Prop("l", 1, None),
+      "MatcherProp" -> Prop(1),
+      "LineProp" -> LineProp(1)
   ) foreach { c => 
-    
-    ("A copied " + c._1).definedAs(c._2) should {
-      "copy its value formatter" in { (p: Prop[_]) => 
+    ("A copied " + c._1) should {
+      val p: Prop[_] = c._2
+      "copy its value formatter" in {  
         p.formatterIs((s:Any) => "v: " + s.toString)
         p.formattedValue.toString must_== "v: 1"
         val c = p.copy

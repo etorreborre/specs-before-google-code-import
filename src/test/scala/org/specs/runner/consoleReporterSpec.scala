@@ -124,8 +124,10 @@ class consoleTraitSpecification extends TestSpecs {
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
   }
-  shareVariables()
   "A console trait" can { clean.before
+    "not display the sus at all if all examples are ok with the -xonly flag" in {
+      runWith("-acc", "in", "-xonly") must notContainMatch("this sus")
+    }
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
       runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
@@ -141,9 +143,6 @@ class consoleTraitSpecification extends TestSpecs {
     "accept a -xOnly (--failedOnly) argument to only show failed and error examples" in {
       runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
       runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
-    }
-    "not display the sus at all if all examples are ok with the -xOnly flag" in {
-      runWith("-acc", "in", "-xOnly") must notContainMatch("this sus")
     }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
@@ -175,11 +174,12 @@ class consoleTraitSpecification extends TestSpecs {
     }
   }
   "A console trait" should { clean.before
+    "work with several tags separated by a comma" in {
+      runWith("-acc", "in,out") must containMatch("\\+ included") 
+      runWith("-acc", "in,out") must containMatch("\\+ excluded")
+    }
     "print a warning message if a accept/reject argument is not followed by tags" in {
       runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
-    }
-    "work with several tags separated by a comma" in {
-      runWith("-acc", "in,out") must (containMatch("\\+ included") and containMatch("\\+ excluded"))
     }
   }
 }
@@ -201,22 +201,13 @@ trait TestSpecs extends spex.Specification {
   def clean = {
     specTwoSystemsRunner.resetOptions()
     specRunner.resetOptions
-    spec.acceptAnyTag
-    spec.resetForExecution
+    taggedSpec.acceptAnyTag
+    taggedSpec.resetForExecution
     specTwoSystems.acceptAnyTag
     specTwoSystems.resetForExecution
     specRunner.messages.clear
   }
-  object spec extends Specification {
-    "this sus" should {
-      ("excluded" in { 1 must_== 1 }).tag("out")
-      ("included" in { 1 must_== 1 }).tag("in")
-      "failed" in { throw new FailureException("failed") }
-      "error" in { throw new java.lang.Error("error") }
-      "skipped" in { skip("skipped") }
-    }
-  }
-  object specRunner extends ConsoleRunner(spec) with MockOutput
+  object specRunner extends ConsoleRunner(taggedSpec) with MockOutput
   object specTwoSystems extends Specification {
     "this is system one" should { "do nothing" in { 1 must_== 1 } }
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
@@ -258,6 +249,15 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
     }
     reportSpecs
     messages
+  }
+}
+object taggedSpec extends Specification {
+  "this sus" should {
+    ("excluded" in { 1 must_== 1 }).tag("out")
+    ("included" in { 1 must_== 1 }).tag("in")
+    "failed" in { fail("failed"); 1 must_== 0 }
+    "error" in { error("error"); 1 must_== 1 }
+    "skipped" in { skip("skipped"); 1 must_== 1 }
   }
 }
 

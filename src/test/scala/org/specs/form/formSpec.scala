@@ -21,17 +21,16 @@ package org.specs.form
 import org.specs.util._
 import matcher.Matcher
 import org.specs._
-import org.specs.runner.{JUnitSuiteRunner, JUnit}
-import samples.PersonForms
+import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import samples.{ PersonForms, PersonBusinessEntities }
 import scala.xml._
 import org.specs.Sugar._
 import org.specs.specification._
 import org.junit.runner.RunWith
 
-class formSpec extends HtmlSpecificationWithJUnit with PersonForms with org.specs.SystemContexts { persons =>
+class formSpec extends PersonForms { persons =>
   val address = Address(37, "Nando-cho")
   val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
-
   "A form" should {
     "have a title" in {
       val form = PersonForm("person", person)
@@ -126,32 +125,37 @@ class formSpec extends HtmlSpecificationWithJUnit with PersonForms with org.spec
       form.toXhtml must \\(<th>Customer</th>, Map("colspan"->"4"))
     }
   }
-  trait AProp { val p: Prop[Int] }
-  Map("Form" -> systemContext(new Form with AProp { val p = prop(1) }),
-      "LineForm" -> systemContext(new LineForm with AProp { val p = prop(1)}),
-      "BagForm" -> systemContext(new BagForm with AProp { val p = prop(1)})
-    ) foreach { c =>
-    ("A " + c._1).definedAs(c._2) should {
-      "decorate all fields and properties when decorated with bold" in { (form: Form with AProp) =>
-        form.bold
-        form.p.toXhtml must \\("b")
-      }
-      "decorate all fields and properties when decorated with italic" in { (form: Form with AProp) =>
-        form.italic
-        form.italic.toXhtml must \\("i")
-      }
-      "format its values when changed formatter" in { (form: Form with AProp) =>
-        form.formatterIs(s => "v: "+s.toString)
-        form.p.formattedValue.toString must_== "v: 1"
-      }
-    }
-  }
   "A form with an embedded form" should {
     "pass on the generic value formatter" in {
       val f = new Form {
         val n = form(new Form { val p = prop(1) })
       }.formatterIs(s => "v: "+s.toString)
       f.n.p.formattedValue.toString must_== "v: 1"
+    }
+  }
+}
+class formUnit extends SpecificationWithJUnit with PersonBusinessEntities {
+  val address = Address(37, "Nando-cho")
+  val person = Person("Eric", "Torreborre", address, List("Jerome", "Olivier"))
+  trait AProp { val p: Prop[Int] }
+  Map("Form" -> (() => new Form with AProp { val p = prop(1) }),
+      "LineForm" -> (() => new LineForm with AProp { val p = prop(1)}),
+      "BagForm" -> (() => new BagForm with AProp { val p = prop(1)})
+    ) foreach { c =>
+    ("A " + c._1) should {
+      val form = c._2()
+      "decorate all fields and properties when decorated with bold" in { 
+        form.bold
+        form.p.toXhtml must \\("b")
+      }
+      "decorate all fields and properties when decorated with italic" in {
+        form.italic
+        form.italic.toXhtml must \\("i")
+      }
+      "format its values when changed formatter" in {
+        form.formatterIs(s => "v: "+s.toString)
+        form.p.formattedValue.toString must_== "v: 1"
+      }
     }
   }
 }

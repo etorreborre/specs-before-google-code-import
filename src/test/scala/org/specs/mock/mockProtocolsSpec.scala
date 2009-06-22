@@ -20,10 +20,9 @@ package org.specs.mock
 import org.specs.runner._
 import org.specs.matcher._
 import org.specs.Sugar._
-
+import org.specs.specification.{ Example, Sus }
 class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
-  shareVariables()
-  "Mock protocols" should { doBefore { clearExample; button.init() }
+  "Mock protocols" should {
    "provide an 'expect oneOf' protocol checking if one call exactly has been made" in {
      var protocol = expect(oneOf) { mock.on; mock.off }
      expectation(protocol must beMet) must failWithMatch("Expected in any order \\[on\\(.*\\); off\\(.*\\)\\]. Received none")
@@ -78,14 +77,6 @@ class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
      protocol = expect(atLeastOneOf) { mock.on; mock.off }
      2.times {i => button.push}
    }
-   "provide an 'expect atMostOneOf' protocol checking if at most one call has been made" in {
-     var protocol = expect(atMostOneOf) { mock.on; mock.off }
-     4.times {i => button.push}
-     expectation(protocol must beMet) must failWithMatch("Expected at most 1 of: \\[on\\(.*\\); off\\(.*\\)\\]. Received:\n  on\\(.*\\)\n  off\\(.*\\)")
-
-     protocol = expect(atMostOneOf) { mock.on; mock.off }
-     2.times {i => button.push}
-   }
    "provide an 'expect at least n of' protocol checking if exactly n calls have been made" in {
      var protocol = expect(3.atLeastOf) { mock.on; mock.off }
      expectation(protocol must beMet) must failWithMatch("Expected at least 3 of: \\[on\\(.*\\); off\\(.*\\)\\]. Received none")
@@ -102,7 +93,7 @@ class mockProtocolsSpec extends MatchersSpecification with ButtonAndLightMock {
       2.times {i => button.push}
     }
   }
-  "Mock protocols" can { doBefore { clearExample; button.init() }
+  "Mock protocols" can {
      "be nested to allow complex expectations: expect, inAnyOrder 1 'on' and 2 'off'" in {
      val protocol = expect(inAnyOrder) {
         expect(oneOf){mock.on; mock.off; mock.on}

@@ -25,7 +25,7 @@ import org.specs.collection.ExtendedList._
 import org.specs.ScalaCheck
 
 class numberOfMessagesUnit extends SpecificationWithJUnit with TestData with ScalaCheck {
-  "A protocol type 'numberOfMessages'" should { doBefore { clearCalls }
+  "A protocol type 'numberOfMessages'" should {
     "exactly 2: consume all if exp=m and rec=m, m" in {
       new inAnyOrder(exactlyN(2)).consume((e), List(r, rprime)) must verify { t:Result => val (exp, rec) = t
         exp.forall(_.passes) && rec.forall(_.consumed)

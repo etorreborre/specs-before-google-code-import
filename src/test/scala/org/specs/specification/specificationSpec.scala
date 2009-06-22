@@ -83,6 +83,7 @@ object basicFeatures extends SpecificationWithSamples {
          "for all its examples" in { 1 mustBe 1 }
        }
      }
+     skipAll.systems(0).examples // execute the should part
      skipAll.systems must exist { s: Sus => s.skippedSus != None }
      skipAll.expectationsNb mustBe 0
    }
@@ -104,7 +105,7 @@ object basicFeatures extends SpecificationWithSamples {
          "do ex2" in {executions = executions:::List("ex2")}
        }
      }
-     spec.name
+     spec.systems(0).examples // execute the should part
      executions must_== List("ex1", "ex2")
    }
  }

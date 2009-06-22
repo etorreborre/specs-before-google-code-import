@@ -16,23 +16,40 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs.specification
-import org.specs._
-import org.specs.runner._
+package org.specs.util
 
-class systemContextSpec extends SpecificationWithJUnit with SystemContexts {
-  case class System(name: String) {
-    var variable = ""
+/**
+ * This trait is used to tag specifications, systems and examples and give them children/parent/path functionalities
+ * This is especially used to find an example in a specification from its path from the root
+ */
+trait TreeNode extends Tree[TreeNode]
+/**
+ * This trait declares a generic tree structure with a parent and a list of children.
+ */
+trait Tree[T <: Tree[T]] {
+  private[util] var childrenNodes: List[T] = Nil
+  private[util] var parentNode: Option[Tree[T]] = None
+  
+  /**
+   * @return a list of integer representing the path from the root node to this node
+   */
+  def pathFromRoot: TreePath = parentNode match {
+    case None => new TreePath(0)
+    case Some(p) => p.pathFromRoot ::: new TreePath(p.childrenNodes.indexOf(this))
+  } 
+  /**
+   * add a new child and set its parent
+   */
+  def addChild(t: T) = {
+    childrenNodes = childrenNodes ::: List(t)
+    t.parentNode = Some(this)
   }
-  "This system" should {
-    implicit val context = systemContext { System("new") }
-    "do this" into { (s: System) =>
-      s.name must_== "new"
-      s.variable = "changed"
-    }
-    "do that".into[System] { s =>
-      s.name must_== "new"
-      s.variable must_== ""
-    }
-  }
+  def childNodes = childrenNodes
+}
+/**
+ * List of nodes representing a path in a tree
+ */
+case class TreePath(path: List[Int]) {
+  def this(i: Int) = this(List(i))
+  def :::(other: TreePath) = TreePath(other.path ::: path)
 }

@@ -23,7 +23,7 @@ import org.specs.execute._
 /**
  * This trait adds shortcut to declare forms in the specification text
  */
-trait LiterateForms extends ExpectableFactory with BaseSpecification { outer =>
+trait LiterateForms extends BaseSpecification with ExpectableFactory { outer =>
   /**
    * This method allows to embbed a Form in a literate specification and display the results of its execution
    */

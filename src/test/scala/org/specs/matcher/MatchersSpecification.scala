@@ -25,7 +25,6 @@ import org.specs.execute._
 
 class MatchersSpecification extends SpecificationWithJUnit {
   var reported: Example = new Example("this example serves as a stub to collect failure messages", new Sus("", this))
-  def clearExample = { reported = new Example("", new Sus("", this)) }
   def failWith(message: String) = is_==(message)
   def failWithMatch(pattern: String) = beMatching(pattern)
   def expectation(value: => Any): String = {

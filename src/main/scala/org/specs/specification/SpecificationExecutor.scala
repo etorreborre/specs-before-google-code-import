@@ -11,25 +11,33 @@ import org.specs.util.{ Configuration }
  * will always return the same examples in the same order
  */
 trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =>
-  /** cache the specification examples to avoid querying again and again the specification */
-  private lazy val specsExamples = this.allExamples
   /** execute an example by cloning the specification and executing the cloned example */
   override def executeExample(example: Example): this.type = {
     var executed = false
     try {
-      if (oneSpecInstancePerExample && specsExamples.contains(example)) {
-        val i  = specsExamples.indexOf(example)
+      if (oneSpecInstancePerExample) {
+        val path  = example.pathFromRoot
         cloneSpecification match {
           case None => example.executeThis
           case Some(s) => {
-            val cloned = s.allExamples(i)
-            cloned.execution.execute
-            example.copyExecutionResults(cloned)
+            s.executeOneExampleOnly = true
+            val cloned = s.getExample(path)
+            cloned match {
+              case None => throw PathException(path + "not found for " + example)
+              case Some(c) => {
+                c.tagWith(this)
+                c.execution.execute
+                example.copyExecutionResults(c)
+              }
+            }
             executed = true
           }
         }
       }
-    } catch { case _ => }
+    } catch { 
+      case e: PathException => throw e
+      case _ => ()
+    }
     if (!executed)
       example.execution.execute
     
@@ -40,3 +48,4 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
     tryToCreateObject[BaseSpecification](getClass.getName, false, false)
   }
 }
+case class PathException(m: String) extends Exception(m)

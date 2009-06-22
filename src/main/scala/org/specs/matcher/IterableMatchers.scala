@@ -228,7 +228,7 @@ class HaveTheSameElementsAs[T] (l: Iterable[T]) extends Matcher[Iterable[T]] {
   def apply(it: => Iterable[T]) = {
     val iterable = it
     (l.sameElementsAs(iterable),
-      d(l.toDeepString) + " has the same elements as " + q(iterable.toDeepString),
-      d(l.toDeepString) + " doesn't have the same elements as " + q(iterable.toDeepString))
+      d(iterable.toDeepString) + " has the same elements as " + q(l.toDeepString),
+      d(iterable.toDeepString) + " doesn't have the same elements as " + q(l.toDeepString))
   }
 }

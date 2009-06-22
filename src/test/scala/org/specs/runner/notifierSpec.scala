@@ -26,10 +26,7 @@ import org.specs.execute._
 class notifierSpec extends SpecificationWithJUnit with Mockito {
   var notifier = mock[Notifier]
   "A notifier for a specification" should beNotifiedOf { 
-    doBefore { 
-      notifier = mock[Notifier] 
-      new NotifierRunner(s, notifier).reportSpecs
-    }
+    new NotifierRunner(s, notifier).reportSpecs
     "the start of a run with the total number of examples" in {
       notifier.runStarting(5) was called
     }

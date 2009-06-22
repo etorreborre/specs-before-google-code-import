@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.specification.fullDetails
 
 class iterableMatchersSpec extends MatchersSpecification {
-  "Iterable matchers" should { clearExample.before
+  "Iterable matchers" should {
     "provide a 'must beEmpty' matcher on iterables: List() must beEmpty" in {
       List() must beEmpty
       expectation(List("1") must beEmpty) must failWith("List(1) is not empty")

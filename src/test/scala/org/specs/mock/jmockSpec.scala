@@ -349,7 +349,7 @@ trait BadMocked extends Mocked {
   }
 }
 trait Mocked extends Specification with JMocker with ExampleLifeCycle with ClassMocker {
-  shareVariables()
+//  shareVariables()
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false

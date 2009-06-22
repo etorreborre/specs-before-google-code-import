@@ -25,7 +25,7 @@ object literateSpecifications extends Specification {
         new literateSnippetSpec,
         new literateSpec,
         new markdownFormatterSpec,
-        new wikiFormatterSpec,
+        new wikiFormatterSpec
     )
 }
 object literateUnits extends Specification {
