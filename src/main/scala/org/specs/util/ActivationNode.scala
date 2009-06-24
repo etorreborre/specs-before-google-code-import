@@ -52,4 +52,5 @@ trait Tree[T <: Tree[T]] {
 case class TreePath(path: List[Int]) {
   def this(i: Int) = this(List(i))
   def :::(other: TreePath) = TreePath(other.path ::: path)
+  def isFirst = path.forall(_ == 0)
 }
