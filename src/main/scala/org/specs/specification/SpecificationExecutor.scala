@@ -15,7 +15,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification =
   override def executeExample(example: Example): this.type = {
     var executed = false
     try {
-      if (oneSpecInstancePerExample) {
+      if (oneSpecInstancePerExample && !executeOneExampleOnly) {
         val path  = example.pathFromRoot
         cloneSpecification match {
           case None => example.executeThis

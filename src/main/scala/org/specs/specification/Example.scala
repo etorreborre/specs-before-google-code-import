@@ -74,9 +74,8 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
   def copyExecutionResults(other: Example) = {
     this.hardCopyResults(other)
-    this.subExs = other.subExs
+    other.subExs.foreach(e => this.createExample(e.description.toString, this.cycle))
     this.expectationsNumber = other.expectationsNumber
-    other.childNodes.foreach(this.addChild(_))
     this.execution.executed = true
   }
 
