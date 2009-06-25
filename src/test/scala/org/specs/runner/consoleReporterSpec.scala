@@ -106,8 +106,10 @@ class reporterSpecification extends TestSpecs {
       val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
       (susTime1 + susTime2) must beCloseTo(total, 2) // to account for rounding errors
     }
-  }
-  "A console reporter" should {
+    "not print out the description of an anonymous system" in {
+      val spec = new SpecWithAnAnonymousSystem(that.isOk)
+      spec.run mustNot containMatch("specifies")
+    }
     "not print stack trace if setNoStackTrace is called" in {
       val spec = new SpecWithOneExample(that.throwsAnException)
       spec.setNoStacktrace()
@@ -246,6 +248,15 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
        "have example 1 ok" in {
         expectations(behaviours) foreach {_.apply}
       }
+    }
+    reportSpecs
+    messages
+  }
+}
+class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpecification {
+  def run = {
+    "have example 1 ok" in {
+      expectations(behaviours) foreach {_.apply}
     }
     reportSpecs
     messages

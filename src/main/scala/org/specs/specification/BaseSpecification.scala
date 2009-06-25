@@ -288,6 +288,12 @@ trait SpecificationSystems { this: BaseSpecification =>
   implicit def specify(desc: String): Sus = {
     addSus(new Sus(desc, this))
   }
+  /**
+   * specifies an anonymous Sus
+   */
+  def specify: Sus = {
+    addSus(new Sus(this))
+  }
   private[specs] def addSus(sus: Sus): Sus = {
     addChild(sus)
     systems = systems ::: List(sus)
@@ -300,7 +306,7 @@ trait SpecificationSystems { this: BaseSpecification =>
   protected[this] def currentSus = {
     sus match {
       case None => {
-        val s = specify("specifies")
+        val s = specify
         setCurrentSus(Some(s))
         s
       }
