@@ -47,6 +47,10 @@ case class LiterateDescription(desc: Node) {
 case class Sus(description: String, parent: BaseSpecification) extends TreeNode with ExampleLifeCycle 
                                       with Tagged with HasResults {
 
+  /** constructor for an anonymous sus */                                        
+  def this(parent: BaseSpecification) = this("specifies", parent)
+  /** @return true if the description is the generic one for anonymous systems */
+  def isAnonymous = description == "specifies"
   /** default verb used to define the behaviour of the sus */
   var verb = ""
 
@@ -105,6 +109,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
     executed = true
     execution()
   }
+  
   /** default way of defining the behaviour of a sus */
   def should(ex: =>Any) = {
     verb = "should"
