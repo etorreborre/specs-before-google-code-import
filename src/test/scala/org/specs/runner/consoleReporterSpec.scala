@@ -31,8 +31,7 @@ class consoleReporterSpec extends SpecificationWithJUnit {
   include(new reporterSpecification, new consoleTraitSpecification)
 }
 class reporterSpecification extends TestSpecs {
-  shareVariables()
-  "A console reporter" should { clean.before
+  "A console reporter" should {
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
     }
@@ -118,6 +117,8 @@ class reporterSpecification extends TestSpecs {
   }
 }
 class consoleTraitSpecification extends TestSpecs {
+  val specRunner = new ConsoleRunner(specWithTags) with MockOutput
+  val specTwoSystemsRunner = new ConsoleRunner(specTwoSystems) with MockOutput
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
       val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput
@@ -125,11 +126,18 @@ class consoleTraitSpecification extends TestSpecs {
       testSpecRunner.reportSpecs
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
-  }
-  "A console trait" can { clean.before
     "not display the sus at all if all examples are ok with the -xonly flag" in {
       runWith("-acc", "in", "-xonly") must notContainMatch("this sus")
     }
+    "work with several tags separated by a comma" in {
+      runWith("-acc", "in,out") must containMatch("\\+ included") 
+      runWith("-acc", "in,out") must containMatch("\\+ excluded")
+    }
+    "print a warning message if a accept/reject argument is not followed by tags" in {
+      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
+    }
+  }
+  "A console trait" can { 
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
       runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
@@ -142,21 +150,11 @@ class consoleTraitSpecification extends TestSpecs {
     "accept a -acc argument to only exclude examples having some tags in the specification" in {
       runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
-    "accept a -xOnly (--failedOnly) argument to only show failed and error examples" in {
-      runWith("-xOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
-      runWith("--failedOnly") must (notContainMatch("\\+ included") and containMatch("x failed") and containMatch("x error"))
-    }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
     }
     "not display the statistics with the -nostats or --nostatistics flag" in {
       runWith("-nostats") must notContainMatch("Total time")
-    }
-    "print a help message with the options description if passed the -h or --help flag" in {
-      mainWith("--help") must containMatch("--help")
-    }
-    "not execute the specification when passed the -h or --help flag" in {
-      mainWith("--help") must notContainMatch("this sus")
     }
     def asString(s: String) = s.replace("\\", "\\\\").replace("[", "\\[")
     "report statuses with ANSI color codes when passed the -c or --color flag" in {
@@ -174,20 +172,16 @@ class consoleTraitSpecification extends TestSpecs {
     "report a skipped example in yellow when passed the -c or --color flag" in {
       runWith("-c", "-ex", "skipped") must containMatch(asString(AnsiColors.yellow))
     }
-  }
-  "A console trait" should { clean.before
-    "work with several tags separated by a comma" in {
-      runWith("-acc", "in,out") must containMatch("\\+ included") 
-      runWith("-acc", "in,out") must containMatch("\\+ excluded")
+    "print a help message with the options description if passed the -h or --help flag" in {
+      mainWith("--help") must containMatch("--help")
     }
-    "print a warning message if a accept/reject argument is not followed by tags" in {
-      runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
+    "not execute the specification when passed the -h or --help flag" in {
+      mainWith("--help") must notContainMatch("this sus")
     }
   }
-}
-trait TestSpecs extends spex.Specification {
   def runWith(args: String*): List[String] = {
     specRunner.args = args.toArray
+    specRunner.messages.clear
     specRunner.reportSpecs
     specRunner.messages.toList
   }
@@ -197,31 +191,34 @@ trait TestSpecs extends spex.Specification {
     specTwoSystemsRunner.messages.toList
   }
   def mainWith(args: String*): List[String] = {
+    specRunner.messages.clear
     specRunner.main(args.toArray)
     specRunner.messages.toList
   }
-  def clean = {
-    specTwoSystemsRunner.resetOptions()
-    specRunner.resetOptions
-    specWithTags.acceptAnyTag
-    specWithTags.resetForExecution
-    specTwoSystems.acceptAnyTag
-    specTwoSystems.resetForExecution
-    specRunner.messages.clear
-  }
-  object specRunner extends ConsoleRunner(specWithTags) with MockOutput
-  object specTwoSystems extends Specification {
-    "this is system one" should { "do nothing" in { 1 must_== 1 } }
-    "this is system two" should { "do nothing" in { 1 must_== 1 } }
-  }
-  object specTwoSystemsRunner extends ConsoleRunner(specTwoSystems) with MockOutput
+}
+class TestSpecs extends org.specs.Specification {
   def specWithTwoSystems = new SpecWithTwoSystems().run
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
+
+  def specTwoSystems = new Specification {
+    "this is system one" should { "do nothing" in { 1 must_== 1 } }
+    "this is system two" should { "do nothing" in { 1 must_== 1 } }
+  }
+  def specWithTags = new Specification {
+	"this sus" should {
+	  ("excluded" in { 1 must_== 1 }).tag("out")
+	  ("included" in { 1 must_== 1 }).tag("in")
+	  "failed" in { 1 must_== 0 }
+	  "error" in { 1 / 0 }
+	  "skipped" in { skip("skipped") }
+	}
+  }
 }
-abstract class TestSpecification extends LiterateSpecification with Console with MockOutput with Textile {
+abstract class TestSpecification extends org.specs.Specification with Expectations with MockOutput {
   override val specs = List(this)
-  override def main(args: Array[String]) = super[Console].main(args)
+}
+trait Expectations extends org.specs.Specification {
   val success = () => true mustBe true
   val isSkipped = () => skip("irrelevant")
   val isSkippedBecauseOfAFaultyMatcher = () => 1 must be(0).orSkipExample
@@ -262,15 +259,6 @@ class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpec
     messages
   }
 }
-object specWithTags extends Specification {
-  "this sus" should {
-    ("excluded" in { 1 must_== 1 }).tag("out")
-    ("included" in { 1 must_== 1 }).tag("in")
-    "failed" in { fail("failed"); 1 must_== 0 }
-    "error" in { error("error"); 1 must_== 1 }
-    "skipped" in { skip("skipped"); 1 must_== 1 }
-  }
-}
 
 class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpecification {
   def run = {
@@ -299,7 +287,8 @@ class SpecWithTwoSystems extends TestSpecification {
     this
   }
 }
-class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends TestSpecification {
+class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends LiterateSpecification with Expectations 
+with MockOutput with Textile {
   def run = {
     "The specification" is <p>
       Some text with {"embedded expectations" in {expectations(behaviours) foreach {_.apply}}}
