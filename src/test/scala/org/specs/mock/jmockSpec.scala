@@ -274,6 +274,8 @@ object jmockBadSpecification extends BadMocked {
   "The JMocker trait" should { 
     "provide a 'one' method failing if no method is called" in {
        expect { one(list).size }
+       
+       1 must_== 1
     }
     "provide an 'exactly' method failing if a lesser number of calls are made" in {
        expect { exactly(2).of(list).size }
@@ -343,13 +345,15 @@ trait BadMocked extends Mocked {
   }
   override def afterTest(ex: Example) = {
     if (checkAfterTest)
-      { context.assertIsSatisfied } must throwA[org.jmock.api.ExpectationError]
-    else
-      checkAfterTest = true
+      try { context.assertIsSatisfied } catch {
+        case e: org.jmock.api.ExpectationError =>
+        case _ => ex.addFailure(new org.specs.execute.FailureException("Expected a org.jmock.api.ExpectationError, got nothing"))
+      }
+      else
+        checkAfterTest = true
   }
 }
 trait Mocked extends Specification with JMocker with ExampleLifeCycle with ClassMocker {
-//  shareVariables()
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false
@@ -360,12 +364,7 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
     def methodWithLazy(p1: =>String) = p1
   }
 
-  var list: java.util.List[Object] = _
-  var scalaList: List[String] = Nil
-  def createMocks = {
-    scalaList = mockAs[List[String]]("scalaList")
-    list = mock[java.util.List[Object]]
-  }
-  override def beforeTest(ex: Example) = { createMocks }
+  var list: java.util.List[Object] = mock[java.util.List[Object]]
+  var scalaList: List[String] = mockAs[List[String]]("scalaList")
 }
 
