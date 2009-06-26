@@ -32,6 +32,12 @@ class consoleReporterSpec extends SpecificationWithJUnit {
 }
 class reporterSpecification extends TestSpecs {
   "A console reporter" should {
+    "report the time for each system and add times for the total" in {
+      val specWithTwoSystems = new SpecWithTwoSystems()
+      specWithTwoSystems.messages
+      val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
+      (susTime1 + susTime2) must beCloseTo(total, 50) // to account for rounding errors
+    }
     "report the name of the specification: 'A specification should'" in {
       specWithOneExample(that.isOk) must containMatch("A specification should")
     }
@@ -52,7 +58,9 @@ class reporterSpecification extends TestSpecs {
       specWithOneExample(that.isKo, that.isKo) must notContainMatch("second failure")
     }
     "display the failures of subexamples" in {
-      specWithOneExample(that.hasTwoSubExamples) must containMatchOnlyOnce("sub1 failed")
+      val specWithTwoSubExamples = new SpecWithSubexamples
+      specWithTwoSubExamples.reportSpecs
+      specWithTwoSubExamples.messages must containMatchOnlyOnce("1.1")
     }
     "display '1 error' if one example throws an exception" in {
       specWithOneExample(that.throwsAnException) must containMatch("1 error")
@@ -99,11 +107,6 @@ class reporterSpecification extends TestSpecs {
     }
     "indicate the line and class where the skipping occurred" in {
       specWithOneExample(that.isSkipped) must containMatch("(consoleReporterSpec.scala:\\d)")
-    }
-    "report the time for each system and add times for the total" in {
-      specWithTwoSystems.messages
-      val susTime1 :: susTime2 :: total :: Nil = specWithTwoSystems.elapsedTimes
-      (susTime1 + susTime2) must beCloseTo(total, 2) // to account for rounding errors
     }
     "not print out the description of an anonymous system" in {
       val spec = new SpecWithAnAnonymousSystem(that.isOk)
@@ -197,7 +200,6 @@ class consoleTraitSpecification extends TestSpecs {
   }
 }
 class TestSpecs extends org.specs.Specification {
-  def specWithTwoSystems = new SpecWithTwoSystems().run
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
 
@@ -226,7 +228,6 @@ trait Expectations extends org.specs.Specification {
   val failure2 = () => "ok" mustBe "second failure"
   val failMethod = () => fail("failure with the fail method")
   val exception= () => throw new Exception("new Error")
-  val subExamples = () => { "subexample1" in fail("sub1 failed"); "subexample2" in fail("sub2 failed") }
   def expectations(behaviours: List[that.Value]) = behaviours map {
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped
@@ -235,7 +236,6 @@ trait Expectations extends org.specs.Specification {
                                     case that.isKoTwice => () => {failure1(); failure2()}
                                     case that.isKoWithTheFailMethod => failMethod
                                     case that.throwsAnException => exception
-                                    case that.hasTwoSubExamples => subExamples
   }
 }
 
@@ -245,6 +245,16 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
        "have example 1 ok" in {
         expectations(behaviours) foreach {_.apply}
       }
+    }
+    reportSpecs
+    messages
+  }
+}
+class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpecification {
+  def run = {
+    "A specification" should {
+      "have example 2.1 ok" in { expectations(behaviours).head.apply}
+      "have example 2.2 ok" in { expectations(behaviours).last.apply }
     }
     reportSpecs
     messages
@@ -260,20 +270,13 @@ class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpec
   }
 }
 
-class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpecification {
-  def run = {
-    "A specification" should {
-      "have example 2.1 ok" in { expectations(behaviours).head.apply}
-      "have example 2.2 ok" in { expectations(behaviours).last.apply }
-    }
-    reportSpecs
-    messages
+class SpecWithSubexamples extends TestSpecification {
+  "A specification" should {
+      "have example 1 ok" in { "1.1" in { 1 must_== 1 } }
+      "have example 2 ok" in { "2.1" in { 1 must_== 1 } }
   }
 }
 class SpecWithTwoSystems extends TestSpecification {
-  def elapsedTimes = messages.flatMap(_.groups("Finished in .* (\\d+) ms")).filter(!_.isEmpty).toList.map(_.toInt)
-  def run = {
-    messages.clear
     "A specification" should {
       "have example 2.1 ok" in { Thread.sleep(10) }
       "have example 2.2 ok" in { Thread.sleep(10) }
@@ -282,10 +285,7 @@ class SpecWithTwoSystems extends TestSpecification {
       "have example 2.1 ok" in { Thread.sleep(10) }
       "have example 2.2 ok" in { Thread.sleep(10) }
     }
-    reportSpecs
-    messages
-    this
-  }
+    def elapsedTimes = {reportSpecs; messages.flatMap(_.groups("Finished in .* (\\d+) ms")).filter(!_.isEmpty).toList.map(_.toInt)}
 }
 class SpecWithLiterateDescription(behaviours: List[(that.Value)]) extends LiterateSpecification with Expectations 
 with MockOutput with Textile {
@@ -300,6 +300,5 @@ with MockOutput with Textile {
 
 object that extends Enumeration {
   val isKo, isOk, isKoTwice, isKoWithTheFailMethod,
-      throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher,
-      hasTwoSubExamples = Value
+      throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher = Value
 }
