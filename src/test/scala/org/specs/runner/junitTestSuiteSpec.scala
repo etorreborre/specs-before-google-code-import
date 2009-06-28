@@ -65,7 +65,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       val failure = result.failures.nextElement.asInstanceOf[TestFailure]
       failure.exceptionMessage must_== "'ok' is not the same as 'first failure'"
       failure.trace.split("\n")(0) must include(failure.exceptionMessage)
-      failure.trace.split("\n")(1) must (beMatching("TestSpec") and beMatching("consoleReporterSpec.scala:\\d"))
+      failure.trace.split("\n")(1) must be matching("Expectations") and be matching("consoleReporterSpec.scala:\\d")
     }
     "report an error with a stacktrace indicating the location of the error in the specification" in {
       val result = new TestResult
@@ -74,7 +74,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       val error = result.errors.nextElement.asInstanceOf[TestFailure]
       error.exceptionMessage must_== "java.lang.Exception: new Error"
       error.trace.split("\n")(0) must include(error.exceptionMessage)
-      error.trace.split("\n")(1) must (beMatching("TestSpec") and beMatching("consoleReporterSpec.scala:\\d"))
+      error.trace.split("\n")(1) must (beMatching("Expectations") and beMatching("consoleReporterSpec.scala:\\d"))
     }
     "report a skipped test" in {
       val result = new TestResult
