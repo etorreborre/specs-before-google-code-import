@@ -33,7 +33,7 @@ object jmockGoodSpecification extends Mocked {
   "The JMocker trait" should {
     "provide a 'one' method succeeding if only one method is called" in {
       expect { one(list).size }
-      list.size()
+      list.size
     }
     "provide an 'exactly' method succeeding if exactly the right number of calls are made" in {
       expect { 2.of(list).size }
@@ -259,15 +259,6 @@ object jmockGoodSpecification extends Mocked {
       }
     }
   }
-  object mockContext extends Context {
-    var mock: ToMock = _
-    before(mock = classOf[ToMock].expectsOne(_.isEmpty).mock)
-  }
-  "The JMocker trait" ->-(mockContext)  should {
-    "allow mocks to be declared in the sus context" in {
-      mockContext.mock.isEmpty
-    }
-  }
 }
 
 object jmockBadSpecification extends BadMocked {
@@ -364,7 +355,7 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
     def methodWithLazy(p1: =>String) = p1
   }
 
-  var list: java.util.List[Object] = mock[java.util.List[Object]]
-  var scalaList: List[String] = mockAs[List[String]]("scalaList")
+  val list: java.util.List[Object] = mock[java.util.List[Object]]
+  val scalaList: List[String] = mockAs[List[String]]("scalaList")
 }
 
