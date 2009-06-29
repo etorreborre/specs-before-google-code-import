@@ -2,39 +2,42 @@ package org.specs.samples
 
 class isolatedExamples extends spex.Specification {
   var x = 0 
+  def inc() = {
+    x = x + 1
+  }
   "a" should {
-    x += 1
+    inc()
     "b" in { 
-      x += 1 
+      inc() 
       "b1" in {
-        x += 1 
+        inc() 
         x must_== 3
       } 
       "b2" in { 
-        x += 1 
+        inc() 
         x must_== 3 
       } 
     } 
     "c" in { 
-      x += 1 
+      inc() 
       x must_== 2
     } 
   } 
   "d" should {
-    x += 1
+    inc()
     "e" in { 
-      x += 1 
+      inc() 
       "e1" in {
-        x += 1 
+        inc() 
         x must_== 3 
       } 
       "e2" in { 
-        x += 1 
+        inc() 
         x must_== 3
       } 
     } 
     "f" in { 
-      x += 1 
+      inc() 
       x must_== 2
     } 
   }

@@ -104,7 +104,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   var failedSus: Option[String] = None
   var isSpecified = false
   private var execution = () => ()
-  private var executed = false
+  protected[specification] var executed = false
   private def execute = if (!executed) {
     executed = true
     execution()

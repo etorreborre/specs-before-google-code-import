@@ -39,9 +39,6 @@ trait SpecsFilter extends SpecsHolder {
   /** pattern for the examples. */
   lazy val exampleFilter = compilePattern("example", examplePattern)
 
-  /** will not return sus whose all examples are filtered. */
-  def filterEmptySus = true
-
   private def compilePattern(description: String, pattern: String) = {
     try { compile(pattern) }
     catch {
@@ -57,7 +54,7 @@ trait SpecsFilter extends SpecsHolder {
 
   /**
    * filter a specification.
-   * @return None if the resulting specification has no SUS or systems
+   * @return None if the resulting specification has no subspecifications
    */
   def filter(specification: Specification): Option[Specification] = {
     specification.subSpecifications = specification.subSpecifications.flatMap(filter(_)).toList
@@ -70,15 +67,11 @@ trait SpecsFilter extends SpecsHolder {
 
   /**
    * filter a SUS.
-   * @return None if the resulting SUS has no examples
+   * @return None if the sus doesn't match the description
    */
   def filter(sus: Sus): Option[Sus] = {
-    if (susFilter.matcher(sus.description).find) {
-      filterExamples(sus) match {
-        case s if s.examples.size > 0 =>  Some(s)
-        case s => if (filterEmptySus) None else Some(s)
-      }
-    }
+    if (susFilter.matcher(sus.description).find)
+      Some(sus)
     else
       None
   }

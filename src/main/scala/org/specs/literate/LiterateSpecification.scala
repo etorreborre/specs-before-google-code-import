@@ -52,7 +52,4 @@ class LiterateSpecification extends Specification with LiterateBaseSpecification
   shareVariables()
 
   def this(n: String) = { this(); name = n; description = n; this }
-
-  /** allow empty sus to be reported. */
-  override def filterEmptySus = false
 }
