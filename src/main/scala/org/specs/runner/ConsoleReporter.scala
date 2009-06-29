@@ -152,7 +152,8 @@ trait OutputReporter extends Reporter with Output {
    */
   def printSus(sus: Sus, padding: String) = {
     var susDescription = if (sus.isAnonymous) "" else sus.description + " " + sus.verb  
-    println(padding + susDescription + sus.skippedSus.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
+    if (!sus.examples.isEmpty)
+      println(padding + susDescription + sus.skippedSus.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
     if (!sus.literateDesc.isEmpty) 
       println(padding + sus.literateDescText)
     timer.start

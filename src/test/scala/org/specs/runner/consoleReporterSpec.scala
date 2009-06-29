@@ -117,6 +117,9 @@ class reporterSpecification extends TestSpecs {
       spec.setNoStacktrace()
       spec.run mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
+    "not print out an empty sus" in {
+      new SpecWithAnEmptySus().run.toList must not containMatch("An empty system")
+    }
   }
 }
 class consoleTraitSpecification extends TestSpecs {
@@ -269,7 +272,14 @@ class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpec
     messages
   }
 }
-
+class SpecWithAnEmptySus extends TestSpecification {
+  def run = {
+    "An empty system" should {
+    }
+    reportSpecs
+    messages
+  }
+}
 class SpecWithSubexamples extends TestSpecification {
   "A specification" should {
       "have example 1 ok" in { "1.1" in { 1 must_== 1 } }
