@@ -133,9 +133,7 @@ trait OutputReporter extends Reporter with Output {
     def displaySus(s: Sus) = if (systems.toList.size > 1) reportSus(s, padding) else printSus(s, padding)
     systems foreach { s =>
       if (canReport(s)) {
-        timer.start
         displaySus(s)
-        timer.stop
       }
     }
   }
@@ -158,7 +156,9 @@ trait OutputReporter extends Reporter with Output {
     println(adjustedPadding + susDescription + sus.skippedSus.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
     if (!sus.literateDesc.isEmpty) 
       println(adjustedPadding + sus.literateDescText)
+    timer.start
     reportExamples(sus.examples, adjustedPadding)
+    timer.stop
     println("")
   }
   /**

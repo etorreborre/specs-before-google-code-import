@@ -437,7 +437,7 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
       this
     }
   }
-  /** 
+  /** n
    * One liner function for expectations.<p>
    * Usage:<code>  
    *   expect[List[Int]] { one(_).size } { l =>
@@ -553,14 +553,6 @@ trait JMockActions {
  * The context and expectations are always created at the beginning of an Example, then checked just after the test has been executed. Executing a test can also trigger an ExpectationError (from the jMock library). This error will be transformed into a FailureException
  */
 trait JMockerExampleLifeCycle extends ExampleLifeCycle with JMockerContext {
-
-  /** 
-   * before any example, a new context and new expectations should be created
-   */
-  override def beforeExample(ex: Example) = {
-    super.beforeExample(ex)
-    restart
-  }
 
   /** 
    * An expectation error may be thrown during the execution of a test

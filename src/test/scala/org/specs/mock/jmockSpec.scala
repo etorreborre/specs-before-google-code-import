@@ -33,7 +33,7 @@ object jmockGoodSpecification extends Mocked {
   "The JMocker trait" should {
     "provide a 'one' method succeeding if only one method is called" in {
       expect { one(list).size }
-      list.size()
+      list.size
     }
     "provide an 'exactly' method succeeding if exactly the right number of calls are made" in {
       expect { 2.of(list).size }
@@ -259,21 +259,14 @@ object jmockGoodSpecification extends Mocked {
       }
     }
   }
-  object mockContext extends Context {
-    var mock: ToMock = _
-    before(mock = classOf[ToMock].expectsOne(_.isEmpty).mock)
-  }
-  "The JMocker trait" ->-(mockContext)  should {
-    "allow mocks to be declared in the sus context" in {
-      mockContext.mock.isEmpty
-    }
-  }
 }
 
 object jmockBadSpecification extends BadMocked {
   "The JMocker trait" should { 
     "provide a 'one' method failing if no method is called" in {
        expect { one(list).size }
+       
+       1 must_== 1
     }
     "provide an 'exactly' method failing if a lesser number of calls are made" in {
        expect { exactly(2).of(list).size }
@@ -343,13 +336,15 @@ trait BadMocked extends Mocked {
   }
   override def afterTest(ex: Example) = {
     if (checkAfterTest)
-      { context.assertIsSatisfied } must throwA[org.jmock.api.ExpectationError]
-    else
-      checkAfterTest = true
+      try { context.assertIsSatisfied } catch {
+        case e: org.jmock.api.ExpectationError =>
+        case _ => ex.addFailure(new org.specs.execute.FailureException("Expected a org.jmock.api.ExpectationError, got nothing"))
+      }
+      else
+        checkAfterTest = true
   }
 }
 trait Mocked extends Specification with JMocker with ExampleLifeCycle with ClassMocker {
-//  shareVariables()
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false
@@ -360,12 +355,7 @@ trait Mocked extends Specification with JMocker with ExampleLifeCycle with Class
     def methodWithLazy(p1: =>String) = p1
   }
 
-  var list: java.util.List[Object] = _
-  var scalaList: List[String] = Nil
-  def createMocks = {
-    scalaList = mockAs[List[String]]("scalaList")
-    list = mock[java.util.List[Object]]
-  }
-  override def beforeTest(ex: Example) = { createMocks }
+  val list: java.util.List[Object] = mock[java.util.List[Object]]
+  val scalaList: List[String] = mockAs[List[String]]("scalaList")
 }
 

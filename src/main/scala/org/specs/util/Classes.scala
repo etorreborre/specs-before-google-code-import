@@ -85,7 +85,7 @@ trait Classes extends ConsoleOutput {
             Some(c.newInstance)
           else if (constructors.toList(0).getParameterTypes.size == 1) {
             val outerClassName = getOuterClassName(c)
-            tryToCreateObject[Object](outerClassName, true, true).map(constructors(0).newInstance(_).asInstanceOf[T])
+            tryToCreateObject[Object](outerClassName, printMessage, printStackTrace).map(constructors(0).newInstance(_).asInstanceOf[T])
           }
           else
             None
