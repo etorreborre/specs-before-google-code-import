@@ -143,7 +143,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportSus(sus: Sus, padding: String) = {
     printSus(sus, padding);
-    if (statistics() && !finalStatisticsOnly()) 
+    if (statistics() && !finalStatisticsOnly() && !sus.examples.isEmpty) 
       printStats(sus, padding)
   }
 

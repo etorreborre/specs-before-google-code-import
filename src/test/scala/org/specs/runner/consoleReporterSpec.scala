@@ -119,6 +119,7 @@ class reporterSpecification extends TestSpecs {
     }
     "not print out an empty sus" in {
       new SpecWithAnEmptySus().run.toList must not containMatch("An empty system")
+      new SpecWithAnEmptySus().run.toList must not containMatch("Total for SUS")
     }
   }
 }
