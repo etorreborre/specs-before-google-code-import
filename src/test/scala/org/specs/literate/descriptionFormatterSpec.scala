@@ -35,6 +35,7 @@ class descriptionFormatterSpec extends SpecificationWithJUnit {
     }
     detailedDiffs()
     val example = new Example("example desc", this)
+    example in { 1 must_== 1 }
     example.executeThis
     "set the status of the example descriptions depending on the example status" in {
       textileFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)).toString must 
