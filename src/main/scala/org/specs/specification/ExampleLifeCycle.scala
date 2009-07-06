@@ -42,8 +42,11 @@ trait ExampleLifeCycle {
   def beforeExample(ex: Example) = { setCurrentExample(Some(ex)) }
   def beforeTest(ex: Example)= {}
   def afterTest(ex: Example) = {}
+  def executeSus(sus: Sus): this.type = { sus.execution(); this }
   def executeExample(ex: Example): this.type = { ex.executeThis; this }
-  def executeTest(ex: Example, t: =>Any): Any = ex.execute(t)
+  def executeTest(ex: Example, t: =>Any): Any = {
+    ex.execute(t)
+  }
   def afterExample(ex: Example) = {
     example = None
   }

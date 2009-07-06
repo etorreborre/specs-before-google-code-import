@@ -154,21 +154,22 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /**
    * Return the example being currently executed if any
    */
-  def lastExample: Option[Example] = example
+  def lastExample: Option[Example] = example.orElse(parentLifeCycle.example)
 
+  var parentLifeCycle = this
   /**
    * utility method to track the last example list being currently defined.<br>
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined
    */
   protected[specification] def exampleContainer: Any {def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example} = {
-    example match {
+    example.orElse(parentLifeCycle.example) match {
       case Some(e) => e
       case None => currentSus
     }
   }
   protected[specification] def currentLifeCycle: ExampleLifeCycle = {
-    example match {
+    example.orElse(parentLifeCycle.example) match {
       case Some(e) => e.cycle
       case None => currentSus
     }

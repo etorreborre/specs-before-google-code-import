@@ -45,7 +45,7 @@ import org.specs.execute._
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
-case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults {
+case class Example(var exampleDescription: ExampleDescription, var cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults {
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   def description = exampleDescription.toString
@@ -132,7 +132,7 @@ case class Example(var exampleDescription: ExampleDescription, cycle: ExampleLif
   }
   protected def skipIfNoExpectations() = {
     if (this.expectationsNumber == 0 && 
-          this.subExs.isEmpty && //this.thisSkipped.isEmpty && this.thisFailures.isEmpty && this.thisErrors.isEmpty && 
+          this.subExs.isEmpty && this.thisSkipped.isEmpty && this.thisFailures.isEmpty && this.thisErrors.isEmpty && 
           Configuration.config.examplesWithoutExpectationsMustBePending)
       throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("(specification.Example|LiterateSpecification)")
   }
