@@ -22,7 +22,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
             s.executeOneExampleOnly = true
             s.expectationsListener = this
             s.parentLifeCycle = this
-            val cloned = s.systems(this.systems.indexOf(sus))
+            val cloned = s.systems(this.systems.zipWithIndex.find(_._1 eq sus).map(_._2).getOrElse(-1))
             cloned.execution()
             sus.exampleList = cloned.exampleList
             sus.exampleList.foreach(_.cycle = sus)
