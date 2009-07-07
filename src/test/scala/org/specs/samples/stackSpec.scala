@@ -34,7 +34,7 @@ class stackSpec extends StackSpecification {
   "A non-empty stack below full capacity" should {
     doBefore(stack = nonEmpty)
     "not be empty" in { 
-      stack verifies { !_.isEmpty }
+      stack verifies (!_.isEmpty)
     }
     "return the top item when sent #top" in { 
       stack.top mustBe stack.lastItemAdded

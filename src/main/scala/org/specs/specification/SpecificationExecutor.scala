@@ -34,6 +34,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
             sus.skippedSus = cloned.skippedSus
             sus.failedSus = cloned.failedSus
             sus.executed = true
+            s.executeOneExampleOnly = false
         }
       }
     }
