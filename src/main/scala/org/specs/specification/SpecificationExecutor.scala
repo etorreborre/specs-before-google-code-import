@@ -26,6 +26,13 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
             cloned.execution()
             sus.exampleList = cloned.exampleList
             sus.exampleList.foreach(_.cycle = sus)
+            sus.before = cloned.before
+            sus.after = cloned.after
+            sus.untilPredicate = cloned.untilPredicate
+            sus.firstActions = cloned.firstActions
+            sus.lastActions = cloned.lastActions
+            sus.skippedSus = cloned.skippedSus
+            sus.failedSus = cloned.failedSus
             sus.executed = true
         }
       }
