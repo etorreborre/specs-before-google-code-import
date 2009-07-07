@@ -44,8 +44,7 @@ class wikiFormatterSpec extends spex.Specification {
   }
   "A wiki formatter setStatus function" should {
     val exampleDesc = "a description"
-    val example = new Example("a description", this)
-    example.executeThis
+    val example = "a description" in (1 must_== 1)
     val descWithStatus = new WikiFormatter(){}.setStatus(exampleDesc, List(example))
 
     "set the example status as an xml attribute" in {

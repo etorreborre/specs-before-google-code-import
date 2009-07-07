@@ -19,22 +19,25 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
       cloneSpecification match {
         case None => sus.execution()
         case Some(s) => {
-            s.executeOneExampleOnly = true
-            s.expectationsListener = this
-            s.parentLifeCycle = this
-            val cloned = s.systems(this.systems.zipWithIndex.find(_._1 eq sus).map(_._2).getOrElse(-1))
-            cloned.execution()
-            sus.exampleList = cloned.exampleList
-            sus.exampleList.foreach(_.cycle = sus)
-            sus.before = cloned.before
-            sus.after = cloned.after
-            sus.untilPredicate = cloned.untilPredicate
-            sus.firstActions = cloned.firstActions
-            sus.lastActions = cloned.lastActions
-            sus.skippedSus = cloned.skippedSus
-            sus.failedSus = cloned.failedSus
-            sus.executed = true
-            s.executeOneExampleOnly = false
+            val index = this.systems.zipWithIndex.find(_._1 eq sus).map(_._2).getOrElse(-1)
+            if (index < s.systems.size) {
+              s.executeOneExampleOnly = true
+              s.expectationsListener = this
+              s.parentLifeCycle = this
+              val cloned = s.systems(index)
+              cloned.execution()
+              sus.exampleList = cloned.exampleList
+              sus.exampleList.foreach(_.cycle = sus)
+              sus.before = cloned.before
+              sus.after = cloned.after
+              sus.untilPredicate = cloned.untilPredicate
+              sus.firstActions = cloned.firstActions
+              sus.lastActions = cloned.lastActions
+              sus.skippedSus = cloned.skippedSus
+              sus.failedSus = cloned.failedSus
+              sus.executed = true
+              s.executeOneExampleOnly = false
+            }
         }
       }
     }

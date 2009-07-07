@@ -186,7 +186,7 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   }
   /** forwards the call to the "parent" cycle */
   override def executeExample(ex: Example): this.type = { 
-    if (exampleList.head == ex)
+    if (!exampleList.isEmpty  && exampleList.head == ex)
       ex.executeThis
     else
       parent.executeExample(ex) 
