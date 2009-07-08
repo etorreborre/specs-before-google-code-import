@@ -31,16 +31,6 @@ class specsFilterSpec extends SpecificationWithJUnit {
       systems.size must_== 1
       systems.first.description must beMatching("sus2")
     }
-    "filter out sus with no examples" in {
-      object spec extends Specification {
-        "this sus is sus1 and it" should {
-          "have one example ex1" in {}
-          "have one example ex2" in {}
-        }
-        "this sus is sus2 and it" should { "have one example ex1" in {} }
-      }
-      filter(List(spec), ".*", ".*ex2").first.systems.size must_== 1
-    }
     "filter the examples of the specification according to a regular expression" in {
       object spec extends Specification {
         "this sus is sus1 and it" should {

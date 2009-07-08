@@ -70,8 +70,10 @@ trait SpecsFilter extends SpecsHolder {
    * @return None if the sus doesn't match the description
    */
   def filter(sus: Sus): Option[Sus] = {
-    if (susFilter.matcher(sus.description).find)
-      Some(sus)
+    if (susFilter.matcher(sus.description).find) {
+       sus.examplesFilter = { ex => filterExample(ex) }
+       Some(sus)
+    }
     else
       None
   }
@@ -84,7 +86,7 @@ trait SpecsFilter extends SpecsHolder {
     if (exampleFilterPattern == ".*") // to speed up the execution
       sus
     else {
-      sus.exampleList_=(sus.examples.flatMap(filterExample(_)).toList)
+      sus.examplesFilter = filterExample(_)
       sus
     }
   }

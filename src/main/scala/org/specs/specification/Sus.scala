@@ -72,11 +72,13 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   }
   /** Return all the examples for this system, including the subexamples (recursively). */
   def allExamples = examples.flatMap(_.allExamples)
-  
+  var examplesFilter: Example => Option[Example] = (e: Example) => Some(e)
   /** add an example to the list of examples. */
   def addExample(e: Example) = {
-    addChild(e)
-    exampleList = exampleList ::: List(e)
+    examplesFilter(e) map { ex =>
+      addChild(ex)
+      exampleList = exampleList ::: List(ex)
+    }
   }
   
   /** create a new example with a description and add it to the current Sus. */
