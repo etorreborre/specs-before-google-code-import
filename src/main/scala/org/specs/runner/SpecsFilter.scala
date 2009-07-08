@@ -79,19 +79,6 @@ trait SpecsFilter extends SpecsHolder {
   }
 
   /**
-   * filter the examples of a SUS according to the regular expression.
-   * @return None if the resulting SUS has no examples
-   */
-  def filterExamples(sus: Sus): Sus = {
-    if (exampleFilterPattern == ".*") // to speed up the execution
-      sus
-    else {
-      sus.examplesFilter = filterExample(_)
-      sus
-    }
-  }
-
-  /**
    * filter one example.
    * @return None if the example does not match the expected regular expression
    */
