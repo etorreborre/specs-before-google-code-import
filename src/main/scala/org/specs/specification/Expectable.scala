@@ -53,6 +53,8 @@ class Expectable[T](value: => T) {
   private var successValueToString: SuccessValue => String = s => ""
   /** the listener will be called for every match to register a new Expectation. */
   private var expectationsListener: Option[ExampleExpectationsListener] = None
+  /** the function creating failure exceptions. */
+  private var failureFactory: FailureFactory = new DefaultFailureFactory {}
   /**
    * stores a precise description of the thing being expected.
    * This description is meant to be passed to the matcher for better failure reporting.
@@ -100,7 +102,7 @@ class Expectable[T](value: => T) {
       result match {
         case false => {
           addMatchMessage(koMessage)
-          new FailureExceptionWithResult(makeFailureMessage, 
+          failureFactory.createFailure(makeFailureMessage, 
                                          new Result(this, successValueToString)).throwWithStackTraceOf(failureTemplate.removeTracesWhileNameMatches("(Expectable.scala|Matchers.scala)"))
         }
         case _ => {
@@ -135,6 +137,11 @@ class Expectable[T](value: => T) {
     this
   }
 
+  /** setter for the failure factory. */
+  def setFailureFactory(factory: FailureFactory): this.type = {
+    failureFactory = factory
+    this
+  }
   /**
    * Set a new function to render success values
    */
@@ -300,7 +307,7 @@ trait OrResults {
         result = r
         result.setAlreadyOk()
       } catch {
-        case f: FailureExceptionWithResult[T] => return f.result.matchWith(m)
+        case f: HasResult[T] => return f.result.matchWith(m)
         case t => throw t
       }
       result
@@ -313,11 +320,11 @@ trait OrResults {
         try { 
           result.nextSignificantMatchMustFail().matchWith(m)
         } catch {
-          case f: FailureExceptionWithResult[T] => return result
+          case f: HasResult[T] => return result
           case t => throw t
         }
       } catch {
-        case f: FailureExceptionWithResult[T] => return f.result.matchWith(m)
+        case f: HasResult[T] => return f.result.matchWith(m)
         case t => throw t
       }
       result
@@ -329,7 +336,7 @@ trait OrResults {
  * This Exception is necessary to handle the "OR" case "value must be equalTo(bad) or be equalTo(good)"
  * where the first match is not ok.
  */
-case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends FailureException(m)
+case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends FailureException(m) with HasResult[T]
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
 
@@ -361,4 +368,13 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   def a(m: => Matcher[T]) = matchWith(m)
   def an(m: => Matcher[T]) = matchWith(m)
   def the(m: => Matcher[T]) = matchWith(m)
+}
+trait FailureFactory {
+  def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T]
+}
+trait HasResult[T] {
+  val result: Result[T]
+}
+trait DefaultFailureFactory extends FailureFactory {
+  def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T] = new FailureExceptionWithResult(message, result)
 }

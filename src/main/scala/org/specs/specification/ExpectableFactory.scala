@@ -31,13 +31,15 @@ import org.specs.matcher._
  * Then StringMatchers are expecting values with String as an upper bound so that effectively only String instances
  * will be used with the implicit def (only solution found to make it all work, to my current understanding)
  */
-trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
+trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues with FailureFactory {
+  def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T] = new FailureExceptionWithResult(message, result)
 
   /** implicit transformation of an object into one supporting AnyMatcher matchers */
   implicit def theValue[A](value: =>A): Expectation[A] = {
     val a = new Expectation(value)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
+    a.setFailureFactory(this)
   }
 
   /** implicit transformation of a String into an object supporting String matchers */
@@ -45,6 +47,7 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     val a = new StringExpectable(value.toString)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
+    a.setFailureFactory(this)
   }
 
   /**
@@ -55,12 +58,14 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     val a = new Expectation(value)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
+    a.setFailureFactory(this)
   }
   /** implicit transformation of an Iterable[String] into an object supporting IterableString matchers */
   implicit def theStrings(value: =>Iterable[String]): IterableStringExpectable = {
     val a = new IterableStringExpectable(value)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
+    a.setFailureFactory(this)
   }
 
   /** implicit transformation of an Iterable into an object supporting Iterable matchers */
@@ -68,6 +73,7 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues {
     val a = new IterableExpectable(value)
     a.setSuccessValueToString(successValueToString _)
     a.setExpectationsListener(this)
+    a.setFailureFactory(this)
   }
 }
 class DelegatedExpectableFactory(var delegate: ExpectableFactory) extends ExpectableFactory {
