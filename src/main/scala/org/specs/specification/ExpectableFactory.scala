@@ -32,6 +32,8 @@ import org.specs.matcher._
  * will be used with the implicit def (only solution found to make it all work, to my current understanding)
  */
 trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues with FailureFactory {
+
+  /** create a FailureExceptionWithResult when an expectation is failing */
   def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T] = new FailureExceptionWithResult(message, result)
 
   /** implicit transformation of an object into one supporting AnyMatcher matchers */

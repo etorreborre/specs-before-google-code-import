@@ -54,7 +54,7 @@ class Expectable[T](value: => T) {
   /** the listener will be called for every match to register a new Expectation. */
   private var expectationsListener: Option[ExampleExpectationsListener] = None
   /** the function creating failure exceptions. */
-  private var failureFactory: FailureFactory = new DefaultFailureFactory {}
+  private var failureFactory: FailureFactory = new SpecsFailureFactory {}
   /**
    * stores a precise description of the thing being expected.
    * This description is meant to be passed to the matcher for better failure reporting.
@@ -340,41 +340,3 @@ case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends F
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
 
-/** 
- * Result of a match
- * 
- * This object carries the Expectable object, in order to apply further matches if necessary.
- * 
- * It has a display function which can be used to set the toString function to an empty string,
- * in the case of Literate specifications where we want to embed expectations without having their
- * result printed in the specification text.
- * 
- * It can also be set to "already ok" in order to court-circuit any further matches in the case of "or-ed"
- * matchers with a successful first match.
- * 
- */
-class Result[T](expectable: => Expectable[T], display: SuccessValue => String) extends SuccessValue {
-  private var isAlreadyOk = false
-  def setAlreadyOk() = { isAlreadyOk = true; this }
-  def setNotAlreadyOk() = { isAlreadyOk = false; this }
-  override def toString = display(this)
-  def nextSignificantMatchMustFail() = { expectable.nextSignificantMatchMustBeNegated(); this }
-  def matchWith[S >: T](m: => Matcher[S]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
-  def matchWithMatcher(m: => Matcher[T]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
-  def be(m: => Matcher[T]) = matchWith(m)
-  def have(m: => Matcher[T]) = matchWith(m)
-  def apply(m: => Matcher[T]) = matchWith(m)
-  def and(m: => Matcher[T]) = matchWith(m)
-  def a(m: => Matcher[T]) = matchWith(m)
-  def an(m: => Matcher[T]) = matchWith(m)
-  def the(m: => Matcher[T]) = matchWith(m)
-}
-trait FailureFactory {
-  def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T]
-}
-trait HasResult[T] {
-  val result: Result[T]
-}
-trait DefaultFailureFactory extends FailureFactory {
-  def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T] = new FailureExceptionWithResult(message, result)
-}
