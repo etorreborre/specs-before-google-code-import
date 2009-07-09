@@ -45,7 +45,9 @@ import org.specs.execute._
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
-case class Example(var exampleDescription: ExampleDescription, var cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults {
+case class Example(var exampleDescription: ExampleDescription, var cycle: ExampleLifeCycle) extends TreeNode with Tagged with DefaultResults 
+ with ExampleLifeCycle
+{
   def this(desc: String, cycle: ExampleLifeCycle) = this(ExampleDescription(desc), cycle)
 
   def description = exampleDescription.toString
@@ -67,14 +69,14 @@ case class Example(var exampleDescription: ExampleDescription, var cycle: Exampl
     addChild(e)
     subExs += e
   }
-  def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
-    val ex = new Example(ExampleDescription(desc), lifeCycle)
+  def createExample(desc: String) = {
+    val ex = new Example(ExampleDescription(desc), this)
     addExample(ex)
     ex
   }
   def copyExecutionResults(other: Example) = {
     this.hardCopyResults(other)
-    other.subExs.foreach(e => this.createExample(e.description.toString, this.cycle))
+    other.subExs.foreach(e => this.createExample(e.description.toString))
     this.expectationsNumber = other.expectationsNumber
     this.execution.executed = true
   }
@@ -122,6 +124,18 @@ case class Example(var exampleDescription: ExampleDescription, var cycle: Exampl
 
   /** execute the example, checking the expectations. */
   def execute = if (!execution.executed) cycle.executeExample(this)
+
+  /** forwards the call to the "parent" cycle */
+  override def executeExample(ex: Example): this.type = { 
+    if (!subExs.isEmpty  && subExs.toList.head == ex)
+      ex.executeThis
+    else
+      cycle.executeExample(ex) 
+    this
+  }
+  override def setCurrentExample(e: Option[Example]) = {
+    cycle.setCurrentExample(e)
+  }
 
   def before = {}
   def after = {}

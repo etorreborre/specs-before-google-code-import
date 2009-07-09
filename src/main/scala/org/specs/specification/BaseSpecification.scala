@@ -138,7 +138,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
   implicit def forExample(desc: String) = {
-    exampleContainer.createExample(desc, currentLifeCycle)
+    exampleContainer.createExample(desc)
   }
 
   /**
@@ -162,19 +162,12 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined
    */
-  protected[specification] def exampleContainer: Any {def createExample(desc: String, lifeCycle: ExampleLifeCycle): Example} = {
+  protected[specification] def exampleContainer: Any {def createExample(desc: String): Example} = {
     example.orElse(parentLifeCycle.example) match {
       case Some(e) => e
       case None => currentSus
     }
   }
-  protected[specification] def currentLifeCycle: ExampleLifeCycle = {
-    example.orElse(parentLifeCycle.example) match {
-      case Some(e) => e.cycle
-      case None => currentSus
-    }
-  }
-
   /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
 
@@ -228,7 +221,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     def like(other: Sus): Example = {
       val behaveLike: Example = forExample("behave like " + other.description.uncapitalize)
       other.examples.foreach { o => 
-        val e = behaveLike.createExample(o.description.toString, behaveLike.cycle)
+        val e = behaveLike.createExample(o.description.toString)
         e.execution = o.execution
       }
       behaveLike

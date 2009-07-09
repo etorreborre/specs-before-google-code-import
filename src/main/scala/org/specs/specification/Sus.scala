@@ -82,8 +82,8 @@ case class Sus(description: String, parent: BaseSpecification) extends TreeNode 
   }
   
   /** create a new example with a description and add it to the current Sus. */
-  def createExample(desc: String, lifeCycle: ExampleLifeCycle) = {
-    val ex = new Example(ExampleDescription(desc), lifeCycle)
+  def createExample(desc: String) = {
+    val ex = new Example(ExampleDescription(desc), this)
     addExample(ex)
     ex
   }

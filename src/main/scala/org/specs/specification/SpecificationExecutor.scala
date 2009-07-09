@@ -13,7 +13,7 @@ import org.specs.util.{ Configuration }
 trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification with ExampleExpectationsListener =>
   /** execute a sus by cloning the specification and executing the cloned sus */
   override def executeSus(sus: Sus): this.type = {
-    if (!oneSpecInstancePerExample || executeOneExampleOnly || systems(0) == sus)
+    if (!oneSpecInstancePerExample || systems(0) == sus) // || executeOneExampleOnly 
       sus.execution()
     else {
       cloneSpecification match {
@@ -64,6 +64,7 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
                 example.copyExecutionResults(c)
               }
             }
+            s.expectationsListener = this
             executed = true
           }
         }
