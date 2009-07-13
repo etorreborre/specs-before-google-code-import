@@ -107,7 +107,7 @@ trait JUnit extends JUnitSuite with Reporter {
     filteredSpecs foreach {
       specification =>
               specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
-              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skippedSus))}
+              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skipped.headOption))}
     }
   }
 }

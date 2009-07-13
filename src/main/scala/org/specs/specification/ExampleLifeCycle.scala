@@ -25,31 +25,142 @@ package org.specs.specification
  * <li>with functions being executed before / after the example tests
  * </ul>
  */
-trait ExampleLifeCycle {
+trait ExampleLifeCycle extends ExampleStructure {
+  var parent: Option[ExampleLifeCycle] = None
+  var current: Option[Example] = None
+  var execution = new ExampleExecution(this, () => ())
+
   protected var sequential = false
   def isSequential = sequential
   def setSequential() = sequential = true
-
-  var sus: Option[Sus] = None
-  var example: Option[Example] = None
-  def until = true
-  def setCurrentExample(ex: Option[Example]) = {
+  
+  def setCurrent(ex: Option[Example]) = {
     example = ex
+    parent.setCurrent(ex)
   }
-  def setCurrentSus(s: Option[Sus]) = {
-    sus = s
+  def afterExample(ex: Example) = current = None
+  def beforeExample(ex: Example) = { setCurrent(Some(ex)) }
+  /** forward the call to the "parent" cycle */
+  def beforeTest(ex: Example) = parent.beforeTest(ex)
+  /** forward the call to the "parent" cycle */
+  def afterTest(ex: Example) = parent.afterTest(ex)
+  /** create the main block to execute when "execute" will be called */
+  protected def specifyExample(a: =>Any): Unit = {
+    execution = new ExampleExecution(this, () => {
+      parent.setCurrent(Some(this))
+      a
+      parent.setCurrent(None)
+    })
+    if (parent.isSequential)
+      execute
   }
-  def beforeExample(ex: Example) = { setCurrentExample(Some(ex)) }
-  def beforeTest(ex: Example)= {}
-  def afterTest(ex: Example) = {}
-  def executeSus(sus: Sus): this.type = { sus.execution(); this }
-  def executeExample(ex: Example): this.type = { ex.executeThis; this }
-  def executeTest(ex: Example, t: =>Any): Any = {
-    ex.execute(t)
+  /** execute this example but not if it has already been executed. */
+  def execute = {
+    if (!execution.executed) 
+      parent.executeExample(this)
   }
-  def afterExample(ex: Example) = {
-    example = None
+  def executeThis = execution.execute
+  def executeTest(ex: Example, t: =>Any): Any = ex.execute(t)
+
+  /** execute one contained example */
+  def executeExample(ex: Example): this.type = { 
+    if (!exampleList.isEmpty  && exampleList.head == ex)
+      ex.executeThis
+    else
+      parent.executeExample(ex) // forward the execution strategy to the parent 
+    this
+  }
+  /** reset in order to be able to run all the examples again */
+  def resetForExecution: this.type = {
+    examples.foreach(_.resetForExecution)
+    this
+  }
+  def copyExecutionResults(other: Example) = {
+    this.hardCopyResults(other)
+    other.subExs.foreach(e => this.createExample(e.description.toString))
+    this.expectationsNumber = other.expectationsNumber
+    this.execution.executed = true
+  }
+
+  def doTest[T](expectations: => T) = parent.executeTest(this, expectations)
+
+  /** encapsulates the expectations to execute */
+  def execute(t: => Any): Any = {
+    val executed = t
+    skipIfNoExpectations()
+    executed
+  }
+  protected def skipIfNoExpectations() = {
+    if (this.expectationsNumber == 0 && 
+          this.subExs.isEmpty && this.thisSkipped.isEmpty && this.thisFailures.isEmpty && this.thisErrors.isEmpty && 
+          Configuration.config.examplesWithoutExpectationsMustBePending)
+      throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("(specification.Example|LiterateSpecification)")
+  }
+
+  /** reset in order to be able to run the example again */
+  def resetForExecution: this.type = {
+    execution.resetForExecution
+    thisFailures.clear
+    thisErrors.clear
+    thisSkipped.clear
+    subExs.foreach(_.resetForExecution)
+    this
   }
 }
 /** Default LifeCycle with no actions before or after. */
 object DefaultLifeCycle extends ExampleLifeCycle
+
+/**
+ * This class encapsulates the execution of an example
+ */
+class ExampleExecution(example: Example, val expectations: () => Any) {
+  /** function containing the expectations to be run */
+  private var toRun: () => Any = () => {
+    if (example.isAccepted) {
+      execution()
+      while (!example.parent.until) execution()
+    } else
+      example.addSkipped(new SkippedException("not tagged for execution"))
+  }
+
+  /** flag used to memorize if the example has already been executed once. In that case, it will not be re-executed */
+  private[specification] var executed = false
+  val execution = () => {
+    var failed = false
+    // try the "before" methods. If there is an exception, add an error and return the current example
+    try { example.parent.beforeExample(example) } catch {
+      case t: Throwable => {
+        example.addError(t)
+        failed = true
+      }
+    }
+    // execute the <code>expectations</code> parameter. If it contains expectations with matchers they will be automatically executed
+    try {
+      if (!failed) {
+        example.parent.beforeTest(example)
+        example.parent.executeTest(example, expectations())
+        example.parent.afterTest(example)
+      }
+    } catch {
+      // failed expectations will launch a FailureException
+      // skipped expectations will launch a SkippedException
+      case f: FailureException => example.addFailure(f)
+      case s: SkippedException => example.addSkipped(s)
+      case t: Throwable => example.addError(t)
+      }
+      // try the "after" methods. If there is an exception, add an error and return the current example
+      try {
+        if (!failed)
+          example.parent.afterExample(example)
+      } catch { case t: Throwable => example.addError(t) }
+      example
+  }
+  /** execute the example, setting a flag to make sure that it is only executed once */
+  def execute = {
+    if (!executed) {
+      toRun()
+      executed = true
+    }
+  }
+  def resetForExecution = executed = false
+}

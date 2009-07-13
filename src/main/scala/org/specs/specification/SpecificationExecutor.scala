@@ -33,7 +33,6 @@ trait SpecificationExecutor extends ExampleLifeCycle { this: BaseSpecification w
               sus.untilPredicate = cloned.untilPredicate
               sus.firstActions = cloned.firstActions
               sus.lastActions = cloned.lastActions
-              sus.skippedSus = cloned.skippedSus
               sus.failedSus = cloned.failedSus
               sus.executed = true
               sus.examplesFilter = cloned.examplesFilter
