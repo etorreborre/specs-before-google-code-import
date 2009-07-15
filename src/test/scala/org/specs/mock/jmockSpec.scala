@@ -325,26 +325,26 @@ object jmockBadSpecification extends BadMocked {
   }
 }
 trait BadMocked extends Mocked {
-  var checkAfterTest = true
-  override def executeTest(ex: Example, t: => Any) = {
+  var checkAfterExpectations = true
+  override def executeExpectations(ex: Examples, t: => Any) = {
     try {
-      example = Some(ex)
+      current = Some(ex)
       t
     } catch {
-      case e: org.jmock.api.ExpectationError => {checkAfterTest = false}
+      case e: org.jmock.api.ExpectationError => {checkAfterExpectations = false}
     }
   }
-  override def afterTest(ex: Example) = {
-    if (checkAfterTest)
+  override def afterExpectations(ex: Examples) = {
+    if (checkAfterExpectations)
       try { context.assertIsSatisfied } catch {
         case e: org.jmock.api.ExpectationError =>
         case _ => ex.addFailure(new org.specs.execute.FailureException("Expected a org.jmock.api.ExpectationError, got nothing"))
       }
       else
-        checkAfterTest = true
+        checkAfterExpectations = true
   }
 }
-trait Mocked extends Specification with JMocker with ExampleLifeCycle with ClassMocker {
+trait Mocked extends Specification with JMocker with ClassMocker {
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false

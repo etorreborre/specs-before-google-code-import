@@ -121,11 +121,11 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     systems ::: subSpecifications.flatMap(_.allSystems)
   }
   /** Return all the examples for this specification, including the subexamples (recursively). */
-  def allExamples: List[Example] = {
+  def allExamples: List[Examples] = {
     systems.flatMap(_.allExamples) ::: subSpecifications.flatMap(_.allExamples)
   }
   /** @return the example for a given Activation path */
-  def getExample(path: TreePath): Option[Example] = {
+  def getExample(path: TreePath): Option[Examples] = {
     path match {
       case TreePath(0 :: i :: rest) if systems.size > i => systems(i).getExample(TreePath(rest))
       case _ => None
@@ -144,7 +144,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /**
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
-  def forExample: Example = forExample("example " + (currentSus.examples.size + 1))
+  def forExample: Example = forExample("example " + (current.map(_.examples.size).getOrElse(0) + 1))
 
   /**
    * Create an anonymous example with a function on a System,
@@ -154,19 +154,17 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /**
    * Return the example being currently executed if any
    */
-  def lastExample: Option[Example] = example.orElse(parentLifeCycle.example)
+  def lastExample: Option[Examples] = current.orElse(parentLifeCycle.current)
 
   var parentLifeCycle = this
+
   /**
    * utility method to track the last example list being currently defined.<br>
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined
    */
   protected[specification] def exampleContainer: Any {def createExample(desc: String): Example} = {
-    example.orElse(parentLifeCycle.example) match {
-      case Some(e) => e
-      case None => currentSus
-    }
+    current.get
   }
   /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
@@ -178,11 +176,11 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * override the beforeExample method to execute actions before the
    * first example of the first sus
    */
-  override def beforeExample(ex: Example) = {
+  override def beforeExample(ex: Examples) = {
     super.beforeExample(ex)
     if (!executeOneExampleOnly && 
           !systems.isEmpty && 
-          !systems.first.examples.isEmpty && systems.first.examples.first == ex)
+          !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
       beforeSpec.map(_.apply)
   }
 
@@ -190,18 +188,18 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * override the afterExample method to execute actions after the
    * last example of the last sus
    */
-  override def afterExample(ex: Example) = {
+  override def afterExample(ex: Examples) = {
     if (!executeOneExampleOnly && 
         !systems.isEmpty && 
-         systems.last.executed && !systems.last.examples.isEmpty && 
-         systems.last.examples.last == ex)
+         systems.last.executed && !systems.last.exampleList.isEmpty && 
+         systems.last.exampleList.last == ex)
       afterSpec.map(_.apply)
     super.afterExample(ex)
   }
   /**
    * add examples coming from another specification
    */
-  def addExamples(examples: List[Example]) = currentSus.exampleList = currentSus.exampleList ::: examples
+  def addExamples(examples: List[Example]) = current.foreach(c => c.exampleList = c.exampleList ::: examples)
   
   /** @return true if it contains the specification recursively */
   def contains(s: Any): Boolean = {
@@ -263,7 +261,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     this
   }
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
-  override def taggedComponents = this.subSpecifications ++ this.systems
+  override def taggedComponents: List[Tagged] = this.systems ++ this.subSpecifications 
   
   override def toString = name
   
@@ -298,17 +296,6 @@ trait SpecificationSystems { this: BaseSpecification =>
     sus
   }
 
-  /** utility method to track the last sus being currently defined, in order to be able to add examples to it */
-  protected[this] def currentSus = {
-    sus match {
-      case None => {
-        val s = specify
-        setCurrentSus(Some(s))
-        s
-      }
-      case Some(s) => s
-    }
-  }
   /**
    * add a textual complement to the sus verb.
    * For example, it is possible to declare:
@@ -317,7 +304,13 @@ trait SpecificationSystems { this: BaseSpecification =>
    * <code>def provide = addToSusVerb("provide")</code>
    */
   def addToSusVerb(complement: String) = new Function1[Example, Example] {
-    def apply(e: Example) = { currentSus.verb += " " + complement; e }
+    def apply(e: Example) = { 
+      current match { 
+        case Some(sus: Sus) => sus.verb += " " + complement 
+        case _ => 
+      }
+      e
+    }
   }
 }
 /**

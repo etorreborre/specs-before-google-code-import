@@ -22,7 +22,7 @@ package org.specs.specification
  * Trait declaring the ability to add a new expectation to an Example.
  */
 trait ExpectationsListener {
-  def addExpectation: Example
+  def addExpectation: Examples
   /**
    * Adds an isExpectation method to any block of code (mock expectation, scalacheck property) to better count the number of expectations
    */
@@ -44,7 +44,7 @@ trait ExpectationsListener {
  */
 trait ExampleExpectationsListener extends ExpectationsListener {
 
-  def addExpectation: Example = addExpectation(None)
+  def addExpectation: Examples = addExpectation(None)
 
   /**
    * Add an expectation to the last created example.
@@ -57,7 +57,7 @@ trait ExampleExpectationsListener extends ExpectationsListener {
    *   classOf[MyClass].expects(one(_).method) in { _.method }
    * </pre>
    */
-  def addExpectation[T](expectable: Option[Expectable[T]]): Example = {
+  def addExpectation[T](expectable: Option[Expectable[T]]): Examples = {
     lastExample match {
       case None => {
         val ex = forExample.addExpectation
@@ -70,12 +70,12 @@ trait ExampleExpectationsListener extends ExpectationsListener {
   /**
    * create a new example.
    */
-  def forExample: Example
+  def forExample: Examples
 
   /**
    * retrieve the last created example.
    */
-  def lastExample: Option[Example]
+  def lastExample: Option[Examples]
 }
 /**
  * Trait adding an expectation on a default unused example.
@@ -83,13 +83,13 @@ trait ExampleExpectationsListener extends ExpectationsListener {
  * It is used to provide a default behavior when examples are not necessary, i.e. when using SpecsMatchers only.
  */
 trait DefaultExampleExpectationsListener extends ExampleExpectationsListener {
-  private val defaultExample = new Example("unused", DefaultLifeCycle)
-  override def addExpectation: Example = forExample.addExpectation
+  private val defaultExample = new Example("unused")
+  override def addExpectation: Examples = forExample.addExpectation
   /**
    * Here we don't try to set the expectation on the default example since we want the expectation to execute
    * right away.
    */
-  override def addExpectation[T](expectable: Option[Expectable[T]]): Example = forExample.addExpectation
-  def lastExample: Option[Example] = Some(defaultExample)
+  override def addExpectation[T](expectable: Option[Expectable[T]]): Examples = forExample.addExpectation
+  def lastExample: Option[Examples] = Some(defaultExample)
   def forExample = defaultExample
 }

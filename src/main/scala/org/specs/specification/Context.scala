@@ -38,8 +38,8 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** 
    * adds a "before" function to the last sus being defined 
    */
-  private def usingBefore(actions: () => Any) = stackBeforeActions(currentSus, actions)
-  def stackBeforeActions(sus: Sus, actions: () => Any) = sus.before = stackActions(actions, sus.before)
+  private def usingBefore(actions: () => Any) = current.map(stackBeforeActions(_, actions))
+  def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
   
   /** @return a function with actions being executed after the previous actions. */
   private def stackActions(actions: () => Any, previousActions: Option[() => Any]) = {
@@ -59,40 +59,27 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** adds a "before" function to the last sus being defined */
   def doBefore(actions: =>Any) = usingBefore(() => actions)
   /** adds a "firstActions" function to the last sus being defined */
-  def doFirst(actions: =>Any) = stackFirstActions(currentSus, actions)
+  def doFirst(actions: =>Any) = current.map(stackFirstActions(_, actions))
   /** adds "firstActions" to a sus */
-  def stackFirstActions(sus: Sus, actions: =>Any) = sus.firstActions = stackActions(() => actions, sus.firstActions)
+  def stackFirstActions(sus: Examples, actions: =>Any) = sus.firstActions = stackActions(() => actions, sus.firstActions)
   /** adds a "lastActions" function to the last sus being defined */
-  def doLast(actions: =>Any) = stackLastActions(currentSus, actions) 
+  def doLast(actions: =>Any) = current.map(stackLastActions(_, actions)) 
   /** adds "lastActions" to a sus */
-  def stackLastActions(sus: Sus, actions: =>Any) = sus.lastActions = reverseStackActions(() => actions, currentSus.lastActions)
-
+  def stackLastActions(sus: Examples, actions: =>Any) = sus.lastActions = reverseStackActions(() => actions, sus.lastActions)
   /** adds a "beforeSpec" function to the current specification */
   def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => actions, beforeSpec)
-
   /** adds a "afterSpec" function to the current specification */
   def doAfterSpec(actions: =>Any) = afterSpec = reverseStackActions(() => actions, afterSpec)
-
-  /** 
-   * adds an "after" function to the last sus being defined 
-   */
-  private def usingAfter(actions: () => Any) = stackAfterActions(currentSus, actions)
-  def stackAfterActions(sus: Sus, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
-
-  /** 
-   * adds an "after" function to the last sus being defined 
-   */
+  /** adds an "after" function to the last sus being defined */
+  private def usingAfter(actions: () => Any) = current.map(stackAfterActions(_, actions))
+  /** adds an "after" function to a sus */
+  def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
+  /**  adds an "after" function to the last sus being defined */
   def doAfter(actions: =>Any) = usingAfter(() => actions)
-
-  /** 
-   * repeats examples according to a predicate 
-   */
-  def until(predicate: =>Boolean): Unit = until(currentSus, predicate)
- 
-  /** 
-   * repeats examples according to a predicate 
-   */
-  def until(sus: Sus, predicate: =>Boolean) = {
+  /** repeats examples according to a predicate */
+  def until(predicate: =>Boolean): Unit = current.map(until(_, predicate))
+  /** repeats examples according to a predicate */
+  def until(sus: Examples, predicate: =>Boolean) = {
     sus.untilPredicate = Some(() => { predicate })
   }
   

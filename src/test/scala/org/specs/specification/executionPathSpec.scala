@@ -38,28 +38,28 @@ class executionPathSpec extends spex.Specification with Classes {
       (TreePath(List(0, 1)) ::: TreePath(List(2, 3))) must_== TreePath(List(0, 1, 2, 3)) 
     }
     "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      spec.systems(0).examples(0).subExamples(0).pathFromRoot must_== TreePath(List(0, 0, 0, 0))
+      spec.systems(0).examples(0).examples(0).pathFromRoot must_== TreePath(List(0, 0, 0, 0))
     }
     "have a pathFromRoot method returning the path of the element in the tree of elements" in {
-      spec.systems(0).examples(1).subExamples(1).pathFromRoot must_== TreePath(List(0, 0, 1, 1))
+      spec.systems(0).examples(1).examples(1).pathFromRoot must_== TreePath(List(0, 0, 1, 1))
     }
   }
   "An Example" should {
     "not create subexamples until asked for it" in {
-      val e = new Example("", this)
+      val e = new Example("")
       var spyCalled = false
       e.in { 
         spyCalled = true
-        new Example("subex", this) 
+        new Example("subex") 
       }
       spyCalled must beFalse
-      e.subExamples
+      e.examples
       spyCalled must beTrue
     }
     "have a getExample method returning the subexample at a given path" in {
       val sys = spec.systems(0)
       val ex = sys.examples(0)
-      val subex = ex.subExamples(1)
+      val subex = ex.examples(1)
       ex.getExample(TreePath(1)) must_==(Some(subex))
     }
   }
@@ -75,10 +75,10 @@ class executionPathSpec extends spex.Specification with Classes {
       spec.pathFromRoot must_== TreePath(0)
       spec.systems(0).pathFromRoot must_== TreePath(List(0, 0))
       spec.systems(0).examples(0).pathFromRoot must_== TreePath(List(0, 0, 0))
-      spec.systems(0).examples(0).subExamples(1).pathFromRoot must_== TreePath(List(0, 0, 0, 1))
+      spec.systems(0).examples(0).examples(1).pathFromRoot must_== TreePath(List(0, 0, 0, 1))
     }
     "have a getExample method returning the example at a given path" in {
-      val subex = spec.systems(0).examples(0).subExamples(1)
+      val subex = spec.systems(0).examples(0)examples(1)
       spec.getExample(subex.pathFromRoot) must_== Some(subex)
     }
   }

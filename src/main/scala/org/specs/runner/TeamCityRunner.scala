@@ -113,10 +113,10 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
     if (!example.failureAndErrors.isEmpty) {
       def exampleMessages(e: Example) = e.failureAndErrors.map(throwableToMessage _).mkString("; ")
       def subExampleMessages(e: Example) = e.failureAndErrors.map(e.description + ": " + throwableToMessage(_))
-      val ms = if (example.subExamples.isEmpty)
+      val ms = if (example.examples.isEmpty)
                  exampleMessages(example)
                else
-                 example.subExamples.flatMap(e => subExampleMessages(e)).mkString("; ")
+                 example.examples.flatMap(e => subExampleMessages(e)).mkString("; ")
       val ds = example.failureAndErrors.map(t => throwableToDetails(t))
       testFailed(testName, "message" -> ms, "details" -> ds.mkString("\n"))
     }

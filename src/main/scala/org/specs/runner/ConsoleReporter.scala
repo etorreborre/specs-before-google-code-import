@@ -120,8 +120,8 @@ trait OutputReporter extends Reporter with Output {
    * by collecting those numbers on this example and on sub-examples
    */
   def stats(example: Example): (Int, Int, Int, Int, Int) = {
-    (if (example.subExamples.isEmpty) 1 else 0, example.expectationsNb, example.failures.size, example.errors.size, example.skipped.size) +
-    example.subExamples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
+    (if (example.examples.isEmpty) 1 else 0, example.expectationsNb, example.failures.size, example.errors.size, example.skipped.size) +
+    example.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
   }
 
   /**
@@ -153,7 +153,7 @@ trait OutputReporter extends Reporter with Output {
   def printSus(sus: Sus, padding: String) = {
     var susDescription = if (sus.isAnonymous) "" else sus.description + " " + sus.verb  
     if (!sus.ownSkipped.isEmpty)
-      println(padding + susDescription + sus.ownSkipped.headOption.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
+      println(padding + susDescription + sus.ownSkipped.firstOption.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
     if (!sus.literateDesc.isEmpty) 
       println(padding + sus.literateDescText)
     timer.start
@@ -194,7 +194,7 @@ trait OutputReporter extends Reporter with Output {
   def reportExamples(examples: Iterable[Example], padding: String): Unit = {
     for (example <- examples) {
       reportExample(example, padding)
-      reportExamples(example.subExamples, padding + "  ")
+      reportExamples(example.examples, padding + "  ")
     }
   }
 
@@ -218,7 +218,7 @@ trait OutputReporter extends Reporter with Output {
     def parens(f: Throwable) = " (" + f.location + ")"
 
     // only print out the example messages if there are no subexamples.
-    if (example.subExamples.isEmpty) {
+    if (example.examples.isEmpty) {
       def errorType(t: Throwable) = t match {
         case s: SkippedException => ""
         case f: FailureException => ""

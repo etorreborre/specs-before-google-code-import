@@ -233,7 +233,7 @@ trait Html extends File {
    * If the example has subexamples, a small header is created.
    */
   def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
-    example.subExamples.toList match {
+    example.examples.toList match {
       case Nil => exampleRow(example, alternation, fullSuccess)
       case subexamples => <h4>{example.exampleDescription.toXhtml.text}</h4> ++ exampleRows(subexamples, fullSuccess)
     }

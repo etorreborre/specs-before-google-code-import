@@ -48,7 +48,7 @@ import org.specs.execute._
  */
 class Expectable[T](value: => T) {
   /** related example. */
-  private var example: Option[Example] = None
+  private var example: Option[Examples] = None
   /** function used to display success values as a result of a match. By default nothing is displayed. */
   private var successValueToString: SuccessValue => String = s => ""
   /** the listener will be called for every match to register a new Expectation. */
@@ -115,7 +115,7 @@ class Expectable[T](value: => T) {
       case None => executeMatch
       case Some(e) => {
         var res = new Result(this, successValueToString)
-        e in { res = executeMatch }
+        e.specifyExample(res = executeMatch)
         res
       }
     }
@@ -129,7 +129,7 @@ class Expectable[T](value: => T) {
   /**
    * Set a specific example to hold the results of this matcher
    */
-  def setExample[T](ex: Example) = example = Some(ex)
+  def setExample[T](ex: Examples) = example = Some(ex)
 
   /** setter for the expectation listener. */
   def setExpectationsListener(listener: ExampleExpectationsListener): this.type = {

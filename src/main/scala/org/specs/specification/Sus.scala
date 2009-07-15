@@ -40,11 +40,7 @@ import org.specs.execute._
  * In specifications, a Sus "should" or "can" provide some functionalities which are defined in <code>Examples</code><br>
  * A Sus is "executed" during its construction and failures and errors are collected from its examples
  */
-/** support class representing the formatted literate description of a SUS */
-case class LiterateDescription(desc: Node) {
-  def toXhtml: NodeSeq = desc
-}
-case class Sus(description: String, parent: BaseSpecification) extends Example {
+case class Sus(desc: String, specification: BaseSpecification) extends Examples(ExampleDescription(desc), Some(specification)) {
 
   /** constructor for an anonymous sus */                                        
   def this(parent: BaseSpecification) = this("specifies", parent)
@@ -56,11 +52,11 @@ case class Sus(description: String, parent: BaseSpecification) extends Example {
    */
   var literateDescription: Option[LiterateDescription] = None
   /** header for the full sus description: description + " " + verb */
-  def header = description + " " + verb
+  def header = desc + " " + verb
   /** @return true if the description is the generic one for anonymous systems */
-  def isAnonymous = description == "specifies"
+  def isAnonymous = desc == "specifies"
   /** @return a description of this sus with all its examples (used for the ConsoleReporter) */
-  def pretty(tab: String) = tab + header + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
+  override def pretty(tab: String) = tab + header + " " + examples.foldLeft("")(_ + _.pretty(addSpace(tab)))
   /** @return an xhtml literate description of the sus */
   def literateDesc: NodeSeq = literateDescription.map(_.toXhtml).getOrElse(NodeSeq.Empty)
     /** @return a String literate description of the sus */
@@ -68,7 +64,7 @@ case class Sus(description: String, parent: BaseSpecification) extends Example {
   /** default way of defining the behaviour of a sus */
   def should(ex: =>Any) = {
     verb = "should"
-    specifyExamples(ex)
+    specifyExample(ex)
     this
   }
   /** alternately there may be no example given yet */
@@ -89,3 +85,7 @@ case class Sus(description: String, parent: BaseSpecification) extends Example {
   }
 }
 
+/** support class representing the formatted literate description of a SUS */
+case class LiterateDescription(desc: Node) {
+  def toXhtml: NodeSeq = desc
+}

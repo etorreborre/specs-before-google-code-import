@@ -43,7 +43,7 @@ trait LiterateBaseSpecification extends BaseSpecification with ExpectableFactory
     private def format(e: => Elem) = {
       try {      
         var content: Elem = <nothing/> 
-        sus.setExecution { content = e }
+        sus.specifyExample(content = e)
         val anonymous = sus.examples.filter(_.description.matches("example \\d+"))
         val exNodes = content.\\("ex")
         exNodes.theSeq.toList.zip(anonymous.toList).foreach { pair =>

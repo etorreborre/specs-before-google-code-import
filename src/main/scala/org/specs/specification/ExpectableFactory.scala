@@ -80,8 +80,8 @@ trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues w
   }
 }
 class DelegatedExpectableFactory(var delegate: ExpectableFactory) extends ExpectableFactory {
-  def forExample: Example = delegate.forExample
-  def lastExample: Option[Example] = delegate.lastExample
+  def forExample: Examples = delegate.forExample
+  def lastExample: Option[Examples] = delegate.lastExample
 }
 class DefaultExpectableFactory extends ExpectableFactory {
   private val defaultExample = new Example("", DefaultLifeCycle)

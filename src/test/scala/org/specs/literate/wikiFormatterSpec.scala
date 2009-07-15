@@ -30,7 +30,7 @@ class wikiFormatterSpec extends spex.Specification {
       formatString("a description") must_== "a description"
     }
     "format the description of example as some xml text" in {
-      val example = new Example("", this).in { 1 must_== 1 }
+      val example = new Example("").in { 1 must_== 1 }
       val formatter = new WikiFormatter(){}
       example.exampleDescription = formatter.makeExampleDescription(<ex>a description</ex>)
       formatter.formatDesc(example) must_== <t>a description</t>
@@ -64,7 +64,7 @@ class wikiFormatterSpec extends spex.Specification {
   }
   "A Textile formatter" should { 
     val exampleDesc = "a description"
-    val example = new Example("a description", this)
+    val example = new Example("a description")
     example.executeThis
     val descWithStatus = new TextileFormatter(){}.setStatus(exampleDesc, List(example))
     "enclose the description with ex tags protected by wiki markup" in {

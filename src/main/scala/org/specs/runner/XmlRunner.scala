@@ -141,7 +141,7 @@ trait Xml extends File {
      { e.failures map (asXml(_)) }
      { e.skipped map (asXml(_)) }
      { e.errors map (asXml(_)) }
-     { e.subExamples map (asXml(_)) }
+     { e.examples map (asXml(_)) }
     </example>
 
   /**

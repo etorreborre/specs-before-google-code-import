@@ -84,18 +84,18 @@ object basicFeatures extends SpecificationWithSamples {
        }
      }
      skipAll.systems(0).examples // execute the should part
-     skipAll.systems must exist { s: Sus => s.skippedSus != None }
+     skipAll.systems must exist (_.skipped.isEmpty)
      skipAll.expectationsNb mustBe 0
    }
    "not execute its examples unless asked for their status" in {
-     var executed = false
+     var isExecuted = false
      object spec extends Specification {
-       "it" should { "not be executed" in {executed = true}}
+       "it" should { "not be executed" in { isExecuted = true } }
      }
      spec.name
-     executed must beFalse
+     isExecuted must beFalse
      spec.failures
-     executed must beTrue
+     isExecuted must beTrue
    }
    "execute all examples sequentially during their definition if setSequential is called" in {
      var executions: List[String] = Nil
@@ -151,7 +151,7 @@ object advancedFeatures extends SpecificationWithSamples {
       compositeSpec.description must_== "compositeSpec"
       compositeSpec.systems.head.examples must beLike {
         case Seq(ex: Example) =>
-          ex.subExamples must beLike { case Seq(subEx) => true }
+          ex.examples must beLike { case Seq(subEx) => true }
       }
     }
     "display detailled difference messages with the detailedDiff method" in {

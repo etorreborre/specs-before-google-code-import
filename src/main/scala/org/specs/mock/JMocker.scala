@@ -452,10 +452,11 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     def mock: T = { expect { f(mocked) }; mocked }
   }
   private def isExpecting[T](m: =>T)(f: T => Any)(f2: T => Any): Any = {
-    val lastExample: Example = addExpectation
+    val lastExample = addExpectation
     var result: Any = null
     expect { f(m) }
-    lastExample.execute { result = f2(m) }
+    lastExample.specifyExample(result = f2(m))
+    lastExample.executeExamples
     result
   }
   /** 
@@ -552,28 +553,28 @@ trait JMockActions {
  * This trait defines when a jMock context will be created and expectations checked.
  * The context and expectations are always created at the beginning of an Example, then checked just after the test has been executed. Executing a test can also trigger an ExpectationError (from the jMock library). This error will be transformed into a FailureException
  */
-trait JMockerExampleLifeCycle extends ExampleLifeCycle with JMockerContext {
+trait JMockerExampleLifeCycle extends LifeCycle with JMockerContext {
 
   /** 
    * An expectation error may be thrown during the execution of a test
    * In that case, it is transformed to a failure exception
    */
-  override def executeTest(ex: Example, t: => Any) = {
-    try { super.executeTest(ex, t) } catch { case e: ExpectationError => throw createFailure(e) }
+  override def executeExpectations(ex: Examples, t: => Any) = {
+    try { super.executeExpectations(ex, t) } catch { case e: ExpectationError => throw createFailure(e) }
   }
 
   /** 
    * After a test the context is verified. If some more expectations are not met an ExpectationError is thrown
    * In that case, it is transformed to a failure exception
    */
-  override def afterTest(ex: Example) = {
+  override def afterExpectations(ex: Examples) = {
     try {
       context.assertIsSatisfied
     } catch {
       case e: ExpectationError => {restart; throw createFailure(e)}
     }
     restart
-    super.afterTest(ex)
+    super.afterExpectations(ex)
   }
   
   private[this] def createFailure(e: ExpectationError) = FailureException(e.toString)

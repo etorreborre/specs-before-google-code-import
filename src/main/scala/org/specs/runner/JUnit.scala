@@ -107,7 +107,7 @@ trait JUnit extends JUnitSuite with Reporter {
     filteredSpecs foreach {
       specification =>
               specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
-              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skipped.headOption))}
+              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skipped.firstOption))}
     }
   }
 }
@@ -150,10 +150,10 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
       // if the test is run with Maven the sus description is added to the example description for a better
       // description in the console
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      if (example.subExamples.isEmpty)
+      if (example.examples.isEmpty)
         addTest(new ExampleTestCase(example, exampleDescription))
       else
-        addTest(new ExamplesTestSuite(exampleDescription, example.subExamples, None))
+        addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
     }
   }
 
@@ -195,7 +195,7 @@ class ExampleTestCase(example: Example, description: String) extends TestCase(de
       }
     }
     report(example, "")
-    example.subExamples foreach {subExample => report(subExample, subExample.description + " -> ")}
+    example.examples foreach {subExample => report(subExample, subExample.description + " -> ")}
     if (example.ownSkipped.isEmpty)
       result.endTest(this)
   }

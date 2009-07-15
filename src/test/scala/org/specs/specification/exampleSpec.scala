@@ -47,7 +47,7 @@ class exampleSpec extends SpecificationWithJUnit {
     e in {
      "subex" in { 1 must_== 1 }
     }
-    e.subExamples(0).cycle mustBe e.cycle
+    e.examples(0).parent mustBe e.parent
   }
   "An example" should {
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
@@ -72,7 +72,7 @@ object ex extends Specification {
   shareVariables()
   var hasBeenExecuted = false
   var subexample: Example = null
-  val testExample = new Example("ex", this) in {
+  val testExample = new Example("ex") in {
     hasBeenExecuted = true
   }
   override def failures = testExample.failures.toList

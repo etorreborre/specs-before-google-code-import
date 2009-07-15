@@ -57,16 +57,16 @@ trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatch
  * This trait allows the initialization of mocks when defined with an annotation:
  * @Mock val l: List[String] = null
  * 
- * The beforeTest method is overriden instead of the beforeExample method. This doesn't make a big difference but it helps the compiler
+ * The beforeExpectations method is overriden instead of the beforeExample method. This doesn't make a big difference but it helps the compiler
  * in the Eclipse plugin not to crash too often.
  */
-trait MockitoLifeCycle extends ExampleLifeCycle {
+trait MockitoLifeCycle extends LifeCycle {
   /** variable used to avoid multiple initializations. */
   private var initialized = false
 
   /** The mocks are reinitialized before each tests. */
-  override def beforeTest(e: Example) = {
-	super.beforeTest(e)
+  override def beforeExpectations(e: Examples) = {
+	super.beforeExpectations(e)
 	if (!initialized) {
 	  initialized = true
       org.mockito.MockitoAnnotations.initMocks(this)

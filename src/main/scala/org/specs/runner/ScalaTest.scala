@@ -176,7 +176,7 @@ class SusSuite(sus: Sus) extends Suite {
     }
     if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
       reporter.testSucceeded(report(e.description, e.description))
-    e.subExamples foreach { sub => runExample(sub, reporter) }
+    e.examples foreach { sub => runExample(sub, reporter) }
   }
 
   import scala.collection.immutable._

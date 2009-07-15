@@ -32,7 +32,7 @@ import org.specs.specification._
  * <li>every expectation will be automatically checked at the end of the example (see the implementation of the
  *  <code>ExampleLifeCycle</code> trait)</ul>
  */
-trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers with ExpectationsListener {
+trait Mocker extends ProtocolTypes with LifeCycle with MockMatchers with ExpectationsListener {
   /** protocol storing mocks expectations */
   val protocol = new Protocol
 
@@ -114,14 +114,14 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers with 
   /**
    * clears the protocol before each example to start with new expectations
    */
-  override def beforeExample(ex: Example) = {
+  override def beforeExample(ex: Examples) = {
     super.beforeExample(ex)
     protocol.clear
   } 
   /**
    * clears the protocol after each example to start with new expectations
    */
-  override def afterExample(ex: Example) = {
+  override def afterExample(ex: Examples) = {
     protocol.clear
     super.afterExample(ex)
   }
@@ -129,12 +129,12 @@ trait Mocker extends ProtocolTypes with ExampleLifeCycle with MockMatchers with 
   /**
    * checks expectations if some have been made during the test 
    */
-  override def afterTest(ex: Example) = {
+  override def afterExpectations(ex: Examples) = {
     if (protocol.isSpecified) {
       ex.addExpectation
       (new Expectation(protocol)) must beMet
     } 
-    super.afterTest(ex)
+    super.afterExpectations(ex)
   }
   
   /**

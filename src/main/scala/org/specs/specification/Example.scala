@@ -45,16 +45,62 @@ import org.specs.execute._
  * <p>
  * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
-case class Example(var exampleDescription: ExampleDescription, var parent: ExampleLifeCycle) extends 
-  ExampleStructure with ExampleLifeCycle with ExampleContext with DefaultResults {
-    
-  /** constructor with a simple string */
-  def this(desc: String, parent: ExampleLifeCycle) = this(ExampleDescription(desc), parent)
+
+abstract class Examples(var exampleDescription: ExampleDescription, var parentCycle: Option[LifeCycle]) extends
+  ExampleContext with DefaultResults {
+  parent = parentCycle
   /** example description as a string */
   def description = exampleDescription.toString
   /** @return the example description */
   override def toString = description.toString
 
+  /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
+  def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
+                                                errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
+  
+  /** execute this example but not if it has already been executed. */
+  override def executeExamples = {
+    if (!executed) 
+      parent.map(_.executeExample(this))
+  }
+  override def allExamples: List[Examples] = {
+    if (examples.isEmpty)
+      List(this)
+    else
+      examples.flatMap(_.allExamples).toList
+  }
+    /** @return the example for a given Activation path */
+  def getExample(path: TreePath): Option[Examples] = {
+    path match {
+      case TreePath(Nil) => Some(this)
+      case TreePath(i :: rest) if !this.examples.isEmpty => this.examples(i).getExample(TreePath(rest))
+      case _ => None
+    }
+  }
+  /** create the main block to execute when "execute" will be called */
+  def specifyExample(a: =>Any): Unit = {
+    execution = new ExampleExecution(this, () => {
+      parent.map(_.setCurrent(Some(this)))
+      a
+      parent.map(_.setCurrent(None))
+    })
+    if (parent.map(_.isSequential).getOrElse(false))
+      executeExamples
+  }
+  /** increment the number of expectations in this example */
+  def addExpectation: Examples = { thisExpectationsNumber += 1; this }
+  /** create a new example with a description and add it to this. */
+  def createExample(desc: String): Example = {
+    val ex = new Example(desc, this)
+    addExample(ex)
+    ex
+  }
+}
+class Example(var exampleDesc: ExampleDescription, var p: Option[ExampleContext]) extends Examples(exampleDesc, p) {
+      /** constructor with a simple string */
+  def this(desc: String, parent: ExampleContext) = this(ExampleDescription(desc), Some(parent))
+  /** constructor with a simple string */
+  def this(desc: String) = this(ExampleDescription(desc), None)
   /**
    * creates a new Example object and store as an ExampleExecution object the expectations to be executed.
    * This <code>expectations</code> parameter is a block of code which may contain expectations with matchers.
@@ -68,14 +114,13 @@ case class Example(var exampleDescription: ExampleDescription, var parent: Examp
     this
   }
   /** this version of in allows to declare examples inside examples */
-  def in(example: =>Example): Unit = specifyExample(example)
+  def in(example: =>Examples): Unit = specifyExample(example)
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
-  def >>(example: =>Example) = in(example)
-  /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
-  def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
-                                                errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
+  /** alias for the <code>in</code> method to create subexamples */
+  def >>(example: =>Examples) = in(example)
 }
+
 /**
  * Description of the example
  */
