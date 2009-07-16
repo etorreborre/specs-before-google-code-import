@@ -59,7 +59,11 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
   def copyFrom(other: ExampleStructure) = {
     examplesFilter = other.examplesFilter
     hardCopyResults(other)
-    other.exampleList.foreach(e => this.createExample(e.description.toString))
+    other.exampleList.foreach { e => 
+      val ex = this.createExample(e.description.toString)
+      ex.execution = e.execution
+      ex.execution.map(_.resetForExecution)
+    }
     thisExpectationsNumber = other.thisExpectationsNumber
   }
 }

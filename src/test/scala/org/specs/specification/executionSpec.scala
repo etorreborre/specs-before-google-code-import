@@ -19,8 +19,8 @@ class execution1 extends spex.Specification {
   }
   "Another sus " should {
     x = x + 1
-    "execute the first example with local variables" in { x must_== 2; x = x + 1 }
-    "execute the second example with a reinitialized variable" in { x must_== 2; x = x + 1 }
+    "2 - execute the first example with local variables" in { println("ex2.1"); x must_== 3; x = x + 1 }
+    "2 - execute the second example with a reinitialized variable" in { println("ex2.2"); x must_== 3; x = x + 1 }
   }
 }
 class execution2 extends spex.Specification {

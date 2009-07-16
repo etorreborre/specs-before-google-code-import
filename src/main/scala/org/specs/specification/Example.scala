@@ -58,6 +58,13 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
   
+  def executeThis = execution.map { exec => 
+    val e = exec.example
+    exec.example = this
+    exec.execute
+    this.thisExpectationsNumber  = e.thisExpectationsNumber
+  }  
+  
   /** execute this example but not if it has already been executed. */
   override def executeExamples = {
     if (!executed) 
@@ -79,11 +86,11 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
   }
   /** create the main block to execute when "execute" will be called */
   def specifyExample(a: =>Any): Unit = {
-    execution = new ExampleExecution(this, () => {
+    execution = Some(new ExampleExecution(this, () => {
       parent.map(_.setCurrent(Some(this)))
       a
       parent.map(_.setCurrent(None))
-    })
+    }))
     if (parent.map(_.isSequential).getOrElse(false))
       executeExamples
   }

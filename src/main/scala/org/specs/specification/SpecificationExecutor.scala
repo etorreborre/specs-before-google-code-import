@@ -27,12 +27,10 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
             cloned match {
               case None => throw PathException(path + "not found for " + example)
               case Some(c) => {
-                c.tagWith(this)
-                c.execution.execute
+                c.execution.map(_.execute)
                 example.copyExecutionResults(c)
               }
             }
-            s.expectationsListener = this
             executed = true
           }
         }
@@ -42,7 +40,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
       case _ => ()
     }
     if (!executed)
-      example.execution.execute
+      example.execution.map(_.execute)
     
     this
   }

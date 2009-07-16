@@ -47,9 +47,9 @@ trait LifeCycle {
   def executeExample(ex: Examples): this.type = this
 }
 trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
-  var execution: ExampleExecution = null
-  def executed = execution.executed
-  def executeThis = execution.execute
+  var execution: Option[ExampleExecution] = None
+  def executed = execution.map(_.executed).getOrElse(true)
+  def executeThis: Unit
   override def executeExpectations(ex: Examples, t: =>Any): Any = {
     val executed = t
     skipIfNoExpectations()
@@ -65,7 +65,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
   }
   def copyExecutionResults(other: Examples) = {
     copyFrom(other)
-    execution.executed = true
+    execution.map(_.executed = true)
   }
 
   protected def skipIfNoExpectations() = {
@@ -78,7 +78,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
   /** reset in order to be able to run the example again */
   override def resetForExecution: this.type = {
     super.resetForExecution
-    execution.resetForExecution
+    execution.map(_.resetForExecution)
     exampleList.foreach(_.resetForExecution)
     this
   }
@@ -89,7 +89,7 @@ object DefaultLifeCycle extends Example("default life cycle")
 /**
  * This class encapsulates the execution of an example
  */
-class ExampleExecution(example: Examples, val expectations: () => Any) {
+class ExampleExecution(var example: Examples, val expectations: () => Any) {
   /** function containing the expectations to be run */
   private var toRun: () => Any = () => {
     if (example.isAccepted) {
