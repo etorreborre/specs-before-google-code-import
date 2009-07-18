@@ -4,15 +4,15 @@ class isolatedExamples2 extends org.specs.SpecificationWithJUnit {
   println("root") 
   var x = 0 
   "it" should {
-//  x must_== 0 
+  x must_== 0 
   "a" in { 
     println("a") 
     x += 1 
-//    x must_== 1 
+    x must_== 1 
     "aa" in { 
       println("aa") 
       x += 1 
-//      x must_== 2 
+      x must_== 2 
       "aaa" in { 
         println("aaa") 
         x += 1 
@@ -33,11 +33,11 @@ class isolatedExamples2 extends org.specs.SpecificationWithJUnit {
   "b" in { 
     println("b") 
     x += 1 
-//    x must_== 1 
+    x must_== 1 
     "ba" in { 
       println("ba") 
       x += 1 
-//      x must_== 2 
+      x must_== 2 
       "baa" in { 
         println("baa") 
         x += 1 

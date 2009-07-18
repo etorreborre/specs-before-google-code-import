@@ -58,12 +58,10 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
   
-  def executeThis = execution.map { exec => 
-    val e = exec.example
-    exec.example = this
-    exec.execute
-    this.thisExpectationsNumber  = e.thisExpectationsNumber
-  }  
+  def executeThis = {
+    execution.map(_.execute)
+    execution.map(e => this.copyExecutionResults(e.example))
+  }
   
   /** execute this example but not if it has already been executed. */
   override def executeExamples = {
