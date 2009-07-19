@@ -35,7 +35,7 @@ trait Tree[T <: Tree[T]] {
    */
   def pathFromRoot: TreePath = parentNode match {
     case None => new TreePath(0)
-    case Some(p) => p.pathFromRoot ::: new TreePath(p.childrenNodes.indexOf(this))
+    case Some(p) => p.pathFromRoot ::: new TreePath(p.childrenNodes.indexOf((n: Tree[T]) => n eq this))
   } 
   /**
    * add a new child and set its parent
