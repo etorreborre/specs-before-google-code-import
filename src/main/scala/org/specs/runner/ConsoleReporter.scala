@@ -156,6 +156,8 @@ trait OutputReporter extends Reporter with Output {
       println(padding + susDescription + sus.ownSkipped.firstOption.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
     if (!sus.literateDesc.isEmpty) 
       println(padding + sus.literateDescText)
+    else
+      println(padding + susDescription)
     timer.start
     reportExamples(sus.examples, padding)
     timer.stop
