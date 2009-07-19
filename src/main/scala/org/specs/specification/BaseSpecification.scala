@@ -164,7 +164,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * the list of subexamples of the current example being defined
    */
   protected[specification] def exampleContainer: Any {def createExample(desc: String): Example} = {
-    current.get
+    current.getOrElse(specify)
   }
   /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
