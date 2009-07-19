@@ -72,3 +72,13 @@ class execution4 extends spex.Specification {
     }
   }
 }
+class execution5 extends spex.Specification {
+  var desc = "2 systems with the same name but different examples"
+  var x = 1
+  "A sus" should {
+    "execute the first example" in { x must_== 1; x += 1 }
+  }
+  "A sus" should {
+    "execute this other example" in { x must_== 1 }
+  }
+}

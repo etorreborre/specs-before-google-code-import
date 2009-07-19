@@ -33,7 +33,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     "not execute its test if the doBefore method fails" in {
       doBeforeExampleFailing.execute
       doBeforeExampleFailing.messages must containMatch("1 error")
-      doBeforeExampleFailing.messages must notContainMatch("tested")
+      doBeforeExampleFailing.messages.toList must not containMatch("tested")
     }
     "be executed even if the doBefore clause is not declared inside a sus" in {
       object badSpec extends Specification {
@@ -129,10 +129,8 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "use a repeated context to setup the before and after actions of a system under test and repeat the same test several times" in {
       specWithRepeatedContext.execute
-      specWithRepeatedContext.data must_== 10
+      specWithRepeatedContext.data must_== 3
     }
-  }
-  "A specification" can {
     "use an until method to repeat the examples of a sus until a predicate is true" in {
       specWithUntil.execute
       specWithUntil.counter must_== 10
@@ -161,7 +159,8 @@ object doBeforeExample extends beforeAfterSpecification {
 object doBeforeExampleFailing extends beforeAfterSpecification {
   override def executeSpec = {
       var beforeCalls = 0
-    "A specification" should { doBefore { error("before error") }
+    "A specification" should { 
+      doBefore { error("before error") }
       "have example 1 ok" in {  }
     }
     reportSpecs
@@ -222,7 +221,7 @@ object specWithContext extends beforeAfterSpecification {
 object specWithRepeatedContext extends beforeAfterSpecification {
   var data = 0
   override def executeSpec = {
-  val context1 = beforeContext(data += 1).until(data == 10)
+  val context1 = beforeContext(data += 1).until(data >= 3)
     "A specification with repeated context" ->- context1 should {
       "have example 1 ok" in { 1 must_== 1 }
     }

@@ -60,7 +60,10 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
   
   def executeThis = {
     execution.map(_.execute)
-    execution.map(e => this.copyExecutionResults(e.example))
+    execution.map { e => 
+      if (!(e.example eq this))
+        this.copyExecutionResults(e.example) 
+    }
   }
   
   /** execute this example but not if it has already been executed. */
