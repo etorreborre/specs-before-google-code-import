@@ -45,17 +45,6 @@ class executionPathSpec extends spex.Specification with Classes {
     }
   }
   "An Example" should {
-    "not create subexamples until asked for it" in {
-      val e = new Example("")
-      var spyCalled = false
-      e.in { 
-        spyCalled = true
-        new Example("subex") 
-      }
-      spyCalled must beFalse
-      e.examples
-      spyCalled must beTrue
-    }
     "have a getExample method returning the subexample at a given path" in {
       val sys = spec.systems(0)
       val ex = sys.examples(0)
