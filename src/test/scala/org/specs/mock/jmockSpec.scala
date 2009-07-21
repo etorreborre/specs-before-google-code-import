@@ -32,7 +32,9 @@ class jmockSpec extends SpecificationWithJUnit {
 object jmockGoodSpecification extends Mocked {
   "The JMocker trait" should {
     "provide a 'one' method succeeding if only one method is called" in {
-      expect { one(list).size }
+      expect { 
+        one(list).size 
+      }
       list.size
     }
     "provide an 'exactly' method succeeding if exactly the right number of calls are made" in {

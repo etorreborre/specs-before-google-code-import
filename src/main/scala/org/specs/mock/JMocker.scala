@@ -560,7 +560,12 @@ trait JMockerExampleLifeCycle extends LifeCycle with JMockerContext {
    * In that case, it is transformed to a failure exception
    */
   override def executeExpectations(ex: Examples, t: => Any) = {
-    try { super.executeExpectations(ex, t) } catch { case e: ExpectationError => throw createFailure(e) }
+    try { 
+      super.executeExpectations(ex, t) 
+    } 
+    catch { 
+      case e: ExpectationError => throw createFailure(e) 
+    }
   }
 
   /** 
@@ -573,7 +578,6 @@ trait JMockerExampleLifeCycle extends LifeCycle with JMockerContext {
     } catch {
       case e: ExpectationError => {restart; throw createFailure(e)}
     }
-    restart
     super.afterExpectations(ex)
   }
   

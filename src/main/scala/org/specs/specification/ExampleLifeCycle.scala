@@ -41,7 +41,7 @@ trait LifeCycle {
   def beforeExample(ex: Examples) = setCurrent(Some(ex))
   /** forward the call to the "parent" cycle */
   def beforeExpectations(ex: Examples): Unit = parent.map(_.beforeExpectations(ex))
-  def executeExpectations(ex: Examples, t: =>Any): Any = {}
+  def executeExpectations(ex: Examples, t: =>Any): Any = parent.map(_.executeExpectations(ex, t)).getOrElse(t)
   /** forward the call to the "parent" cycle */
   def afterExpectations(ex: Examples): Unit = parent.map(_.afterExpectations(ex))
   def executeExample(ex: Examples): this.type = this
@@ -51,7 +51,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
   def executed = execution.map(_.executed).getOrElse(true)
   def executeThis: Unit
   override def executeExpectations(ex: Examples, t: =>Any): Any = {
-    val executed = t
+    val executed = super.executeExpectations(ex, t)
     skipIfNoExpectations()
     executed
   }
