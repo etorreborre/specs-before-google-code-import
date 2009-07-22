@@ -88,9 +88,9 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
   /** create the main block to execute when "execute" will be called */
   def specifyExample(a: =>Any): Unit = {
     execution = Some(new ExampleExecution(this, () => {
-      parent.map(_.setCurrent(Some(this)))
-      a
-      parent.map(_.setCurrent(None))
+      withCurrent(this) {
+        a
+      }
     }))
     if (parent.map(_.isSequential).getOrElse(false))
       executeExamples

@@ -39,6 +39,7 @@ h3. System tables
 
 <ex>There should be a table for each system under test.</ex>{oneTablePerSus}
 <ex>The table must be preceded by the system name as a separate header.</ex>{systemName}
+
 <ex>Close to the system name, there should be a small _up_ arrow !images/up.gif! to go to the top of the page</ex>{topArrow}
 <ex>In each table, there should be a row per example</ex>{oneRowPerExample}
 

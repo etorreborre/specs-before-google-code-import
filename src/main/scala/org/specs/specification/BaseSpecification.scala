@@ -144,17 +144,25 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /**
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
-  def forExample: Example = forExample("example " + (current.map(_.examples.size).getOrElse(0) + 1))
+  def forExample: Example = {
+    forExample("example " + (current.map(_.exampleList.size).getOrElse(0) + 1))
+  }
 
   /**
    * Create an anonymous example with a function on a System,
-   * giving it a number depending on the existing created examples/
+   * giving it a number depending on the existing created examples
    */
   def forExample[S](function: S => Any): Example = forExample in function
   /**
    * Return the example being currently executed if any
    */
-  def lastExample: Option[Examples] = current.orElse(parentLifeCycle.current)
+  def lastExample: Option[Examples] = {
+    current.orElse(parentLifeCycle.current) match {
+      case Some(s: Sus) => None
+      case Some(e: Example) => Some(e)
+      case None => None
+    }
+  }
 
   var parentLifeCycle = this
 

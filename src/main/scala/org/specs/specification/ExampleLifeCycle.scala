@@ -22,23 +22,29 @@ import org.specs.util.Configuration
 import org.specs.ExtendedThrowable._
 
 trait LifeCycle {
-  var parent: Option[LifeCycle] = None
-  var current: Option[Examples] = None
+  private[specs] var parent: Option[LifeCycle] = None
+  private[specs] var current: Option[Examples] = None
   /** a predicate which will decide if an example must be re-executed */
-  var untilPredicate: Option[() => Boolean] = None
+  private[specs] var untilPredicate: Option[() => Boolean] = None
 
-  protected var sequential = false
+  private[specs] protected var sequential = false
   def isSequential = sequential
   def setSequential() = sequential = true
   
+  def withCurrent(ex: Examples)(a: => Any) = {
+    val c = current.orElse(parent.flatMap(_.current))
+    setCurrent(Some(ex))
+    a
+    setCurrent(c)
+  }
   def setCurrent(ex: Option[Examples]): Unit = {
     current = ex
     parent.map(_.setCurrent(ex))
   }
   /** forwards the call to the "parent" cycle */
   def until: Boolean = parent.map(_.until).getOrElse(true) && untilPredicate.getOrElse(() => true)()
-  def afterExample(ex: Examples) = setCurrent(None)
-  def beforeExample(ex: Examples) = setCurrent(Some(ex))
+  def afterExample(ex: Examples) = {}
+  def beforeExample(ex: Examples) = {}
   /** forward the call to the "parent" cycle */
   def beforeExpectations(ex: Examples): Unit = parent.map(_.beforeExpectations(ex))
   def executeExpectations(ex: Examples, t: =>Any): Any = parent.map(_.executeExpectations(ex, t)).getOrElse(t)
