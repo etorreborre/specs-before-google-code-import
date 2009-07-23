@@ -86,12 +86,12 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
   object taggedSpecification extends Specification {
     "the first system" should {
       "have no tag for the first example" in { 1 mustBe 1 }
-      "have a tag for the second example" in { 1 mustBe 1 } tag("unit")
-    }
+      "have a tag for the second example" in { 1 mustBe 1 } tag "unit"
+    } 
     "the second system" should {
-      "have a functional tag for the first example" in { 1 mustBe 1 }
-      "have a functional tag for the second example" in { 1 mustBe 1 }
-    } tag("functional")
+      ("have a functional tag for the first example" in { 1 mustBe 1 }) tag "functional"
+      "have a functional tag for the second example" in { 1 mustBe 1 } tag "functional"
+    }
   }
 }
 trait ScalaTestMocks extends JMocker with Contexts { this: BaseSpecification =>

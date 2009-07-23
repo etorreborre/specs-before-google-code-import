@@ -185,8 +185,8 @@ class SusSuite(sus: Sus) extends Suite {
    */
   override def groups: Map[String, Set[String]] = {
     var exampleTags: Map[String, Set[String]] = new HashMap[String, Set[String]]()
-    for (e <- sus.examples;
-         tag <- e.tags) {
+    for {e <- sus.examples
+         tag <- e.tags } {
         val exampleNames: Set[String] = exampleTags.get(tag.name) match {
           case None => new HashSet[String]
           case Some(set) => set
