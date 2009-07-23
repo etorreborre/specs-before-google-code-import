@@ -55,14 +55,14 @@ class tagsSpec extends HtmlSpecificationWithJUnit with Fixtures {
   This will output:
  { specOutput }
 
-  <ex>If a tag is applied to a sus, it also applied to all its examples</ex>:
+  <ex>If a tag is applied to a sus, it must not applied to all its examples</ex>:
 {"""
     object specWithSus extends Specification {
       "this sus" should {
         "be tagged 1" in { 1 must_== 1 }
         "be tagged 2" in { 1 must_== 1 }
       } tag("be tagged")
-    } """ }{susExamplesAreTagged}
+    } """ }{susExamplesAreNotTagged}
 
 </t> isSus
 }
@@ -85,8 +85,8 @@ trait Fixtures extends LiterateSpecification { this: LiterateSpecification =>
         "be tagged 2" in { 1 must_== 1 }
       } tag("be tagged")
     }
-   def susExamplesAreTagged = eg {
-     specWithSus.systems.flatMap(_.examples).flatMap(_.tags).size must_== 2
+   def susExamplesAreNotTagged = eg {
+     specWithSus.systems.flatMap(_.examples).flatMap(_.tags) must beEmpty
    }
    import org.specs.io.mock.MockOutput
    def specOutput = {
