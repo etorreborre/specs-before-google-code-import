@@ -84,7 +84,7 @@ object basicFeatures extends SpecificationWithSamples {
        }
      }
      skipAll.systems(0).examples // execute the should part
-     skipAll.systems must exist (_.skipped.isEmpty)
+     skipAll.systems must exist (!_.skipped.isEmpty)
      skipAll.expectationsNb mustBe 0
    }
    "not execute its examples unless asked for their status" in {
