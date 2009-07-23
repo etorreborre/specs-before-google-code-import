@@ -132,7 +132,7 @@ trait OutputReporter extends Reporter with Output {
   def reportSystems(systems: Iterable[Sus], padding: String) = {
     def displaySus(s: Sus) = if (systems.toList.size > 1) reportSus(s, padding) else printSus(s, padding)
     systems foreach { s =>
-      if (canReport(s)) {
+      if (canReport(s) && !s.examples.isEmpty) {
         displaySus(s)
       }
     }

@@ -11,12 +11,14 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
   /** filters the examples which should be added to this Example structure */
   var examplesFilter: Example => Option[Example] = (e: Example) => Some(e)
   /** Declare the examples as components to be tagged when the sus is tagged */
-  override def taggedComponents: List[Tagged] = this.examples
+  override def taggedComponents: List[Tagged] = this.exampleList
 
   /** add an example to the list of examples. */
   def addExample(e: Example) = {
     examplesFilter(e) map { ex =>
       addChild(ex)
+      ex.accept(this.accepted:_*)
+      ex.reject(this.rejected:_*)
       exampleList = exampleList ::: List(ex)
     }
   }

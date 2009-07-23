@@ -146,16 +146,16 @@ class consoleTraitSpecification extends TestSpecs {
   }
   "A console trait" can { 
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
-      runWith("--reject", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
+      runWith("--reject", "out", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a -rej argument to only exclude examples having some tags in the specification" in {
-      runWith("-rej", "out") must (containMatch("\\+ included") and containMatch("o excluded"))
+      runWith("-rej", "out", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a --accept argument to only include examples having some tags in the specification" in {
-      runWith("--accept", "in") must (containMatch("\\+ included") and containMatch("o excluded"))
+      runWith("--accept", "in", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "accept a -acc argument to only exclude examples having some tags in the specification" in {
-      runWith("-acc", "in") must (containMatch("\\+ included") and containMatch("o excluded"))
+      runWith("-acc", "in", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
@@ -211,15 +211,15 @@ class TestSpecs extends org.specs.Specification {
     "this is system one" should { "do nothing" in { 1 must_== 1 } }
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
   }
-  def specWithTags = new Specification {
-	"this sus" should {
-	  ("excluded" in { 1 must_== 1 }).tag("out")
-	  ("included" in { 1 must_== 1 }).tag("in")
-	  "failed" in { 1 must_== 0 }
-	  "error" in { 1 / 0 }
-	  "skipped" in { skip("skipped") }
-	}
-  }
+}
+object specWithTags extends Specification {
+  "this sus" should {
+    ("excluded" in { 1 must_== 1 }).tag("out")
+    ("included" in { 1 must_== 1 }).tag("in")
+    "failed" in { 1 must_== 0 }
+    "error" in { 1 / 0 }
+    "skipped" in { skip("skipped"); 1 }
+  } tag "in"
 }
 abstract class TestSpecification extends org.specs.Specification with Expectations with MockOutput {
   override val specs = List(this)
