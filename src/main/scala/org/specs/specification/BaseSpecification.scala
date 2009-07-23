@@ -145,6 +145,10 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
   def forExample: Example = {
+    current match {
+      case None => setCurrent(Some(specify))
+      case _ => ()
+    }
     forExample("example " + (current.map(_.exampleList.size).getOrElse(0) + 1))
   }
 

@@ -46,10 +46,7 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
     }
   }
   "A specification with one sus and an example alone" should {
-    object testSpec extends Specification { 
-      "this sus" should { "ex1" in { 1 must_== 1 } }
-      "ex2" in { 1 must_== 1 }
-    }
+    object testSpec extends specWith2Sus
     "have two sus" in {
       testSpec.systems must have size(2)
       testSpec.systems(0).examples must have size(1)
@@ -59,7 +56,6 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
     }
   }
   "A specification with one expectation only" should {
-    object nudeSpec extends Specification { "name" mustEqual "name" }
     "create a default sus" in {
       nudeSpec.systems.size mustBe 1
     }
@@ -92,15 +88,6 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
     }
   }
   "A specification with 2 expectations only" should {
-    object twoNamedExamples extends Specification {
-      val n = "name" aka "the string"
-      n mustEqual "name"
-      n mustEqual "name2"
-    }
-    object twoExamples extends Specification {
-      "name" mustEqual "name"
-      "name" mustEqual "name2"
-    }
     "create 2 default examples with a normal assert" in {
       twoNamedExamples.systems.head.examples.size mustBe 2
     }
@@ -119,6 +106,19 @@ object failedSpecification extends Specification { "it" should { 1 must_== 0; ""
 object skippedSpecification extends Specification { "it" should { "be skipped" in { skip("be skipped") } } }
 object skippedMatcherSpecification extends Specification { "it" should { "be skipped" in { 1 must be_==(0).orSkipExample } } }
 
-
-
-
+class specWith2Sus extends Specification { 
+  "this sus" should { "ex1" in { 1 must_== 1 } }
+  "ex2" in { 1 must_== 1 }
+}
+object nudeSpec extends Specification { "name" mustEqual "name"; systems }
+object twoNamedExamples extends Specification {
+  val n = "name" aka "the string"
+  n mustEqual "name"
+  n mustEqual "name2"
+  systems
+}
+object twoExamples extends Specification {
+  "name" mustEqual "name"
+  "name" mustEqual "name2"
+}
+    
