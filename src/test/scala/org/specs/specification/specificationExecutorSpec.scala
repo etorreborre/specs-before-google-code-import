@@ -13,7 +13,7 @@ class specificationExecutorSpec extends spex.Specification {
       example.expectationsNb must_== 1
     }
     "execute all subexamples" in {
-      specificationWithSubexamples.allExamples.flatMap(_.examples) must have size(3)
+      specificationWithSubexamples.allExamples must have size(3)
       specificationWithSubexamples.failures must have size(1)
     }
   }
@@ -87,7 +87,7 @@ object specificationWithANestedCaseClassSpecification extends spex.Specification
 }
 object specificationWithSubexamples extends spex.Specification {
   "execute all subexamples" should {
-    "ex" >> {
+    "ex" in {
       "subex1" in {
         1 must_== 1 
       }
