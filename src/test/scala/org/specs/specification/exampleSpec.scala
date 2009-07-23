@@ -23,8 +23,6 @@ import org.specs.runner._
 import org.specs.util._
 
 class exampleSpec extends SpecificationWithJUnit {
-  setSequential()
-  shareVariables()
   "An example" should {
     "not be executed if not asked for results" in {
       ex.hasBeenExecuted must beFalse
@@ -41,13 +39,6 @@ class exampleSpec extends SpecificationWithJUnit {
       ex.failures
       ex.hasBeenExecuted must beTrue
     }
-  }
-  "A subexample must have the same lifecycle as its parent example" in {
-    val e = forExample("example")
-    e in {
-     "subex" in { 1 must_== 1 }
-    }
-    e.examples(0).parent mustBe e.parent
   }
   "An example" should {
     "throw a SkippedException with a PENDING message if it has a body with no expectations" in {
@@ -72,7 +63,7 @@ object ex extends Specification {
   shareVariables()
   var hasBeenExecuted = false
   var subexample: Example = null
-  val testExample = new Example("ex") in {
+  val testExample = "ex" in {
     hasBeenExecuted = true
   }
   override def failures = testExample.failures.toList
