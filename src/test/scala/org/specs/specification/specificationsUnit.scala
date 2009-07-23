@@ -57,16 +57,16 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
   }
   "A specification with one expectation only" should {
     "create a default sus" in {
-      nudeSpec.systems.size mustBe 1
+      nudeSpecification.systems.size mustBe 1
     }
     "create a default example" in {
-      nudeSpec.systems.head.examples.size mustBe 1
+      nudeSpecification.systems.head.examples.size mustBe 1
     }
     "create a default example named 'example 1'" in {
-      nudeSpec.systems.head.examples.first.description must_== "example 1"
+      nudeSpecification.systems.head.examples.first.description must_== "example 1"
     }
     "count 1 expectation" in {
-      nudeSpec.expectationsNb mustBe 1
+      nudeSpecification.expectationsNb mustBe 1
     }
   }
   "the location of a failure" should {
@@ -110,7 +110,7 @@ class specWith2Sus extends Specification {
   "this sus" should { "ex1" in { 1 must_== 1 } }
   "ex2" in { 1 must_== 1 }
 }
-object nudeSpec extends Specification { "name" mustEqual "name"; systems }
+object nudeSpecification extends Specification { "name" mustEqual "name"; systems }
 object twoNamedExamples extends Specification {
   val n = "name" aka "the string"
   n mustEqual "name"

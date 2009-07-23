@@ -34,10 +34,9 @@ class descriptionFormatterSpec extends SpecificationWithJUnit {
       textileFormatter.format(<t>h1. Hello world</t>) must \\("h1")
     }
     detailedDiffs()
-    val example = new Example("example desc")
-    example in { 1 must_== 1 }
-    example.executeThis
     "set the status of the example descriptions depending on the example status" in {
+      val example = "example desc" in { 1 must_== 1 }
+      example.executeThis
       textileFormatter.setStatus("this is the " + example.description + " to be highlighted", List(example)).toString must 
         include("""this is the ==<ex class="success" """) and
         include("</ex>== to be highlighted")
