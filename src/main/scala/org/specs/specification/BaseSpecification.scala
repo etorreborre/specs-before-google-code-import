@@ -145,11 +145,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
   def forExample: Example = {
-    current match {
-      case None => setCurrent(Some(specify))
-      case _ => ()
-    }
-    forExample("example " + (current.map(_.exampleList.size).getOrElse(0) + 1))
+    forExample("example " + (exampleContainer.exampleList.size + 1))
   }
 
   /**
@@ -175,8 +171,12 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * It is either the list of examples associated with the current sus, or
    * the list of subexamples of the current example being defined
    */
-  protected[specification] def exampleContainer: Any {def createExample(desc: String): Example} = {
-    current.getOrElse(specify)
+  protected[specification] def exampleContainer: Examples = {
+    current match {
+      case None => setCurrent(Some(specify))
+      case _ => ()
+    }
+    current.get
   }
   /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None

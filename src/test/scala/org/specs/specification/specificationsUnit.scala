@@ -46,13 +46,13 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
     }
   }
   "A specification with one sus and an example alone" should {
-    object testSpec extends specWith2Sus
+    object s extends specWith2Sus
     "have two sus" in {
-      testSpec.systems must have size(2)
-      testSpec.systems(0).examples must have size(1)
-      testSpec.systems(0).examples(0).description must_== "ex1" 
-      testSpec.systems(1).examples must have size(1)
-      testSpec.systems(1).examples(0).description must_== "ex2" 
+      s.systems must have size(2)
+      s.systems(0).examples must have size(1)
+      s.systems(0).examples(0).description must_== "ex1" 
+      s.systems(1).examples must have size(1)
+      s.systems(1).examples(0).description must_== "ex2" 
     }
   }
   "A specification with one expectation only" should {
