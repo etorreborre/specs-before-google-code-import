@@ -124,7 +124,7 @@ class reporterSpecification extends TestSpecs {
   }
 }
 class consoleTraitSpecification extends TestSpecs {
-  val specRunner = new ConsoleRunner(specWithTags) with MockOutput
+  val specRunner = new ConsoleRunner(new specWithTags) with MockOutput
   val specTwoSystemsRunner = new ConsoleRunner(specTwoSystems) with MockOutput
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
@@ -144,7 +144,7 @@ class consoleTraitSpecification extends TestSpecs {
       runWith("-acc") must containMatch("\\[WARNING\\] accept/reject tags omitted")
     }
   }
-  "A console trait" can { 
+  "A console trait with tagged specifications" should { 
     "accept a --reject argument to only exclude examples having some tags in the specification" in {
       runWith("--reject", "out", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
@@ -157,6 +157,8 @@ class consoleTraitSpecification extends TestSpecs {
     "accept a -acc argument to only exclude examples having some tags in the specification" in {
       runWith("-acc", "in", "-ns") must (containMatch("\\+ included") and containMatch("o excluded"))
     }
+  }
+  "A console trait" should {
     "not display the statistics with the -finalstats or --finalstatistics flag" in {
       run2SystemsWith("-finalstats") must notContainMatch("for SUS")
     }
@@ -168,16 +170,16 @@ class consoleTraitSpecification extends TestSpecs {
       runWith("--color") must containMatch(asString(AnsiColors.green))
     }
     "report a success in green when passed the -c or --color flag" in {
-      runWith("-c", "-ex", "included") must containMatch(asString(AnsiColors.green))
+      runWith("-c") must containMatch(asString(AnsiColors.green))
     }
     "report a failure in red when passed the -c or --color flag" in {
-      runWith("-c", "-ex", "failure") must containMatch(asString(AnsiColors.red))
+      runWith("-c") must containMatch(asString(AnsiColors.red))
     }
     "report an error in red when passed the -c or --color flag" in {
-      runWith("-c", "-ex", "error") must containMatch(asString(AnsiColors.red))
+      runWith("-c") must containMatch(asString(AnsiColors.red))
     }
     "report a skipped example in yellow when passed the -c or --color flag" in {
-      runWith("-c", "-ex", "skipped") must containMatch(asString(AnsiColors.yellow))
+      runWith("-c") must containMatch(asString(AnsiColors.yellow))
     }
     "print a help message with the options description if passed the -h or --help flag" in {
       mainWith("--help") must containMatch("--help")
@@ -212,7 +214,7 @@ class TestSpecs extends org.specs.Specification {
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
   }
 }
-object specWithTags extends Specification {
+class specWithTags extends Specification {
   "this sus" should {
     ("excluded" in { 1 must_== 1 }).tag("out")
     ("included" in { 1 must_== 1 }).tag("in")
