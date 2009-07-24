@@ -24,46 +24,41 @@ import org.specs.execute._
 import org.specs.util._
 import org.specs.util.ExtendedString._
 /**
- * This trait provides a structure to a specification.<br>
- * A specification is composed of:<ul>
- * <li>sub specifications or
- * <li>systems under tests (systems)
- * <li>examples which are components of systems under tests
- * <li>sub-examples which are components of examples</ul><p>
+ * This class provides the base structure of a specification.<br>
+ * A specification has a name, a description and is composed of:<ul>
+ * <li>sub specifications and/or</li>
+ * <li>systems under specification (systems)</li>
+ * </ul>
+ * <p/>
+ * In turn the systems can contain recursively contain examples.
+ * <p/>
+ * The description of a specification is its class name by default but which can be also overriden for better readibility.
+ * For example, it is possible to declare a Specification using a constructor taking the full name of the specification:
+ * <code>
+ * class messagingSpec extends Specification("Specification for the messaging system")
+ * </code>
+ * <p/>
  *
- * A specification is also given a description which is formed from its class name by default
- * but which can be also overriden<p>
- *
- * A specification can be composed of other specifications:<br>
- * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code><br>
- * or <code>declare("A complex specification").isSpecifiedBy(spec1, spec2)</code>
- * <p>
- * A system under specification can be created from a string with an implicit definition using <code>should</code>:<br>
- * <code>"my system under test" should {}</code><br>
- * Alternatively, it could be created with:
- * <code>specify("my system under test").should {}</code>
- * <p>
- * Sub-examples can be created by declaring them inside the current example:<pre>
- * def otherExample = "this is a shared example" in { "this expectation" must notBeEmpty }
- *
- * "behave like other examples" in {
- *  otherExample
- * } </pre>
- * Sub-examples are usually used to share examples across specifications (see the Stack example in test/scala/scala/specs/sample)
- * <p>
- * A <code>BaseSpecification</code> also implements an <code>ExampleLifeCycle</code> trait
- * allowing subclasses to refine the behaviour of the specification before/after an example and before/after
- * a test inside an example. This is used to plug setup/teardown behaviour at the sus level and to plug
- * mock expectations checking when a specification is using the Mocker trait: <code>mySpec extends Specification with Mocker</code>
+ * A <code>BaseSpecification</code> implements several traits:<ul>
+ * <li>TreeNode: allowing the specification, its systems and examples to be considered as a generic tree of nodes</li>
+ * <li>SpecificationSystems: trait holding the systems declaration and navigation functions</li>
+ * <li>SpecificationExecutor: this enables the execution of examples in isolation, by executing them in a clone of the specification, so that any local variable used
+ * by the example is set to its initial value as if other examples never had modified it. This trait specialize the ExampleLifeCycle trait defining all steps of an example execution</li>
+ * <li>ExampleExpectationsListener: this trait allows an expectation to be added to the current example being executed</li>
+ * <li>Tagged: allow to tag the specification with some name so that accepted and rejected tags define what should be executed or not</li>
+ * <li>HasResults: generic trait for anything declaring failures, successes, errors and skipped</li>
+ * <li>LinkedSpecification: this allow the declaration of links between literal specifications</li>
+ * <li>SpecificationConfiguration: this defines variables which affect the behaviour of the specification. For example if examples without expectations 
+ * should be marked as pending</li>
+ * </ul>
  */
 class BaseSpecification extends TreeNode with SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
   with HasResults with LinkedSpecification with SpecificationConfiguration { outer =>
     
-  /** description of the specification */
-  var description = createDescription(getClass.getName)
-
   /** name of the specification */
   var name = createDescription(getClass.getName)
+  /** description of the specification */
+  var description = createDescription(getClass.getName)
 
   /**
    * @return a description from the class name, taking the last name which doesn't contain a $ or a number.
@@ -82,13 +77,11 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
 
   /** specifications contained by the current specification. An empty list by default */
   var subSpecifications: List[Specification] = List()
-
-  /** specification including this one */
+  /** specification which includes this one */
   var parentSpecification: Option[BaseSpecification] = None
-
   /** set the parent specification of this one */
   def setParent(s: BaseSpecification): this.type = { parentSpecification = Some(s); this }
-  /** @return all the parent specifications of this specification, starting with the immediate parent */
+  /** @return all the parent specifications of this specification, starting with the most immediate parent */
   def parentSpecifications: List[BaseSpecification] = {
     parentSpecification.map(List(_)).getOrElse(Nil) ::: parentSpecification.map(_.parentSpecifications).getOrElse(Nil)   
   } 
@@ -97,34 +90,41 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     this.description = this.name + " is specified by"
     include(specifications:_*)
   }
-
-  def include(specifications: Specification*) = {
-    val toInclude = specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
-    toInclude.foreach(_.setParent(this))
-    subSpecifications = subSpecifications ::: toInclude 
-  }
-
   /** alias for isSpecifiedBy */
   def areSpecifiedBy(specifications: Specification*) = {
     this.description = this.name + " are specified by"
     include(specifications:_*)
   }
-
+  /**
+   * include a list of specifications inside this one
+   */
+  def include(specifications: Specification*) = {
+    val toInclude = specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
+    toInclude.foreach(_.setParent(this))
+    subSpecifications = subSpecifications ::: toInclude 
+  }
   /**
    * implicit definition allowing to declare a composition inside the current specification:
    * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code>
+   * It changes the name of this specification with the parameter
    */
-  implicit def declare(d: String): BaseSpecification = { name = d; this }
-
-  /** Return all the systems for this specification, including the ones from the sub-specifications (recursively). */
+  implicit def declare(newName: String): BaseSpecification = { 
+    name = newName
+    this 
+  }
+  /** @return recursively all the systems included in this specification */
   def allSystems: List[Sus] = {
     systems ::: subSpecifications.flatMap(_.allSystems)
   }
-  /** Return all the examples for this specification, including the subexamples (recursively). */
+  /** @return recursively all the examples included in this specification */
   def allExamples: List[Examples] = {
     systems.flatMap(_.allExamples) ::: subSpecifications.flatMap(_.allExamples)
   }
-  /** @return the example for a given Activation path */
+  /** @return true if it contains the specification recursively */
+  def contains(s: Any): Boolean = {
+    subSpecifications.contains(s) || subSpecifications.exists(_.contains(s))
+  }
+  /** @return the example corresponding to a given Tree path, searching in the incl */
   def getExample(path: TreePath): Option[Examples] = {
     path match {
       case TreePath(0 :: i :: rest) if systems.size > i => systems(i).getExample(TreePath(rest))
@@ -140,50 +140,37 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   implicit def forExample(desc: String) = {
     exampleContainer.createExample(desc)
   }
-
   /**
    * Create an anonymous example, giving it a number depending on the existing created examples/
    */
   def forExample: Example = {
     forExample("example " + (exampleContainer.exampleList.size + 1))
   }
-
-  /**
-   * Create an anonymous example with a function on a System,
-   * giving it a number depending on the existing created examples
-   */
-  def forExample[S](function: S => Any): Example = forExample in function
   /**
    * Return the example being currently executed if any
    */
   def lastExample: Option[Examples] = {
-    current.orElse(parentLifeCycle.current) match {
+    current.orElse(this.current) match {
       case Some(s: Sus) => None
       case Some(e: Example) => Some(e)
       case None => None
     }
   }
-
-  var parentLifeCycle = this
-
   /**
    * utility method to track the last example list being currently defined.<br>
-   * It is either the list of examples associated with the current sus, or
-   * the list of subexamples of the current example being defined
+   * It is either the current sus (one  gets created with specify if there's not any) or
+   * the current example
    */
   protected[specification] def exampleContainer: Examples = {
-    current match {
-      case None => setCurrent(Some(specify))
-      case _ => ()
+    current.getOrElse {
+      setCurrent(Some(specify))
+      current.get
     }
-    current.get
   }
   /** the beforeAllSystems function will be invoked before all systems */
   var beforeSpec: Option[() => Any] = None
-
   /** the afterAllSystems function will be invoked after all systems */
   var afterSpec: Option[() => Any] = None
-  private[specification] var executeOneExampleOnly = false
   /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
@@ -195,7 +182,6 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
           !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
       beforeSpec.map(_.apply)
   }
-
   /**
    * override the afterExample method to execute actions after the
    * last example of the last sus
@@ -208,15 +194,11 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
       afterSpec.map(_.apply)
     super.afterExample(ex)
   }
-  /**
-   * add examples coming from another specification
+  /** 
+   * this variable commands if the specification has been instantiated to execute one example only, 
+   * in order to execute it in isolation 
    */
-  def addExamples(examples: List[Example]) = current.foreach(c => c.exampleList = c.exampleList ::: examples)
-  
-  /** @return true if it contains the specification recursively */
-  def contains(s: Any): Boolean = {
-    subSpecifications.contains(s) || subSpecifications.exists(_.contains(s))
-  }
+  private[specification] var executeOneExampleOnly = false
     /**
    * Syntactic sugar for examples sharing between systems under test.<p>
    * Usage: <code>
@@ -242,30 +224,22 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
                                          outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
     }
   }
-  /** @return the examples number without executing the specification (i.e. without subexamples) */
-  def examplesNb: Int = subSpecifications.foldLeft(0)(_+_.examplesNb) + systems.foldLeft(0)(_+_.examples.size)
-
+  /** @return the first level examples number (i.e. without subexamples) */
+  def firstLevelExamplesNb: Int = subSpecifications.foldLeft(0)(_+_.firstLevelExamplesNb) + systems.foldLeft(0)(_+_.examples.size)
   /** @return the failures of each sus */
   def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures)
-
   /** @return the skipped of each sus */
   def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: systems.flatMap(_.skipped)
-
   /** @return the errors of each sus */
   def errors: List[Throwable] = subSpecifications.flatMap(_.errors) ::: systems.flatMap(_.errors)
-
   /** @return all the examples with no errors, failures or skip messages */
   def successes: List[Example] = subSpecifications.flatMap(_.successes) ::: systems.flatMap(_.successes)
-
   /** @return all the examples */
   def examples: List[Example] = subSpecifications.flatMap(_.examples) ::: systems.flatMap(_.examples)
-
   /** @return the total number of expectations for each sus */
   def expectationsNb: Int = subSpecifications.foldLeft(0)(_ + _.expectationsNb) + systems.foldLeft(0)(_ + _.expectationsNb)
-
   /** @return true if there are failures or errors */
   def isFailing: Boolean = !this.failures.isEmpty || !this.errors.isEmpty
-
   /** reset in order to be able to run the examples again */
   def resetForExecution: this.type = {
     subSpecifications.foreach(_.resetForExecution)
@@ -274,95 +248,6 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   }
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
   override def taggedComponents: List[Tagged] = this.systems ++ this.subSpecifications 
-  
+  /** @return the name of the specification */
   override def toString = name
-  
-}
-/**
- * This trait abstracts the building and storing of the systems of a Specification.
- */
-trait SpecificationSystems { this: BaseSpecification =>
-  /** list of systems under test */
-  var systems : List[Sus] = Nil
-
-  /**
-   * implicit definition allowing to declare a new system under test described by a string <code>desc</code><br>
-   * Usage: <code>"my system under test" should {}</code><br>
-   * Alternatively, it could be created with:
-   * <code>specify("my system under test").should {}</code>
-   */
-  implicit def specify(desc: String): Sus = {
-    addSus(new Sus(desc, this))
-  }
-  /**
-   * specifies an anonymous Sus
-   */
-  def specify: Sus = {
-    addSus(new Sus(this))
-  }
-  private[specs] def addSus(sus: Sus): Sus = {
-    addChild(sus)
-    systems = systems ::: List(sus)
-    if (this.isSequential)
-      systems.last.setSequential
-    sus
-  }
-
-  /**
-   * add a textual complement to the sus verb.
-   * For example, it is possible to declare:
-   * <code>"the system" should provide {...}</code>
-   * if the following function is declared:
-   * <code>def provide = addToSusVerb("provide")</code>
-   */
-  def addToSusVerb(complement: String) = new Function1[Example, Example] {
-    def apply(e: Example) = { 
-      current match { 
-        case Some(sus: Sus) => sus.verb += " " + complement 
-        case _ => 
-      }
-      e
-    }
-  }
-}
-/**
- * This trait adds the possibility to declare an included specification as "linked" in order to 
- * control its reporting in a separate file for example.
- */
-trait LinkedSpecification { this: BaseSpecification => 
-  /** storing the parent links of this specification */
-  private var parentLinks = List[LinkedSpecification]()
-  def addParent(s: LinkedSpecification): this.type = { parentLinks = s :: parentLinks; this }
-  def hasParent(s: LinkedSpecification): Boolean = parentLinks.contains(s)
-
-  def linkTo(subSpec: Specification with LinkedSpecification): this.type  = linkTo(subSpec.description, subSpec)
-  def linkTo(desc: String, subSpec: Specification): this.type = {
-    if (!contains(subSpec)) include(subSpec)
-    subSpec.addParent(this)
-    this
-  }
-  /** 
-   * partitions the subspecifications in a pair where the first member is the list of linked specifications, 
-   * and the second member is the unlinked ones
-   */
-  def partitionLinkedSpecifications: (List[Specification], List[Specification]) = {
-    this.subSpecifications.partition(_.hasParent(this))  
-  }
-  /**
-   * @return the linked specifications
-   */
-  def linkedSpecifications = this.partitionLinkedSpecifications._1
-  /**
-   * @return the unlinked specifications
-   */
-  def unlinkedSpecifications = this.partitionLinkedSpecifications._2 
-}
-trait SpecificationConfiguration { this: BaseSpecification =>
-  private[specification] var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
-  /** 
-   * override this method to use the same specification object to execute Examples, effectively sharing
-   * variables between them. 
-   */
-  def shareVariables() = oneSpecInstancePerExample = false
-  def dontShareVariables() = oneSpecInstancePerExample = true
 }

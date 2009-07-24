@@ -28,7 +28,7 @@ import org.specs.specification._
 trait LiterateSpecificationLinks extends LinkedSpecification with Links { this: Specification => 
   def linkTo(subSpec: Specification with runner.Html): String = linkTo(subSpec.description, subSpec)
   def linkTo(desc: String, subSpec: Specification with runner.Html): String = {
-    super.linkTo(desc, subSpec)
+    super.linkTo(subSpec)
     // execute the subSpec
     subSpec.failures
     relativeLink(desc, subSpec.fileName(subSpec))
