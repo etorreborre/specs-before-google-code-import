@@ -18,16 +18,16 @@
  */
 package org.specs.specification
 
+/**
+ * This traits adds the possibility to add declarations for detailed failures when matching strings.
+ */
 trait DetailedFailures {
   /** by default no full details are reported by specifications */
   implicit var detailedFailures: Detailed = noDetails()
-
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
   def detailedDiffs() = { detailedFailures = fullDetails("()") }
-
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
   def detailedDiffs(separators: String) = { detailedFailures = fullDetails(separators) }
-
   /** reset the detailled diffs to no diffs */
   def noDetailedDiffs() = { detailedFailures = noDetails() }
 }

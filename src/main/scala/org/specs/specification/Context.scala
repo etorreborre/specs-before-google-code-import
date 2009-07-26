@@ -16,7 +16,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS INTHE SOFTWARE.
  */
-package org.specs
+package org.specs.specification
 import org.specs.util._
 import org.specs.util.ExtendedString._
 import scala.xml._
@@ -32,15 +32,37 @@ import org.specs.execute._
 
 /**
  * This traits adds before / after capabilities to specifications, so that a context can be defined for
- * each system under test being specified.
+ * each system under test being specified and trigger some actions before or after each example.
  */
 trait BeforeAfter { outer: BaseSpecification =>
-  /** 
-   * adds a "before" function to the last sus being defined 
-   */
+  /** adds a "before" function to the last sus being defined */
+  def doBefore(actions: =>Any) = usingBefore(() => actions)
+  /**  adds an "after" function to the last sus being defined */
+  def doAfter(actions: =>Any) = usingAfter(() => actions)
+  /** adds a "firstActions" function to the last sus being defined */
+  def doFirst(actions: =>Any) = current.map(stackFirstActions(_, actions))
+  /** adds a "lastActions" function to the last sus being defined */
+  def doLast(actions: =>Any) = current.map(stackLastActions(_, actions)) 
+  /** adds a "beforeSpec" function to the current specification */
+  def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => actions, beforeSpec)
+  /** adds a "afterSpec" function to the current specification */
+  def doAfterSpec(actions: =>Any) = afterSpec = reverseStackActions(() => actions, afterSpec)
+  /** adds a "before" function to the last sus being defined */
   private def usingBefore(actions: () => Any) = current.map(stackBeforeActions(_, actions))
-  def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
-  
+  /** adds an "after" function to the last sus being defined */
+  private def usingAfter(actions: () => Any) = current.map(stackAfterActions(_, actions))
+  /** actions are stacked so that several before actions can be triggered one after the other */
+  private[specs] def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
+  /** adds an "after" function to a sus */
+  private[specs] def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
+  /** adds "firstActions" to a sus */
+  private[specs] def stackFirstActions(sus: Examples, actions: =>Any) = sus.firstActions = stackActions(() => actions, sus.firstActions)
+  /** adds "lastActions" to a sus */
+  private[specs] def stackLastActions(sus: Examples, actions: =>Any) = sus.lastActions = reverseStackActions(() => actions, sus.lastActions)
+  /** repeats examples according to a predicate */
+  def until(predicate: =>Boolean): Unit = current.map(until(_, predicate))
+  /** repeats examples according to a predicate */
+  def until(sus: Examples, predicate: =>Boolean) = sus.untilPredicate = Some(() => { predicate })
   /** @return a function with actions being executed after the previous actions. */
   private def stackActions(actions: () => Any, previousActions: Option[() => Any]) = {
     Some(() => {
@@ -48,41 +70,13 @@ trait BeforeAfter { outer: BaseSpecification =>
       actions()
     })
   }
-  /** @return a function with actions being executed after the previous actions. */
+  /** @return a function with actions being executed before the previous actions. */
   private def reverseStackActions(actions: () => Any, previousActions: Option[() => Any]) = {
     Some(() => {
       actions()
       previousActions.map(a => a())
     })
   }
-
-  /** adds a "before" function to the last sus being defined */
-  def doBefore(actions: =>Any) = usingBefore(() => actions)
-  /** adds a "firstActions" function to the last sus being defined */
-  def doFirst(actions: =>Any) = current.map(stackFirstActions(_, actions))
-  /** adds "firstActions" to a sus */
-  def stackFirstActions(sus: Examples, actions: =>Any) = sus.firstActions = stackActions(() => actions, sus.firstActions)
-  /** adds a "lastActions" function to the last sus being defined */
-  def doLast(actions: =>Any) = current.map(stackLastActions(_, actions)) 
-  /** adds "lastActions" to a sus */
-  def stackLastActions(sus: Examples, actions: =>Any) = sus.lastActions = reverseStackActions(() => actions, sus.lastActions)
-  /** adds a "beforeSpec" function to the current specification */
-  def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => actions, beforeSpec)
-  /** adds a "afterSpec" function to the current specification */
-  def doAfterSpec(actions: =>Any) = afterSpec = reverseStackActions(() => actions, afterSpec)
-  /** adds an "after" function to the last sus being defined */
-  private def usingAfter(actions: () => Any) = current.map(stackAfterActions(_, actions))
-  /** adds an "after" function to a sus */
-  def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
-  /**  adds an "after" function to the last sus being defined */
-  def doAfter(actions: =>Any) = usingAfter(() => actions)
-  /** repeats examples according to a predicate */
-  def until(predicate: =>Boolean): Unit = current.map(until(_, predicate))
-  /** repeats examples according to a predicate */
-  def until(sus: Examples, predicate: =>Boolean) = {
-    sus.untilPredicate = Some(() => { predicate })
-  }
-  
   /** 
    * Syntactic sugar for before/after actions.<p>
    * Usage: <code>"a system" should { createObjects.before
@@ -90,7 +84,6 @@ trait BeforeAfter { outer: BaseSpecification =>
    * </code>
    */
   implicit def toShortActions(actions: =>Unit) = new ShortActions(actions)
-
   /** 
    * Syntactic sugar for before/after actions.<p>
    * Usage: <code>"a system" should { createObjects.before
@@ -106,34 +99,28 @@ trait BeforeAfter { outer: BaseSpecification =>
     def afterSpec = outer.doAfterSpec(actions)
   }
 }
+/**
+ * This trait helps creating Context objects encapsulating the before/after actions which can be associated to a sus
+ */
 trait Contexts extends BeforeAfter { this: BaseSpecification =>
   /** Factory method to create a context with beforeAll only actions */
   def contextFirst(actions: => Any) = new Context { first(actions) }
-
   /** Factory method to create a context with before only actions */
   def beforeContext(actions: => Any) = new Context { before(actions) }
-
   /** Factory method to create a context with before only actions and an until predicate */
   def beforeContext(actions: => Any, predicate: =>Boolean) = new Context { before(actions); until(predicate()) }
-
   /** Factory method to create a context with after only actions */
   def afterContext(actions: => Any) = new Context { after(actions) }
-
   /** Factory method to create a context with afterAll actions */
   def contextLast(actions: => Any) = new Context { last(actions) }
-
   /** Factory method to create a context with after only actions and an until predicate */
   def afterContext(actions: => Any, predicate: =>Boolean) = new Context { after(actions); until(predicate()) }
-
   /** Factory method to create a context with after only actions */
   def context(b: => Any, a: =>Any) = new Context { before(b); after(a) }
-
   /** Factory method to create a context with before/after actions */
   def globalContext(b: => Any, a: =>Any) = new Context { first(b); last(a) }
-
   /** Factory method to create a context with before/after actions and an until predicate */
   def context(b: => Any, a: =>Any, predicate: =>Boolean) = new Context { before(b); after(a); until(predicate()) }
-
   /** 
    * Syntactic sugar to create pass a new context before creating a sus.<p>
    * Usage: <code>"a system" ->(context) should { 

@@ -31,81 +31,8 @@ import org.specs.ExtendedThrowable._
 import scala.reflect.Manifest
 import org.specs.execute._
 
-/**
- * The <code>Example</code> class specifies one example of a system behaviour<br>
- * It has:<ul>
- * <li>a description explaining what is being done
- * <li>an <code>ExampleLifeCycle</code> which defines behaviour before/after example and test</ul>
- * <p>
- * Usage: <code>"this is an example" in { // code containing expectations }</code> or<br>
- * <code>"this is an example" >> { // code containing expectations }</code><br>
- * ">>" can be used instead of "in" if that word makes no sense in the specification
- * <p>
- * An example can also contain subexamples which are executed will evaluating the <code>in</code> method.
- * <p>
- * When expectations have been evaluated inside an example they register their failures and errors for later reporting
- */
-
-abstract class Examples(var exampleDescription: ExampleDescription, var parentCycle: Option[LifeCycle]) extends
-  ExampleContext with DefaultResults {
-  parent = parentCycle
-  /** example description as a string */
-  def description = exampleDescription.toString
-  /** @return the example description */
-  override def toString = description.toString
-
-  /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
-  def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
-                                                errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
-  
-  def executeThis = {
-    execution.map(_.execute)
-    execution.map { e => 
-      if (!(e.example eq this))
-        this.copyExecutionResults(e.example) 
-    }
-  }
-  
-  /** execute this example but not if it has already been executed. */
-  override def executeExamples = {
-    if (!executed) 
-      parent.map(_.executeExample(this))
-  }
-  override def allExamples: List[Examples] = {
-    if (examples.isEmpty)
-      List(this)
-    else
-      examples.flatMap(_.allExamples).toList
-  }
-    /** @return the example for a given Activation path */
-  def getExample(path: TreePath): Option[Examples] = {
-    path match {
-      case TreePath(Nil) => Some(this)
-      case TreePath(i :: rest) if !this.examples.isEmpty => this.examples(i).getExample(TreePath(rest))
-      case _ => None
-    }
-  }
-  /** create the main block to execute when "execute" will be called */
-  def specifyExample(a: =>Any): Unit = {
-    execution = Some(new ExampleExecution(this, () => {
-      withCurrent(this) {
-        a
-      }
-    }))
-    if (parent.map(_.isSequential).getOrElse(false))
-      executeExamples
-  }
-  /** increment the number of expectations in this example */
-  def addExpectation: Examples = { thisExpectationsNumber += 1; this }
-  /** create a new example with a description and add it to this. */
-  def createExample(desc: String): Example = {
-    val ex = new Example(desc, this)
-    addExample(ex)
-    ex
-  }
-}
 class Example(var exampleDesc: ExampleDescription, var p: Option[ExampleContext]) extends Examples(exampleDesc, p) {
-      /** constructor with a simple string */
+  /** constructor with a simple string */
   def this(desc: String, parent: ExampleContext) = this(ExampleDescription(desc), Some(parent))
   /** constructor with a simple string */
   def this(desc: String) = this(ExampleDescription(desc), None)
