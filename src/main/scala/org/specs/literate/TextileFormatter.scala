@@ -32,7 +32,6 @@ trait TextileFormatting extends WikiFormatter {
     val parsed = parser.parseToHtml(s)
     debug("parsed is \n" + parsed)
     val replaced = parsed.
-    replace("<br/>", "").
     replace("&#8220;", "\"").
     replace("&#8221;", "\"").
     replace("&#8216;", "'").
