@@ -28,7 +28,7 @@ import org.mockito.internal.verification.api.VerificationMode
  * @see org.specs.mock.Mockito
  */
 class MockitoMocker {
-  def mockingProgress = Mockito.MOCKING_PROGRESS
+  def verify(mode: VerificationMode) = Mockito.verify(Mockito.mock(classOf[List[Int]]), mode)
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure).asInstanceOf[T]
   def mock[T](implicit m: scala.reflect.Manifest[T], v: org.mockito.ReturnValues): T = Mockito.mock(m.erasure, v).asInstanceOf[T]
   def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure, Mockito.RETURNS_SMART_NULLS).asInstanceOf[T]

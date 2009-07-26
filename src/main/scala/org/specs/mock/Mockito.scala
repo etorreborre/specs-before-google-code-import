@@ -25,7 +25,8 @@ import org.mockito.internal.stubbing.StubberImpl
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
 import org.mockito.internal.verification.api.{ VerificationInOrderMode, VerificationMode }
-import org.mockito.internal.progress.NewOngoingStubbing
+import org.mockito.internal.stubbing._
+import org.mockito.internal.progress._
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
 
@@ -128,7 +129,7 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
   /** Matcher accepting a call and checking if the method was called according to the verification mode: once, times(2), atLeast(once,...) */
   class CalledMatcher extends Matcher[Any] with HasVerificationMode {
     def apply(v: =>Any) = {
-      mocker.mockingProgress.verificationStarted(verificationMode)
+      mocker.verify(verificationMode)
       var result = (true, "The method was called", "The method was not called")
       try { v } catch {
         case e => result = (false, "The method was called", "The method was not called as expected:" + e.getMessage.replace("\n", " "))
@@ -293,19 +294,19 @@ trait MockitoStubs extends MocksCreation {
    * Internally it calls Mockito.when(mock call).thenReturn(returnValue)
    */
   class Stubbed	[T](c: =>T) {
-    def returns(t: T, t2: T*): NewOngoingStubbing[T] = {
+    def returns(t: T, t2: T*): IOngoingStubbing[T] = {
       if (t2.isEmpty) 
         mocker.when(c).thenReturn(t)
       else
         mocker.when(c).thenReturn(t, t2:_*)
     }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
-    def throws[E <: Throwable](e: E*): NewOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
+    def throws[E <: Throwable](e: E*): IOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
   }
   /** @return an object allowing the chaining of stub values. */
-  implicit def theOngoingStubbing[T](stub: =>NewOngoingStubbing[T]) = new OngoingStubbing(stub)
+  implicit def anOngoingStubbing[T](stub: =>BaseStubbing[T]) = new AnOngoingStubbing(stub)
   /** provide stub chain methods. */
-  class OngoingStubbing[T](stub: =>NewOngoingStubbing[T]) {
+  class AnOngoingStubbing[T](stub: =>BaseStubbing[T]) {
     def thenReturns(t: T) = stub.thenReturn(t)
     def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
   }
