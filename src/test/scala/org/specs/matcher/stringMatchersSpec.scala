@@ -98,43 +98,44 @@ class stringMatchersSpec extends MatchersSpecification {
       expectation("zazbz" aka "the string" must find("l(.*?)l").withGroup("a")) must failWith("'l(.*?)l' isn't found in the string 'zazbz' with group 'a'. Found nothing")
     }
   }
-  "String matchers with be or have as separated words" should {
-    "be ok with 'be equalIgnoringCase'" in {
+  "String matchers with be or have as separated words" should beOkWith {
+    "'be equalIgnoringCase'" in {
       "hello" must be equalIgnoringCaseTo("Hello")
       "hello" must not be equalIgnoringCaseTo("Hello2")
     }
-    "be ok with 'be ==/'" in {
+    "'be ==/'" in {
       "hello" must be ==/("Hello")
       "hello" must not be ==/("Hello2")
     }
-    "be ok with 'be !=/'" in {
+    "'be !=/'" in {
       "hello" must be !=/("Hello2")
       "hello" must not be !=/("Hello")
     }
-    "be ok with 'be equalIgnoringSpace'" in {
+    "'be equalIgnoringSpace'" in {
       "hello" must be equalIgnoringSpaceTo(" hello ")
       "hello" must not be equalIgnoringSpaceTo(" ello ")
     }
-    "be ok with 'not include'" in {
+    "'not include'" in {
       "hello" must not include("zz")
     }
-    "be ok with 'be matching'" in {
+    "'be matching'" in {
       "hello" must be matching("h.*")
     }
-    "be ok with 'not be matching'" in {
+    "'not be matching'" in {
       "hello" must not be matching("z.*")
     }
-    "be ok with 'not startWith'" in {
+    "'not startWith'" in {
       "hello" must not startWith("z")
     }
-    "be ok with 'not endWith'" in {
+    "'not endWith'" in {
       "hello" must not endWith("z")
     }
-    "be ok with 'have length'" in {
+    "'have length'" in {
       "hello" must have length(5)
     }
-    "be ok with 'not have length'" in {
+    "'not have length'" in {
       "hello" must not have length(6)
     }
   }
+  def beOkWith(e: => org.specs.specification.Example) = addToSusVerb("be ok with ")(e)
 }
