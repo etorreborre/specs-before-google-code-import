@@ -273,11 +273,11 @@ class BeVerbMatcher[T] extends OkWordMatcher[T] {
   def ==/(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
   def ==/(s: String) = new BeEqualToIgnoringCase(s)
   def !=/(s: String) = new BeEqualToIgnoringCase(s).not
-  def <[T <% Double](n: T) = new BeLessThan(n) 
-  def <=[T <% Double](n: T) = new BeLessThanOrEqualTo(n) 
-  def >[T <% Double](n: T) = new BeLessThanOrEqualTo(n).not
-  def >=[T <% Double](n: T) = new BeLessThan(n).not 
-  def ~[T <% Double](n: T, delta: T) = new BeCloseTo(n, delta)
+  def <[T](n: T)(implicit d: T => Double, e: T => Ordered[T]) = new BeLessThan(n) 
+  def <=[T](n: T)(implicit d: T => Double, e: T => Ordered[T]) = new BeLessThanOrEqualTo(n) 
+  def >[T](n: T)(implicit d: T => Double, e: T => Ordered[T]) = new BeLessThanOrEqualTo(n).not
+  def >=[T](n: T)(implicit d: T => Double, e: T => Ordered[T]) = new BeLessThan(n).not 
+  def ~[T](n: T, delta: T)(implicit d: T => Monoid[T], e: T => Ordered[T]) = new BeCloseTo(n, delta)
 }
 class HaveVerbMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")
