@@ -64,7 +64,9 @@ trait ExampleExpectationsListener extends ExpectationsListener {
         expectable.map(_.setExample(ex))
         ex
       }
-      case Some(e) => e.addExpectation
+      case Some(e) => {
+        e.addExpectation
+      }
     }
   }
   /**

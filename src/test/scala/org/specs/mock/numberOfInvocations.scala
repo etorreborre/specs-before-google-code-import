@@ -59,12 +59,12 @@ The number of invocations can be checked with different methods on the @called@ 
 <ex>If the method wasn't called the expected number of times, there must be a @FailureException@</ex>:
   
 { "new s4 { mockedList.add(\"one\") was called.twice }.failures" snip it }
-{ >("The method was not called as expected: list.add(\"one\"); Wanted 2 times but was 1") }
+{ >("Wanted 2 times") }
 
 <ex>@wasnt called@ checks that the method wasn't called at all (never in Mockito)</ex>:
   
 { "new s4 { mockedList.add(\"one\") wasnt called }.failures" snip it }
-{ >("The method was not called as expected: list.add(\"one\"); Never wanted but invoked!") }
+{ >("Never wanted here") }
 
 <ex>It is also possible to check that there are no unexpected calls on a mock</ex>:
   
@@ -72,9 +72,9 @@ The number of invocations can be checked with different methods on the @called@ 
     mockedList.add("one") was called
     mockedList had noMoreCalls
   }.failures.first""" snip it }
-{ execute(it) must (include("The mock was called: No interactions wanted") and 
-    include("Undesired invocation:") and
-    include("list.add(\"two\");"))
+{ 
+  execute(it) must (include("No interactions wanted here") and 
+    include("But found this interaction:"))
 }
 
 </wiki> isSus

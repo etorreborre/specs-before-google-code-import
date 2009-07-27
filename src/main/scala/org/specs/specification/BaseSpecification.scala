@@ -150,7 +150,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * Return the example being currently executed if any
    */
   def lastExample: Option[Examples] = {
-    current.orElse(this.current) match {
+    current match {
       case Some(s: Sus) => None
       case Some(e: Example) => Some(e)
       case None => None

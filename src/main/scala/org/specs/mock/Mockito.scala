@@ -129,10 +129,14 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
   /** Matcher accepting a call and checking if the method was called according to the verification mode: once, times(2), atLeast(once,...) */
   class CalledMatcher extends Matcher[Any] with HasVerificationMode {
     def apply(v: =>Any) = {
-      mocker.verify(verificationMode)
+      mocker.verify(this.verificationMode)
       var result = (true, "The method was called", "The method was not called")
-      try { v } catch {
-        case e => result = (false, "The method was called", "The method was not called as expected:" + e.getMessage.replace("\n", " "))
+      try { 
+        v 
+      } catch {
+        case e => { 
+          result = (false, "The method was called", "The method was not called as expected:" + e.getMessage)
+        }
       }
       result
     }
@@ -259,7 +263,9 @@ trait InteractionMatchers extends ExpectableFactory {
       try { 
         mocker.verifyNoMoreInteractions(m)
       } catch {
-        case e => result = (false, "The method wasn't called anymore", "The mock was called:" + e.getMessage.replace("\n", " ") + e.getCause.getMessage)
+        case e => {
+          result = (false, "The method wasn't called anymore", e.getMessage)
+        }
       }
       result
     }
