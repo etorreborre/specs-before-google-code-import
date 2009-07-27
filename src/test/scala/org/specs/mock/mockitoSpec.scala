@@ -65,7 +65,7 @@ If one method has not been called on a mock, <ex>the @was called@ matcher must t
   }
   s2.failures
   """ snip it }
-  { >("The method was not called as expected: Wanted but not invoked: list.clear()") }
+  { >("Wanted but not invoked") }
 
 h4. Argument matchers
 

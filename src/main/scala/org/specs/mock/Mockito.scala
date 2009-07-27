@@ -26,6 +26,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
 import org.mockito.internal.verification.api.{ VerificationInOrderMode, VerificationMode }
 import org.mockito.internal.stubbing._
+import org.mockito.stubbing.OngoingStubbing
 import org.mockito.internal.progress._
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
@@ -300,19 +301,19 @@ trait MockitoStubs extends MocksCreation {
    * Internally it calls Mockito.when(mock call).thenReturn(returnValue)
    */
   class Stubbed	[T](c: =>T) {
-    def returns(t: T, t2: T*): IOngoingStubbing[T] = {
+    def returns(t: T, t2: T*): OngoingStubbing[T] = {
       if (t2.isEmpty) 
         mocker.when(c).thenReturn(t)
       else
         mocker.when(c).thenReturn(t, t2:_*)
     }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
-    def throws[E <: Throwable](e: E*): IOngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
+    def throws[E <: Throwable](e: E*): OngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
   }
   /** @return an object allowing the chaining of stub values. */
-  implicit def anOngoingStubbing[T](stub: =>BaseStubbing[T]) = new AnOngoingStubbing(stub)
+  implicit def anOngoingStubbing[T](stub: =>OngoingStubbing[T]) = new AnOngoingStubbing(stub)
   /** provide stub chain methods. */
-  class AnOngoingStubbing[T](stub: =>BaseStubbing[T]) {
+  class AnOngoingStubbing[T](stub: =>OngoingStubbing[T]) {
     def thenReturns(t: T) = stub.thenReturn(t)
     def thenThrows[E <: Throwable](e: E) = stub.thenThrow(e)
   }
