@@ -21,6 +21,17 @@ import org.specs._
 import scalacheck.Gen._
 
 class numericMatchersUnit extends MatchersSpecification with ScalaCheck {
+  "A 'beGreaterThan' matcher" should {
+    "work with Longs" in {
+      1000L must be_>=(500L)
+    }
+    "work with Floats" in {
+      1000f must be_>=(500f)
+    }
+    "work with Doubles" in {
+      1000.0 must be_>=(500.0)
+    }
+  }
   "A 'beClose' matcher" should {
     "be ok if x is inside the range n - delta, n + delta" in {
       case class RangeMatch(x: Double, n: Double, delta: Double)
