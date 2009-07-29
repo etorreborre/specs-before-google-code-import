@@ -34,8 +34,9 @@ trait LifeCycle {
   def withCurrent(ex: Examples)(a: => Any) = {
     val c = current.orElse(parent.flatMap(_.current))
     setCurrent(Some(ex))
-    a
-    setCurrent(c)
+    try { a } finally {
+      setCurrent(c)
+    }
   }
   def setCurrent(ex: Option[Examples]): Unit = {
     current = ex
