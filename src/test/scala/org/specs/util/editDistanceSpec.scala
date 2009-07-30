@@ -82,4 +82,28 @@ class editDistanceSpec extends SpecificationWithJUnit with EditDistance with Dat
        }
     }
   }
+  "The diff shortener" should {
+    import DiffShortener._
+    "not shorten a regular string" in {
+      shorten("abcd") must_== "abcd"
+    }
+    "shorten a diff before if too many letters" in {
+      shorten("abcdefghijkl(mn)opqr") must_== "...hijkl(mn)opqr"
+    }
+    "shorten a diff even at the end" in {
+      shorten("abcdefghijkl(mn)") must_== "...hijkl(mn)"
+    }
+    "shorten a diff even at the beginning" in {
+      shorten("(mn)abcdefghijkl") must_== "(mn)abcde..."
+    }
+    "shorten right and left" in {
+      shorten("abcdefghijkl(mn)opqrstuv") must_== "...hijkl(mn)opqrs..."
+    }
+    "shorten in the center" in {
+      shorten("hijkl(zz)abcdefghijklmno(xx)abcde") must_== "hijkl(zz)ab...no(xx)abcde"
+    }
+    "shorten left, center and right" in {
+      shorten("abcdefg(zz)abcdefghijklmno(xx)abcdefg") must_== "...cdefg(zz)ab...no(xx)abcde..."
+    }
+  }
 }

@@ -105,7 +105,9 @@ trait EditDistance {
 	        findOperations(subst, i - 1, j - 1, s1(i - 1) + s1mod, s2(j - 1) + s2mod)
 	    }
       }
-      findOperations(distance, s1.length, s2.length, "", "")
+      val (s1diffs, s2diffs) = findOperations(distance, s1.length, s2.length, "", "")
+      import DiffShortener._
+      (shorten(s1diffs, firstSeparator, secondSeparator, 20), shorten(s2diffs, firstSeparator, secondSeparator, 20))
     }
     def min(suppr: Int, subst: Int, ins: =>Int) = {
       if(suppr < subst) suppr
@@ -134,3 +136,46 @@ trait EditDistance {
   private def firstSeparator(s: String) = if (s.isEmpty) "" else s.substring(0, s.size / 2 + s.size % 2)
   private def secondSeparator(s: String) = if (s.size < 2) firstSeparator(s) else s.substring(s.size / 2 + s.size % 2, s.size)
 }
+
+/**
+ * This object help shortening strings between differences when the strings are too long
+ */
+object DiffShortener {
+  def shorten(s: String): String = shorten(s, "(", ")", 5)
+  def shorten(s: String, firstSep: String, secondSep: String, size: Int): String = {
+    def shortenLeft(s: String) = if (s.size > size) ("..." + s.slice(s.size - size, s.size)) else s
+    def shortenRight(s: String) = if (s.size > size) (s.slice(0, size) + "...") else s
+    def shortenCenter(s: String) = if (s.size > size) (s.slice(0, size / 2) + "..." + s.slice(s.size - size / 2, s.size)) else s
+    val list = sepList(s, firstSep, secondSep)
+    list.foldLeft("") { (res, cur) =>
+      if (cur.startsWith(firstSep) && cur.endsWith(secondSep))
+        res + cur
+      else if (list.first eq cur)
+        res + shortenLeft(cur)
+      else if (list.last eq cur)
+        res + shortenRight(cur)
+      else
+        res + shortenCenter(cur)
+    }
+  }
+  def sepList(s: String, firstSep: String, secondSep: String) = {
+    def split(s: String, sep: String): Array[String] = if (List("[", "]" ,"(", ")", "-", "+", "?", "*").contains(sep)) split(s, "\\" + sep) else s.split(sep)
+    val splitted = split(s, firstSep)
+    if (splitted.size == 1)
+      List(s)
+    else {
+      splitted.foldLeft(List[String]()) { (res, cur) =>
+        if (!cur.contains(secondSep))
+          res ::: List(cur)
+        else {
+          val diff = split(cur, secondSep)(0)
+          if (split(cur, secondSep).size > 1)
+            res ::: List(firstSep + diff + secondSep, split(cur, secondSep)(1))
+          else
+            res ::: List(firstSep + diff + secondSep)
+        }
+      }
+    }
+  }
+}
+
