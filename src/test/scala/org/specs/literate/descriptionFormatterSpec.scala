@@ -33,7 +33,6 @@ class descriptionFormatterSpec extends SpecificationWithJUnit {
     "format a description as textile markup" in {
       textileFormatter.format(<t>h1. Hello world</t>) must \\("h1")
     }
-    detailedDiffs()
     "set the status of the example descriptions depending on the example status" in {
       val example = "example desc" in { 1 must_== 1 }
       example.executeThis

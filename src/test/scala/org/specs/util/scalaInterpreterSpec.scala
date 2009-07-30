@@ -21,7 +21,6 @@ import org.specs._
 import org.specs.runner._
 
 class scalaInterpreterSpec extends SpecificationWithJUnit with ScalaInterpreter {
-  detailedDiffs()
   "A Scala interpreter" should {
     "interpret a simple expression 1 + 1 to 2" in {
       interpret("1 + 1") must include("2")

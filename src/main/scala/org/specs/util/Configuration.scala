@@ -39,6 +39,8 @@ trait Configuration extends ConfigurationFactory {
   def examplesWithoutExpectationsMustBePending = true
   /** this value controls if examples should be executed in a separate specification instance to avoid side effects */
   def oneSpecInstancePerExample = true
+  /** this value controls if string differences should be displayed as highlighted */
+  def detailedDiffs = true
 }
 trait ConfigurationFactory extends FileSystem {
   /** @return the default configuration class */
@@ -74,6 +76,7 @@ trait ConfigurationFactory extends FileSystem {
         override def colorize = boolean(properties, "colorize", super.colorize)
         override def examplesWithoutExpectationsMustBePending = boolean(properties, "examplesWithoutExpectationsMustBePending", super.examplesWithoutExpectationsMustBePending)
         override def oneSpecInstancePerExample = boolean(properties, "oneSpecInstancePerExample", super.oneSpecInstancePerExample)
+        override def detailedDiffs = boolean(properties, "detailedDiffs", super.detailedDiffs)
       })
     }
     catch {

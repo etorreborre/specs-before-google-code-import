@@ -17,17 +17,17 @@
  * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.specification
-
+import org.specs.util.Configuration
 /**
  * This traits adds the possibility to add declarations for detailed failures when matching strings.
  */
 trait DetailedFailures {
   /** by default no full details are reported by specifications */
-  implicit var detailedFailures: Detailed = noDetails()
+  implicit var detailedFailures: Detailed = if (Configuration.config.detailedDiffs) new fullDetails("()") else noDetails()
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
-  def detailedDiffs() = { detailedFailures = fullDetails("()") }
+  def detailedDiffs() = { detailedFailures = new fullDetails("()") }
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
-  def detailedDiffs(separators: String) = { detailedFailures = fullDetails(separators) }
+  def detailedDiffs(separators: String) = { detailedFailures = new fullDetails(separators) }
   /** reset the detailled diffs to no diffs */
   def noDetailedDiffs() = { detailedFailures = noDetails() }
 }
@@ -36,6 +36,7 @@ abstract class Detailed
 /** no details should be shown */
 case class noDetails() extends Detailed
 /** all details should be shown */
-case class fullDetails(separators: String) extends Detailed {
+case class fullDetails(separators: String, shortenSize: Int) extends Detailed {
+  def this(sep: String) = this(sep, 20)
   def this() = this("()") 
 }

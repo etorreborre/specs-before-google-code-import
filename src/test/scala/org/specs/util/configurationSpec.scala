@@ -43,12 +43,13 @@ statistics = false
 finalStatisticsOnly = true
 colorize = true
 examplesWithoutExpectationsMustBePending = false
-oneSpecInstancePerExample = false
+oneSpecInstancePerExample = true
+detailedDiffs = false
 """
       configuration.addFile("configuration.properties", props)
       val c = configuration.getConfiguration("configuration.properties")
-      (c.stacktrace, c.statistics, c.examplesWithoutExpectationsMustBePending, c.oneSpecInstancePerExample).foreach(_ must beFalse)
-      (c.failedAndErrorsOnly, c.finalStatisticsOnly, c.colorize).foreach(_ must beTrue)
+      (c.stacktrace, c.statistics, c.examplesWithoutExpectationsMustBePending, c.detailedDiffs).foreach(_ must beFalse)
+      (c.failedAndErrorsOnly, c.finalStatisticsOnly, c.colorize, c.oneSpecInstancePerExample).foreach(_ must beTrue)
     }
   }
   "A configuration" can {
