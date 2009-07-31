@@ -46,7 +46,7 @@ When executed, <ex>the TeamCity runner should notify the start of a specificatio
 
 <ex>The examples of system under specification should be reported as testStarted and testFinished inside the start and finished messages for the sus</ex>:
 
-{List("##teamcity[testSuiteStarted name='specification name']",
+{List("##teamcity[testSuiteStarted name='specification name']", 
       "##teamcity[testSuiteStarted name='sus1 description']",
       "##teamcity[testStarted name='specification name.good example']",
       "##teamcity[testFinished name='specification name.good example']",

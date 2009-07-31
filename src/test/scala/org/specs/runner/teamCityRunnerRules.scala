@@ -30,6 +30,7 @@ class teamCityRunnerRules extends HtmlSpecificationWithJUnit("Team city runner")
   def messagesMustBeCreated = clearDetails(runSpec.messages) must containInOrder(messages())
   def runSpec = (new TeamCityRunner(testingSpecification) with MockOutput).reportSpecs
 } 
+
 object testingSpecification extends Specification("specification name") {
 
   "sus1 description" should {
