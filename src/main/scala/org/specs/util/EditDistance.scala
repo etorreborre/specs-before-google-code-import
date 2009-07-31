@@ -70,7 +70,7 @@ trait EditDistance {
     }
 
     /** @return a (String, String) displaying the differences between each input strings. The used separators are parenthesis: '(' and ')'*/
-    def showDistance: (String, String) = showDistance("()") 
+    def showDistance: (String, String) = showDistance("()", 20) 
 
     /**
      * @param sep separators used to hightlight differences. If sep is empty, then no separator is used. If sep contains 
@@ -79,7 +79,7 @@ trait EditDistance {
      * 
      * @return a (String, String) displaying the differences between each input strings. The used separators are specified by the caller.<p>
      */
-    def showDistance(sep: String) = {
+    def showDistance(sep: String, shortenSize: Int) = {
       val (firstSeparator, secondSeparator) = separators(sep)
 	  def modify(s: String, c: Char): String = modifyString(s, c.toString)
 	  def modifyString(s: String, mod: String): String = (firstSeparator + mod + secondSeparator + s).removeAll(secondSeparator + firstSeparator)
@@ -107,7 +107,7 @@ trait EditDistance {
       }
       val (s1diffs, s2diffs) = findOperations(distance, s1.length, s2.length, "", "")
       import DiffShortener._
-      (shorten(s1diffs, firstSeparator, secondSeparator, 20), shorten(s2diffs, firstSeparator, secondSeparator, 20))
+      (shorten(s1diffs, firstSeparator, secondSeparator, shortenSize), shorten(s2diffs, firstSeparator, secondSeparator, shortenSize))
     }
     def min(suppr: Int, subst: Int, ins: =>Int) = {
       if(suppr < subst) suppr
@@ -121,16 +121,19 @@ trait EditDistance {
   /** prints on the console the edit matrix for 2 strings */
   def showMatrix(s1: String, s2: String) = EditMatrix(s1, s2).print
 
-  /** @return a (String, String) displaying the differences between each input strings. The used separators are parenthesis: '(' and ')'*/
-  def showDistance(s1: String, s2: String) = EditMatrix(s1, s2).showDistance
+  /** @return a (String, String) displaying the differences between each input strings. The used separators are brackets: '(' and ')'*/
+  def showDistance(s1: String, s2: String): (String, String) = showDistance(s1, s2, "[]", 20)
+  /** @return a (String, String) displaying the differences between each input strings. The string is shortened before and after differences if necessary. */
+  def showDistance(s1: String, s2: String, sep: String): (String, String) = showDistance(s1, s2, sep, 20)
   /**
    * @param sep separators used to hightlight differences. If sep is empty, then no separator is used. If sep contains 
    * one character, it is taken as the unique separator. If sep contains 2 or more characters, the first half of the characters are taken as
    * opening separator and the second half as closing separator.
    * 
-   * @return a (String, String) displaying the differences between each input strings. The used separators are specified by the caller.<p>
+   * @return a (String, String) displaying the differences between each input strings. 
+   * The used separators are specified by the caller. The string is shortened before and after differences if necessary. <p>
    */
-  def showDistance(s1: String, s2: String, sep: String) = EditMatrix(s1, s2).showDistance(sep)
+  def showDistance(s1: String, s2: String, sep: String, shortenSize: Int): (String, String) = EditMatrix(s1, s2).showDistance(sep, shortenSize)
 
   private def separators(s: String) = (firstSeparator(s), secondSeparator(s))
   private def firstSeparator(s: String) = if (s.isEmpty) "" else s.substring(0, s.size / 2 + s.size % 2)

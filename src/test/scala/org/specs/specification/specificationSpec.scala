@@ -156,11 +156,11 @@ object advancedFeatures extends SpecificationWithSamples {
     }
     "display detailed difference messages with the detailedDiff method" in {
       val spec = oneEx(that.isKoWithDetailedDiffs)
-      spec.failures.first.message must_== "'hel(l)o' is not equal to 'hel(t)o'"
+      spec.failures.first.message must_== "'hel[l]o' is not equal to 'hel[t]o'"
     }
     "display detailed difference messages with with other difference separators than '(' and ')'" in {
       val spec = oneEx(that.isKoWithDetailedDiffsAndAlternateSeparator)
-      spec.failures.first.message must_== "'hel[l]o' is not equal to 'hel[t]o'"
+      spec.failures.first.message must_== "'hel(l)o' is not equal to 'hel(t)o'"
     }
   }
 }
@@ -171,8 +171,8 @@ trait SpecificationWithSamples extends Specification {
     val success = () => true mustBe true
     val failure1 = () => "ok" mustBe "first failure"
     val failure2 = () => "ok" mustBe "second failure"
-    val detailedFailure = () => {detailedDiffs(); "hello" must_== "helto"}
-    val detailedFailureWithAlternateSeparator = () => {detailedDiffs("[]"); "hello" must_== "helto"}
+    val detailedFailure = () => { detailedDiffs(); "hello" must_== "helto" }
+    val detailedFailureWithAlternateSeparator = () => {detailedDiffs("()"); "hello" must_== "helto"}
     val failMethod = () => fail("failure with the fail method")
     val failMethodWithNoArgument = () => fail
     val skipMethod = () => skip("skipped with the skip method")
