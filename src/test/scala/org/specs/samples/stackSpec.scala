@@ -23,6 +23,10 @@ import org.specs.util._
 
 class stackSpec extends StackSpecification {
   var stack = emptyStack 
+  val nonEmptyStack = beforeContext(stack = nonEmpty)
+  val belowCapacityStack = beforeContext(stack = belowCapacity)
+  val fullStack = beforeContext(stack = full)
+  
   "An empty stack" should {
     "throw an exception when sent #top" in { 
       stack.top must throwA[NoSuchElementException]
@@ -31,8 +35,7 @@ class stackSpec extends StackSpecification {
       stack.pop must throwA[NoSuchElementException]
     }
   }
-  "A non-empty stack below full capacity" should {
-    doBefore(stack = nonEmpty)
+  "A non-empty stack below full capacity" ->-(nonEmptyStack) should {
     "not be empty" in { 
       stack verifies (!_.isEmpty)
     }
@@ -52,16 +55,14 @@ class stackSpec extends StackSpecification {
         stack.top mustNotBe stack.lastItemAdded
     }
   }
-  "A stack below full capacity" should {
-    doBefore(stack = belowCapacity)
+  "A stack below full capacity"->-(belowCapacityStack) should {
     behave like "A non-empty stack below full capacity"
     "add to the top when sent #push" in { 
       stack push 3
       stack.top mustBe 3
     }
   }
-  "A full stack" should {
-    doBefore(stack = full)
+  "A full stack"->-(fullStack) should {
     behave like "A non-empty stack below full capacity"
     "throw an exception when sent #push" in {
       stack.push(11) must throwAn[Error]

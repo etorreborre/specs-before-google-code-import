@@ -64,6 +64,8 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
     other.exampleList.foreach { e => 
       val ex = this.createExample(e.description.toString)
       ex.execution = e.execution
+      if (!e.exampleList.isEmpty)
+        ex.exampleList = e.exampleList
       ex.tagWith(e)
       ex.execution.map(_.resetForExecution)
     }
