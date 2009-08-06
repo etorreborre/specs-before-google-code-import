@@ -33,7 +33,7 @@ trait Wiki extends Properties with Links {
    * Using this function avoid issues like quotes insides brackets ['something']
    * being displayed as question marks.
    */
-  def wikiPre(stringToFormat: String) = <pre>stringToFormat</pre>
+  def wikiPre(stringToFormat: String) = <pre>{stringToFormat}</pre>
   def wikiCode(stringToFormat: String) = stringToFormat.replace("\r\n", "\n").
                                                         replace("\n\r", "\n").
           split("\n").map(htmlize(_)).mkString("==<code class=\"prettyprint\">", "</code>==<br/>==<code class=\"prettyprint\">", "</code>==")
