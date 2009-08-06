@@ -1,8 +1,5 @@
 package org.specs.specification
 
-/**
- * This trait holds the actions to execute before or after examples, or a list of examples.
- */
 trait ExampleContext extends ExampleLifeCycle {
   
   /** the before function will be invoked before each example */
@@ -30,13 +27,11 @@ trait ExampleContext extends ExampleLifeCycle {
     }
     parent.map(_.afterExample(ex))
   }
-  /** copy actions and results from another example. */
   override def copyExecutionResults(other: Examples) = {
     copyContextFrom(other)
-    copyExecutionResults(other)
+    super.copyExecutionResults(other)
   }
 
-  /** copy all actions from another context. */
   def copyContextFrom(other: ExampleContext) = {
     before = other.before
     after = other.after
