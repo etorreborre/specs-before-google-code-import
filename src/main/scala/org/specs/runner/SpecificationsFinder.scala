@@ -81,11 +81,15 @@ trait SpecificationsFinder extends FileSystem {
    */
   def collectSpecifications(result: Queue[String], filePath: String, pattern: String): Unit = {
     if (!filePath.endsWith(".scala")) return
-    val specPattern = "\\s*object\\s*(" + pattern + ")\\s*extends\\s*.*Spec.*\\s*\\{"
-    val m = Pattern.compile(specPattern).matcher(readFile(filePath))
-    while (m.find) {
-      result += ((packageName(filePath).map(_ + ".").getOrElse("") + m.group(1).trim) + "$")
+    def addClassNameFor(specType: String, suffix: String) = {
+      val specPattern = "\\s*"+specType+"\\s*(" + pattern + ")\\s*extends\\s*.*"
+      val m = Pattern.compile(specPattern).matcher(readFile(filePath))
+      while (m.find) {
+        result += ((packageName(filePath).map(_ + ".").getOrElse("") + m.group(1).trim) + suffix)
+      }
     }
+    addClassNameFor("object", "$")
+    addClassNameFor("class", "")
   }
 
   /** @return the package declaration at the beginning of a file */

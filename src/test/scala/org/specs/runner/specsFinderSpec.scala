@@ -22,8 +22,8 @@ import org.specs.io.ConsoleOutput
 import org.specs.runner._
 
 class specsFinderSpec extends SpecificationWithJUnit with Init {
-
-  "A specs finder" should {
+  val finder = new MockFileSystem with SpecificationsFinder with ConsoleOutput
+  "A specs finder" should { doBefore(finder.reset)
     finder.defaultExtension = ".scala"
     "not find the name of a specification in the file is not a .scala file" in {
       finder.addFile("fileName", packageDeclaration + specificationContent)
@@ -51,6 +51,14 @@ class specsFinderSpec extends SpecificationWithJUnit with Init {
       finder.addFile(specificationContent)
       finder.specificationNames("path", ".*") mustContain "trueSpec$"
     }
+    "create the name of a specification if it extends another specification class" in {
+      finder.addFile(packageDeclaration + "\nobject mySpec extends Parent")
+      finder.specificationNames("path", ".*") mustContain "org.specs.mySpec$"
+    }
+    "create the name of a specification if it is a class" in {
+      finder.addFile(packageDeclaration + "\nclass mySpec extends Parent")
+      finder.specificationNames("path", ".*") mustContain "org.specs.mySpec"
+    }
     "return an empty list if there is no specification declaration found in the file" in {
       finder.addFile(packageDeclaration)
       finder.specificationNames("path", ".*") must_== List()
@@ -65,7 +73,6 @@ class specsFinderSpec extends SpecificationWithJUnit with Init {
       finder.specificationNames("dir1", ".*") must_== List("org.specs.trueSpec$", "org.specs.trueSpec$")
     }
   }
-  object finder extends MockFileSystem with SpecificationsFinder with ConsoleOutput
 }
 trait Init {
   val packageDeclaration = "package org.specs"
