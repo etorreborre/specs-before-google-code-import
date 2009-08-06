@@ -14,21 +14,27 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
 import org.specs.execute.{ FailureException, SkippedException }
 import org.specs.util.Configuration
 import org.specs.ExtendedThrowable._
 
+/**
+ * This trait models the execution cycle of an example.
+ */
 trait LifeCycle {
+  /** lifecycles can be chained via parent-child relationships */
   private[specs] var parent: Option[LifeCycle] = None
+  /** current example defining the context of this execution */
   private[specs] var current: Option[Examples] = None
   /** a predicate which will decide if an example must be re-executed */
   private[specs] var untilPredicate: Option[() => Boolean] = None
-
+  /** this variable defines if examples should be executed as soon as defined */
   private[specs] protected var sequential = false
   def isSequential = sequential
+  /** this variable defines if examples should be executed as soon as defined */
   def setSequential() = sequential = true
   
   def withCurrent(ex: Examples)(a: => Any) = {
@@ -53,6 +59,7 @@ trait LifeCycle {
   def afterExpectations(ex: Examples): Unit = parent.map(_.afterExpectations(ex))
   def executeExample(ex: Examples): this.type = this
 }
+
 trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
   var execution: Option[ExampleExecution] = None
   def executed = execution.map(_.executed).getOrElse(true)

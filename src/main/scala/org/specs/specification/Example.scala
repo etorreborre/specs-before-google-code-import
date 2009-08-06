@@ -14,7 +14,7 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
 
@@ -31,13 +31,17 @@ import org.specs.ExtendedThrowable._
 import scala.reflect.Manifest
 import org.specs.execute._
 
-class Example(var exampleDesc: ExampleDescription, var p: Option[ExampleContext]) extends Examples(exampleDesc, p) {
+/**
+ * The Example class represents a block of code with expectations
+ * It has a description and an optional context.
+ */
+class Example(var exampleDesc: ExampleDescription, private var p: Option[ExampleContext]) extends Examples(exampleDesc, p) {
   /** constructor with a simple string */
   def this(desc: String, parent: ExampleContext) = this(ExampleDescription(desc), Some(parent))
   /** constructor with a simple string */
   def this(desc: String) = this(ExampleDescription(desc), None)
   /**
-   * creates a new Example object and store as an ExampleExecution object the expectations to be executed.
+   * create a new Example object and store as an ExampleExecution object the expectations to be executed.
    * This <code>expectations</code> parameter is a block of code which may contain expectations with matchers.
    * Upon execution, errors and failures will be attached to the current example
    * by calling the <code>addFailure</code> and <code>addError</code> methods
@@ -57,12 +61,15 @@ class Example(var exampleDesc: ExampleDescription, var p: Option[ExampleContext]
 }
 
 /**
- * Description of the example
+ * Description of the example. It can possibly be a piece of html code to display in a literate specification
  */
 case class ExampleDescription(desc: String, toXhtml: Node) {
   override def toString = desc
   def format: String = toXhtml.toString
 }
+/**
+ * Case object to build Example descriptions with just a string.
+ */
 object ExampleDescription {
   def apply(desc: String): ExampleDescription = ExampleDescription(desc, <ex>{desc}</ex>)
 }

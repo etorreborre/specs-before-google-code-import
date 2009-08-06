@@ -52,7 +52,12 @@ class EntityLineForm[T] extends LineForm {
     a.map(e => c.entityProperties.foreach(_.entity(e)))
     c
   }
-    
+  override def resetAll(): this.type = {
+    super.resetAll
+    entityProperties.clear()
+    this
+  }
+
   override def copy = {
     val form = new EntityLineForm[T]
     this.lineProperties.foreach(p => form.lineProperties.append(p.copy))

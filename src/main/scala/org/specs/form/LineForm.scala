@@ -79,7 +79,11 @@ class LineForm extends Form {
     }
     copyPropertiesAndFields(f)
   }
-
+  override def resetAll(): this.type = {
+    super.resetAll()
+    lineProperties.clear()
+    this
+  }
 }
 object LineForm {
   /** create a LineForm with labels only to create header rows */

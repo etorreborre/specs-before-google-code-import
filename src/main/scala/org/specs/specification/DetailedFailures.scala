@@ -14,12 +14,17 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS INTHE SOFTWARE.
+ * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
 import org.specs.util.Configuration
 /**
  * This traits adds the possibility to add declarations for detailed failures when matching strings.
+ * Generally detailed failures can be configured with:<ul>
+ * <li>the expected separators: [] are the default</li>
+ * <li>a trigger size: the minimal size of the string to match for which to show detailed failures</li>
+ * <li>a shorten size: the size of text which should show up between 2 differences, the rest being elided</li>
+ * </ul>
  */
 trait DetailedFailures {
   /** by default no full details are reported by specifications */

@@ -20,9 +20,20 @@ package org.specs
 import org.specs.literate._
 import org.specs.runner._
 /**
- * LiterateSpecification with Html reporting
+ * LiterateSpecification with Html reporting and Textile markup
  */
 class HtmlSpecification extends LiterateSpecification with runner.Html with Textile {
+  def this(n: String) = { 
+    this()
+    name = n
+    description = n
+    this 
+  }
+}
+/**
+ * LiterateSpecification with Html reporting and Markdown markup
+ */
+class MarkdownSpecification extends LiterateSpecification with runner.Html with Markdown {
   def this(n: String) = { 
     this()
     name = n
