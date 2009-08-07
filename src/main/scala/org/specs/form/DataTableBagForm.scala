@@ -18,7 +18,7 @@
  */
 package org.specs.form
 
-class DataTableBagForm[T](title: Option[String], bag: Seq[T]) extends BagForm[T](bag) with DataTableFormEnabled {
+class DataTableBagForm[T](title: Option[String], bag: Seq[T]) extends BagForm[T](title, bag) with DataTableFormEnabled {
   def this(title: String, bag: Seq[T]) = this(Some(title), bag)
   override def setHeader[F <: LineForm](line: F): F = super[DataTableFormEnabled].setHeader(line)
   
