@@ -203,6 +203,8 @@ class ExampleTestCase(example: Example, description: String) extends TestCase(de
 
 case class UserError(t: Throwable, context: String) extends Throwable {
   setStackTrace(t.getStackTrace)
+  override def getCause = t.getCause
+
   override def getMessage = {
     t match {
       case f: FailureException => context + t.getMessage
@@ -218,6 +220,8 @@ case class UserError(t: Throwable, context: String) extends Throwable {
 class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage) {
   override def getStackTrace = t.getStackTrace
 
+  override def getCause = t.getCause
+
   override def printStackTrace = t.printStackTrace
 
   override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
@@ -231,6 +235,8 @@ class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getM
  */
 class SpecError(t: Throwable) extends java.lang.Error(t.getMessage) {
   override def getStackTrace = t.getStackTrace
+
+  override def getCause = t.getCause
 
   override def printStackTrace = t.printStackTrace
 

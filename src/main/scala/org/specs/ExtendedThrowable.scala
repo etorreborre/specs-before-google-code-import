@@ -88,6 +88,7 @@ object ExtendedThrowable {
      */
     def throwWithStackTraceOf(other: Throwable) = {
       t.setStackTrace(other.getStackTrace)
+      t.initCause(other.getCause)
       throw t
     }
     
