@@ -112,11 +112,17 @@ trait FormEnabled extends DefaultExecutable with LabeledXhtml with Layoutable wi
   /**
    * add a Prop to the Form.
    */
-  def add(p: FormProperty with Copyable[FormProperty]): this.type = { properties.append(p); this }
+  def add(p: FormProperty with Copyable[FormProperty]*): this.type = { 
+    p.foreach(properties.append(_)) 
+    this 
+  }
   /**
    * add a Field to the Form.
    */
-  def add[T](p: Field[T]): this.type = { fields.append(p); this }
+  def add[T](p: Field[T]): this.type = { 
+    fields.append(p) 
+    this 
+  }
   /**
    * this allows to set properties on this Form with:
    * myForm.set { f =>

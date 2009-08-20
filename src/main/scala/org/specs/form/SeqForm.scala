@@ -43,6 +43,7 @@ import org.specs.execute.Status
  * </code>
  */
 class SeqForm[T](title: Option[String], val seq: Seq[T]) extends TableForm(title) with SeqFormEnabled[T] {
+  def this(s: String, seq: Seq[T]) = this(Some(s), seq)
   def this(seq: Seq[T]) = this(None, seq)
   def this() = this(None, List())
 }
