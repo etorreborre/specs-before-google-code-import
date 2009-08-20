@@ -24,6 +24,7 @@ object mockSpecifications extends Specification {
   "Mock specifications" areSpecifiedBy (
     new jmockSpec,
     new mockitoSpec,
+    new easymockSpec,
     new mockParametersSpec,
 	new mockProtocolsSpec)
 }
