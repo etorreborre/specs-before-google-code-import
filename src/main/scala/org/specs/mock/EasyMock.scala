@@ -221,17 +221,11 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
 }
 /**
  * This trait transforms EasyMock errors into specs failures
- * It also cleans up the mocks variable used for the expect blocks.
  */
 trait EasyMockLifeCycle extends LifeCycle {
   /** list of mocks to replay in an expect block */
   private[mock] val mocks = new scala.collection.mutable.ListBuffer[Object]
 
-  override def afterExample(ex: Examples) = {
-    mocks.clear
-    super.afterExample(ex)
-  }
-  
   override def executeExpectations(ex: Examples, t: =>Any) = {
     try { 
       super.executeExpectations(ex, t)
