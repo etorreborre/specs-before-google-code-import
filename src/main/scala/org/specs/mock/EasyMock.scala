@@ -211,7 +211,11 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
     try {
       m.foreach(EasyClassMocker.verify(_).isExpectation)
     } catch {
-      case e: java.lang.AssertionError => new FailureException(e.getMessage).throwWithStackTraceOf(e)
+      case e: java.lang.AssertionError => {
+        val f = new FailureException(e.getMessage)
+        f.setStackTrace(e.getStackTrace)
+        f.hideCallerAndThrow("(easymock\\.|mock\\.EasyMock)")
+      }
     }
   }
 }
@@ -233,7 +237,11 @@ trait EasyMockLifeCycle extends LifeCycle {
       super.executeExpectations(ex, t)
     }
     catch {
-      case e if (e.getStackTrace.exists(_.toString.contains("easymock"))) => new FailureException(e.getMessage).throwWithStackTraceOf(e)
+      case e if (e.getStackTrace.exists(_.toString.contains("easymock"))) => {
+        val f = new FailureException(e.getMessage)
+        f.setStackTrace(e.getStackTrace)
+        f.hideCallerAndThrow("(easymock\\.|mock\\.EasyMock)")
+      }
     }
   }
 }

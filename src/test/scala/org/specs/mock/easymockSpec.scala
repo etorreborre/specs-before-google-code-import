@@ -125,10 +125,10 @@ class TestEasyMockSpec(t: ToMock => Any) extends org.specs.Specification with Ea
     "have one example" in { t(m) }
   }
 }
-class TestEasyMockSpec2 extends org.specs.Specification with EasyMock {
+class TestSpec2 extends org.specs.Specification with EasyMock {
   "this spec" should {
     val m = mock[ToMock]
-    "have one example" in { 
+    "have one example" in {
       m.voidMethod.isExpectation
     }
   }
