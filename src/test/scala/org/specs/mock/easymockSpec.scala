@@ -15,20 +15,20 @@ class easymockSpec extends SpecificationWithJUnit with EasyMock {
       verify(m)
     }
     "catch unexpected calls and report them as failures" in {
-      new TestEasyMockSpec((m: ToMock) => {
+      new TestEasyMockSpecification((m: ToMock) => {
         replay(m)
         m.voidMethod
       }).failures must have size(1)
     }
     "catch unexpected calls and report them as failures" in {
-      new TestEasyMockSpec((m: ToMock) => { 
+      new TestEasyMockSpecification((m: ToMock) => { 
         m.voidMethod
         m.replay
         m.verify
       }).failures must have size(1)
     }
     "catch expected but not received method calls" in {
-      new TestEasyMockSpec((m: ToMock) => {
+      new TestEasyMockSpecification((m: ToMock) => {
         m.voidMethod
         replay(m)
         verify(m)
@@ -119,7 +119,7 @@ class easymockSpec extends SpecificationWithJUnit with EasyMock {
     }
   }
 }
-class TestEasyMockSpec(t: ToMock => Any) extends org.specs.Specification with EasyMock {
+class TestEasyMockSpecification(t: ToMock => Any) extends org.specs.Specification with EasyMock {
   val m = mock[ToMock]
   "this spec" should {
     "have one example" in { t(m) }
