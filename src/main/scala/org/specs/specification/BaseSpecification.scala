@@ -176,23 +176,23 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * first example of the first sus
    */
   override def beforeExample(ex: Examples) = {
-    super.beforeExample(ex)
     if (!executeOneExampleOnly && 
           !systems.isEmpty && 
           !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
       beforeSpec.map(_.apply)
+    super.beforeExample(ex)
   }
   /**
    * override the afterExample method to execute actions after the
    * last example of the last sus
    */
   override def afterExample(ex: Examples) = {
+    super.afterExample(ex)
     if (!executeOneExampleOnly && 
         !systems.isEmpty && 
          systems.last.executed && !systems.last.exampleList.isEmpty && 
          systems.last.exampleList.last == ex)
       afterSpec.map(_.apply)
-    super.afterExample(ex)
   }
   /** 
    * this variable commands if the specification has been instantiated to execute one example only, 
