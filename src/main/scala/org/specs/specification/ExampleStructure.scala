@@ -28,6 +28,8 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
   def allExamples: List[Examples]
   /** @return the total number of expectations for this sus */
   def ownExpectationsNb = { executeExamples; thisExpectationsNumber }
+ /** @return true if there are failures or errors */
+  def hasOwnFailureOrErrors = !(ownFailures ::: ownErrors).isEmpty
   /** @return the failures of this example, executing the example if necessary */
   def ownFailures: List[FailureException] = { executeExamples; thisFailures.toList }
   /** @return the skipped messages for this example, executing the example if necessary  */

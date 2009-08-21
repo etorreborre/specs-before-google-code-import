@@ -26,7 +26,6 @@ import org.specs.specification._
 import org.specs.ExtendedThrowable._
 import org.specs.execute._
 import org.specs.util.Plural._
-import org.specs.literate._
 /**
  * This trait reports the result of a specification on a simple <code>Output</code>
  * which must support <code>print</code>-like methods
@@ -132,7 +131,7 @@ trait OutputReporter extends Reporter with Output {
   def reportSystems(systems: Iterable[Sus], padding: String) = {
     def displaySus(s: Sus) = if (systems.toList.size > 1) reportSus(s, padding) else printSus(s, padding)
     systems foreach { s =>
-      if (canReport(s) && !s.examples.isEmpty) {
+      if (canReport(s) && (!s.examples.isEmpty || s.hasOwnFailureOrErrors)) {
         displaySus(s)
       }
     }
@@ -151,14 +150,15 @@ trait OutputReporter extends Reporter with Output {
    * prints one sus specification
    */
   def printSus(sus: Sus, padding: String) = {
-    var susDescription = if (sus.isAnonymous) "" else sus.description + " " + sus.verb  
-    if (!sus.ownSkipped.isEmpty)
-      println(padding + susDescription + sus.ownSkipped.firstOption.map(" (skipped: " + _.getMessage + ")").getOrElse(""))
+    var susDescription = if (sus.isAnonymous) "" else sus.description + " " + sus.verb
+
     if (!sus.literateDesc.isEmpty) 
       println(padding + sus.literateDescText)
     else
       println(padding + susDescription)
     timer.start
+    if (sus.hasOwnFailureOrErrors)
+      reportExample(sus, padding)
     reportExamples(sus.examples, padding)
     timer.stop
     println("")
@@ -203,8 +203,8 @@ trait OutputReporter extends Reporter with Output {
   /**
    * reports one example: + if it succeeds, x if it fails, its description, its failures or errors
    */
-  def reportExample(example: Example, padding: String) = {
-    def status(example: Example) = {
+  def reportExample(example: Examples, padding: String) = {
+    def status(example: Examples) = {
       if (example.hasFailureOrErrors)
         failureColored("x")
       else if (example.skipped.size > 0)

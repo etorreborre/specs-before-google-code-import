@@ -107,7 +107,10 @@ trait JUnit extends JUnitSuite with Reporter {
     filteredSpecs foreach {
       specification =>
               specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
-              specification.systems foreach {sus => addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, sus.examples, sus.skipped.firstOption))}
+              specification.systems foreach { sus => 
+                val examples = if (sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
+                addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.skipped.firstOption))
+              }
     }
   }
 }
@@ -136,7 +139,7 @@ class JUnit4(val specifications: Specification*) extends JUnit {
  * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
  * run the example during the initialization time.
  */
-class ExamplesTestSuite(description: String, examples: Iterable[Example], skipped: Option[Throwable]) extends JUnitSuite with Stacktraces {
+class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with Stacktraces {
 
   /**return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
@@ -176,11 +179,11 @@ class ExamplesTestSuite(description: String, examples: Iterable[Example], skippe
  *
  * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
-class ExampleTestCase(example: Example, description: String) extends TestCase(description.replaceAll("\n", " ")) {
+class ExampleTestCase(example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
   override def run(result: TestResult) = {
     if (example.ownSkipped.isEmpty)
       result.startTest(this)
-    def report(ex: Example, context: String) = {
+    def report(ex: Examples, context: String) = {
       ex.ownFailures foreach {
         failure: FailureException =>
                 result.addFailure(this, new SpecAssertionFailedError(UserError(failure, context)))
