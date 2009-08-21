@@ -121,8 +121,8 @@ trait Threads extends ErrorHandler with Clock with Conductor with LifeCycle with
         // without signalling errors. Otherwise the signalError could have been in a finally.
         // If the simulation is aborted, then stop will be called,
         // which will cause ThreadDeath, so just die and do nothing
-        case e: ThreadDeath =>
-        case t: Throwable => println("error");signalError(t)
+        case e: ThreadDeath => 
+        case t: Throwable => signalError(t)
       }
     }
   }
