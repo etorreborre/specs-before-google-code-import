@@ -33,6 +33,9 @@ class lineFormSpec extends spex.Specification {
     "return a header with the properties labels" in {
       lineForm.header.toString must include("First Name") and include("Last Name")
     }
+    "return a modified header with specific attributes" in {
+      (lineForm % <t width="50%"/>.attributes).header.toString must include("width=\"50%\"")
+    }
     "return a row containing the properties values instead when queried for rows" in {
       lineForm.rows must have size 1
       lineForm.rows aka "multiple rows query" must have size 1

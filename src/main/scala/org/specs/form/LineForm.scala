@@ -66,7 +66,22 @@ class LineForm extends Form {
     super.rows
   }
   /** extract a header from all the property labels */
-  def header = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
+  def header = {
+    val bareHeader = reduce(lineProperties.map(_.label), { (cur: String) => <th>{cur}</th> })
+    headerAttributes match {
+      case None => bareHeader
+      case Some(att) => bareHeader.toList.map {
+        case e: Elem => e % att
+        case other => other
+      } 
+    }  
+  }
+  /** add attributes to the xhtml header */
+  private var headerAttributes: Option[MetaData] = None
+  def %(attributes: MetaData): this.type = {
+    headerAttributes = Some(attributes)
+    this
+  }
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
   override def toXhtml = reduce(lineProperties, { (p: LabeledXhtml) => p.toXhtml })
   /** return the xhtml of all properties without the label (because they are LineProp and LineField) */
