@@ -171,15 +171,20 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   var beforeSpec: Option[() => Any] = None
   /** the afterAllSystems function will be invoked after all systems */
   var afterSpec: Option[() => Any] = None
+  private var beforeSpecHasBeenExecuted = false
   /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
    */
   override def beforeExample(ex: Examples) = {
-    if (!executeOneExampleOnly && 
-          !systems.isEmpty && 
-          !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
+    if (!executeOneExampleOnly && !beforeSpecHasBeenExecuted) {
+      beforeSpecHasBeenExecuted = true
       beforeSpec.map(_.apply)
+    }
+//    if (!executeOneExampleOnly && 
+//          !systems.isEmpty && 
+//          !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
+//      beforeSpec.map(_.apply)
     super.beforeExample(ex)
   }
   /**
