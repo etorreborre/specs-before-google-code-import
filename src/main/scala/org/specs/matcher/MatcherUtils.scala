@@ -40,10 +40,10 @@ object MatcherUtils {
   /**
    * @return an object.toString() between quotes (used in messages creation)
    */
-  def q(a: Any)  = if (a == null) "'null'" else ("'" + a.toString + "'")
+  def q(a: Any)  = if (null == a) "'null'" else ("'" + a.toString + "'")
   
   /**
    * @return an object.toString() without quotes (used in messages creation)
    */
-  def unq(a: Any)  = if (a == null) "null" else a.toString
+  def unq(a: Any)  = if (null == a) "null" else a.toString
 }

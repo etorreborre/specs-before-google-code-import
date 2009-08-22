@@ -185,7 +185,8 @@ trait SpecificationWithSamples extends Specification {
                                       case that.isKoWithTheFailMethodWithNoArgument => failMethodWithNoArgument
                                       case that.isKoWithDetailedDiffs => detailedFailure
                                       case that.isKoWithDetailedDiffsAndAlternateSeparator => detailedFailureWithAlternateSeparator
-                                      case that.throwsAnException => exception }
+                                      case that.throwsAnException => exception 
+    }
   }
   object specification extends Specification
   object okSpec extends oneEx(that.isOk)

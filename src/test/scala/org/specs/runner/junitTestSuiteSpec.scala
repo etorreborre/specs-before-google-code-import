@@ -76,6 +76,12 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       error.trace.split("\n")(0) must include(error.exceptionMessage)
       error.trace.split("\n")(1) must (beMatching("Expectations") and beMatching("consoleReporterSpec.scala:\\d"))
     }
+    "report an error with the cause of the error" in {
+      val result = new TestResult
+      suite(that.throwsAnExceptionWithACause).run(result)
+      val error = result.errors.nextElement
+      error.thrownException.getCause mustNot be(null)
+    }
     "report a skipped test" in {
       val result = new TestResult
       val listener = new RunNotifier {
@@ -112,6 +118,14 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       import _root_.junit.framework._
       case class aTest() extends TestCase("name")
       description.asDescription(aTest()).toString must beMatching(".*\\(.*\\)")
+    }
+  }
+  "A sus" should {
+    "report its exceptions if any" in {
+      val messages = new SpecificationWithJUnit with MockOutput {
+        "a failing system"  should { error("bad") }
+      }.reportSpecs.messages 
+      messages must containMatch("bad")
     }
   }
 }

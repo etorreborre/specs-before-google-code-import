@@ -181,10 +181,6 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
       beforeSpecHasBeenExecuted = true
       beforeSpec.map(_.apply)
     }
-//    if (!executeOneExampleOnly && 
-//          !systems.isEmpty && 
-//          !systems.first.exampleList.isEmpty && systems.first.exampleList.first == ex)
-//      beforeSpec.map(_.apply)
     super.beforeExample(ex)
   }
   /**

@@ -234,6 +234,9 @@ trait Expectations extends org.specs.Specification {
   val failure2 = () => "ok" mustBe "second failure"
   val failMethod = () => fail("failure with the fail method")
   val exception= () => throw new Exception("new Error")
+  val exceptionWithACause = () => {
+    throw new Exception("new Error", new NullPointerException)
+  }
   def expectations(behaviours: List[that.Value]) = behaviours map {
                                     case that.isOk => success
                                     case that.isSkipped => isSkipped
@@ -242,6 +245,7 @@ trait Expectations extends org.specs.Specification {
                                     case that.isKoTwice => () => {failure1(); failure2()}
                                     case that.isKoWithTheFailMethod => failMethod
                                     case that.throwsAnException => exception
+                                    case that.throwsAnExceptionWithACause => exceptionWithACause 
   }
 }
 
@@ -313,5 +317,5 @@ with MockOutput with Textile {
 
 object that extends Enumeration {
   val isKo, isOk, isKoTwice, isKoWithTheFailMethod,
-      throwsAnException, isSkipped, isSkippedBecauseOfAFaultyMatcher = Value
+      throwsAnException, throwsAnExceptionWithACause, isSkipped, isSkippedBecauseOfAFaultyMatcher = Value
 }
