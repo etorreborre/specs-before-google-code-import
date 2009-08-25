@@ -32,8 +32,17 @@ import scala.reflect.Manifest
 import org.specs.execute._
 
 /**
- * The Example class represents a block of code with expectations
+ * The Example class represents a block of code with expectations.<br/>
+ * 
  * It has a description and an optional context.
+ * 
+ * Usage: <code>"this is an example" in { // code containing expectations }</code> or<br>
+ * <code>"this is an example" >> { // code containing expectations }</code><br>
+ * ">>" can be used instead of "in" if that word makes no sense in the specification
+ * <p>
+ * An example can also contain subexamples which are executed will evaluating the <code>in</code> method.
+ * <p>
+ * When expectations have been evaluated inside an example they register their failures and errors for later reporting
  */
 class Example(var exampleDesc: ExampleDescription, private var p: Option[ExampleContext]) extends Examples(exampleDesc, p) {
   /** constructor with a simple string */

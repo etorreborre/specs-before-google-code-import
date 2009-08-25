@@ -32,51 +32,64 @@ import scala.reflect.Manifest
 import org.specs.execute._
 
 /**
- * The <code>Example</code> class specifies one example of a system behaviour<br>
+ * The <code>Examples</code> class specifies a list of examples of a system behaviour.<br/>
+ * It either is an example containing other subexamples or a "terminal" example defining expectations on the
+ * system behaviour.
  * It has:<ul>
  * <li>a description explaining what is being done
- * <li>an <code>ExampleLifeCycle</code> which defines behaviour before/after example and test</ul>
- * <p>
- * Usage: <code>"this is an example" in { // code containing expectations }</code> or<br>
- * <code>"this is an example" >> { // code containing expectations }</code><br>
- * ">>" can be used instead of "in" if that word makes no sense in the specification
- * <p>
- * An example can also contain subexamples which are executed will evaluating the <code>in</code> method.
- * <p>
- * When expectations have been evaluated inside an example they register their failures and errors for later reporting
+ * <li>an optional <code>ExampleLifeCycle</code> which defines behaviour before/after example and test</ul>
+ * <p/>
+ * 
+ * Concrete instances of this class are the Example class and the Sus class. The main difference between those two classes 
+ * is the methods they offer to create their body:<br/> 
+ * <code>"this" should {...} for a Sus</code><br/> and 
+ * <code>"this must behave like this" in {...}</code><br/>
+ * 
+ * One important thing to note is that subexamples are only created when the parent <code>Examples</code> is executed.
+ * 
+ * A Sus can also have a literate description when defined in a LiterateSpecification.
  */
-abstract class Examples(var exampleDescription: ExampleDescription, var parentCycle: Option[LifeCycle]) extends
+abstract class Examples(var exampleDescription: ExampleDescription, val parentCycle: Option[LifeCycle]) extends
   ExampleContext with DefaultResults {
   parent = parentCycle
+  
   /** example description as a string */
   def description = exampleDescription.toString
   /** @return the example description */
-  override def toString = description.toString
+  override def toString = description
 
   /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}
-  
+
+  /** 
+   * execute this example, by delegating the execution to the execution instance
+   * If the execution of this example comes from a cloned example (see SpecificationExecutor)
+   * Then all the execution results need to be copied back to this example.
+   */
   def executeThis = {
     execution.map(_.execute)
-    execution.map { e => 
-      if (!(e.example eq this))
-        this.copyExecutionResults(e.example) 
+    execution.map { e => if (!(e.example eq this))
+      this.copyExecutionResults(e.example) 
     }
   }
   
-  /** execute this example but not if it has already been executed. */
+  /** execute this example to  be able to get all subexamples if any. */
   override def executeExamples = {
     if (!executed) 
       parent.map(_.executeExample(this))
   }
+  /**
+   * @return all the examples from this example, this is either this if there are no subexamples or the recursive list of
+   * all examples taken on each subexample
+   */
   override def allExamples: List[Examples] = {
     if (examples.isEmpty)
       List(this)
     else
       examples.flatMap(_.allExamples).toList
   }
-    /** @return the example for a given Activation path */
+  /** @return the example for a given Tree path */
   def getExample(path: TreePath): Option[Examples] = {
     path match {
       case TreePath(Nil) => Some(this)
@@ -84,7 +97,13 @@ abstract class Examples(var exampleDescription: ExampleDescription, var parentCy
       case _ => None
     }
   }
-  /** create the main block to execute when "execute" will be called */
+  /** 
+   * set the main block to execute when "execute" will be called
+   * In this block we make sure that this example will be the container for any subexample created during
+   * the execution of the code.<br/>
+   * 
+   * If the lifecycle specifies that the specification is sequential, then the example is executed right away.
+   */
   def specifyExample(a: =>Any): Unit = {
     execution = Some(new ExampleExecution(this, () => {
       withCurrent(this) {
