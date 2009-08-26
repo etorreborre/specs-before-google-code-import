@@ -2,9 +2,10 @@ package org.specs.matcher.concurrent
 import _root_.java.util.concurrent.atomic.AtomicReference
 import java.lang.Thread.State._
 import org.specs.matcher.concurrent.PimpedThreadGroup._
+import org.specs.runner._
 
-trait Conductor extends ErrorHandler with Clock {
-  /**
+trait Conductor extends ErrorHandler with Clock with OutputReporter { outer =>
+  /** 
    * Run multithreaded test with the default parameters,
    * or the parameters set at the command line.
    */
@@ -39,14 +40,26 @@ trait Conductor extends ErrorHandler with Clock {
     testThreadStartLatch.countDown()
 
     // start the clock thread
-    val clockThread = startThread(ClockThread(clockPeriod, runLimit))
+    val clockThread = startThread(new ClockThread(clockPeriod, runLimit) {
+      def printf(msg: String) = outer.println(msg)                                    
+      def printf(msg: String, any: Any*) = outer.println(msg)                                    
+      def println(any: Any) = outer.println(any.toString)                                    
+                                  })
 
     // wait until all threads have ended
     waitForThreads
 
-
     // change state to test finished
     currentState set TestFinished
+    import scala.collection.jcl.Conversions._
+    import org.specs.ExtendedThrowable._
+    val l = new java.util.ArrayList[Throwable]()
+    l.addAll(errorsQueue)
+    println(errorsQueue)
+    l.foreach { e => 
+      val f = new org.specs.execute.FailureException(e.getMessage)
+      f.throwWithStackTraceOf(e)
+    }
   }
 
   /**
@@ -65,8 +78,8 @@ trait Conductor extends ErrorHandler with Clock {
   // returns, and after that the error gets into the errors. Because if you look in run() in the
   // thread inside createTestThread, the signalling error happens in a catch Throwable block before the thread
   // returns.
-  private def waitForThreads{
-    while(threadGroup.anyThreadsAlive_?){
+  private def waitForThreads {
+    while(threadGroup.anyThreadsAlive_?) {
       threadGroup.getThreads foreach waitForThread
     }
   }
