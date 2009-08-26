@@ -19,7 +19,7 @@
 package org.specs.specification
 import org.specs.util.Configuration
 /**
- * This traits adds the possibility to add declarations for detailed failures when matching strings.
+ * This traits adds the possibility to add declarations for detailed failures when matching strings.<br/>
  * Generally detailed failures can be configured with:<ul>
  * <li>the expected separators: [] are the default</li>
  * <li>a trigger size: the minimal size of the string to match for which to show detailed failures</li>
