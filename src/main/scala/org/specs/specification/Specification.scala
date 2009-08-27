@@ -59,8 +59,10 @@ abstract class Specification extends BaseSpecification with Expectations with Fa
   /** @return a description of this specification with all its systems (used for the ConsoleReporter) */
   def pretty = description + systems.foldLeft("")(_ + _.pretty(addSpace("\n")))
 
+  /** syntactic sugar to create a list of specifications starting from this one */
   def ::(s: Specification) = List(s, this)
 
+  /** implementation of the error method for a Specification */
   def error(msg: String) = Predef.error(msg)
 }
 

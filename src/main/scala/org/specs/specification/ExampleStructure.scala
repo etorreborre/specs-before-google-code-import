@@ -2,9 +2,15 @@ package org.specs.specification
 import org.specs.execute.{ DefaultResults, FailureException, SkippedException }
 import org.specs.util._
 
+/**
+ * This trait models the structure of an Example with:<ul>
+ * <li>subexamples</li>
+ * <li>an example filter, which is a function filtering examples to execute</li>
+ * </ul>
+ */
 trait ExampleStructure extends TreeNode with Tagged with DefaultResults { 
   
-  /** number of <code>Assert</code> objects which refer to that Example */
+  /** number of <code>Expecatble</code> objects which refer to that Example */
   protected[specification] var thisExpectationsNumber = 0
   /** examples describing the sus behaviour */
   var exampleList = List[Example]()
@@ -53,13 +59,19 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
     executeExamples
     exampleList
   }
-  def executeExamples() : Unit = {}
+  /** execute the example, with possibly may create subexamples in order to be able to query them */
+  def executeExamples() : Unit
+  /** remove all failures and errors */
   def resetForExecution: this.type = {
     thisFailures.clear
     thisErrors.clear
     thisSkipped.clear
     this
   }
+  /** 
+   * copy the execution results from another example. This method is used to copy the results from another example
+   * executed in isolation in another specification.
+   */
   def copyFrom(other: ExampleStructure) = {
     examplesFilter = other.examplesFilter
     hardCopyResults(other)

@@ -77,7 +77,9 @@ trait LifeCycle {
   /** define the actions to be done after an example has been executed */
   def afterExample(ex: Examples) = {}
   /** define actions to be done just before the example expectations, as if they were part of the example */
-  def beforeExpectations(ex: Examples): Unit = parent.map(_.beforeExpectations(ex))
+  def beforeExpectations(ex: Examples): Unit = {
+    parent.map(_.beforeExpectations(ex))
+  }
   /** define actions to be done just after the example expectations, as if they were part of the example */
   def afterExpectations(ex: Examples): Unit = parent.map(_.afterExpectations(ex))
   /** define how to execute the example expectations */
@@ -106,10 +108,9 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
    * executing the expectations of an example contained by this LifeCycle, 
    * skipping the example if it doesn't contain any expectations 
    */
-  override def executeExpectations(ex: Examples, t: =>Any): Any = {
-    val executed = super.executeExpectations(ex, t)
+  override def afterExpectations(ex: Examples) = {
+    super.afterExpectations(ex)
     skipIfNoExpectations()
-    executed
   }
   /** 
    * execute one sub example either right away if this is the first example

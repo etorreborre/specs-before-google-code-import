@@ -13,6 +13,7 @@ import org.specs.util.Classes._
 trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with ExampleExpectationsListener =>
   /** execute an example by cloning the specification and executing the cloned example */
   override def executeExample(example: Examples): this.type = {
+    super.executeExample(example)
     var executed = false
     try {
       val path  = example.pathFromRoot

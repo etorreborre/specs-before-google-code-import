@@ -75,7 +75,7 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
   }
   
   /** execute this example to  be able to get all subexamples if any. */
-  override def executeExamples = {
+  def executeExamples = {
     if (!executed) 
       parent.map(_.executeExample(this))
   }
