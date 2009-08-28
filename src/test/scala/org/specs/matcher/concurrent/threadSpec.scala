@@ -1,9 +1,11 @@
 package org.specs.matcher.concurrent
-import org.specs.execute._
+import org.specs._
+import org.specs.matcher._
+import java.util.concurrent.locks._
+import PimpedReadWriteLock._
 
-class threadSpec extends org.specs.Specification with org.specs.matcher.Threads {
-  val lock = new java.util.concurrent.locks.ReentrantReadWriteLock
-  import PimpedReadWriteLock._
+class threadSpec extends SpecificationWithJUnit with Threads {
+  val lock = new ReentrantReadWriteLock
 
   "this system" should {
     thread("reader thread") { 
