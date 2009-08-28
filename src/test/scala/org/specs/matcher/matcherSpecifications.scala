@@ -18,6 +18,7 @@
  */
 package org.specs.matcher
 import org.specs.specification._
+import org.specs.matcher.concurrent._
 
 object matcherSpecifications extends Specification {
   "Matchers" areSpecifiedBy (
@@ -30,6 +31,7 @@ object matcherSpecifications extends Specification {
     new patternMatchersSpec,
     new scalacheckMatchersSpec,
     new stringMatchersSpec,
+    new threadSpec,
     new varianceSpec
 	)
 }
