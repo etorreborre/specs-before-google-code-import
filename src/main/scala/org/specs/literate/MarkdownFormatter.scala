@@ -26,4 +26,5 @@ trait MarkdownFormatting extends WikiFormatter {
      val markup = new MarkdownProcessor
      "<div>" + markup.markdown(s) + "</div>"
   }
+  override def escapeHtml(s: String) = s
 }
