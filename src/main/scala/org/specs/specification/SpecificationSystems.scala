@@ -24,8 +24,8 @@ trait SpecificationSystems { this: BaseSpecification =>
   class SpecifiedSus(val sus: Sus) {
     def should(a: =>Any) = sus.should(a)
     def should(a: =>Unit) = sus.should(a)
-    def can(a: =>Any) = sus.should(a)
-    def can(a: =>Unit) = sus.should(a)
+    def can(a: =>Any) = sus.can(a)
+    def can(a: =>Unit) = sus.can(a)
   }
   /**
    * specifies an anonymous Sus included in this specification
