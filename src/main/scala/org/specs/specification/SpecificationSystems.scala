@@ -13,8 +13,19 @@ trait SpecificationSystems { this: BaseSpecification =>
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specify(desc: String): Sus = {
-    addSus(new Sus(desc, this))
+  implicit def specifySus(desc: String): SpecifiedSus = {
+    new SpecifiedSus(addSus(new Sus(desc, this)))
+  }
+  def specify(desc: String): Sus = specifySus(desc).sus
+  /** 
+   * this class is used instead of using the Sus directly in order to make sure that only "should" and "can" are added
+   * to Strings
+   */
+  class SpecifiedSus(val sus: Sus) {
+    def should(a: =>Any) = sus.should(a)
+    def should(a: =>Unit) = sus.should(a)
+    def can(a: =>Any) = sus.should(a)
+    def can(a: =>Unit) = sus.should(a)
   }
   /**
    * specifies an anonymous Sus included in this specification

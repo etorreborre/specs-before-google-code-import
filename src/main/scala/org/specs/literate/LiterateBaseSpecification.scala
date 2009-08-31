@@ -23,7 +23,7 @@ import scala.xml._
 trait LiterateBaseSpecification extends BaseSpecification with ExpectableFactory with WikiFormatter { outer =>
   implicit def toSus(e: => Elem): ToLiterateSus = new ToLiterateSus(e) 
   class ToLiterateSus(e: => Elem) {
-    def isSus = toLiterateSus("") ->> e
+    def isSus = toLiterateSusWithDesc("") ->> e
   }
   implicit def toLiterateSusWithDesc(string: String) = new LiterateSus(specify(string))
   implicit def toLiterateSus(sus: Sus) = new LiterateSus(sus)
