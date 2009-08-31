@@ -4,7 +4,7 @@ import org.specs.SpecificationWithJUnit
 import org.specs.Sugar
 import org.specs.execute.FailureException
 
-class easymockSpec extends SpecificationWithJUnit with EasyMock {
+class easymockSpec extends SpecificationWithJUnit with EasyMock with Sugar {
   "An easymock mock" should {
     val m = mock[ToMock]
     "declare expectations in an expect block doing the replay at the end" in {
@@ -61,25 +61,25 @@ class easymockSpec extends SpecificationWithJUnit with EasyMock {
     "use syntactic sugar for multiple calls" in {
        m.voidMethod.times(3) 
        replay(m)
-       (1 to 3).foreach { i => m.voidMethod }
+       3.times { m.voidMethod }
        verify(m)
     }
     "use syntactic sugar for multiple calls with a range" in {
        m.voidMethod.times(1, 3) 
        replay(m)
-       (1 to 2).foreach { i => m.voidMethod }
+       2.times { m.voidMethod }
        verify(m)
     }
     "use syntactic sugar for multiple calls at least once" in {
        m.voidMethod.atLeastOnce 
        replay(m)
-       (1 to 2).foreach { i => m.voidMethod }
+       2.times { m.voidMethod }
        verify(m)
     }
     "use syntactic sugar for multiple calls any times" in {
        m.voidMethod.anyTimes 
        replay(m)
-       (1 to 2).foreach { i => m.voidMethod }
+       2.times { m.voidMethod }
        verify(m)
     }
     "use syntactic sugar for thrown exceptions" in {
