@@ -224,12 +224,16 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * In this example we suppose that there is a system under specification with the same name previously defined.
    * Otherwise, an Exception would be thrown, causing the specification failure at construction time.
    */
-  object behave {
+   object behave {
     def like(other: Sus): Example = {
       val behaveLike: Example = forExample("behave like " + other.description.uncapitalize)
-      other.examples.foreach { o => 
-        val e = behaveLike.createExample(o.description.toString)
-        e.execution = o.execution
+      behaveLike.in {
+        other.examples.foreach { o => 
+          val e = behaveLike.createExample(o.description.toString)
+          e.execution = o.execution
+          e.execution.map(_.example = e)
+          e.parent = Some(behaveLike)
+        }
       }
       behaveLike
     }
@@ -239,6 +243,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
                                          outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
     }
   }
+
   /** @return the first level examples number (i.e. without subexamples) */
   def firstLevelExamplesNb: Int = subSpecifications.foldLeft(0)(_+_.firstLevelExamplesNb) + systems.foldLeft(0)(_+_.examples.size)
   /** @return the failures of each sus */
