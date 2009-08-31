@@ -73,6 +73,7 @@ trait NumberOfTimes {
   implicit def integerToRange(n: Int): RangeInt = new RangeInt(n)
   case class RangeInt(n: Int) { 
     def times[T](f: (Int) => T)  = for (i <- 1 to n) f(i) 
+    def times(f: => Unit)  = for (i <- 1 to n) f 
     def times = this 
   }
 }
