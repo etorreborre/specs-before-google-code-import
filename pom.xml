@@ -29,11 +29,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.scala-tools.testing</groupId>
   <artifactId>specs</artifactId>
-  <version>1.6.0-SNAPSHOT</version>
+  <version>1.6.0</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>specs is a Behaviour-Driven-Design
-  framework</description>
+  <description>specs is a Behaviour-Driven-Design framework</description>
   <url>http://code.google.com/p/specs/</url>
   <inceptionYear>2007</inceptionYear>
   <licenses>
@@ -62,7 +61,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </developer>
   </developers>
   <properties>
-    <scala.version>2.7.3</scala.version>
+    <scala.version>2.7.4</scala.version>
     <java.src.version>1.5</java.src.version>
   </properties>
   <repositories>
@@ -81,10 +80,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2/</url>
       <layout>default</layout>
-    </repository>
-    <repository>
-      <id>powermock-repo</id>
-      <url>http://powermock.googlecode.com/svn/repo/</url>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -187,12 +182,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <groupId>org.easymock</groupId>
       <artifactId>easymockclassextension</artifactId>
       <version>2.4</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock.api</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
