@@ -61,7 +61,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </developer>
   </developers>
   <properties>
-    <scala.version>2.7.4</scala.version>
+    <scala.version>2.7.5</scala.version>
     <java.src.version>1.5</java.src.version>
   </properties>
   <repositories>
