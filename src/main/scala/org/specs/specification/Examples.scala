@@ -105,11 +105,7 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
    * If the lifecycle specifies that the specification is sequential, then the example is executed right away.
    */
   def specifyExample(a: =>Any): Unit = {
-    execution = Some(new ExampleExecution(this, () => {
-      withCurrent(this) {
-        a
-      }
-    }))
+    execution = Some(new ExampleExecution(this, (ex) => withCurrent(ex) { a }))
     if (parent.map(_.isSequential).getOrElse(false))
       executeExamples
   }

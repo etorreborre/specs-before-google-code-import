@@ -158,7 +158,7 @@ object DefaultLifeCycle extends Example("default life cycle")
  * It will check if the example is tagged for execution ("accepted") and it will execute the expectations as
  * long as the untilr predicate is not satisfied (if there is one)
  */
-class ExampleExecution(var example: Examples, val expectations: () => Any) {
+class ExampleExecution(var example: Examples, var expectations: Examples => Any) {
   /** function containing the expectations to be run */
   private var toRun: () => Any = () => {
     if (example.isAccepted) {
@@ -192,7 +192,7 @@ class ExampleExecution(var example: Examples, val expectations: () => Any) {
     try {
       if (!failed) {
         example.beforeExpectations(example)
-        example.executeExpectations(example, expectations())
+        example.executeExpectations(example, expectations(example))
         example.afterExpectations(example)
       }
     } catch {
