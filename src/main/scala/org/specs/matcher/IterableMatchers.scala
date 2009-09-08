@@ -244,12 +244,12 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((l: java.util.Set[T]) => convertSet(l)))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((l: java.util.Set[T]) => convertSet(l)))
   }
-  implicit def toJavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) = new JavaMapResultMatcher[S, U](result)
+  implicit def toAJavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) = new JavaMapResultMatcher[S, U](result)
   class JavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) {
     def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ ((m: java.util.Map[S, U]) => convertCollection(m.entrySet)))
     def contain(a: (S, U)) = result.matchWith(outer.contain(a) ^^ ((m: java.util.Map[S, U]) => convertCollection(m.entrySet)))
   }
-  implicit def toMapResultMatcher[S, T](result: Result[Map[S, T]]) = new MapResultMatcher(result)
+  implicit def toAMapResultMatcher[S, T](result: Result[Map[S, T]]) = new MapResultMatcher(result)
   class MapResultMatcher[S, T](result: Result[Map[S, T]]) {
     def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: (S,T)) = result.matchWith(outer.contain(a))

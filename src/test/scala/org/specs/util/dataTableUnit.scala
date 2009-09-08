@@ -79,7 +79,7 @@ class dataTableUnit extends SpecificationWithJUnit with DataTables {
     "provide the results of the execution of a function over all rows, showing failures if the function throws an exception" in {
        val datatable =  "a"|"b"|"c"|
                          1 ! 2 ! 4 |
-                         1 ! 2 ! 3 |{(a: Int, b: Int, c: Int) => a+b must_== c}
+                         1 ! 2 ! 3 |{(a, b, c) => a+b must_== c}
        try { datatable.execute }
        catch { case _ => true }
 

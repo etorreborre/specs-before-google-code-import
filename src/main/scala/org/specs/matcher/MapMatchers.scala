@@ -135,11 +135,6 @@ trait MapBeHaveMatchers { outer: MapBaseMatchers =>
 
   implicit def toJavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) = new JavaMapResultMatcher[S, U](result)
   class JavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) {
-    implicit def toHaveSize(m: java.util.Map[S, U]): {def size: Int} = new MapSize(m) 
-    class MapSize(m: java.util.Map[S, U]) {
-      def size: Int = m.entrySet.size
-    }
-    def size(k: Int) = result.matchWithMatcher(new SizeMatcher[java.util.Map[S, U]](k)) 
     def key(k: S) = result.matchWithMatcher(haveKey(k) ^^ ((m: java.util.Map[S, U]) => convertMap(m))) 
     def value(k: U) = result.matchWithMatcher(haveValue(k) ^^ ((m: java.util.Map[S, U]) => convertMap(m))) 
   }
