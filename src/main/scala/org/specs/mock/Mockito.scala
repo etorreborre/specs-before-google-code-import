@@ -25,7 +25,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
 import org.mockito.internal.verification.api.{ VerificationInOrderMode, VerificationMode }
 import org.mockito.internal.stubbing._
-import org.mockito.stubbing.OngoingStubbing
+import org.mockito.stubbing.{ OngoingStubbing, Stubber }
 import org.mockito.internal.progress._
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
@@ -308,6 +308,13 @@ trait MockitoStubs extends MocksCreation {
     }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
     def throws[E <: Throwable](e: E*): OngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
+  }
+  /** @return an object allowing the chaining of returned values on doNothing calls. */
+  implicit def aStubber(stub: =>Stubber) = new AStubber(stub)
+  /** provide stub chain methods. */
+  class AStubber[T](stub: =>Stubber) {
+    def thenReturn[T](t: T) = stub.doReturn(t)
+    def thenThrow[E <: Throwable](e: E) = stub.doThrow(e)
   }
   /** @return an object allowing the chaining of stub values. */
   implicit def anOngoingStubbing[T](stub: =>OngoingStubbing[T]) = new AnOngoingStubbing(stub)
