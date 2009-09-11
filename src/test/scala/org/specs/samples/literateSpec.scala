@@ -126,11 +126,10 @@ class tableFormSpec extends HtmlSpecificationWithJUnit("Table form") {
     field("Name", n)
     prop("Age", 35)(a)
   }
-  class Persons extends TableForm("Persons")
- "A form with fields" is <textile> { 
-   new Persons {
+ "A table form with one line form per line" is <textile> { 
+   new TableForm("Persons") {
      tr(Person("Eric", 35))
-     tr(Person("Eric2", 35))
+     tr(Person("Eric again", 35))
    }.reportTo(this) 
  }  
   </textile>
