@@ -26,6 +26,8 @@ trait ExampleContext extends ExampleLifeCycle {
   
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None
+  /** the around function will be invoked around each expectations */
+  var around: Option[Any => Any] = None
   /** the firstActions function will be invoked before all examples */
   var firstActions: Option[() => Any] = None
   /** the after function will be invoked after each example */
@@ -40,6 +42,10 @@ trait ExampleContext extends ExampleLifeCycle {
         firstActions.map(_.apply)
       before.map(_.apply())
     }
+  }
+  /** calls the executeExpectations method of the "parent" cycle. */
+  override def executeExpectations(ex: Examples, t: =>Any): Any = {
+    around.map(f => f(parent.map(_.executeExpectations(ex, t)))).orElse(parent.map(_.executeExpectations(ex, t)))
   }
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Examples): Unit = { 

@@ -72,7 +72,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
       badSpec.isOk must beTrue
     }
   }
-  "A system under test" can {
+  "A system under specification" can {
     "specify a doBeforeAll method to setup the context before any example is executed" in {
       specWithDoBeforeAll.execute
       specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must containMatch("doBeforeAll")
@@ -114,20 +114,24 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
   }
   "A specification" can {
-    "use a context to setup the before actions of a system under test" in {
+    "use a context to setup the before actions of a system under specification" in {
       specWithBeforeContext.execute
       specWithBeforeContext.beforeIsCalled must beTrue
     }
-    "use a context to setup the after actions of a system under test" in {
+    "use a context to execute actions around the expectations of examples" in {
+      specWithAroundContext.execute
+      specWithAroundContext.aroundIsCalled must beTrue
+    }
+    "use a context to setup the after actions of a system under specification" in {
       specWithAfterContext.execute
       specWithAfterContext.afterIsCalled must beTrue
     }
-    "use a context to setup the before and after actions of a system under test" in {
+    "use a context to setup the before and after actions of a system under specification" in {
       specWithContext.execute
       specWithContext.beforeIsCalled must beTrue
       specWithContext.afterIsCalled must beTrue
     }
-    "use a repeated context to setup the before and after actions of a system under test and repeat the same test several times" in {
+    "use a repeated context to setup the before and after actions of a system under specification and repeat the same test several times" in {
       specWithRepeatedContext.execute
       specWithRepeatedContext.data must_== 3
     }
@@ -189,6 +193,18 @@ object specWithBeforeContext extends beforeAfterSpecification {
   var beforeIsCalled = false
   val context1 = beforeContext {
     beforeIsCalled = true 
+  }
+  override def executeSpec = {
+    "A specification" ->- context1 should {
+      "have example 1 ok" in { 1 must_== 1 }
+    }
+    reportSpecs
+  }
+}
+object specWithAroundContext extends beforeAfterSpecification {
+  var aroundIsCalled = false
+  val context1 = aroundContext {
+    (a: Any) => { aroundIsCalled = true; a } 
   }
   override def executeSpec = {
     "A specification" ->- context1 should {
