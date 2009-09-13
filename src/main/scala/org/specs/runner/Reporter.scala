@@ -59,15 +59,15 @@ trait SpecsHolder {
 trait Reporter extends SpecsFilter with ConsoleLog {
   val specsConfiguration: Property[Configuration] = Property(config)
   /** this variable controls if stacktraces should be printed. */
-  protected val stacktrace = Property(specsConfiguration().stacktrace)
+  private[specs] val stacktrace = Property(specsConfiguration().stacktrace)
   /** this variable controls if ok examples should be printed. */
-  protected val failedAndErrorsOnly = Property(specsConfiguration().failedAndErrorsOnly)
+  private[specs] val failedAndErrorsOnly = Property(specsConfiguration().failedAndErrorsOnly)
   /** this variable controls if the statistics should be printed. */
-  protected val statistics = Property(specsConfiguration().statistics)
+  private[specs] val statistics = Property(specsConfiguration().statistics)
   /** this variable controls if the final statistics should be printed. */
-  protected val finalStatisticsOnly = Property(specsConfiguration().finalStatisticsOnly)
+  private[specs] val finalStatisticsOnly = Property(specsConfiguration().finalStatisticsOnly)
   /** this variable controls if the ANSI color sequences should be used to colorize output */
-  protected val colorize = Property(specsConfiguration().colorize)
+  private[specs] val colorize = Property(specsConfiguration().colorize)
 
   /** set a new configuration object. */
   def setConfiguration(className: Option[String]): this.type = { 

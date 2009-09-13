@@ -36,6 +36,15 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
       calls2.calls(1).verifInOrderMode.toString must_== org.mockito.Mockito.times(3).toString
     }
   }
+  "A method returning void" can {
+    "be called once with doesNothing then throw an exception" in {
+      class ToMock { def method = () }
+      val m = mock[ToMock]
+      doNothing.thenThrow(new RuntimeException).when(m).method
+      m.method
+      m.method must throwA[RuntimeException]
+    }
+  }
   "Implicit defs for in order calls work" in {
     m1.add("1")
     m1.add("1")

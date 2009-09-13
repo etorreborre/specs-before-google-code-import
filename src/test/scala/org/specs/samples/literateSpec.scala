@@ -121,6 +121,20 @@ This is a Person form, checking that the initials are set properly on a Person o
 
   </textile>
 }
+class tableFormSpec extends HtmlSpecificationWithJUnit("Table form") {
+  case class Person(n: String, a: Int) extends LineForm {
+    field("Name", n)
+    prop("Age", 35)(a)
+  }
+ "A table form with one line form per line" is <textile> { 
+   new TableForm("Persons") {
+     tr(Person("Eric", 35))
+     tr(Person("Eric again", 35))
+   }.reportTo(this) 
+ }  
+  </textile>
+}
+
 trait PersonBusinessEntities {
   case class Person(firstName: String, lastName: String, address: Address, friends: List[String]) {
     def initials = firstName(0).toString + lastName(0)

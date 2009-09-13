@@ -37,6 +37,8 @@ import org.specs.execute._
 trait BeforeAfter { outer: BaseSpecification =>
   /** adds a "before" function to the last sus being defined */
   def doBefore(actions: =>Any) = usingBefore(() => actions)
+  /** adds a "around" function to the last sus being defined */
+  def doAround(actions: Any =>Any) = current.map(_.around = Some(actions))
   /**  adds an "after" function to the last sus being defined */
   def doAfter(actions: =>Any) = usingAfter(() => actions)
   /** adds a "firstActions" function to the last sus being defined */
@@ -53,6 +55,8 @@ trait BeforeAfter { outer: BaseSpecification =>
   private def usingAfter(actions: () => Any) = current.map(stackAfterActions(_, actions))
   /** actions are stacked so that several before actions can be triggered one after the other */
   private[specs] def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
+  /** actions are stacked so that several before actions can be triggered one after the other */
+  private[specs] def stackAroundActions(sus: Examples, actions: Any => Any) = sus.around = stackAround(actions, sus.around)
   /** adds an "after" function to a sus */
   private[specs] def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
   /** adds "firstActions" to a sus */
@@ -68,6 +72,12 @@ trait BeforeAfter { outer: BaseSpecification =>
     Some(() => {
       previousActions.map(a => a())
       actions()
+    })
+  }
+  /** @return a function with actions being stacked around. */
+  private def stackAround(actions: Any => Any, previousActions: Option[Any => Any]) = {
+    Some((a:Any) => {
+      actions(previousActions.map(f => f(a)))
     })
   }
   /** @return a function with actions being executed before the previous actions. */
@@ -107,6 +117,8 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
   def contextFirst(actions: => Any) = new Context { first(actions) }
   /** Factory method to create a context with before only actions */
   def beforeContext(actions: => Any) = new Context { before(actions) }
+  /** Factory method to create a context with around only actions */
+  def aroundContext(actions: Any => Any) = new Context { around(actions) }
   /** Factory method to create a context with before only actions and an until predicate */
   def beforeContext(actions: => Any, predicate: =>Boolean) = new Context { before(actions); until(predicate()) }
   /** Factory method to create a context with after only actions */
@@ -147,6 +159,7 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
     val sus = specify(desc)
     stackFirstActions(sus, context.firstActions())
     stackBeforeActions(sus, context.beforeActions)
+    stackAroundActions(sus, context.aroundActions)
     stackAfterActions(sus, context.afterActions)
     stackLastActions(sus, context.lastActions())
     until(sus, context.predicate())
@@ -166,9 +179,11 @@ case class Context() {
   var firstActions: () => Any = () => () 
   var lastActions: () => Any = () => ()
   var beforeActions: () => Any = () => () 
+  var aroundActions: Any => Any = (a:Any) => () 
   var afterActions: () => Any = () => ()
   var predicate: () => Boolean = () => true
   def before(actions: =>Any) = { beforeActions = () => actions; this }
+  def around(actions: Any =>Any) = { aroundActions = actions; this }
   def after(actions: =>Any) = { afterActions = () => actions; this }
   def first(actions: =>Any) = { firstActions = () => actions; this }
   def last(actions: =>Any) = { lastActions = () => actions; this }
