@@ -53,7 +53,6 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
               }
             }
             executed = true
-            s.executeOneExampleOnly = false
           }
         }
       }
