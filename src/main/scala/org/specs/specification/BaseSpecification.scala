@@ -203,9 +203,9 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    */
   override def afterExample(ex: Examples) = {
     super.afterExample(ex)
-    if (!executeOneExampleOnly && 
-        !systems.isEmpty && 
-         systems.last.executed && !systems.last.exampleList.isEmpty && 
+    if (!systems.isEmpty && 
+         systems.last.executed && 
+        !systems.last.exampleList.isEmpty && 
          systems.last.exampleList.last == ex)
       afterSpec.map(_.apply)
   }
