@@ -203,7 +203,7 @@ object specWithBeforeContext extends beforeAfterSpecification {
 }
 object specWithAroundContext extends beforeAfterSpecification {
   var aroundIsCalled = false
-  val context1 = aroundContext {
+  val context1 = aroundExpectationsContext {
     (a: Any) => { aroundIsCalled = true; a } 
   }
   override def executeSpec = {
