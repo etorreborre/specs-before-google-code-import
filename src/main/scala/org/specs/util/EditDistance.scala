@@ -91,14 +91,14 @@ trait EditDistance {
   	      if (dist == 0) (s1(0) + s1mod, s2(0) + s2mod)
           else (modify(s1mod, s1(0)), modify(s2mod, s2(0))) 
         }
-        else if (j < 1) (modifyString(s1mod, s1.slice(0, i)), s2mod)
-        else if (i < 1) (s1mod, modifyString(s2mod, s2.slice(0, j)))
+        else if (j < 1) (modifyString(s1mod, s1.slice(0, i)), modifyString(s2mod, ""))
+        else if (i < 1) (modifyString(s1mod, ""), modifyString(s2mod, s2.slice(0, j)))
         else {
 	      val (suppr, subst, ins) = (matrix(i - 1)(j), matrix(i - 1)(j - 1), matrix(i)(j - 1))   
 	      if (suppr < subst) 
-	        findOperations(suppr, i - 1, j, modify(s1mod, s1(i - 1)), s2mod)
+	        findOperations(suppr, i - 1, j, modify(s1mod, s1(i - 1)), modifyString(s2mod, ""))
 	      else if (ins < subst)
-	        findOperations(ins, i, j - 1, s1mod, modify(s2mod, s2(j - 1)))
+	        findOperations(ins, i, j - 1, modifyString(s1mod, ""), modify(s2mod, s2(j - 1)))
 	      else if (subst < dist)
 	        findOperations(subst, i - 1, j - 1, modify(s1mod, s1(i - 1)), modify(s2mod, s2(j - 1)))
 	      else
@@ -171,8 +171,10 @@ object DiffShortener {
         if (!cur.contains(secondSep))
           res ::: List(cur)
         else {
-          val diff = split(cur, secondSep)(0)
-          if (split(cur, secondSep).size > 1)
+          lazy val diff = split(cur, secondSep)(0)
+          if (split(cur, secondSep).size == 0)
+            res ::: List(firstSep + secondSep)
+          else if (split(cur, secondSep).size > 1)
             res ::: List(firstSep + diff + secondSep, split(cur, secondSep)(1))
           else
             res ::: List(firstSep + diff + secondSep)
