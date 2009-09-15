@@ -92,7 +92,7 @@ trait AnyBaseMatchers {
       }
       import org.specs.Products._
       val failureMessage = details match {
-        case full: fullDetails if (full.startDiffSize <= x.size) => {
+        case full: fullDetails if (full.startDiffSize <= x.toString.size) => {
           EditMatrix(dy, qx).showDistance(full.separators, full.shortenSize).toList.mkString(" is not equal to ")
         }
         case _ => dy + " is not equal to " + qx
