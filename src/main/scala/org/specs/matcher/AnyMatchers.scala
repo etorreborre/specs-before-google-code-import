@@ -91,8 +91,9 @@ trait AnyBaseMatchers {
         qx = qx + ": " + getClassName(x)
       }
       import org.specs.Products._
+      def isNull(a: Any) = a match { case (ref: AnyRef) => ref eq null; case _ => false }
       val failureMessage = details match {
-        case full: fullDetails if (full.startDiffSize <= x.toString.size) => {
+        case full: fullDetails if (!isNull(x) && full.startDiffSize <= x.toString.size) => {
           EditMatrix(dy, qx).showDistance(full.separators, full.shortenSize).toList.mkString(" is not equal to ")
         }
         case _ => dy + " is not equal to " + qx
