@@ -30,7 +30,7 @@ import org.hamcrest.core.AnyOf._
 import org.jmock._
 import org.specs.specification._
 import org.specs.util.Property
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.jmock.internal.matcher.MethodNameMatcher
 import org.specs.collection.JavaCollectionsConversion._
 import scala.reflect.Manifest

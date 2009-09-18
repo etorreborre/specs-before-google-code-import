@@ -21,7 +21,7 @@ import scala.xml._
 import org.specs.specification._
 import org.specs.io._
 import org.specs.util._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.xml.NodeFunctions._
 import org.specs.execute._
 /**

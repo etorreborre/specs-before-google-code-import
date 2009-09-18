@@ -20,7 +20,7 @@ package org.specs.util
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 
 class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples {
 

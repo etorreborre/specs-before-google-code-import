@@ -16,7 +16,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package org.specs
+package org.specs.util
 import org.specs.util.ExtendedString._
 import java.io.StringWriter
 import java.io.PrintWriter

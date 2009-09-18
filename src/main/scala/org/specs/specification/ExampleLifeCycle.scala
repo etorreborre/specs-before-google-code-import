@@ -19,7 +19,7 @@
 package org.specs.specification
 import org.specs.execute.{ FailureException, SkippedException }
 import org.specs.util.Configuration
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 
 /**
  * This trait models the execution cycle of an example.

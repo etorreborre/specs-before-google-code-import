@@ -19,7 +19,7 @@
 package org.specs.specification
 import org.specs.matcher._
 import org.specs.matcher.Matchers._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.Sugar._
 import org.specs.execute._
 

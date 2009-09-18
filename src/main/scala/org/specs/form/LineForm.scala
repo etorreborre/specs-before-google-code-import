@@ -50,7 +50,8 @@ class LineForm extends Form {
     p
   }
   /** add a new LineProp to that line with expected and actual value */
-  def prop[T](label: String, expected: Option[T], actual: =>Option[T]) = {
+  def prop[T](label: String, expected: Option[T], actual: =>Option[T]): LineProp[T
+  ] = {
     val p = new LineProp(label, new Property(() => expected), new Property(() => actual), Some(new MatcherConstraint(actual, executor)))
     lineProperties.append(p)
     add(p)

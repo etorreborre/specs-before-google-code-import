@@ -27,7 +27,7 @@ import org.specs.runner._
 import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
 import org.specs.specification._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import scala.reflect.Manifest
 import org.specs.execute._
 

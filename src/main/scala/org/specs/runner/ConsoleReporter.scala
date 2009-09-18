@@ -23,7 +23,7 @@ import org.specs.specification._
 import org.specs.util._
 import org.specs._
 import org.specs.specification._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.execute._
 import org.specs.util.Plural._
 /**

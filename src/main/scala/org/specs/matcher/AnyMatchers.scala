@@ -21,7 +21,7 @@ package org.specs.matcher
 import org.specs.specification._
 import org.specs.matcher.MatcherUtils.{q, matches}
 import org.specs.matcher.PatternMatchers._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.util.EditDistance._
 import org.specs.util.Classes._
 import org.specs.collection.ExtendedIterable._
@@ -90,7 +90,7 @@ trait AnyBaseMatchers {
         dy = dy + ": " + getClassName(y)
         qx = qx + ": " + getClassName(x)
       }
-      import org.specs.Products._
+      import org.specs.util.Products._
       def isNull[T](a: T) = a match { case x: AnyVal => false; case y => y.asInstanceOf[AnyRef] eq null }
       val failureMessage = details match {
         case full: fullDetails if (!isNull(x) && full.startDiffSize <= x.toString.size) => {

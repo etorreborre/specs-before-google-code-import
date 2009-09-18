@@ -18,7 +18,7 @@
  */
 package org.specs.collection
 import org.specs.collection.ExtendedList._
-import org.specs.Products._
+import org.specs.util.Products._
 import org.specs.runner._
 
 class extendedListUnit extends TestData {
