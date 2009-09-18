@@ -21,7 +21,7 @@ package org.specs.matcher
 import org.specs._
 import org.specs.specification._
 import org.specs.collection.ExtendedIterable._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.matcher.MatcherUtils._
 import org.specs.execute._
 import scala.xml.Node

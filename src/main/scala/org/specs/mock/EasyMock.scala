@@ -23,7 +23,7 @@ import _root_.org.easymock.{ IExpectationSetters, IAnswer, EasyMock => EasyMocke
 import org.easymock.internal.MocksControl._
 import org.specs.specification.{ ExpectationsListener, LifeCycle, Examples } 
 import org.specs.execute.FailureException
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import java.lang.reflect.Proxy
 import org.easymock.internal._
 

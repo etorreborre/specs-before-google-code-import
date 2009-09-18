@@ -18,7 +18,7 @@
  */
 package org.specs.runner
 import org.specs.specification._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import org.specs.io._
 import org.specs.util._
 

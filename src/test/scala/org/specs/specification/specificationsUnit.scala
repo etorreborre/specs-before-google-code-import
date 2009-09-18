@@ -23,7 +23,7 @@ import org.specs.matcher._
 import org.specs.Sugar._
 import org.specs.runner._
 import org.specs.util._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import scala.collection.mutable._
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._

@@ -18,7 +18,7 @@
  */
 package org.specs.matcher
 import org.specs.runner._
-
+  
 class numericMatchersSpec extends MatchersSpecification {
   "Numeric matchers" should {
     "provide a 'be_<' matcher: 1 must be_<(2)" in {
@@ -72,6 +72,9 @@ class numericMatchersSpec extends MatchersSpecification {
       expectation(1.2 aka "the number" must beCloseTo(1.0, 0.1)) must failWith("the number 1.2 is not close to 1.0 +/- 0.1")
 
       expectation(1.2 must not(beCloseTo(1.0, 0.2))) must failWith("1.2 is close to 1.0 +/- 0.2")
+    }
+    "provide a 'must beCloseTo' matcher: 1.2 must beCloseTo(1.0 +/- 0.5)" in {
+      1.2 must be closeTo (1.0 +/- 0.5)
     }
     "provide a 'be <' matcher" in {
       1 must be <(2)

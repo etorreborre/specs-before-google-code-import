@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.util
-import org.specs.Products._
+import Products._
 import scala._
 import org.specs.specification._
 import scala.xml.NodeSeq

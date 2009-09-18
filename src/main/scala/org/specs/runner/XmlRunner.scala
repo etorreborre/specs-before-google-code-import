@@ -23,7 +23,7 @@ import org.specs.log._
 import org.specs._
 import scala.xml.{Elem, PrettyPrinter}
 import org.specs.specification._
-import org.specs.ExtendedThrowable._
+import org.specs.util.ExtendedThrowable._
 import scala.xml.{Elem, PrettyPrinter}
 import org.specs.execute._
 

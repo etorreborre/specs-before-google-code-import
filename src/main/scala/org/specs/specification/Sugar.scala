@@ -17,6 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs
+import org.specs.util.Products
 import org.specs.io._
 /**
  * Synctactic sugar for specifications. Since it makes heavy uses of implicit definitions,<br>

@@ -79,6 +79,18 @@ trait NumericBaseMatchers {
    * Matches if x = n +/- delta.
    */   
   def beCloseTo[S](n: S, delta: S)(implicit d: S => Monoid[S], e: S => Ordered[S]) = new BeCloseTo(n, delta)
+  /** implicit definition to create delta for the beCloseTo matcher */
+  implicit def ToDelta[S](n: S) = CanHaveDelta(n)
+  /** transient class allowing the creation of a delta */
+  private[specs] case class CanHaveDelta[S](n: S) {
+    def +/-(delta: S) = Delta(n, delta)
+  }
+  /** class representing a numeric range */
+  private[specs] case class Delta[S](n: S, delta: S)
+  /**
+   * Matches if x = n +/- delta.
+   */   
+  def beCloseTo[S](delta: Delta[S])(implicit d: S => Monoid[S], e: S => Ordered[S]) = new BeCloseTo(delta.n, delta.delta)
   /**
    * Alias for beCloseTo.
    */   
@@ -88,6 +100,7 @@ object NumericMatchersUtil {
   /** format a number: 1 must be 1 and not 1.0 if it is an integer. */
   def f[D <% Ordered[D]](x: D): String = x.toString
 }
+
 trait NumericBeHaveMatchers { this: NumericBaseMatchers => 
   import NumericMatchersUtil._
   /** 
@@ -104,6 +117,7 @@ trait NumericBeHaveMatchers { this: NumericBaseMatchers =>
     def greaterThan(n: S) = result.matchWith(beGreaterThan(n))
     def greaterThanOrEqualTo(n: S) = result.matchWith(beGreaterThanOrEqualTo(n)) 
     def closeTo(n: S, delta: S) = result.matchWith(beCloseTo(n, delta))
+    def closeTo(delta: Delta[S]) = result.matchWith(beCloseTo(delta))
     def ~(n: S, delta: S) = result.matchWith(beCloseTo(n, delta))
   }
   def lessThan[S <% Ordered[S]](n: S) = beLessThan(n) 
