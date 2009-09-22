@@ -136,6 +136,16 @@ class easymockSpec extends SpecificationWithJUnit with EasyMock with Sugar {
       mockAs[ToMock]("name").isExpectation
     }
   }
+  "An easymock mock with a java interface" should {
+    "work with a java method returning a genericized list" in {
+      val ls: java.util.List[Bar] = new java.util.ArrayList[Bar]
+      ls.add(new Bar(1))
+      val m = mock[Foo]
+      m.getBars.asInstanceOf[java.util.List[Bar]] returns ls 
+      replay(m)
+      m.getBars.get(0).i must_== 1
+    }
+  }
 }
 class TestEasyMockSpecification(t: ToMock => Any) extends org.specs.Specification with EasyMock {
   val m = mock[ToMock]
