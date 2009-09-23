@@ -29,6 +29,7 @@ import org.mockito.stubbing.{ OngoingStubbing, Stubber }
 import org.mockito.internal.progress._
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
+import org.specs._
 
 /**
  * The Mockito trait can be mixed with Specifications to provide mocking capabilities using the Mockito library.

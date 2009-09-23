@@ -17,6 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.literate
+import org.specs.Specification
 
 /**
  * This trait supports writing literate specifications for acceptance testing.

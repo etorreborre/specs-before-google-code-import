@@ -18,7 +18,7 @@
  */
 package org.specs.form
 
-class dataTableFormSpec extends spex.Specification {
+class dataTableFormSpec extends org.spex.Specification {
   "A data table form" can {
     "be executed as a Form" in {
       

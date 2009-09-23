@@ -19,6 +19,7 @@
 package org.specs.literate
 import org.specs.specification._
 import org.specs.execute._
+import org.specs._
 /**
  * This trait adds shortcut methods to define expectations, to silence expressions
  */

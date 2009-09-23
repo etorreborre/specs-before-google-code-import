@@ -22,6 +22,7 @@ import org.specs.io.FileSystem
 import java.util.regex._
 import scala.collection.mutable.Queue
 import org.specs.util.Classes._
+import org.specs._
 
 /**
  * Companion SpecsFinder object to create a SpecsFinder returning an aggregate Specification of

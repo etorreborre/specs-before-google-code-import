@@ -18,9 +18,8 @@
  */
 package org.specs.form
 
-import matcher.{HaveTheSameElementsAs, BeEqualTo, Matcher, Matchers}
+import org.specs.matcher.{HaveTheSameElementsAs, BeEqualTo, Matcher, Matchers}
 import scala.xml._
-import scala.collection.mutable._
 import scala.collection.mutable.ListBuffer
 import org.specs.xml.NodeFunctions._
 import org.specs.execute._

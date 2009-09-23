@@ -18,6 +18,7 @@
  */
 package org.specs.matcher
 import org.specs.specification._
+import org.specs._
 
 object matcherUnits extends Specification {
   "Matchers unit tests" areSpecifiedBy (new anyMatchersUnit,

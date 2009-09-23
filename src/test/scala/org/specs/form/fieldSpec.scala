@@ -20,7 +20,7 @@ package org.specs.form
 import Field._
 import org.specs.util.Property
 
-class fieldSpec extends spex.Specification {
+class fieldSpec extends org.spex.Specification {
   "A Field" should {
     "update its value with the apply method and get it with the get method" in {
       Field("label", 1)(2).get must_== 2

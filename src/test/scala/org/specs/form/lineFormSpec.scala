@@ -18,7 +18,7 @@
  */
 package org.specs.form
 
-class lineFormSpec extends spex.Specification {
+class lineFormSpec extends org.spex.Specification {
   val lineForm = new LineForm {
         prop("First Name", "Hello")
         prop("Last Name", "World")

@@ -17,7 +17,7 @@ package org.specs.matcher.concurrent
 
 import Thread.State._
 import PimpedThreadGroup._
-import scala.collection.jcl.Conversions.convertList
+import scala.collection.JavaConversions.asList
 import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
 

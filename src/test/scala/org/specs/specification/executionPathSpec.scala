@@ -18,8 +18,9 @@
  */
 package org.specs.specification
 import org.specs.util.{ TreeNode, TreePath, Classes }
+import org.specs._
 
-class executionPathSpec extends spex.Specification with Classes {
+class executionPathSpec extends org.spex.Specification with Classes {
   shareVariables()
   val spec = new Specification {
     "this system" should {

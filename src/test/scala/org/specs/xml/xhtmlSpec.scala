@@ -19,7 +19,7 @@
 package org.specs.xml
 import Xhtml._
 
-class xhtmlSpec extends spex.Specification {
+class xhtmlSpec extends org.spex.Specification {
   "The Xhtml object" should {
     "have a spanLastTd function setting a colspan on each last td of a row, except the last one" in {
       val updated = Xhtml.spanLastTd(

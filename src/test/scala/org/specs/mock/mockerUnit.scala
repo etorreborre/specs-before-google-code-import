@@ -20,6 +20,7 @@ package org.specs.mock
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.mock._
+import org.specs._
 
 class mockerUnit extends SpecificationWithJUnit with Sugar with ProtocolTypes {
   val mocker = new Mocker { def addExpectation = null }

@@ -20,7 +20,7 @@ package org.specs.literate
 import org.specs.specification.Example
 import scala.xml._
 
-class markdownFormatterSpec extends spex.Specification {
+class markdownFormatterSpec extends org.spex.Specification {
   def formatString(s: String): String = new MarkdownFormatter{}.format(s)
   def formatElem(e: Elem): Node = new MarkdownFormatter{}.format(e)
 

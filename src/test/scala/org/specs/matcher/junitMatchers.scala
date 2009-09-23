@@ -20,7 +20,7 @@ package org.specs.matcher
 import org.junit.Test
 import _root_.junit.framework.AssertionFailedError
 
-class junitMatchersSpec extends spex.Specification {
+class junitMatchersSpec extends org.spex.Specification {
   "A junit test case" can {
     "use specs matchers" in {
       val test = new junitSampleTest

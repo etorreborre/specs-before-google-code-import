@@ -22,6 +22,7 @@ import org.specs.matcher._
 import org.specs.util._
 import org.specs.form._
 import org.specs.runner._
+import org.specs._
 
 class helloWorld extends HtmlSpecification("Hello World") {
   def greet = "hello"

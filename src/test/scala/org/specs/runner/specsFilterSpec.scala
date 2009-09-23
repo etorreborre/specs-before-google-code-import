@@ -19,6 +19,7 @@
 package org.specs.runner
 import org.specs.Specification
 import org.specs.runner._
+import org.specs._
 
 class specsFilterSpec extends SpecificationWithJUnit {
   "a specs filter" should {

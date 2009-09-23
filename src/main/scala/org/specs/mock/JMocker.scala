@@ -358,16 +358,16 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     private var parameterIndex  = 0
 
     /** option mapping function to apply before returning the value */
-    private var function: Option[T => _] = None
+    private var function: Option[T => Any] = None
 
     /** optional matcher checking the captured value */
     private var matcher: Option[HamcrestMatcherAdapter[T]] = None
 
     /** the returned value as a ReturnValueAction object */
-    def value = new ReturnValueAction[T]() {
+    def value = new ReturnValueAction() {
       override def invoke(i: Invocation) = function match {
         case None => i.getParameter(parameterIndex)
-        case Some(f) => f(i.getParameter(parameterIndex).asInstanceOf[T])
+        case Some(f) => f(i.getParameter(parameterIndex).asInstanceOf[T]).asInstanceOf[java.lang.Object]
       }
     }
 

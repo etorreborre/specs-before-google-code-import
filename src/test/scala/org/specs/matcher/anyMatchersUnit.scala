@@ -141,7 +141,7 @@ class anyMatchersUnit extends MatchersSpecification {
   }
   "A 'beEmpty' matcher" should {
     "be ok when testing an empty string" in {
-      stringWrapper("") must beEmpty
+      "" must be empty
     }
   }
   "A throwA + exception matcher" should {

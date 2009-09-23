@@ -23,6 +23,7 @@ import scala.reflect.Manifest
 import org.specs.execute._
 import org.specs.util._
 import org.specs.util.ExtendedString._
+import org.specs.Specification
 /**
  * This class provides the base structure of a specification.<br>
  * A specification has a name, a description and is composed of:<ul>
@@ -86,19 +87,19 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     parentSpecification.map(List(_)).getOrElse(Nil) ::: parentSpecification.map(_.parentSpecifications).getOrElse(Nil)   
   } 
   /** this declares that a specification is composed of other specifications */
-  def isSpecifiedBy(specifications: Specification*) = {
+  def isSpecifiedBy[T <: Specification](specifications: T*) = {
     this.description = this.name + " is specified by"
     include(specifications:_*)
   }
   /** alias for isSpecifiedBy */
-  def areSpecifiedBy(specifications: Specification*) = {
+  def areSpecifiedBy[T <: Specification](specifications: T*) = {
     this.description = this.name + " are specified by"
     include(specifications:_*)
   }
   /**
    * include a list of specifications inside this one
    */
-  def include(specifications: Specification*) = {
+  def include[T <: Specification](specifications: T*) = {
     val toInclude = specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
     toInclude.foreach(_.setParent(this))
     subSpecifications = subSpecifications ::: toInclude 
@@ -267,7 +268,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     this
   }
   /** Declare the subspecifications and systems as components to be tagged when the specification is tagged */
-  override def taggedComponents: List[Tagged] = this.systems ++ this.subSpecifications 
+  override def taggedComponents: List[Tagged] = this.systems.toList ::: this.subSpecifications 
   /** @return the name of the specification */
   override def toString = name
 }

@@ -21,7 +21,7 @@ package org.specs.form
 import scala.xml.NodeSeq
 import org.specs.execute._
 import org.specs.matcher._
-import util.Property
+import org.specs.util.Property
 
 /**
  * The Prop class is a named property which holds:<ul>

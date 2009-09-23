@@ -19,7 +19,7 @@
 package org.specs.util
 import org.specs.io.mock._
 
-class configurationSpec extends spex.Specification {
+class configurationSpec extends org.spex.Specification {
   "A configuration object" should {
     "try to find the default configuration class, named DefaultConfiguration, in the default package" in {
       Configuration.getDefaultConfiguration must haveClass[DefaultConfiguration]

@@ -18,6 +18,7 @@
  */
 package org.specs.samples
 import org.specs.runner._
+import org.specs._
 
 object runners {
   object spec extends Specification

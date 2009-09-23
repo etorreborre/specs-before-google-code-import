@@ -18,7 +18,7 @@
  */
 package org.specs.matcher
 import org.specs._
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 
 class numericMatchersUnit extends MatchersSpecification with ScalaCheck {
   "A 'beGreaterThan' matcher" should {

@@ -20,9 +20,9 @@ package org.specs.mock;
 import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.mock._
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 import org.specs.collection.ExtendedList._
-import org.specs.ScalaCheck
+import org.specs._
 
 class numberOfMessagesUnit extends SpecificationWithJUnit with TestData with ScalaCheck {
   "A protocol type 'numberOfMessages'" should {

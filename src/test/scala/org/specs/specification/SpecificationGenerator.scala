@@ -22,6 +22,7 @@ import org.scalacheck._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop._
 import org.specs.matcher._
+import org.specs._
 
 trait SpecificationGenerator { self: Specification =>
   object spec extends Specification("generated spec")

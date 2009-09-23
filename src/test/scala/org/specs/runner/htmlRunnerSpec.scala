@@ -17,8 +17,9 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.runner
+import org.specs.literate.Textile
 
-class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with literate.Textile { "Html Runner Specification" is <t>
+class htmlRunnerSpec extends htmlRunnerRules("Html Runner") with Textile { "Html Runner Specification" is <t>
 
 A specification can be run and its output displayed as an Html page.
 On this html page we should be able to see:

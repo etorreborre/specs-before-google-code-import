@@ -18,6 +18,7 @@
  */
 package org.specs.literate
 import org.specs.specification._
+import org.specs._
 /**
  * This trait allows to add links to other specifications inside a literate specification.
  * The link will be displayed as a Html link

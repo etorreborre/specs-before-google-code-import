@@ -28,8 +28,8 @@ class fileSystemUnit extends TestData {
     }
   }
 }
-import scalacheck.Gen._
-import scalacheck._
+import org.scalacheck.Gen._
+import org.scalacheck._
 import scala.collection.mutable.Queue
 import java.util.regex._
 import org.specs._

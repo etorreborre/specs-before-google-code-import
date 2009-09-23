@@ -24,6 +24,7 @@ import _root_.org.junit.runner._
 import org.specs.collection.JavaCollectionsConversion._
 import org.specs.util.Stacktraces
 import org.specs.execute._
+import org.specs._
 
 /**
  * The strategy for running Specifications with JUnit is as follow:<p>

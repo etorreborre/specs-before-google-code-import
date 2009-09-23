@@ -18,7 +18,7 @@
  */
 package org.specs.samples
 
-class isolatedExamples extends spex.Specification {
+class isolatedExamples extends org.spex.Specification {
   var x = 0 
   def inc() = {
     x = x + 1

@@ -19,7 +19,7 @@
 package org.specs.util
 import org.specs.execute._
 
-class propertySpec extends spex.Specification {
+class propertySpec extends org.spex.Specification {
   "A property" should {
     "not be evaluate its update value until it is queried" in  {
       val p = Property(1)

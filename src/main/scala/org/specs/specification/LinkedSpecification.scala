@@ -17,6 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
+import org.specs._
 
 /**
  * This trait adds the possibility to declare an included specification as "linked" in order to 

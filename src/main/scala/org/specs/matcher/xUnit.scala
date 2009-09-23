@@ -18,6 +18,8 @@
  */
 package org.specs.matcher
 import org.specs.specification._
+import org.specs._
+
 /**
  * This trait provides methods to help the transition for xUnit users
  */

@@ -19,6 +19,7 @@
 package org.specs.util
 import org.specs.Specification
 import org.specs.runner._
+import org.specs._
 
 class dataTableHeaderUnit extends SpecificationWithJUnit with DataTables {
   "a data table header" should {

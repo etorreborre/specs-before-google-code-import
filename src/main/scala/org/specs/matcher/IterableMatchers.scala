@@ -219,12 +219,12 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f))
   }
-  import scala.collection.jcl.Conversions._
+  import scala.collection.JavaConversions._
   private def convertCollection[U](c: java.util.Collection[U]): Iterable[U] = {
     val javalist = new java.util.ArrayList[U]()
     javalist.addAll(c)
     val list = new scala.collection.mutable.ListBuffer[U]()
-    for (a <- convertList(javalist)) list.append(a)
+    for (a <- asList(javalist)) list.append(a)
     list.toList
   }
   implicit def toJavaCollectionResultMatcher[S](result: Result[java.util.Collection[S]]) = new JavaCollectionResultMatcher(result)
@@ -234,15 +234,15 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
   }
   implicit def toJavaListResultMatcher[T](result: Result[java.util.List[T]]) = new JavaListResultMatcher(result)
   class JavaListResultMatcher[T](result: Result[java.util.List[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ (convertList(_)))
-    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((l: java.util.List[T]) => convertList(l)))
-    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((l: java.util.List[T]) => convertList(l)))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ (asList(_)))
+    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((l: java.util.List[T]) => asList(l)))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((l: java.util.List[T]) => asList(l)))
   }
   implicit def toJavaSetResultMatcher[T](result: Result[java.util.Set[T]]) = new JavaSetResultMatcher(result)
   class JavaSetResultMatcher[T](result: Result[java.util.Set[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ (convertSet(_)))
-    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((l: java.util.Set[T]) => convertSet(l)))
-    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((l: java.util.Set[T]) => convertSet(l)))
+    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ (asSet(_)))
+    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((l: java.util.Set[T]) => asSet(l)))
+    def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((l: java.util.Set[T]) => asSet(l)))
   }
   implicit def toAJavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) = new JavaMapResultMatcher[S, U](result)
   class JavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) {

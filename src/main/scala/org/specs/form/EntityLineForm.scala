@@ -14,7 +14,7 @@
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * DEALINGS INTHE SOFTWARE.
  */
 package org.specs.form
 import org.specs.util.Property
@@ -42,23 +42,18 @@ class EntityLineForm[T] extends LineForm {
   def entityIs(a: T): this.type = entityIs(Some(a))
   def entityIs(a: Option[T]): this.type = { 
     a.map(entity(_))
-    a.map(e => entityProperties.foreach(_.entity(e)))
-    this 
+    a.map(e => entityProperties.map(_.asInstanceOf[EntityLineProp[T, _]]entity(e)))
+    this
   }
   def testWith(a: T): EntityLineForm[T] = testWith(Some(a))
   def testWith(a: Option[T]): EntityLineForm[T] = {
     val c = copy
     a.map(c.entityIs(_))
-    a.map(e => c.entityProperties.foreach(_.entity(e)))
+    a.map(e => c.entityProperties.map(_.asInstanceOf[EntityLineProp[T, _]].entity(e)))
     c
   }
-  override def resetAll(): this.type = {
-    super.resetAll
-    entityProperties.clear()
-    this
-  }
-
-  override def copy = {
+    
+  override def copy: EntityLineForm[T] = {
     val form = new EntityLineForm[T]
     this.lineProperties.foreach(p => form.lineProperties.append(p.copy))
     this.properties.foreach(p => form.properties.append(p.copy))

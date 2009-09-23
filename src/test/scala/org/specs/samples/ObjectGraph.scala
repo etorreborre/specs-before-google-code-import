@@ -20,6 +20,7 @@ package org.specs.samples
 import org.specs.runner._
 import org.specs.matcher._
 import org.specs.specification._
+import org.specs._
 
 class objectGraphSpec extends SpecificationWithJUnit with ObjectGraphMatchers {
   "The following object graphs" should {

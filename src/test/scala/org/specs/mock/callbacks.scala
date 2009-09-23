@@ -17,6 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.mock
+import org.specs._
 
 object callbacks extends callbacks
 class callbacks extends HtmlSpecification("Stubbing with callbacks") with MockitoSpecification {

@@ -17,6 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.matcher
+import org.specs._
 
 class specsMatchersSpec extends MatchersSpecification {
   "specs matchers" can {

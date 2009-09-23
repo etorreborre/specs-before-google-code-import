@@ -23,6 +23,7 @@ import org.specs.log._
 import java.io.Writer
 import org.specs.specification.BaseSpecification
 import org.specs.util.ExtendedString._
+import org.specs._
 
 /**
  * This trait groups the functionalities of runners creating files from

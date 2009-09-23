@@ -87,7 +87,7 @@ class extendedListUnit extends TestData {
 }
 import org.specs.Sugar._
 import org.specs._
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 import org.specs.ScalaCheck
 
 trait TestData extends SpecificationWithJUnit with Sugar with ScalaCheck {

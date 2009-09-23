@@ -20,6 +20,7 @@ package org.specs.samples
 import org.specs.runner._
 import org.scalacheck.Commands
 import org.specs.util._
+import org.specs._
 
 class stackSpec extends StackSpecification {
   var stack = emptyStack 
@@ -74,7 +75,7 @@ class StackSpecification extends SpecificationWithJUnit {
   case class SampleStack(name: String, stackCapacity: Int, itemsNb: Int) extends LimitedStack[Int](stackCapacity) {
     def this(name: String, capacity: Int) = this(name, capacity, 0)
     var lastItemAdded = 0
-    for (i <- 1 to itemsNb) { this += i; lastItemAdded = i }
+    for (i <- 1 to itemsNb) { super.push(i); lastItemAdded = i }
     override def toString = name
   }
   def emptyStack = new SampleStack("empty stack", 10)
@@ -84,7 +85,7 @@ class StackSpecification extends SpecificationWithJUnit {
 }
 
 class LimitedStack[T](val capacity: Int) extends scala.collection.mutable.Stack[T] {
-  override def push(a: T*) = {
-    if (size >= capacity) throw new Error("full stack") else this ++= a
+  override def push(a: T) = {
+    if (size >= capacity) throw new Error("full stack") else super.push(a)
   }
 }

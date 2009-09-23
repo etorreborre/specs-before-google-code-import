@@ -18,6 +18,7 @@
  */
 package org.specs.runner
 import org.specs.specification.BaseSpecification
+import org.specs.Specification
 
 class HtmlRunner(val specs: Seq[Specification], outputDirPath: String, fName: BaseSpecification => String) extends FileReporter(outputDirPath, fName) with Html {
   

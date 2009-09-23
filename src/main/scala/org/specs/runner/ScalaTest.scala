@@ -19,6 +19,7 @@
 package org.specs.runner
 import org.scalatest._
 import org.specs.specification._
+import org.specs._
 /**
  * Concrete class for the ScalaTest trait.
  * Usage:<code>

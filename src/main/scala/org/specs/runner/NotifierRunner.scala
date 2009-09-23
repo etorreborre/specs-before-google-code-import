@@ -18,6 +18,7 @@
  */
 package org.specs.runner
 import org.specs.specification._
+import org.specs._
 
 /**
  * This is a generic trait for defining a notified object which will know about the state of a run.

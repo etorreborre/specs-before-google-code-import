@@ -21,6 +21,7 @@ import org.specs.log.ConsoleLog
 import org.specs.collection.JavaCollectionsConversion
 import _root_.org.junit.runner._
 import org.specs.specification._
+import org.specs.Specification
 
 /**
  * The Runner class is an abstract class referencing one or several specifications to run. It should be extended

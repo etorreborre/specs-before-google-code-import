@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.specification._
 import scala.xml._
 
-class wikiFormatterSpec extends spex.Specification {
+class wikiFormatterSpec extends org.spex.Specification {
   "A wiki formatter" should {
     def formatString(s: String): String = new WikiFormatter(){}.format(s)
     def formatElem(e: Elem): Node = new TextileFormatter(){}.format(e)

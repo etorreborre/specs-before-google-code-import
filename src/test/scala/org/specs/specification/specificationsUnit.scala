@@ -25,7 +25,7 @@ import org.specs.runner._
 import org.specs.util._
 import org.specs.util.ExtendedThrowable._
 import scala.collection.mutable._
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
 class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {

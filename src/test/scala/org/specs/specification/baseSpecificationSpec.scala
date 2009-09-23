@@ -18,8 +18,9 @@
  */
 package org.specs.specification
 import org.specs.util.Property
+import org.specs._
 
-class baseSpecificationSpec extends spex.Specification {
+class baseSpecificationSpec extends org.spex.Specification {
   def threeSpecs = List(new Specification{}, new Specification{}, new Specification{})
   
   "Specifications" can {

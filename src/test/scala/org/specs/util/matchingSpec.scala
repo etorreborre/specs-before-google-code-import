@@ -22,7 +22,7 @@ import org.specs.collection.ExtendedList.listToExtendedList
 import scala.Math._
 import org.scalacheck.{ Prop, Gen }
 
-class matchingSpec extends spex.Specification {
+class matchingSpec extends org.spex.Specification {
   var edgeFunction = (t:(String, String)) => t
   var edgeWeight = (t:(String, String)) => t._1.size + t._2.size 
   val sets = for {

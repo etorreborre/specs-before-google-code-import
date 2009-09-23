@@ -20,6 +20,7 @@ package org.specs.runner
 import org.specs.io.mock.MockFileSystem
 import org.specs.io.ConsoleOutput
 import org.specs.runner._
+import org.specs._
 
 class specsFinderSpec extends SpecificationWithJUnit with Init {
   val finder = new MockFileSystem with SpecificationsFinder with ConsoleOutput

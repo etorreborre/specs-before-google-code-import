@@ -19,6 +19,7 @@
 package org.specs.matcher
 import org.specs.specification._
 import org.specs.runner._
+import org.specs._
 
 class matchersUnit extends SpecificationWithJUnit with MatcherCases with ScalaCheck {
   "A matcher" should {
@@ -66,7 +67,7 @@ class matchersUnit extends SpecificationWithJUnit with MatcherCases with ScalaCh
   }
 }
 import org.specs.Specification
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 import org.specs.Sugar._
 trait MatcherCases {
   type TestCase = (Boolean, Matcher[Boolean], Matcher[Boolean])

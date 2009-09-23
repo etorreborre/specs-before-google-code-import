@@ -18,7 +18,7 @@
  */
 package org.specs.mock
 import org.specs.runner._
-
+import org.specs._
 
 object mockSpecifications extends Specification {
   "Mock specifications" areSpecifiedBy (

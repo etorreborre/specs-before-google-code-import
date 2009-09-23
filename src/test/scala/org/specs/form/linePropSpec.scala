@@ -18,7 +18,7 @@
  */
 package org.specs.form
 
-class linePropSpec extends spex.Specification {
+class linePropSpec extends org.spex.Specification {
   "A LinePropSpec toXhtml method" should {
     "return a <td> cell without the property label" in {
       val p = LineProp("label", 1)

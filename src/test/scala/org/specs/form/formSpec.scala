@@ -19,7 +19,7 @@
 package org.specs.form
 
 import org.specs.util._
-import matcher.Matcher
+import org.specs.matcher.Matcher
 import org.specs._
 import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import samples.{ PersonForms, PersonBusinessEntities }

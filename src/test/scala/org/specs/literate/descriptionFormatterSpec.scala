@@ -21,6 +21,7 @@ import scala.xml._
 import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.runner._
+import org.specs._
 
 class descriptionFormatterSpec extends SpecificationWithJUnit {
 

@@ -21,6 +21,7 @@ package org.specs.runner
 import org.specs.specification._
 import java.util.regex.Pattern.compile
 import java.util.regex.PatternSyntaxException
+import org.specs._
 
 trait SpecsFilter extends SpecsHolder {
 

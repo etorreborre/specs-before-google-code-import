@@ -18,17 +18,17 @@
  */
 package org.specs.specification
 
-class executionSpec extends spex.Specification {
+class executionSpec extends org.spex.Specification {
   include(new execution1, new execution2, new execution3)
 }
-class execution0 extends spex.Specification {
+class execution0 extends org.spex.Specification {
   var x = 1
   "A sus" should {
     "execute the first example with local variables" in { x must_== 1; x = x + 1 }
     "execute the second example with a reinitialized variable" in { x must_== 1; x = x + 1 }
   }
 }
-class execution1 extends spex.Specification {
+class execution1 extends org.spex.Specification {
   var x = 1
   "A sus" should {
     x = x + 1
@@ -41,7 +41,7 @@ class execution1 extends spex.Specification {
     "2 - execute the second example with a reinitialized variable" in { x must_== 2; x = x + 1 }
   }
 }
-class execution2 extends spex.Specification {
+class execution2 extends org.spex.Specification {
   "A sus" should {
     var x = 1
     def inc() = {
@@ -54,7 +54,7 @@ class execution2 extends spex.Specification {
     }
   }
 }
-class execution3 extends spex.Specification {
+class execution3 extends org.spex.Specification {
   "A sus" should {
     var x = 1
     "execute the first example with local variables" in { 
@@ -69,7 +69,7 @@ class execution3 extends spex.Specification {
     }
   }
 }
-class execution4 extends spex.Specification {
+class execution4 extends org.spex.Specification {
   var x = 1
   "A sus" should {
     "execute the first example with local variables" in {  
@@ -90,7 +90,7 @@ class execution4 extends spex.Specification {
     }
   }
 }
-class execution5 extends spex.Specification {
+class execution5 extends org.spex.Specification {
   var desc = "2 systems with the same name but different examples"
   var x = 1
   "A sus" should {

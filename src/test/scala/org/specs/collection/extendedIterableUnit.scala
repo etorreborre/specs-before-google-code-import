@@ -17,10 +17,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.collection
-import matcher.MatchersSpecification
+import org.specs.matcher.MatchersSpecification
 import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._
 import org.specs.runner._
+import org.specs._
 
 class extendedIterableUnit extends IterableData with ScalaCheck {
   "A sameElementsAs function" should returnTrue {
@@ -79,7 +80,7 @@ class extendedIterableUnit extends IterableData with ScalaCheck {
   }
 }
 import org.specs._
-import scalacheck.Gen._
+import org.scalacheck.Gen._
 import org.specs.ScalaCheck
 import org.specs.collection.ExtendedIterable._
 import org.specs.collection.ExtendedList._

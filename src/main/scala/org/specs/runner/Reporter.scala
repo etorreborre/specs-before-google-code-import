@@ -24,6 +24,7 @@ import org.specs.specification._
 import org.specs.util.Configuration._
 import org.specs.util.Configuration
 import org.specs.util.Property
+import org.specs._
 
 /**
  * The SpecsHolder trait is used by any class providing access to a sequence of specifications

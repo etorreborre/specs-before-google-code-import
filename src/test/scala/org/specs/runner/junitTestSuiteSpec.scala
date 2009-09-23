@@ -26,6 +26,7 @@ import _root_.junit.framework._
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.specs.specification._
+import org.specs._
 
 class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A junit test suite for a composite specification" should {

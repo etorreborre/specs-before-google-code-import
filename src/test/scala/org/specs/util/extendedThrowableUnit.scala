@@ -21,6 +21,7 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.specification._
 import org.specs.util.ExtendedThrowable._
+import org.specs._
 
 class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples {
 

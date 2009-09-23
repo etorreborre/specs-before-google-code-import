@@ -19,6 +19,7 @@
 package org.specs.matcher
 import _root_.junit.framework.AssertionFailedError
 import org.specs.specification.{ Result, HasResult }
+import org.specs._
 
 /**
  * This trait provides the possibility to use specs matchers in a JUnit test case.

@@ -19,6 +19,7 @@
 package org.specs.specification
 import org.specs.matcher._
 import org.specs.runner._
+import org.specs._
 
 class taggedSpec extends SpecificationWithJUnit {
   "A tagged object" should { createTagged.before
