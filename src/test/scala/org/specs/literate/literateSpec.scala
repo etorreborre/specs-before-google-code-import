@@ -79,7 +79,7 @@ h3. Properties
   { """After prompting for a name like {"Peter".a}, the system must greet the visitor with the person name: {"hello Peter".it}{ it must be_==(hello(a)) }""" >@ }
 
 gives:
-   {"<ex class=\"success\">"}After prompting for a name like _{"Peter".a}_, the system must greet the visitor with the person name: _{"hello Peter".it}_{ it must be_==(hello(a)) }{"</ex>"}
+   {"<ex class=\"success\">"}After prompting for a name like _{"Peter".a}_, the system must greet the visitor with the person name: _{"hello Peter".it}_{ it() must be_==(hello(a)) }{"</ex>"}
 
 </t> isSus
 }
