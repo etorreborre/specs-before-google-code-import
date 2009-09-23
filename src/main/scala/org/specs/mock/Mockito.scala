@@ -304,11 +304,23 @@ trait MockitoStubs extends MocksCreation {
     def returns(t: T, t2: T*): OngoingStubbing[T] = {
       if (t2.isEmpty) 
         mocker.when(c).thenReturn(t)
-      else
-        mocker.when(c).thenReturn(t, t2:_*)
+      else { // written like this to avoid a 2.8 compiler error: "cannot find class manifest for element type of T*"
+    	var stub = mocker.when(c).thenReturn(t)
+    	t2 foreach { x =>
+    		stub = stub.thenReturn(x)
+    	}
+    	stub
+      }
     }
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
-    def throws[E <: Throwable](e: E*): OngoingStubbing[T] = mocker.when(c).thenThrow(e:_*)
+    def throws[E <: Throwable](e: E*): OngoingStubbing[T] = {
+      if (e.isEmpty) throw new java.lang.IllegalArgumentException("The parameter passed to throws must not be empty")
+      var stub = mocker.when(c).thenThrow(e.first)
+      e.drop(1) foreach { x =>
+    	stub = stub.thenThrow(x)
+      }
+      stub
+    }
   }
   /** @return an object allowing the chaining of returned values on doNothing calls. */
   implicit def aStubber(stub: =>Stubber) = new AStubber(stub)
