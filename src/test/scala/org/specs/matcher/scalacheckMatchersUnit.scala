@@ -91,13 +91,13 @@ class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock w
   }
   "The afterNShrinks function" should {
     "return nothing if there is no shrink" in {
-      afterNShrinks(List(Arg("A", "s", 0, "s"))) must_== ""
+      afterNShrinks(List(Arg("A", "s", 0, "s", prettyArg))) must_== ""
     }
     "return the original argument and the shrinked one if there is at least a shrink" in {
-      afterNShrinks(List(Arg("A", "s", 2, "srt"))) must_== " - shrinked ('srt' -> 's')"
+      afterNShrinks(List(Arg("A", "s", 2, "srt", prettyArg))) must_== " - shrinked ('srt' -> 's')"
     }
     "return an equal sign if one of the arguments is not shrinked" in {
-      afterNShrinks(List(Arg("A", "s", 2, "srt"), Arg("B", "srt", 0, "srt"))) must_== " - shrinked ('srt' -> 's', = )"
+      afterNShrinks(List(Arg("A", "s", 2, "srt", prettyArg), Arg("B", "srt", 0, "srt", prettyArg))) must_== " - shrinked ('srt' -> 's', = )"
     }
   }
 }
@@ -114,11 +114,13 @@ trait ScalaCheckMock extends Mocker {
     override def printf(format: String, args: Any*) = record
   }
   val matcher = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener
+  val prettyArg = (a: Any) => org.scalacheck.Pretty.prettyAny(a)
+
   val matcherWithFailure = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
-    override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null)), scala.collection.immutable.Set[String]("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
+    override def result = Test.Result(Test.Failed(List(Arg("", null, 1, null, prettyArg)), scala.collection.immutable.Set[String]("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }
   val matcherWithPropertyException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
-    override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null)), FailureException(""), scala.collection.immutable.Set[String]("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
+    override def result = Test.Result(Test.PropException(List(Arg("", null, 2, null, prettyArg)), FailureException(""), scala.collection.immutable.Set[String]("label")), 1, 2, FreqMap.empty[immutable.Set[Any]])
   }
   val matcherWithGenerationException = new ScalaCheckMatchers with ConsoleOutputMock with ScalaCheckFunctionsMock with DefaultExampleExpectationsListener {
     override def result = Test.Result(Test.GenException(new Exception), 1, 2, FreqMap.empty[immutable.Set[Any]])

@@ -102,7 +102,7 @@ trait ScalaCheckExamples extends Specification with ScalaCheck {
   val trueFunction = ((x: Boolean) => true)
   val falseFunction = ((x: Boolean) => false)
   val identityAssert: Boolean => Boolean = ((x: Boolean) => x mustBe true)
-  val exceptionProperty = ((x: Boolean) => throw new Exception("e"))
+  val exceptionProperty = ((x: Boolean) => {throw new Exception("e"); true})
 }
 object CounterSpecification extends Commands {
 

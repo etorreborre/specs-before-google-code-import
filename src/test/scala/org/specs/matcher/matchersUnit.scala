@@ -46,12 +46,12 @@ class matchersUnit extends SpecificationWithJUnit with MatcherCases with ScalaCh
   "A matcher" can {
     "be combined with another matcher with a logical 'and' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result((m1 and m2)(a)) mustBe result(m1(a)) && result(m2(a))
+    	result((m1 and m2)(a)) mustBe result(m1(a)) && result(m2(a))
       }(set(minTestsOk->20))
     }
     "be combined with another matcher with a logical 'or' to provide a new matcher" in {
       matcherCases must pass { t: TestCase => val (a, m1, m2) = t
-        result((m1 or m2)(a)) mustBe result(m1(a)) || result(m2(a))
+    	result((m1 or m2)(a)) mustBe result(m1(a)) || result(m2(a))
       }(set(minTestsOk->20))
     }
     "be combined with another matcher with a logical 'xor' to provide a new matcher" in {
