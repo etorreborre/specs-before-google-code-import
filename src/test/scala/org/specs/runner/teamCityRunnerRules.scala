@@ -33,7 +33,6 @@ class teamCityRunnerRules extends HtmlSpecificationWithJUnit("Team city runner")
 } 
 
 object testingSpecification extends Specification("specification name") {
-
   "sus1 description" should {
     "good example" in { true must beTrue }
     "failed example" in { true must beFalse }
