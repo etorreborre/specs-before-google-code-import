@@ -73,6 +73,15 @@ trait Classes extends ConsoleOutput {
    * This is useful to instantiate nested classes which are referencing their outer class in their constructor
    */
   def tryToCreateObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
+	def createInstance(constructor: java.lang.reflect.Constructor[_], outer: Option[_]) = {
+      constructor.setAccessible(true)
+      val instance = outer match {
+    	case Some(o: Object) => constructor.newInstance(o).asInstanceOf[T]
+    	case None => constructor.newInstance().asInstanceOf[T]            
+      }
+      constructor.setAccessible(false)
+	  instance
+	}
     loadClass(className, printMessage, printStackTrace) match {
       case None => None
       case Some(c: Class[_]) => {
@@ -81,10 +90,12 @@ trait Classes extends ConsoleOutput {
           if (constructors.isEmpty)
             None
           else if (constructors.toList(0).getParameterTypes.isEmpty)
-            Some(c.newInstance)
+            Some(createInstance(constructors.toList(0), None))
           else if (constructors.toList(0).getParameterTypes.size == 1) {
             val outerClassName = getOuterClassName(c)
-            tryToCreateObject[Object](outerClassName, printMessage, printStackTrace).map(constructors(0).newInstance(_).asInstanceOf[T])
+            tryToCreateObject[Object](outerClassName, printMessage, printStackTrace).map { p => 
+              createInstance(constructors(0), Some(p))
+            }
           }
           else
             None
