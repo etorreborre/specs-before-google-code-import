@@ -59,7 +59,7 @@ class ClassRunner extends Classes with OutputReporter {
     specificationClasses.flatMap(x => x)
   }
   def createSpecification(packageName: String, className: String) = {
-    createObject[Specification](fullClassName(packageName, className), true, args.contains("-v"))
+    tryToCreateObject[Specification](fullClassName(packageName, className), true, args.contains("-v"))
   }
   private def fullClassName(packageName: String, className: String) = {
     if (packageName.trim.isEmpty) 

@@ -22,7 +22,7 @@ import org.specs.specification._
 import org.specs.Sugar._
 import org.specs.runner._
 
-object sampleSpec2 extends Specification {
+object sampleSpecification2 extends Specification {
   "A sample specification2" should {
     "return something" in {
        "hello" mustBe "hello"
@@ -31,7 +31,7 @@ object sampleSpec2 extends Specification {
 }
 
 
-object allSpecififcation extends Specification {
+object allSpecification extends Specification {
   def length11(s: String) = new Specification(s) {
     s should {
       "have 11 characters" in {

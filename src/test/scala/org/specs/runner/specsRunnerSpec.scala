@@ -27,18 +27,15 @@ import org.specs.specification._
 
 class specsRunnerSpec extends SpecificationWithJUnit with TestRunner {
   "A specs file runner" should { runner.messages.clear.before
-
     "execute a specification contained in a file" in {
-      runTheFileWithClassName("org.specs.samples.sampleSpec1$")
+      runTheFileWithClassName("org.specs.samples.sampleSpecification1$")
       messages mustHaveMatch "example"
     }
     "execute 2 specifications contained in a directory" in {
-      runTheFileWithClassName("org.specs.samples.sampleSpec1$", "org.specs.samples.sampleSpec2$")
+      runTheFileWithClassName("org.specs.samples.sampleSpecification1$", "org.specs.samples.sampleSpecification2$")
       messages mustHaveMatch "specification1"
       messages mustHaveMatch "specification2"
     }
-  }
-  "A specs file runner" should {
   }
 }
 trait MockSpecsFinder extends SpecsFinder {

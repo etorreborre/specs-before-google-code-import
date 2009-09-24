@@ -44,7 +44,9 @@ case class SpecsFinder(path: String, pattern: String, asOneSpecification: Boolea
     val collected = new scala.collection.mutable.ListBuffer[Specification]
     val specNames = specificationNames(path, pattern)
     specNames foreach { className =>
-      createSpecification(className).foreach { collected.append(_) }
+      createSpecification(className).foreach { 
+    	  collected.append(_) 
+      }
     }
     if (asOneSpecification) {
 	    object totalSpecification extends Specification {
@@ -107,5 +109,5 @@ trait SpecificationsFinder extends FileSystem {
    * Tries to load the class name and cast it to a specification
    * @return None in case of an exception.
    */
-  def createSpecification(className: String): Option[Specification] = createObject[Specification](className)
+  def createSpecification(className: String): Option[Specification] = tryToCreateObject[Specification](className, false, false)
 }
