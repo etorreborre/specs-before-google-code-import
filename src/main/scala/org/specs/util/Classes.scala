@@ -19,6 +19,7 @@
 package org.specs.util
 import org.specs.io.Output
 import org.specs.io.ConsoleOutput
+import scala.reflect.Manifest
 /**
  * This object provides simple functions to instantiate classes.
  */
@@ -40,10 +41,10 @@ trait Classes extends ConsoleOutput {
   /**
    * Create an instance of a given class and optionally print message and/or the stacktrace if the class can't be loaded.
    */
-  def createObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
+  def createObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
     try {
       val c = loadClass(className, printMessage, printStackTrace)
-      return c.map(_.newInstance.asInstanceOf[T])
+      return createInstanceOf[T](c)
     } catch {
       case e => {
         if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className)
@@ -51,6 +52,19 @@ trait Classes extends ConsoleOutput {
       }
     }
     return None
+  }
+  /**
+   * create an instance of a given class, checking that the created instance typechecks as expected
+   */
+  private[util] def createInstanceOf[T](c: Option[Class[_]])(implicit m: Manifest[T]) = {
+    c match {
+      case Some(klass) => {
+        val instance: AnyRef = klass.newInstance
+        if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
+        Some(instance.asInstanceOf[T])
+      }
+      case None => None
+    }
   }
   /**
    * Load a class, given the class name
@@ -72,7 +86,7 @@ trait Classes extends ConsoleOutput {
    * 
    * This is useful to instantiate nested classes which are referencing their outer class in their constructor
    */
-  def tryToCreateObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[T] = {
+  def tryToCreateObject[T](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
     loadClass(className, printMessage, printStackTrace) match {
       case None => None
       case Some(c: Class[_]) => {
@@ -81,7 +95,7 @@ trait Classes extends ConsoleOutput {
           if (constructors.isEmpty)
             None
           else if (constructors.toList(0).getParameterTypes.isEmpty)
-            Some(c.newInstance)
+            createInstanceOf[T](Some[Class[_]](c))
           else if (constructors.toList(0).getParameterTypes.size == 1) {
             val outerClassName = getOuterClassName(c)
             tryToCreateObject[Object](outerClassName, printMessage, printStackTrace).map(constructors(0).newInstance(_).asInstanceOf[T])
@@ -98,6 +112,8 @@ trait Classes extends ConsoleOutput {
       }
     }
   }
+  /** try to create object but print no messages */
+  def tryToCreateObject[T](className: String): Option[T] = tryToCreateObject(className, false, false)
   /**
    * @return the outer class name for a given class
    */

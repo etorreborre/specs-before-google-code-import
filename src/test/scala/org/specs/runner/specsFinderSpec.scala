@@ -72,8 +72,12 @@ class specsFinderSpec extends SpecificationWithJUnit with Init {
       finder.addFile("file2.scala", packageDeclaration + specificationContent)
       finder.specificationNames("dir1", ".*") must_== List("org.specs.trueSpec$", "org.specs.trueSpec$")
     }
+    "not fail when trying to create a spec for an object not inheriting the specification class" in {
+      finder.createSpecification("org.specs.runner.NotASpecification") must beNone
+    }
   }
 }
+class NotASpecification
 trait Init {
   val packageDeclaration = "package org.specs"
   val packageDeclarationWithSc = packageDeclaration + ";"
