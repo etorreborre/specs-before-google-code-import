@@ -77,7 +77,7 @@ class specsFinderSpec extends SpecificationWithJUnit with Init {
     }
     "print an error message when failing to instantiate a spec" in {
       finder.createSpecification("org.specs.runner.NotASpecification", true, false)
-      finder.messages must notBeEmpty
+      finder.messages must containMatch("is not an instance of")
     }
   }
 }

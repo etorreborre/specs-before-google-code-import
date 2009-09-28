@@ -47,7 +47,7 @@ trait Classes extends ConsoleOutput {
       return createInstanceOf[T](c)
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className)
+        if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className + ": " + e.getMessage)
         if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
       }
     }
