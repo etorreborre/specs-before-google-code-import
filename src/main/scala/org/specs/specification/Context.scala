@@ -38,7 +38,7 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** adds a "before" function to the last sus being defined */
   def doBefore(actions: =>Any) = usingBefore(() => actions)
   /** adds a "around" function to the last sus being defined */
-  def doAroundExpectations(actions: Any =>Any) = current.map(_.aroundExpectations = Some(actions))
+  def doAroundExpectations(actions: (=>Any) =>Any) = current.map(_.aroundExpectations = Some(actions))
   /**  adds an "after" function to the last sus being defined */
   def doAfter(actions: =>Any) = usingAfter(() => actions)
   /** adds a "firstActions" function to the last sus being defined */
@@ -56,7 +56,7 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** actions are stacked so that several before actions can be triggered one after the other */
   private[specs] def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
   /** actions are stacked so that several before actions can be triggered one after the other */
-  private[specs] def stackAroundActions(sus: Examples, actions: Any => Any) = sus.aroundExpectations = stackAround(actions, sus.aroundExpectations)
+  private[specs] def stackAroundActions(sus: Examples, actions: (=>Any) => Any) = sus.aroundExpectations = stackAround(actions, sus.aroundExpectations)
   /** adds an "after" function to a sus */
   private[specs] def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
   /** adds "firstActions" to a sus */
@@ -75,7 +75,7 @@ trait BeforeAfter { outer: BaseSpecification =>
     })
   }
   /** @return a function with actions being stacked around. */
-  private def stackAround(actions: Any => Any, previousActions: Option[Any => Any]) = {
+  private def stackAround(actions: (=>Any) => Any, previousActions: Option[(=>Any) => Any]) = {
     Some((a:Any) => {
       actions(previousActions.map(f => f(a)))
     })
@@ -134,7 +134,7 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
   /** Factory method to create a context with before only actions */
   def beforeContext(actions: => Any) = new Context { before(actions) }
   /** Factory method to create a context with around only actions */
-  def aroundExpectationsContext(actions: Any => Any) = new Context { aroundExpectations(actions) }
+  def aroundExpectationsContext(actions: (=>Any) => Any) = new Context { aroundExpectations(actions) }
   /** Factory method to create a context with before only actions and an until predicate */
   def beforeContext(actions: => Any, predicate: =>Boolean) = new Context { before(actions); until(predicate()) }
   /** Factory method to create a context with after only actions */
@@ -195,11 +195,11 @@ case class Context() {
   private[specs] var firstActions: () => Any = () => () 
   private[specs] var lastActions: () => Any = () => ()
   private[specs] var beforeActions: () => Any = () => () 
-  private[specs] var aroundExpectationsActions: Any => Any = (a:Any) => () 
+  private[specs] var aroundExpectationsActions: (=>Any) => Any = (a: Any) => a 
   private[specs] var afterActions: () => Any = () => ()
   private[specs] var predicate: () => Boolean = () => true
   def before(actions: =>Any) = { beforeActions = () => actions; this }
-  def aroundExpectations(actions: Any =>Any) = { aroundExpectationsActions = actions; this }
+  def aroundExpectations(actions: (=>Any) =>Any) = { aroundExpectationsActions = actions; this }
   def after(actions: =>Any) = { afterActions = () => actions; this }
   def first(actions: =>Any) = { firstActions = () => actions; this }
   def last(actions: =>Any) = { lastActions = () => actions; this }
