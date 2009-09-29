@@ -160,9 +160,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.scala-tools.testing</groupId>
+      <groupId>org.scalacheck</groupId>
       <artifactId>scalacheck</artifactId>
-      <version>1.5-2.8</version>
+      <version>1.6</version>
       <optional>true</optional>
     </dependency>
     <dependency>
