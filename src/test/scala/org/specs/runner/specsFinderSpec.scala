@@ -17,13 +17,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.runner
-import org.specs.io.mock.MockFileSystem
+import org.specs.io.mock.{ MockOutput, MockFileSystem }
 import org.specs.io.ConsoleOutput
 import org.specs.runner._
 import org.specs._
 
 class specsFinderSpec extends SpecificationWithJUnit with Init {
-  val finder = new MockFileSystem with SpecificationsFinder with ConsoleOutput
+  val finder = new MockFileSystem with SpecificationsFinder with MockOutput
   "A specs finder" should { doBefore(finder.reset)
     finder.defaultExtension = ".scala"
     "not find the name of a specification in the file is not a .scala file" in {
@@ -73,8 +73,16 @@ class specsFinderSpec extends SpecificationWithJUnit with Init {
       finder.addFile("file2.scala", packageDeclaration + specificationContent)
       finder.specificationNames("dir1", ".*") must_== List("org.specs.trueSpec$", "org.specs.trueSpec$")
     }
+    "not fail when trying to create a spec for an object not inheriting the specification class" in {
+      finder.createSpecification("org.specs.runner.NotASpecification") must beNone
+    }
+    "print an error message when failing to instantiate a spec" in {
+      finder.createSpecification("org.specs.runner.NotASpecification", true, false)
+      finder.messages must containMatch("is not an instance of")
+    }
   }
 }
+class NotASpecification
 trait Init {
   val packageDeclaration = "package org.specs"
   val packageDeclarationWithSc = packageDeclaration + ";"

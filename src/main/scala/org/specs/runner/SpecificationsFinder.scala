@@ -21,8 +21,8 @@ package org.specs.runner
 import org.specs.io.FileSystem
 import java.util.regex._
 import scala.collection.mutable.Queue
-import org.specs.util.Classes._
-import org.specs._
+import org.specs.util.Classes
+import org.specs.Specification
 
 /**
  * Companion SpecsFinder object to create a SpecsFinder returning an aggregate Specification of
@@ -61,7 +61,7 @@ case class SpecsFinder(path: String, pattern: String, asOneSpecification: Boolea
 /**
  * This trait browses files on a given path and returns what can be matching specification class names.
  */
-trait SpecificationsFinder extends FileSystem {
+trait SpecificationsFinder extends FileSystem with Classes {
 
    /**
     * @param path a path to a directory containing scala files (it can be a glob: i.e. "dir/**/*spec.scala")
@@ -110,4 +110,10 @@ trait SpecificationsFinder extends FileSystem {
    * @return None in case of an exception.
    */
   def createSpecification(className: String): Option[Specification] = tryToCreateObject[Specification](className, false, false)
+  /**
+   * @return a <code>Specification</code> object from a className if that class is a <code>Specification</code> class.<br>
+   * Tries to load the class name and cast it to a specification
+   * @return None in case of an exception.
+   */
+  def createSpecification(className: String, printMessage: Boolean, printStackTrace: Boolean): Option[Specification] = createObject[Specification](className, printMessage, printStackTrace)
 }
