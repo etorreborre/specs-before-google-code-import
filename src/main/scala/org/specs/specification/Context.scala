@@ -76,9 +76,13 @@ trait BeforeAfter { outer: BaseSpecification =>
   }
   /** @return a function with actions being stacked around. */
   private def stackAround(actions: (=>Any) => Any, previousActions: Option[(=>Any) => Any]) = {
-    Some((a:Any) => {
-      actions(previousActions.map(f => f(a)))
-    })
+    def newActions(a: =>Any) = {
+      previousActions match {
+        case None => actions(a)
+        case Some(previous) => actions(previous(a))
+      }
+    }
+    Some(newActions(_))
   }
   /** @return a function with actions being executed before the previous actions. */
   private def reverseStackActions(actions: () => Any, previousActions: Option[() => Any]) = {
@@ -165,7 +169,7 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
    * In that case before/after actions defined in the context will be set on the defined sus.
    */
   case class ToContext(desc: String) {
-    def ->-[S](context: Context): Sus = {
+    def ->-(context: Context): Sus = {
       if (context == null) throw new NullPointerException("the context is null")
       specifySus(context, desc)
     } 
