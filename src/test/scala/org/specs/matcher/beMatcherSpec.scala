@@ -66,6 +66,9 @@ class beMatcherSpec extends MatchersSpecification { outer =>
     s must be asNullAs(s2)
     expectation(s must be asNullAs("")) must failWithMatch("null")
   }
+  "not be null" in {
+    "" must not be null
+  }
   "not be asNullAs" in {
     var s: String = null
     var s2: String = ""
