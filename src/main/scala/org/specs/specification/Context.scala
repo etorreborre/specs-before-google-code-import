@@ -342,6 +342,7 @@ case class Context() {
   def before(actions: =>Any) = { beforeActions = () => actions; this }
   /** alias for before */
   def beforeExample(actions: =>Any) = before(actions)
+  /** around a simple example expectations */
   def aroundExpectations(actions: (=>Any) =>Any) = { aroundExpectationsActions = actions; this }
   /** actions to execute after each example */
   def after(actions: =>Any) = { afterActions = () => actions; this }
