@@ -94,7 +94,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
     }
   }
 }
-trait ScalaTestMocks extends JMocker with Contexts { this: BaseSpecification =>
+trait ScalaTestMocks extends BaseSpecification with JMocker with Contexts {
    var reporter = mock[org.scalatest.Reporter]
    var stopper = mock[org.scalatest.Stopper]
    val c = beforeContext {

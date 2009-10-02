@@ -25,15 +25,18 @@ package org.specs.specification
 trait ExampleContext extends ExampleLifeCycle {
   
   /** the before function will be invoked before each example */
-  var before: Option[() => Any] = None
+  var before: Option[() => Any] = Some(() => ())
   /** the aroundExpectations function will be invoked around each expectations */
-  var aroundExpectations: Option[(=>Any) => Any] = None
+  var aroundExpectations: Option[(=>Any) => Any] = {
+    def id(a: =>Any) = a
+    Some(id(_))
+  }
   /** the firstActions function will be invoked before all examples */
-  var firstActions: Option[() => Any] = None
+  var firstActions: Option[() => Any] = Some(() => ())
   /** the after function will be invoked after each example */
-  var after: Option[() => Any] = None
+  var after: Option[() => Any] = Some(() => ())
   /** the lastActions function will be invoked after all examples */
-  var lastActions: Option[() => Any] = None
+  var lastActions: Option[() => Any] = Some(() => ())
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Examples): Unit = {
     parent.map(_.beforeExample(ex))
