@@ -122,9 +122,7 @@ trait AnyBaseMatchers {
   /**
    * Matches if b is null
    */
-  def beNull[T] = new Matcher[T](){
-    def apply(v: =>T) = { val b = v; (b == null, description.getOrElse("the value") + " is null", d(b) + " is not null") }
-  }
+  def beNull[T] = new BeNull[T]
   /**
    * Alias for beNull
    */
@@ -635,4 +633,7 @@ class BeEqualTo[T](a: =>T) extends Matcher[T] {
     }
     (x == y, dy + " is equal to " + qx, dy + " is not equal to " + qx)
   }
+}
+class BeNull[T] extends Matcher[T] {
+  def apply(v: =>T) = { val b = v; (b == null, description.getOrElse("the value") + " is null", d(b) + " is not null") }
 }

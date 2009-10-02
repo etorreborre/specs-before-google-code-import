@@ -18,7 +18,7 @@
  */
 package org.specs.specification
 import org.specs.matcher.Matcher
-
+import org.specs.matcher.BeNull
 /** 
  * Result of a match
  * 
@@ -40,7 +40,12 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   def nextSignificantMatchMustFail() = { expectable.nextSignificantMatchMustBeNegated(); this }
   def matchWith[S >: T](m: => Matcher[S]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
   def matchWithMatcher(m: => Matcher[T]) = if (isAlreadyOk) this else expectable.applyMatcher(m)
-  def be(m: => Matcher[T]) = matchWith(m)
+  def be(m: => Matcher[T]) = {
+    if (null eq m)
+      matchWith(new BeNull[T])
+    else
+      matchWith(m)
+  }
   def have(m: => Matcher[T]) = matchWith(m)
   def apply(m: => Matcher[T]) = matchWith(m)
   def and(m: => Matcher[T]) = matchWith(m)
