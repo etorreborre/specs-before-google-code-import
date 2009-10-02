@@ -39,7 +39,7 @@ class specificationContextSpec extends SpecificationWithJUnit {
     "not use around actions on a sus but only on examples and subexamples" in {
       val spec = new TestedSpecification("beforeSus", "beforeExample", "around", "afterExample", "afterSus") {
          "A system with a nested example" should {
-           "have one example with a subexample" in { 
+           "have one example with a subexample" in {
              "this is a subexample" in { 1 must_== 1 }
            }
          }
