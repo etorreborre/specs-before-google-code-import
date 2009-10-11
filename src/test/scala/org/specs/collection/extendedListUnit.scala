@@ -88,10 +88,11 @@ class extendedListUnit extends TestData {
 import org.specs.Sugar._
 import org.specs._
 import scalacheck.Gen._
+import scalacheck.Gen
 import org.specs.ScalaCheck
 
 trait TestData extends SpecificationWithJUnit with Sugar with ScalaCheck {
-   val prefixesAndPrefix = for (list <- listOf(elements(1, 2, 3, 4));
+   val prefixesAndPrefix = for (list <- listOf(Gen.oneOf(1, 2, 3, 4));
                                 n <- choose(0, list.size-1);
                                 val prefix = list.take(n))
                                 yield (list, list.prefixes, prefix)

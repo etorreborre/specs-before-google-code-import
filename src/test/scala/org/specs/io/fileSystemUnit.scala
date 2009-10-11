@@ -29,6 +29,7 @@ class fileSystemUnit extends TestData {
   }
 }
 import scalacheck.Gen._
+import scalacheck.Gen
 import scalacheck._
 import scala.collection.mutable.Queue
 import java.util.regex._
@@ -37,7 +38,7 @@ import org.specs.Sugar._
 
 trait TestData extends SpecificationWithJUnit with FileSystem with ConsoleOutput with ScalaCheck {
   case class MatchingPath(path: String, glob: String)
-  def paths = for { glob <- elements("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
+  def paths = for { glob <- Gen.oneOf("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
                     path <- elements(pathsMatchingGlob(glob):_*)
                   } yield MatchingPath(path, glob)
 

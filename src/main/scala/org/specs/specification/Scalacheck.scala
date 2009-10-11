@@ -19,7 +19,6 @@
 package org.specs
 import org.specs.matcher.{ScalaCheckMatchers, ScalaCheckParameters}
 import org.scalacheck.Prop
-import org.scalacheck.Prop.property
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Shrink
 import org.scalacheck.Arbitrary

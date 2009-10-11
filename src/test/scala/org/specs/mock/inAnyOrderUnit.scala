@@ -21,6 +21,7 @@ import org.specs.runner._
 import org.specs.Sugar._
 import org.specs.mock._
 import scalacheck.Gen._
+import scalacheck.Gen
 import org.specs.collection.ExtendedList._
 import org.specs._
 
@@ -85,11 +86,11 @@ trait TestData extends ProtocolTypes {
     (e, e1, e2).foreach(_.callsNumber = 0)
     (r, r1, r2).foreach(_.consumedBy = None)
   }
-  def sameCalls = for (expected <- listOf(elements(methods: _*)))
+  def sameCalls = for (expected <- listOf(Gen.elements(methods: _*)))
                     yield (expected.map(new ExpectedCall(_)), expected.scramble.map(new ReceivedCall(_)))
 
   def receivedSizeIs(f: (Int, Int) => Boolean) = {
-    for (expected <- listOf(elements(methods: _*));
+    for (expected <- listOf(Gen.elements(methods: _*));
          n <- choose(-2, 2);
          val received = (expected.scramble:::expected.scramble).take(expected.size + n)
                         if (f(n + expected.size, expected.size)))

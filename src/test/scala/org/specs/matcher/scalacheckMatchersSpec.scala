@@ -95,14 +95,14 @@ object specWithFailure extends Specification with ScalaCheck {
 trait ScalaCheckExamples extends Specification with ScalaCheck {
   val identityProp = forAll((a:Boolean) => a)
   val alwaysTrueProp = forAll((a:Int) => true)
-  val alwaysTrue = elements(true)
-  val alwaysFalse = elements(false)
-  val random = elements(true, false)
+  val alwaysTrue: Gen[Boolean] = Gen.oneOf(true)
+  val alwaysFalse = Gen.oneOf(false)
+  val random = Gen.oneOf(true, false)
   val exceptionValues = Gen(p => throw new Exception("e"))
   val trueFunction = ((x: Boolean) => true)
   val falseFunction = ((x: Boolean) => false)
   val identityAssert: Boolean => Boolean = ((x: Boolean) => x mustBe true)
-  val exceptionProperty = ((x: Boolean) => throw new Exception("e"))
+  val exceptionProperty = ((x: Boolean) => {throw new Exception("e"); true})
 }
 object CounterSpecification extends Commands {
 
@@ -119,19 +119,18 @@ object CounterSpecification extends Commands {
     def run(s: State) = counter.inc
     def nextState(s: State) = State(s.n + 1)
 
-    preCondition = s => true
+    preConditions += (s => true)
 
-    postCondition = (s,r) => counter.get == s.n + 1
+    postConditions += ((s,r,u) => counter.get == s.n + 1)
   }
 
   case object Dec extends Command {
     def run(s: State) = counter.dec
     def nextState(s: State) = State(s.n - 1)
-    postCondition = (s,r) => counter.get == s.n - 1
+    postConditions += ((s,r,u) => counter.get == s.n - 1)
   }
 
-
-  def genCommand(s: State): Gen[Command] = Gen.elements(Inc, Dec)
+  def genCommand(s: State): Gen[Command] = Gen.oneOf(Inc, Dec)
 
 }
 class Counter(private var n: Int) {
