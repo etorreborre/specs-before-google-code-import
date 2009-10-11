@@ -66,13 +66,14 @@ class matchersUnit extends SpecificationWithJUnit with MatcherCases with ScalaCh
   }
 }
 import org.specs.Specification
+import scalacheck.Gen
 import scalacheck.Gen._
 import org.specs.Sugar._
 trait MatcherCases {
   type TestCase = (Boolean, Matcher[Boolean], Matcher[Boolean])
-  val matcherCases = for (b1 <- elements(true, false);
-                          b2 <- elements(true, false);
-                          a  <- elements(true, false);
+  val matcherCases = for (b1 <- Gen.oneOf(true, false);
+                          b2 <- Gen.oneOf(true, false);
+                          a  <- Gen.oneOf(true, false);
                           val m1 = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok1", "ko1") };
                           val m2 = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok2", "ko2")}
                         ) yield (a, m1, m2)
