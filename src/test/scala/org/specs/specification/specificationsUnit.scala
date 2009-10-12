@@ -71,7 +71,7 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
     }
   }
   "the location of a failure" should {
-    val startLine = 105
+    val startLine = 106
     "indicate the precise location if it is an anonymous example" in {
       anonymousSpecification.failures(0).location must_== "specificationsUnit.scala:" + startLine
     }
