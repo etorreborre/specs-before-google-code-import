@@ -51,9 +51,9 @@ trait BagFormEnabled[T] extends TableFormEnabled {
 
   override def tr[F <: Form](l: F): F = {
     l match {
-      case entityLine: EntityLineForm[T] => {
-        expectedEntities.append(entityLine)
-        properties.append(entityLine)
+      case entityLine: EntityLineForm[_] => {
+        expectedEntities.append(entityLine.asInstanceOf[EntityLineForm[T]])
+        properties.append(entityLine.asInstanceOf[EntityLineForm[T]])
       }
       case _ => super[TableFormEnabled].tr(l)
     }

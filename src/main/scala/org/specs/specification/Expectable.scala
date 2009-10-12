@@ -307,7 +307,7 @@ trait OrResults {
         result = r
         result.setAlreadyOk()
       } catch {
-        case f: HasResult[T] => return f.result.matchWith(m)
+        case f: HasResult[_] => return f.asInstanceOf[HasResult[T]].result.matchWith(m)
         case t => throw t
       }
       result
@@ -320,11 +320,11 @@ trait OrResults {
         try { 
           result.nextSignificantMatchMustFail().matchWith(m)
         } catch {
-          case f: HasResult[T] => return result
+          case f: HasResult[_] => return result
           case t => throw t
         }
       } catch {
-        case f: HasResult[T] => return f.result.matchWith(m)
+        case f: HasResult[_] => return f.asInstanceOf[HasResult[T]].result.matchWith(m)
         case t => throw t
       }
       result
