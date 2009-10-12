@@ -25,6 +25,7 @@ import org.specs.runner._
 import org.specs.util._
 import org.specs.util.ExtendedThrowable._
 import scala.collection.mutable._
+import scalacheck.Gen
 import scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 
@@ -33,9 +34,9 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {
       def classNames = for {
-        packageName <- elements("com", "scala")
-        className <- elements(packageName + "s", packageName + ".specs", packageName + ".other.normal")
-        name <- elements(className, className + "$inner", className + "$inner$", className + "$2", className + "$2$")
+        packageName <- Gen.oneOf("com", "scala")
+        className <- Gen.oneOf(packageName + "s", packageName + ".specs", packageName + ".other.normal")
+        name <- Gen.oneOf(className, className + "$inner", className + "$inner$", className + "$2", className + "$2$")
       } yield name
 
       classNames must pass { name : String =>

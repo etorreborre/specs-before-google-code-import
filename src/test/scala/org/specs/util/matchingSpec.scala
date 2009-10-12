@@ -27,9 +27,9 @@ class matchingSpec extends spex.Specification {
   var edgeWeight = (t:(String, String)) => t._1.size + t._2.size 
   val sets = for {
     size1   <- Gen.choose(1, 3)
-    set1    <- Gen.vectorOf(size1, Gen.elements("Ar", "Bill", "Charles"))
+    set1    <- Gen.listOfN(size1, Gen.oneOf("Ar", "Bill", "Charles"))
     size2   <- Gen.choose(1, 3)
-    set2   <- Gen.vectorOf(size2, Gen.elements("An", "Bess", "Claris"))
+    set2   <- Gen.listOfN(size2, Gen.oneOf("An", "Bess", "Claris"))
   } yield (set1, set2) 
 
   "matching an empty set with an empty set returns an empty list" in {
