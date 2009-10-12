@@ -89,13 +89,13 @@ trait Classes extends ConsoleOutput {
   def tryToCreateObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
     loadClass(className, printMessage, printStackTrace) match {
       case None => None
-      case Some(c: Class[T]) => {
+      case Some(c: Class[_]) => {
         try {
           val constructors = c.getDeclaredConstructors.toList
           if (constructors.isEmpty)
             None
           else if (constructors.toList(0).getParameterTypes.isEmpty)
-            createInstanceOf[T](Some[Class[T]](c))
+            createInstanceOf[T](Some[Class[T]](c.asInstanceOf[Class[T]]))
           else if (constructors.toList(0).getParameterTypes.size == 1) {
             val outerClassName = getOuterClassName(c)
             tryToCreateObject[T](outerClassName, printMessage, printStackTrace).map(constructors(0).newInstance(_).asInstanceOf[T])
