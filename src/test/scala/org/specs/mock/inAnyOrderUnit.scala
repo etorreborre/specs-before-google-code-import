@@ -86,11 +86,11 @@ trait TestData extends ProtocolTypes {
     (e, e1, e2).foreach(_.callsNumber = 0)
     (r, r1, r2).foreach(_.consumedBy = None)
   }
-  def sameCalls = for (expected <- listOf(Gen.elements(methods: _*)))
+  def sameCalls = for (expected <- listOf(Gen.oneOf(methods.map(value(_)): _*)))
                     yield (expected.map(new ExpectedCall(_)), expected.scramble.map(new ReceivedCall(_)))
 
   def receivedSizeIs(f: (Int, Int) => Boolean) = {
-    for (expected <- listOf(Gen.elements(methods: _*));
+    for (expected <- listOf(Gen.oneOf(methods.map(value(_)): _*));
          n <- choose(-2, 2);
          val received = (expected.scramble:::expected.scramble).take(expected.size + n)
                         if (f(n + expected.size, expected.size)))

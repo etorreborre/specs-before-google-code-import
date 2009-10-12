@@ -61,9 +61,9 @@ class extendedIterableUnit extends IterableData with ScalaCheck {
   import scala.Math.min
   val sets = for {
         size1   <- Gen.choose(1, 3)
-        set1    <- Gen.vectorOf(size1, Gen.oneOf("Art", "Bill", "Chris"))
+        set1    <- Gen.listOfN(size1, Gen.oneOf("Art", "Bill", "Chris"))
         size2   <- Gen.choose(1, 3)
-        set2   <- Gen.vectorOf(size2, Gen.oneOf("Ann", "Bess", "Clara"))
+        set2   <- Gen.listOfN(size2, Gen.oneOf("Ann", "Bess", "Clara"))
   } yield (Set(set1:_*), Set(set2:_*)) 
 
   "A subtract method" should {
