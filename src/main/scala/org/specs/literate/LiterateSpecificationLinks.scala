@@ -18,6 +18,7 @@
  */
 package org.specs.literate
 import org.specs.specification._
+import scala.xml._
 /**
  * This trait allows to add links to other specifications inside a literate specification.
  * The link will be displayed as a Html link
@@ -33,4 +34,9 @@ trait LiterateSpecificationLinks extends LinkedSpecification with Links { this: 
     subSpec.failures
     relativeLink(desc, subSpec.fileName(subSpec))
   }
+  def createLink(title: String, content: NodeSeq): String = { 
+    linkTo(title, new HtmlSpecification(title) with Markdown { title is <m>{content.toString}</m> }) 
+  }
+
+
 }
