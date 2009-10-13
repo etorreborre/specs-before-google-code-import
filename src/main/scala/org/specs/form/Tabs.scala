@@ -47,4 +47,24 @@ trait Tabs extends Layout { outer =>
       }
     }
   }
+  
+  /**
+   * create tabs with an overall title from a list of forms
+   */
+  def tabs[T <: Form](title: String, formsToTab: T*): Form = toTabs(title, formsToTab.map(f => (f.title, f)):_*)
+  /**
+   * create tabs with an overall title from a list of (tab title, form)
+   */
+  def toTabs[T <: Form](title: String, formsToTab: (String, T)*): Form = {
+    new Form(title) {
+      new tabs {
+        formsToTab foreach { tabTitleAndForm => val (t, f) = tabTitleAndForm
+          new tab(t) {
+            trs(f.rows)
+          }
+        }
+      }
+    }
+  }
+
 }
