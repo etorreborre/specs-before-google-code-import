@@ -58,7 +58,7 @@ trait SpecsFilter extends SpecsHolder {
    */
   def filter(specification: Specification): Option[Specification] = {
     specification.subSpecifications = specification.subSpecifications.flatMap(filter(_)).toList
-    specification.systems = specification.systems.flatMap(filter(_)).toList
+    specification.systemsList = specification.systemsList.flatMap(filter(_)).toList
     if (specification.subSpecifications.isEmpty && specification.systems.isEmpty)
       None
     else
