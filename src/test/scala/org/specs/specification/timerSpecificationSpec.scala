@@ -24,14 +24,13 @@ import org.specs.util._
 import scala.xml._
 import org.specs.Sugar._
 
-class timerSpecificationSpec extends TimerSpecificationActionWords {
+class timerSpecificationSpec extends TimerSpecificationActionWords with Properties {
   "The timer specification" is <p>
    A Simple timer is an object which can measure time. Let's create a timer.
    When a timer is stopped{stop}, the timer should {"fail to return the elapsed time" in failTime} then
    {"return the elapsed time" in succeeds}
 
-   A person can have its name reset. If the person's name is set to {"Peter" as personName},
-   then {"the person must be named Peter" in checkName}
+   A person can have its name reset { "Peter" as personName in checkName }
 </p>
 }
 

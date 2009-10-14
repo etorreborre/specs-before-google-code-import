@@ -21,6 +21,9 @@ import org.specs.runner._
 import org.scalacheck.Commands
 import org.specs.util._
 
+/**
+ * Note that this example show the use of different methods to pass the context, like definedAs, when or ->-
+ */
 class stackSpec extends StackSpecification {
   var stack = emptyStack 
   val nonEmptyStack = beforeContext(stack = nonEmpty)
@@ -35,7 +38,7 @@ class stackSpec extends StackSpecification {
       stack.pop must throwA[NoSuchElementException]
     }
   }
-  "A non-empty stack below full capacity" ->-(nonEmptyStack) should {
+  "A non-empty stack below full capacity" definedAs nonEmptyStack should {
     "not be empty" in { 
       stack verifies (!_.isEmpty)
     }
@@ -62,7 +65,7 @@ class stackSpec extends StackSpecification {
       stack.top mustBe 3
     }
   }
-  "A full stack"->-(fullStack) should {
+  "A full stack" when (fullStack) should {
     behave like "A non-empty stack below full capacity"
     "throw an exception when sent #push" in {
       stack.push(11) must throwAn[Error]

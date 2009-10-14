@@ -188,6 +188,8 @@ trait Contexts extends BaseSpecification with BeforeAfter { outer =>
    * In that case before/after actions defined in the context will be set on the defined sus.
    */
   case class ToContext(desc: String) {
+    def when(context: Context): Sus = ->-(context)
+    def definedAs(context: Context): Sus = ->-(context)
     def ->-(context: Context): Sus = {
       if (context == null) throw new NullPointerException("the context is null")
       specifySus(context, desc)
