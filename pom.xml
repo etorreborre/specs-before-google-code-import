@@ -246,6 +246,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <argLine>-Xmx512m</argLine>
+          <forkMode>always</forkMode>
           <includes>
             <include>**/*Unit.java</include>
             <include>**/*Spec.java</include>
