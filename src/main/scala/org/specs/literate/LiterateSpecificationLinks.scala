@@ -34,7 +34,7 @@ trait LiterateSpecificationLinks extends LinkedSpecification with Links { this: 
     subSpec.failures
     relativeLink(desc, subSpec.fileName(subSpec))
   }
-  def createLink(title: String, content: NodeSeq): String = { 
+  def linkTo(title: String, content: NodeSeq): String = { 
     linkTo(title, new HtmlSpecification(title) with Markdown { title is <m>{content.toString}</m> }) 
   }
 
