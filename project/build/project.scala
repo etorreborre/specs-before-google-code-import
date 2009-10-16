@@ -3,6 +3,7 @@ import sbt._
 class Project(info: ProjectInfo) extends DefaultProject(info) {
   val mavenLocal = "Local Maven Repository" at "file://D:/mvn-repository"
   override def outputDirectoryName = "build"
+  override def managedDependencyPath = "project" / "lib_managed"
   override def compileOptions = Unchecked :: super.compileOptions.toList
   override def javaCompileOptions = JavaCompileOption("-Xmx256m -Xms64m -Xss1M") :: Nil
   override def testJavaCompileOptions = JavaCompileOption("-Xmx256m -Xms64m") :: Nil
