@@ -74,6 +74,11 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
   "Functions" can {
     "be checked directly, without creating an example, using the verifies operator. startsWith" verifies { (a: String, b: String) => (a+b).startsWith(a) }
   }
+  "A property throwing an exception" should {
+    "display the exception message" in {
+      specWithException.examples(0).failures(0).getMessage must include("Bang")
+    }
+  }
 }
 object spec extends Specification with ScalaCheck {
   dontExpectProperties()
@@ -90,6 +95,9 @@ object specWithFailure extends Specification with ScalaCheck {
   expectProperties()
   var counter = 0
   forAll((a:Int) => {counter +=1; counter < 10}) must pass
+}
+object specWithException extends Specification with ScalaCheck {
+  forAll((a:Int) => { error("Bang"); a == a }) must pass
 }
 
 trait ScalaCheckExamples extends Specification with ScalaCheck {

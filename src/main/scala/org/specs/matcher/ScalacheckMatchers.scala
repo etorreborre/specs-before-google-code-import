@@ -149,7 +149,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
        case Result(PropException(args, FailureException(ex), _), n, _, _) =>
          (false, noCounterExample(n), "A counter-example is "+counterExample(args)+": " + ex + " ("+afterNTries(n)+")")
        case r@Result(PropException(m, ex, _), n, _, _) =>
-         (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
+         (false, noCounterExample(n), ex.getMessage + "\n" + prettyTestRes(r)(defaultPrettyParams))
      }
    }
    // depending on the result, return the appropriate success status and messages
