@@ -21,7 +21,7 @@ import org.specs.io._
 import org.specs.util._
 import org.specs.log._
 import org.specs._
-import scala.xml.{Elem, PrettyPrinter}
+import scala.xml.{Elem, PrettyPrinter, NodeSeq}
 import org.specs.specification._
 import org.specs.util.ExtendedThrowable._
 import scala.xml.{Elem, PrettyPrinter}
@@ -141,16 +141,17 @@ trait Xml extends File {
   /**
    * @returns the example results translated as to xml (including sub-examples) 
    */
-  def asXml(e: Example): Elem = 
+  def asXml(e: Example): Elem = {
     <example description={e.description} 
       expectations={if (planOnly()) "0" else e.expectationsNb.toString} 
       failures={if (planOnly()) "0" else e.failures.size.toString} 
       errors={if (planOnly()) "0" else e.errors.size.toString}>
-     { if (!planOnly()) e.failures map (asXml(_)) }
-     { if (!planOnly()) e.skipped map (asXml(_)) }
-     { if (!planOnly()) e.errors map (asXml(_)) }
-     { if (!planOnly()) e.examples map (asXml(_)) }
+     { if (!planOnly()) e.failures map (asXml(_)) else NodeSeq.Empty } 
+     { if (!planOnly()) e.skipped map (asXml(_)) else NodeSeq.Empty }
+     { if (!planOnly()) e.errors map (asXml(_)) else NodeSeq.Empty }
+     { if (!planOnly()) e.examples map (asXml(_)) else NodeSeq.Empty }
     </example>
+    }
 
   /**
    * @returns an error translated as to xml 
