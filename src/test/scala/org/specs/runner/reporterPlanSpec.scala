@@ -1,7 +1,8 @@
 package org.specs.runner
 import org.spex._
+import org.specs.io.mock._
 
-class reporterPlanSpec extends Specification {
+class reporterPlanSpec extends Specification with Sugar {
   "A console reporter with the -plan option" should {
     "show the -plan options when displaying the help" in {
       help must containMatch("-plan | --planOnly")
@@ -9,7 +10,9 @@ class reporterPlanSpec extends Specification {
     "show the -plan option description when displaying the help" in {
       help must containMatch("only display") and containMatch("without executing examples")
     }
-    "not execute examples, thus show 0 expectations when reporting the specification" in {
+  }
+  "A console reporter with the -plan option, when reporting the specification" should {
+    "not execute examples, thus show 0 expectations" in {
       plan must containMatch("0 expectation")
     }
     "display the sus descriptions" in {
@@ -20,6 +23,20 @@ class reporterPlanSpec extends Specification {
     }
     "not display the second level examples" in {
       plan must not containMatch("subex1")
+    }
+  }
+  "A xml reporter with the -plan option, when reporting the specification" should {
+    "not execute examples, thus show 0 expectations" in {
+      xmlPlan must not be matching("expectations=\"[1-9]\"")
+    }
+    "display the sus descriptions" in {
+      xmlPlan must include("it")
+    }
+    "display the first level examples" in {
+      xmlPlan must include("do this")
+    }
+    "not display the second level examples" in {
+      xmlPlan must not include("subex1")
     }
   }
   val s = new TestSpecification {
@@ -35,7 +52,7 @@ class reporterPlanSpec extends Specification {
     }
   } 
     
-  class TestSpecification extends org.specs.Specification with org.specs.io.mock.MockOutput {
+  class TestSpecification extends org.specs.Specification with MockOutput {
     def help = displayHelp
   }
   def help = {
@@ -50,4 +67,12 @@ class reporterPlanSpec extends Specification {
     s.reportSpecs
     s.messages.toList
   }
+  val reporter = new XmlRunner(s, "target") with MockFileSystem with MockOutput
+  def xmlPlan: String = { 
+   reporter.args = Array("-plan")
+   reporter.reportSpecs
+   reporter.files.values.next
+  }
 }
+
+

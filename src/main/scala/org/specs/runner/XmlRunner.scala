@@ -32,7 +32,7 @@ import org.specs.execute._
  * Usage: <code>object runner extends XmlRunner("./results/specs", mySpec)</code>
  *
  * The name of the generated file is specification.name by default but can be overriden:<pre>
- * object runner extends XmlRunner("./results/specs", mySpec){ override def fileName="spec-report.xml" }</pre>
+ * object runner extends XmlRunner(mySpec, "./results/specs"){ override def fileName(s: Specification)="spec-report.xml" }</pre>
  */
 case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName: BaseSpecification => String) extends 
   FileReporter(outputDirPath, fName) with Xml {
@@ -119,7 +119,10 @@ trait Xml extends File {
    * @returns the specification results translated as to xml (including subspecifications)
    */
   def asXml(s: Specification): Elem = {
-    <spec name={s.name} description={s.description} expectations={s.expectationsNb.toString} failures={s.failures.size.toString} errors={s.errors.size.toString}>
+    <spec name={s.name} description={s.description} 
+      expectations={if (planOnly()) "0" else s.expectationsNb.toString} 
+      failures={if (planOnly()) "0" else s.failures.size.toString} 
+      errors={if (planOnly()) "0" else s.errors.size.toString}>
       {s.subSpecifications map (asXml(_))}
       {s.systems map (asXml(_))}
     </spec>
@@ -129,7 +132,9 @@ trait Xml extends File {
    * @returns the sus results translated as to xml 
    */
   def asXml(sus: Sus): Elem = 
-    <sus description={sus.description} expectations={sus.expectationsNb.toString} failures={sus.failures.size.toString} errors={sus.errors.size.toString}>
+    <sus description={sus.description} expectations={if (planOnly()) "0" else sus.expectationsNb.toString} 
+                                       failures={if (planOnly()) "0" else sus.failures.size.toString} 
+                                       errors={if (planOnly()) "0" else sus.errors.size.toString}>
       {sus.examples map (asXml(_))}
     </sus>
 
@@ -137,11 +142,14 @@ trait Xml extends File {
    * @returns the example results translated as to xml (including sub-examples) 
    */
   def asXml(e: Example): Elem = 
-    <example description={e.description} expectations={e.expectationsNb.toString} failures={e.failures.size.toString} errors={e.errors.size.toString}>
-     { e.failures map (asXml(_)) }
-     { e.skipped map (asXml(_)) }
-     { e.errors map (asXml(_)) }
-     { e.examples map (asXml(_)) }
+    <example description={e.description} 
+      expectations={if (planOnly()) "0" else e.expectationsNb.toString} 
+      failures={if (planOnly()) "0" else e.failures.size.toString} 
+      errors={if (planOnly()) "0" else e.errors.size.toString}>
+     { if (!planOnly()) e.failures map (asXml(_)) }
+     { if (!planOnly()) e.skipped map (asXml(_)) }
+     { if (!planOnly()) e.errors map (asXml(_)) }
+     { if (!planOnly()) e.examples map (asXml(_)) }
     </example>
 
   /**
