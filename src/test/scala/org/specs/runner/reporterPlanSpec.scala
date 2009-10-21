@@ -1,6 +1,7 @@
 package org.specs.runner
 import org.spex._
 import org.specs.io.mock._
+import org.junit.runner.notification._
 
 class reporterPlanSpec extends Specification with Sugar {
   "A console reporter with the -plan option" should {
@@ -11,7 +12,9 @@ class reporterPlanSpec extends Specification with Sugar {
       help must containMatch("only display") and containMatch("without executing examples")
     }
   }
-  include(ReporterPlan("console reporter", consoleReporter), ReporterPlan("xml reporter", xmlReporter))
+  include(ReporterPlan("console reporter", consoleReporter), 
+          ReporterPlan("xml reporter", xmlReporter),
+          ReporterPlan("junit reporter", junitReporter))
   case class ReporterPlan(n: String, reporter: {def plan: String; def expectations: String}) extends Specification(n) with Sugar {
     "A "+n+" with the -plan option, when reporting the specification" should {
       "not execute examples, thus show 0 expectations" in {
@@ -59,6 +62,24 @@ class reporterPlanSpec extends Specification with Sugar {
       xml.files.values.next
     }
     def expectations = "expectations=\"[1-9]\""
+  }
+  val junit = new JUnit4(s)
+  object result extends _root_.junit.framework.TestResult {
+    var messages = ""
+    override def startTest(test: _root_.junit.framework.Test) = {
+      test match {
+        case e: ExampleTestCase => messages = messages + e.example.parent.get.toString + ":" + test.toString + "\n" 
+      }
+    }
+    def output = messages
+  } 
+  object junitReporter {
+    def plan: String = {
+      System.setProperty("plan", "true")
+      junit.run(result)
+      result.output
+    }
+    def expectations: String = "[1-9] expectation"
   }
   def help = {
     s.help

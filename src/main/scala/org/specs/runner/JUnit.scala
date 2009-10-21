@@ -24,6 +24,7 @@ import _root_.org.junit.runner._
 import org.specs.collection.JavaCollectionsConversion._
 import org.specs.util.Stacktraces
 import org.specs.execute._
+import org.specs.util.Property
 
 /**
  * The strategy for running Specifications with JUnit is as follow:<p>
@@ -108,8 +109,8 @@ trait JUnit extends JUnitSuite with Reporter {
       specification =>
               specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
               specification.systems foreach { sus => 
-                val examples = if (sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
-                addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.skipped.firstOption))
+                val examples = if (!planOnly() && sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
+                addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.firstOption))
               }
     }
   }
@@ -153,7 +154,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
       // if the test is run with Maven the sus description is added to the example description for a better
       // description in the console
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      if (example.examples.isEmpty)
+      if (JUnitOptions.planOnly() || example.examples.isEmpty)
         addTest(new ExampleTestCase(example, exampleDescription))
       else
         addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
@@ -167,7 +168,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
    * and the JUnitSuiteRunner will interpret this as an ignored test (this functionality wasn't available in JUnit3)
    */
   override def run(result: TestResult) = {
-    skipped.map(e => result.addFailure(this, new SkippedAssertionError(e)))
+    if (!JUnitOptions.planOnly()) skipped.map(e => result.addFailure(this, new SkippedAssertionError(e)))
     super.run(result)
   }
 }
@@ -179,9 +180,9 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
  *
  * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
-class ExampleTestCase(example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
+class ExampleTestCase(val example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
   override def run(result: TestResult) = {
-    if (example.ownSkipped.isEmpty)
+    if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
       result.startTest(this)
     def report(ex: Examples, context: String) = {
       ex.ownFailures foreach {
@@ -197,9 +198,11 @@ class ExampleTestCase(example: Examples, description: String) extends TestCase(d
                 result.addError(this, new SpecError(UserError(error, context)))
       }
     }
-    report(example, "")
-    example.examples foreach {subExample => report(subExample, subExample.description + " -> ")}
-    if (example.ownSkipped.isEmpty)
+    if (!JUnitOptions.planOnly()) { 
+      report(example, "")
+      example.examples foreach {subExample => report(subExample, subExample.description + " -> ")}
+    }
+    if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
       result.endTest(this)
   }
 }
@@ -222,7 +225,6 @@ case class UserError(t: Throwable, context: String) extends Throwable {
  */
 class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage) {
   override def getStackTrace = t.getStackTrace
-
   override def getCause = t.getCause
 
   override def printStackTrace = t.printStackTrace
@@ -248,3 +250,10 @@ class SpecError(t: Throwable) extends java.lang.Error(t.getMessage) {
   override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
 }
 class SkippedAssertionError(t: Throwable) extends SpecAssertionFailedError(t)
+
+/**
+ * This trait allows to pass system options to Tests and TestSuites
+ */
+object JUnitOptions {
+  val planOnly = Property(System.getProperty("plan") != null)
+}
