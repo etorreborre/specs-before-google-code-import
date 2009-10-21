@@ -22,4 +22,9 @@ import org.specs.{ Sugar, ScalaCheck }
 import org.specs.runner._
 import org.specs.util.DataTables
 
-class Specification extends org.specs.SpecificationWithJUnit with Mockito with Sugar with DataTables with ScalaCheck with ScalaTest
+class Specification extends org.specs.SpecificationWithJUnit with Mockito with Sugar with DataTables with ScalaCheck with ScalaTest {
+  /**
+   * Alternate constructor with the name of the specification
+   */
+  def this(n: String) = { this(); name = n; description = n; this }
+}
