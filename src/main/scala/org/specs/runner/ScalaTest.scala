@@ -134,6 +134,7 @@ class SusSuite(sus: Sus) extends Suite {
           case Some(name) => if (isNotExcluded(name)) runTest(name, reporter, stopper, properties)
         }
       }
+      reporter.suiteStarting(new SpecReport(suiteName, suiteName, suiteName, suiteName, true))
       for (name <- testNames;
            included <- includes) {
         testGroups.get(included) match {
@@ -144,6 +145,7 @@ class SusSuite(sus: Sus) extends Suite {
           }
         }
       }
+      reporter.suiteCompleted(new SpecReport(suiteName, suiteName, suiteName, suiteName, true))
     }
     /**
      * Report the result of an example given its description to the reporter.
@@ -152,33 +154,40 @@ class SusSuite(sus: Sus) extends Suite {
                          reporter: org.scalatest.Reporter,
                          stopper: Stopper,
                          properties: Map[java.lang.String, Any]): Unit = {
-      sus.examples.find(_.description == testName).map(e => runExample(e, reporter))
+      sus.examples.find(_.description == testName).map(e => runExample(e, reporter, properties))
     }
 
   /**
    * Report the result of an example: ignored if it is skipped, failed if it has failures or errors, succeeded otherwise
    * call this method recursively if the example has subexamples
    */
-  private[this] def runExample(e: Example, reporter: org.scalatest.Reporter): Unit = {
+  private[this] def runExample(e: Example, reporter: org.scalatest.Reporter, properties: Map[java.lang.String, Any]): Unit = {
+    def planOnly = properties.keySet.contains("plan")
     def report(desc: String, msg: String) = new SpecReport(desc, msg, msg, msg, true)
-    reporter.testStarting(new SpecReport(e.description, e.description, e.description, e.statusAsText + " " + e.description, true))
-    e.skipped foreach { skipped =>
-      reporter.testIgnored(report(e.description, "    " + skipped.message))
+    if (planOnly)
+      reporter.testStarting(new SpecReport(e.description, e.description, e.description, "- " + e.description, true))
+    else
+      reporter.testStarting(new SpecReport(e.description, e.description, e.description, e.statusAsText + " " + e.description, true))
+    if (!planOnly) {
+      e.skipped foreach { skipped =>
+        reporter.testIgnored(report(e.description, "    " + skipped.message))
+      }
+      e.failures foreach { f =>
+        reporter.testFailed(report(e.description, "    " + f.getMessage))
+      }
+      e.errors foreach { error =>
+        reporter.testFailed(new SpecReport(e.description, "    " + error.getMessage,
+                                                          "    " + error.getMessage,
+                                                          "    " + error.getMessage,
+                                           true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
+      }
+      if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
+        reporter.testSucceeded(report(e.description, e.description))
+      e.examples foreach { sub => runExample(sub, reporter, properties) }
     }
-    e.failures foreach { f =>
-      reporter.testFailed(report(e.description, "    " + f.getMessage))
-    }
-    e.errors foreach { error =>
-      reporter.testFailed(new SpecReport(e.description, "    " + error.getMessage,
-                                                        "    " + error.getMessage,
-                                                        "    " + error.getMessage,
-                                         true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
-    }
-    if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
+    else
       reporter.testSucceeded(report(e.description, e.description))
-    e.examples foreach { sub => runExample(sub, reporter) }
   }
-
   import scala.collection.immutable._
   /**
    * @return a map with the keys being the examples tags and the values the example names for each tag

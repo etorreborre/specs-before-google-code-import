@@ -14,7 +14,9 @@ class reporterPlanSpec extends Specification with Sugar {
   }
   include(ReporterPlan("console reporter", consoleReporter), 
           ReporterPlan("xml reporter", xmlReporter),
-          ReporterPlan("junit reporter", junitReporter))
+          ReporterPlan("junit reporter", junitReporter),
+          ReporterPlan("ScalaTest reporter", scalaTestReporter))
+  
   case class ReporterPlan(n: String, reporter: {def plan: String; def expectations: String}) extends Specification(n) with Sugar {
     "A "+n+" with the -plan option, when reporting the specification" should {
       "not execute examples, thus show 0 expectations" in {
@@ -43,7 +45,7 @@ class reporterPlanSpec extends Specification with Sugar {
       
     }
   } 
-  class TestSpecification extends org.specs.Specification with MockOutput {
+  class TestSpecification extends org.specs.Specification with MockOutput with ScalaTest {
     def help = displayHelp
   }
   object consoleReporter {
@@ -78,6 +80,25 @@ class reporterPlanSpec extends Specification with Sugar {
       System.setProperty("plan", "true")
       junit.run(result)
       result.output
+    }
+    def expectations: String = "[1-9] expectation"
+  }
+
+  object scalaTestReporter {
+    class MockReporter extends org.scalatest.Reporter {
+      var messages = ""
+      override def testStarting(s: org.scalatest.Report): Unit = messages += s.message + "\n"
+      override def testIgnored(s: org.scalatest.Report) = messages += s.message + "\n"
+      override def testFailed(s: org.scalatest.Report) = messages += s.message + "\n"  
+      override def testSucceeded(s: org.scalatest.Report) = messages += s.message + "\n"
+      override def suiteStarting(s: org.scalatest.Report): Unit = messages += s.message + "\n"
+      override def suiteCompleted(s: org.scalatest.Report): Unit = messages += s.message + "\n"
+    } 
+    var reporter = new MockReporter
+    var stopper = new org.scalatest.Stopper {}
+    def plan: String = {
+      s.execute(None, reporter, stopper, Set(), Set(), Map("plan" -> "true"), None)
+      reporter.messages
     }
     def expectations: String = "[1-9] expectation"
   }
