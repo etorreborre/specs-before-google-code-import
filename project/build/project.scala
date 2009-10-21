@@ -13,7 +13,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val wikitextile 	= "org.eclipse.mylyn.wikitext" % "wikitext.textile" % "0.9.4.I20090220-1600-e3x" 
   val markdown 		= "org.markdownj" % "markdownj" % "0.3.0-1.0.2b4" 
   val scalatest 	= "org.scalatest" % "scalatest" % "0.9.5" 
-  val scalacheck 	= "org.scala-tools.testing" % "scalacheck" % "1.6-SNAPSHOT" 
+  val scalacheck 	= "org.scala-tools.testing" % "scalacheck" % "1.6" 
   val jmock 		= "org.jmock" % "jmock" % "2.4.0" 
   val easymock 		= "org.easymock" % "easymock" % "2.5.1" 
   val easymockclass	= "org.easymock" % "easymockclassextension" % "2.4" 
