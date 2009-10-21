@@ -164,7 +164,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
 -rej, --reject tags             reject the specified tags (comma-separated names)
 -sus, --system                  only the systems under specifications matching this regular expression will be executed
 -ex, --example                  only the examples matching this regular expression will be executed
--plan, --planOnly               only display the sus and first level descriptions without executing examples
+-plan, --planOnly               only display the sus and first level descriptions without executing the examples
 -c, --color                     report with color""".stripMargin)
   }
   /** regexp for filtering systems. */

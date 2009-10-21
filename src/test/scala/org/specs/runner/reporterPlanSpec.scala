@@ -9,7 +9,7 @@ class reporterPlanSpec extends Specification with Sugar {
       help must containMatch("-plan | --planOnly")
     }
     "show the -plan option description when displaying the help" in {
-      help must containMatch("only display") and containMatch("without executing examples")
+      help must containMatch("only display") and containMatch("without executing")
     }
   }
   include(ReporterPlan("console reporter", consoleReporter), 
