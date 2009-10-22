@@ -77,7 +77,7 @@ class reporterPlanSpec extends Specification with Sugar {
   } 
   object junitReporter {
     def plan: String = {
-      System.setProperty("plan", "true")
+      JUnitOptions.planOnly(true)
       junit.run(result)
       result.output
     }
