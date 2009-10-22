@@ -86,7 +86,7 @@ trait Fixtures extends LiterateSpecification { this: LiterateSpecification =>
       } tag("be tagged")
     }
    def susExamplesAreNotTagged = eg {
-     specWithSus.systems.flatMap(_.examples).flatMap(_.tags) must beEmpty
+     specWithSus.systems.flatMap(_.examples).flatMap(_.tagNames) must beEmpty
    }
    import org.specs.io.mock.MockOutput
    def specOutput = {

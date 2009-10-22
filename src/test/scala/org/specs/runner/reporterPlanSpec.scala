@@ -87,17 +87,12 @@ class reporterPlanSpec extends Specification with Sugar {
   object scalaTestReporter {
     class MockReporter extends org.scalatest.Reporter {
       var messages = ""
-      override def testStarting(s: org.scalatest.Report): Unit = messages += s.message + "\n"
-      override def testIgnored(s: org.scalatest.Report) = messages += s.message + "\n"
-      override def testFailed(s: org.scalatest.Report) = messages += s.message + "\n"  
-      override def testSucceeded(s: org.scalatest.Report) = messages += s.message + "\n"
-      override def suiteStarting(s: org.scalatest.Report): Unit = messages += s.message + "\n"
-      override def suiteCompleted(s: org.scalatest.Report): Unit = messages += s.message + "\n"
+      def apply(e: org.scalatest.events.Event) = messages += e.toString + "\n"
     } 
     var reporter = new MockReporter
     var stopper = new org.scalatest.Stopper {}
     def plan: String = {
-      s.execute(None, reporter, stopper, Set(), Set(), Map("plan" -> "true"), None)
+      s.run(None, reporter, new org.scalatest.Stopper {}, org.scalatest.Filter(), Map("plan" -> "true"), None, new org.scalatest.Tracker)
       reporter.messages
     }
     def expectations: String = "[1-9] expectation"
