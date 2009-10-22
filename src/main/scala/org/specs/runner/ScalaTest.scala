@@ -18,6 +18,7 @@
  */
 package org.specs.runner
 import org.scalatest._
+import org.scalatest.events._
 import org.specs.specification._
 /**
  * Concrete class for the ScalaTest trait.
@@ -52,7 +53,7 @@ trait ScalaTest extends SpecsFilter with FailOrSkip with org.scalatest.Suite {
   /**
    * @return an empty map for now. The notion of group may be added later to specifications
    */
-  override def groups: Map[String, Set[String]] = Map()
+  override def tags: Map[String, Set[String]] = Map()
 
   /**
    * @return the subspecifications or the systems as ScalaTest suites
@@ -96,7 +97,6 @@ trait ScalaTest extends SpecsFilter with FailOrSkip with org.scalatest.Suite {
  * its subspecifications or its systems under test (sus)
  */
 class SusSuite(sus: Sus) extends Suite {
-
   /**
    * @return the description of the sus with either "should" or "can"
    */
@@ -115,37 +115,34 @@ class SusSuite(sus: Sus) extends Suite {
     sus.examples foreach {e => result = result + e.description}
     result
   }
-
+  private def current: Ordinal = new Ordinal(0)
   /**
    * Report the result of several examples, checking if they are included or not
    */
   override def runTests(testName: Option[java.lang.String],
                          reporter: org.scalatest.Reporter,
                          stopper: Stopper,
-                         includes: scala.collection.immutable.Set[String],
-                         excludes: scala.collection.immutable.Set[String],
-                         properties: Map[java.lang.String, Any]): Unit = {
-      val testGroups = groups
-      def isNotExcluded(name: String) = excludes.forall(!testGroups.get(_).exists(set => set.contains(name)))
-      def isIncluded(name: String) = includes.exists(testGroups.get(_).exists(set => set.contains(name)))
-      if (includes.isEmpty) {
-        testName match {
-          case None => testNames.foreach(name => if (isNotExcluded(name)) runTest(name, reporter, stopper, properties))
-          case Some(name) => if (isNotExcluded(name)) runTest(name, reporter, stopper, properties)
-        }
+                         filter: Filter,
+                         properties: Map[java.lang.String, Any],
+                         distributor: Option[Distributor],
+                         tracker: Tracker): Unit = {
+      val testTags = tags
+      def isIncluded(name: String): Boolean = {
+        val tagsForName = testTags.get(name).getOrElse(Set())
+        val r = filter.tagsToInclude.isEmpty && 
+                !filter.tagsToExclude.exists(tagsForName.contains(_)) ||
+                !filter.tagsToInclude.isEmpty && 
+                 filter.tagsToInclude.get.exists(tagsForName.contains(_)) &&
+                !filter.tagsToExclude.exists(tagsForName.contains(_))
+        r
       }
-      reporter.suiteStarting(new SpecReport(suiteName, suiteName, suiteName, suiteName, true))
-      for (name <- testNames;
-           included <- includes) {
-        testGroups.get(included) match {
-          case None => ()
-          case Some(includedNames) => {
-            if (isIncluded(name) && isNotExcluded(name))
-              runTest(name, reporter, stopper, properties)
-          }
-        }
+      reporter.apply(SuiteStarting(current.next, suiteName, None))
+      testName filter(isIncluded(_)) map { name => 
+        runTest(name, reporter, stopper, properties, tracker) 
+      } getOrElse {
+        testNames filter(isIncluded(_)) map { name => runTest(name, reporter, stopper, properties, tracker) }
       }
-      reporter.suiteCompleted(new SpecReport(suiteName, suiteName, suiteName, suiteName, true))
+      reporter.apply(SuiteCompleted(current.next, suiteName, None))
     }
     /**
      * Report the result of an example given its description to the reporter.
@@ -153,55 +150,52 @@ class SusSuite(sus: Sus) extends Suite {
     override def runTest(testName: java.lang.String,
                          reporter: org.scalatest.Reporter,
                          stopper: Stopper,
-                         properties: Map[java.lang.String, Any]): Unit = {
-      sus.examples.find(_.description == testName).map(e => runExample(e, reporter, properties))
+                         properties: Map[java.lang.String, Any],
+                         tracker: Tracker): Unit = {
+      sus.examples.find(_.description == testName).map(e => runExample(e, reporter, sus.description, properties))
     }
 
   /**
    * Report the result of an example: ignored if it is skipped, failed if it has failures or errors, succeeded otherwise
    * call this method recursively if the example has subexamples
    */
-  private[this] def runExample(e: Example, reporter: org.scalatest.Reporter, properties: Map[java.lang.String, Any]): Unit = {
+  private[this] def runExample(e: Example, reporter: org.scalatest.Reporter, suiteName: String, properties: Map[java.lang.String, Any]): Unit = {
     def planOnly = properties.keySet.contains("plan")
-    def report(desc: String, msg: String) = new SpecReport(desc, msg, msg, msg, true)
     if (planOnly)
-      reporter.testStarting(new SpecReport(e.description, e.description, e.description, "- " + e.description, true))
+      reporter(TestStarting(current.next, suiteName, None, "- " + e.description))
     else
-      reporter.testStarting(new SpecReport(e.description, e.description, e.description, e.statusAsText + " " + e.description, true))
+      reporter(TestStarting(current.next, suiteName, None, e.statusAsText + " " + e.description))
     if (!planOnly) {
       e.skipped foreach { skipped =>
-        reporter.testIgnored(report(e.description, "    " + skipped.message))
+        reporter(TestIgnored(current.next, suiteName, None, e.description + ": " + skipped.message))
       }
       e.failures foreach { f =>
-        reporter.testFailed(report(e.description, "    " + f.getMessage))
+        reporter(TestFailed(current.next, f.getMessage, suiteName, None, e.description, Some(f)))
       }
       e.errors foreach { error =>
-        reporter.testFailed(new SpecReport(e.description, "    " + error.getMessage,
-                                                          "    " + error.getMessage,
-                                                          "    " + error.getMessage,
-                                           true, Some(error), None, Thread.currentThread.getName, new java.util.Date))
+        reporter(TestFailed(current.next, error.getMessage, suiteName, None, e.description, Some(error)))
       }
       if (e.failures.isEmpty && e.errors.isEmpty && e.skipped.isEmpty)
-        reporter.testSucceeded(report(e.description, e.description))
-      e.examples foreach { sub => runExample(sub, reporter, properties) }
+        reporter(TestSucceeded(current.next, suiteName, None, e.description))
+      e.examples foreach { sub => runExample(sub, reporter, suiteName, properties) }
     }
     else
-      reporter.testSucceeded(report(e.description, e.description))
+      reporter(TestSucceeded(current.next, suiteName, None, e.description))
   }
   import scala.collection.immutable._
   /**
-   * @return a map with the keys being the examples tags and the values the example names for each tag
+   * @return a map with the keys being the examples names and the values the set of tags for that name
    */
-  override def groups: Map[String, Set[String]] = {
-    var exampleTags: Map[String, Set[String]] = new HashMap[String, Set[String]]()
+  override def tags: Map[String, Set[String]] = {
+    var exampleNames: Map[String, Set[String]] = new HashMap[String, Set[String]]()
     for {e <- sus.examples
-         tag <- e.tags } {
-        val exampleNames: Set[String] = exampleTags.get(tag.name) match {
+         tag <- e.tagNames } {
+        val exampleTags: Set[String] = exampleNames.get(e.description) match {
           case None => new HashSet[String]
           case Some(set) => set
         }
-        exampleTags = exampleTags + (tag.name -> (exampleNames + e.description))
+        exampleNames  = exampleNames  + (e.description -> (exampleTags + tag))
     }
-    exampleTags
+    exampleNames
   }
 }

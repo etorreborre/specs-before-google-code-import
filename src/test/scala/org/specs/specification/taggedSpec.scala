@@ -50,7 +50,7 @@ class taggedSpec extends SpecificationWithJUnit {
       val other = (new Object with Tagged).addTag("a").accept("a").reject("b")
 
       tagged.tagWith(other)
-      tagged.tags must_== other.tags
+      tagged.tagNames must_== other.tagNames
       tagged.accepted must_== other.accepted
       tagged.rejected must_== other.rejected
     }
@@ -81,12 +81,12 @@ class taggedSpec extends SpecificationWithJUnit {
   "A tagged object with subcomponents" should { createTaggedTree.before
     "propagate its tags to the subcomponents" in {
       taggedTree.tag("1")
-      taggedTree.taggedComponents.first.tags must haveSameElementsAs(List(Tag("1")))
+      taggedTree.taggedComponents.first.tagNames must haveSameElementsAs(List("1"))
     }
     "clear the subcomponents tags when clearing its own" in {
       taggedTree.tag("1")
       taggedTree.clearTags
-      taggedTree.taggedComponents.first.tags must beEmpty
+      taggedTree.taggedComponents.first.tagNames must beEmpty
     }
     "be able to accept all tags if some tags were previously rejected" in {
       taggedTree.tag("1")

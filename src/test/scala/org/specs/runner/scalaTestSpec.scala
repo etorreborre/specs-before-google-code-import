@@ -24,7 +24,9 @@ import org.specs._
 import org.specs.runner._
 import org.specs.Sugar._
 import org.scalatest._
-import org.specs.mock.JMocker
+import org.scalatest.events._
+import org.specs.mock.Mockito
+import org.mockito.Mockito._
 import scala.collection.immutable._
 
 class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
@@ -44,32 +46,29 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
     }
     "return groups corresponding to the tags on the specification" in {
       val first = suiteWithGroups.nestedSuites.first
-      first.groups must_== Map("unit" -> Set("have a tag for the second example"))
+      first.tags must_== Map("have a tag for the second example" -> Set("unit"))
     }
   }
   "A ScalaTest runner"->-(c) should {
     "report failures and errors as test failed, skipped as ignored and the rest as success" in {
-       expect {
-        2.of(reporter).testFailed(a[Report])
-        1.of(reporter).testIgnored(a[Report])
-        1.of(reporter).testSucceeded(a[Report])
-        allowOtherMethods.isExpectation
-      }
-      sampleSuite.execute(None, reporter, stopper, Set(), Set(), Map(), None)
+      sampleSuite.run(None, reporter, stopper, Filter(), Map(), None, new Tracker())
+      reporter.apply(any[SuiteStarting]) was called.atLeastOnce
+      reporter.apply(any[TestFailed])   was called.atLeastOnce
+      reporter.apply(any[TestIgnored]) was called
+      reporter.apply(any[TestSucceeded]) was called
+      reporter.apply(any[SuiteCompleted]) was called.atLeastOnce
     }
     "use the tags defined on the examples when executing included groups only" in {
-      expect {
-        1.of(reporter).testSucceeded(a[Report]).isExpectation
-        allowOtherMethods
-      }
-      suiteWithGroups.execute(None, reporter, stopper, Set("unit"), Set(), Map(), None)
+      suiteWithGroups.run(None, reporter, stopper, new Filter(Some(Set("unit")), Set()), Map(), None, new Tracker())
+      reporter.apply(any[SuiteStarting]) was called.atLeastOnce
+      reporter.apply(any[TestSucceeded]) was called.once
+      reporter.apply(any[SuiteCompleted]) was called.atLeastOnce
     }
     "use the tags defined on the examples, and not executing excluded groups" in {
-      expect {
-        2.of(reporter).testSucceeded(a[Report]).isExpectation
-        allowOtherMethods
-      }
-      suiteWithGroups.execute(None, reporter, stopper, Set(), Set("functional"), Map(), None)
+      suiteWithGroups.run(None, reporter, stopper, new Filter(None, Set("functional")), Map(), None, new Tracker())
+      reporter.apply(any[SuiteStarting]) was called.atLeastOnce
+      reporter.apply(any[TestSucceeded]) was called.twice
+      reporter.apply(any[SuiteCompleted]) was called.atLeastOnce
     }
   }
   def suite(behaviours: that.Value*) = new ScalaTestSuite(new SimpleSpecification(behaviours.toList))
@@ -94,16 +93,11 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
     }
   }
 }
-trait ScalaTestMocks extends BaseSpecification with JMocker with Contexts {
+trait ScalaTestMocks extends BaseSpecification with Mockito with Contexts {
    var reporter = mock[org.scalatest.Reporter]
    var stopper = mock[org.scalatest.Stopper]
    val c = beforeContext {
      reporter = mock[org.scalatest.Reporter]
      stopper = mock[org.scalatest.Stopper]
-   }
-   def allowOtherMethods = {
-     allowingMatch(reporter, ".*Starting")
-     allowingMatch(reporter, ".*Completed")
-     allowing(stopper)
    }
 }
