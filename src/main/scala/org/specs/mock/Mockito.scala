@@ -53,7 +53,7 @@ import org.specs.matcher.MatcherUtils._
  * 
  * See the method descriptions for more usage examples.  
  */
-trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with MockitoStubs
+trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with MockitoStubs with MockitoMatchers
 /**
  * This trait allows the initialization of mocks when defined with an annotation:
  * @Mock val l: List[String] = null
@@ -405,4 +405,7 @@ trait MocksCreation {
        }
      } 
   }
+}
+trait MockitoMatchers {
+  def any[T](implicit m: scala.reflect.Manifest[T]): T = org.mockito.Matchers.isA(m.erasure).asInstanceOf[T]
 }
