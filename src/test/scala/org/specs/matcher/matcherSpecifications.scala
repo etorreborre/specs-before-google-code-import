@@ -18,7 +18,6 @@
  */
 package org.specs.matcher
 import org.specs.specification._
-import org.specs.matcher.concurrent._
 
 object matcherSpecifications extends Specification {
   "Matchers" areSpecifiedBy (
