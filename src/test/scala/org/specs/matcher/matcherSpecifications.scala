@@ -30,7 +30,6 @@ object matcherSpecifications extends Specification {
     new patternMatchersSpec,
     new scalacheckMatchersSpec,
     new stringMatchersSpec,
-    new threadSpec,
     new varianceSpec
 	)
 }
