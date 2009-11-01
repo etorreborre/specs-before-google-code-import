@@ -21,7 +21,7 @@ trait DocumentsFactory { outer: BaseSpecification =>
     new ExampleDoc(e)
   }
 
-  class TextDoc(text: String) extends Doc {
+  case class TextDoc(text: String) extends Doc {
     def txt = this
     def toXhtml: NodeSeq = Text(text)
     def toText = text
@@ -30,12 +30,19 @@ trait DocumentsFactory { outer: BaseSpecification =>
     def md: this.type = this
   }
   implicit def markdownDoc(s: MarkdownString) = new MarkdownText(s.text)
-  class MarkdownText(text: =>String) extends Doc {
-    def toXhtml = <md>{((new Markdown {}).format(<m>{text}</m>) \ "p")(0) match {
+  private def markdownDecorator: NodeSeq => NodeSeq = markdownFormat((_:NodeSeq))
+  private def markdownFormat(t: String): NodeSeq = markdownFormat(<m>{t}</m>)
+  private def markdownFormat(n: NodeSeq): NodeSeq = markdownFormat(<m>{n}</m>)
+  private def markdownFormat(n: Elem): NodeSeq = {
+    val formatted = (new Markdown {}).format(n) \ "p"
+    formatted match {
       case <p>{a @ _*}</p> => a
       case other => other
     }
-    }</md>
+  } 
+  case class MarkdownText(text: String) extends Doc {
+    override def paragraph = MarkdownText(text + "\n")
+    def toXhtml = <md>{markdownFormat(text)}</md>
     def toText = text
   }
   def br = new LineBreak
@@ -52,13 +59,14 @@ trait DocumentsFactory { outer: BaseSpecification =>
     def toXhtml = reduce(documents, { (d: Doc) => d.toXhtml })
     def toText = documents.map(_.toText).mkString("")
   }
-  class Decorator(document: Doc, decorator: (NodeSeq => NodeSeq)) extends Doc {
-    def toXhtml = decorator(document.toXhtml)
+  case class Decorator(document: Doc, d: (NodeSeq => NodeSeq)) extends Doc {
+    def toXhtml = d(document.toXhtml)
     def toText = toXhtml.toString
   }
   class Paragraph(document: Doc) extends Decorator(document, (d: NodeSeq) => <p>{d}</p>)
   
   abstract class Doc extends Document {
+    
     if (systemsList.isEmpty) {
       setCurrent(Some(specify(outer.name)))
       currentDocument = Some(this)
@@ -75,16 +83,30 @@ trait DocumentsFactory { outer: BaseSpecification =>
     def \(s: String): Doc = \(new TextDoc(s))
     def \(d: Doc): Doc = plus(d)
     
-    def parAddPar(d: Doc): Doc = add(new Paragraph(this), new Paragraph(d))
-    def addPar(d: Doc): Doc = add(this, new Paragraph(d))
-    def parAdd(d: Doc): Doc = add(new Paragraph(this), d)
+    def parAddPar(d: Doc): Doc = add(this.paragraph, d.paragraph)
+    def addPar(d: Doc): Doc = add(this, d.paragraph)
+    def parAdd(d: Doc): Doc = add(this.paragraph, d)
     def add(d1: Doc, d2: Doc) = {
-      currentDocument = Some(new DocSequence(List(d1, d2)))
+      val newDocument = (d1, d2) match {
+        case (MarkdownText(t1), b) => new DocSequence(List(TextDoc(t1), d2)).setDecorator(markdownDecorator)
+        case (a, MarkdownText(t2)) => new DocSequence(List(d1, TextDoc(t2))).setDecorator(markdownDecorator)
+        case (a, b) => {
+          val nd = new DocSequence(List(d1, d2))
+          currentDocument.map(_.copyDecoratorTo(nd))
+          nd
+        }
+      }
+      currentDocument = Some(newDocument)
       currentDocument.get
     }
+    def paragraph: Doc = new Paragraph(this)
     def plus(d: Doc): Doc = add(this, d)
     def toXhtml: NodeSeq
-    def toLiterateDesc: LiterateDescription = LiterateDescription(<div>{ toXhtml }</div>)
+    def toLiterateDesc: LiterateDescription = LiterateDescription(<div>{ decorator(toXhtml) }</div>)
+    
+    var decorator = (n: NodeSeq) => n
+    def setDecorator(d: NodeSeq => NodeSeq): this.type = { decorator = d; this }
+    def copyDecoratorTo(d: Doc): this.type = { d.setDecorator(this.decorator); this }
   }
   
   implicit def susToDocuments(sus: Sus) = new SusDoc(sus)
@@ -99,3 +121,5 @@ trait Document {
   def toXhtml: NodeSeq
   def toText: String
 }
+trait MarkdownDocs extends FormattedDocs
+trait FormattedDocs

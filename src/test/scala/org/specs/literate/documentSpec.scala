@@ -71,14 +71,51 @@ class DocumentSpec extends org.spex.Specification with DocumentsFactory {
 
 import org.specs.runner._
 import scala.xml._
-class DocumentSample extends LiterateSpecification with Documents with org.specs.runner.Html {
+class NormalSpecWithTextBlocks extends LiterateSpecification with Documents with org.specs.runner.Html with MarkdownDocs {
+implicit def toEx(a: =>Any) = new ToEx(a)
+class ToEx(a: =>Any) {
+  def *:(s: String) = s in { a }
+}
+  
+"""
+This is an introduction of the specification
 
+It is formatted with _Markdown_ to allow text formatting when outputed as html document.
+""".txt 
+
+  //"This sus should" \\
+    
+    ("do this" in { 1 must_== 1 }) \
+    ("do that" in { 1 must_== 1 })
+}
+class DocumentSample extends LiterateSpecification with Documents with org.specs.runner.Html with MarkdownDocs {
+  """"
+    The documents must support different formatting options:
+
+    1. Formatted Text Blocks with detached examples
+       1.1 Html
+           Markdown text paragraphs + one paragraph per example
+       1.2 Console
+       1.2.1 Raw Markdown text paragraphs + one line per example
+       1.2.1 Markdown in the example text must not interpreted if:
+          list item
+          html tag
+           
+    2. Blocs de textes avec examples en li pour html
+  
+""" \
+  "Ecrire du texte." \ br \
+   """En sautant des lignes, avec du formattage Markdown.
+
+     Puis en plein milieu inserer un example qui doit s'executer et s'afficher. Et sur la meme ligne eventuellement
+continuer la prose.
+   """ \ 
+  "like this one".in { 1 must_== 1 } \\  
   "Documents can be created by creating small document pieces and appending them together." \\
-  "_If_ the firt document is created outside of any sus, then a sus is created for it.".md \ br \ 
-  "Then this document can embbed examples" \
+  "_If_ the firt document is created outside of any sus, then a sus is created for it." \ br \ 
+  "Then this document can embbed examples:" \\
   "like this one".in { 1 must_== 1 } \\
-  "or this other" \
-  "one here".in { 1 must_== 1 } \
+  "or this other one here".in { 1 must_== 1 } \
   "And the text can resume afterwards to present the rest of the specification."
 
   "Documents can also be added inside a sus. A sus with documents" can {
