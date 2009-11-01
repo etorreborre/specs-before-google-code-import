@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.runner
-import org.scalatest._
+import org.scalatest.{ Suite, Stopper, Filter, Distributor, Tracker }
 import org.scalatest.events._
 import org.specs.specification._
 /**
