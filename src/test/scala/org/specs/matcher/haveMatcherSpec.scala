@@ -37,5 +37,39 @@ class haveMatcherSpec extends SpecificationWithJUnit { outer =>
   "A collection matcher starting with 'notHave' can be used with 'not have' as a separated words" in {
     List(1) must not have(size(2))
   }
+  
+  def eventually[T] = new EventuallyMatcher[T]
+  class EventuallyMatcher[T] extends Matcher[T] { 
+    def apply(v: =>T) = (true, "", "")
+    def ? (m: Matcher[T]) = m
+  }
+  implicit def toEventuallyMatcherDecorator[T](m: Matcher[T]) = new EventuallyMatcherDecorator(m)
+  class EventuallyMatcherDecorator[T](m: Matcher[T]) extends Matcher[T] { 
+    def apply(v: =>T) = m(eventualMatch(v))
+    def eventualMatch(v: =>T) = v
+    def eventually = this
+  }
+  implicit def toEventuallyMatchable[T](m: Matcher[T]) = new EventuallyMatchable(m)
+  class EventuallyMatchable[T](m: Matcher[T]) { 
+    def :: (e: EventuallyMatcher[Nothing]) = m // add the eventually logic here
+  }
+  implicit def toEventuallyMatcherResult[T](result: Result[T]) = new EventuallyMatcherResult(result)
+  class EventuallyMatcherResult[T](result: Result[T]) {
+    def be_==(a: T) = result.matchWith(eventually(outer.be_==(a)))
+    def be(a: T) = result.matchWith(eventually(outer.be(a)))
+    private def eventually(m: Matcher[T]) = m  // add some logic for the semantics of "eventually"
+  }    
 
+  "An extension for a matcher can be created" in {
+    "A string" must eventually be_== "A string"
+  }
+  "An extension for a matcher can be created" in {
+    "A string" must be_==("A string").eventually
+  }
+  "An extension for a matcher can be created" in {
+    "A string" must eventually :: be_==("A string")
+  }
+  "An extension for a matcher can be created" in {
+    "A string" must eventually ? be_==("A string")
+  }
 }

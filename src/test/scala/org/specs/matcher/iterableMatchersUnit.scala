@@ -74,5 +74,25 @@ class iterableMatchersUnit extends MatchersSpecification {
     "allow to use 'contain' matcher on a heterogeneous list of elements" in {
       List("one", 2) must contain("one")
     }
+    "not fail for containAll if the elements actually exist in the collection" in {
+      lazy val ones: Stream[Int] = Stream.cons(1, ones)
+      ones.exists(_ == 1) must be(true)
+      ones must containAll(List(1))
+    }
+    "provide a failure message even for an infinite collection, provided the exist method works ok" in {
+      case class Numbers(first: Int) extends Iterable[Int] {
+        def elements: Iterator[Int] = rest.elements
+        def rest = Numbers(first + 1)
+        override def exists(f: Int => Boolean) = {
+          if (f(first)) 
+            true
+          else
+            false
+        } 
+        override def toString = "Numbers(" + (first to (first + 51)).mkString(", ") + "...)" 
+      }
+      lazy val fromTwo = Numbers(3);
+      { fromTwo must containAll(List(1, 2)); "" } must throwA[org.specs.execute.FailureException]
+    }
   }
 }
