@@ -28,7 +28,7 @@ object utilSpecifications extends Specification {
         new includeExcludeSpec,
         new matchingSpec,
         new propertySpec,
-        new scalaInterpreterSpec,
+     //   new scalaInterpreterSpec,
         new timerSpec
     )
 }

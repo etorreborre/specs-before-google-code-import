@@ -21,7 +21,7 @@ import org.specs._
 
 object ioSpecifications extends Specification {
     "The io specifications" areSpecifiedBy (
-        new fileSystemSpec,
+//        new fileSystemSpec,
         new fileWriterSpec)
 }
 object ioUnits extends Specification {

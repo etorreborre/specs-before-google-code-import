@@ -23,7 +23,7 @@ import org.specs.runner._
 object mockSpecifications extends Specification {
   "Mock specifications" areSpecifiedBy (
     new jmockSpec,
-    new mockitoSpec,
+    //new mockitoSpec,
     new easymockSpec,
     new mockParametersSpec,
 	new mockProtocolsSpec)

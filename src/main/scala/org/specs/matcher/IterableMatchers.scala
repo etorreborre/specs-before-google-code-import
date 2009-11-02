@@ -47,8 +47,8 @@ trait IterableBaseMatchers { outer =>
   def containAll[T](l: Iterable[T])(implicit details: Detailed) = new Matcher[Iterable[T]]() {
     def apply(v: => Iterable[T]) = {
       val iterable = v;
-      val failureMessage = if (iterable.mkString("").size >= 50) 
-        d(iterable.mkString("\n")) + "\n\ndoesn't contain all of\n\n" + q(l.mkString("\n"))
+      val failureMessage = if (iterable.toString.size >= 30) 
+        d(iterable.toString.split(",").mkString("\n")) + "\n\ndoesn't contain all of\n\n" + l.mkString("\n")
       else
         d(iterable) + " doesn't contain all of " + q(l)
       (l.forall(x => iterable.exists(_ == x)), 
@@ -68,8 +68,8 @@ trait IterableBaseMatchers { outer =>
   def containInOrder[T](l: Iterable[T])(implicit details: Detailed) = new Matcher[Iterable[T]](){
     def apply(v: => Iterable[T]) = {
       val iterable = v;
-      val failureMessage = if (iterable.mkString("").size >= 50) 
-        d(iterable.mkString("\n")) + "\n\ndoesn't contain all of\n\n" + q(l.mkString("\n")) + " in order"
+      val failureMessage = if (iterable.toString.size >= 30) 
+        d(iterable.toString.split(",").mkString("\n")) + "\n\ndoesn't contain all of\n\n" + l.mkString("\n") + " in order"
       else
         d(iterable) + " doesn't contain all of " + q(l) + " in order"  
       (iterable.containsInOrder(l), 
