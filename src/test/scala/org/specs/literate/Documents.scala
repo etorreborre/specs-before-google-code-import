@@ -63,9 +63,13 @@ trait DocumentsFactory { outer: BaseSpecification =>
   }
   case class Decorator(document: Doc, d: (NodeSeq => NodeSeq)) extends Doc {
     def toXhtml = d(document.toXhtml)
-    def toText = toXhtml.toString
+    def toText = toXhtml.text
   }
-  class Paragraph(document: Doc) extends Decorator(document, (d: NodeSeq) => <p>{d}</p>)
+  class Paragraph(document: Doc) extends Doc 
+  {
+    def toXhtml = <p>{ document.toXhtml }</p> 
+    def toText = document.toText + "\n\n"
+  }
   
   abstract class Doc extends Document {
     
@@ -85,21 +89,16 @@ trait DocumentsFactory { outer: BaseSpecification =>
     def \(s: String): Doc = \(new TextDoc(s))
     def \(d: Doc): Doc = plus(d)
     
-    def parAddPar(d: Doc): Doc = add(this.paragraph, d.paragraph)
-    def addPar(d: Doc): Doc = add(this, d.paragraph)
-    def parAdd(d: Doc): Doc = add(this.paragraph, d)
-    def add(d1: Doc, d2: Doc) = {
+    def parAddPar(d: Doc): Doc = add(this, br).add(br).add(d)
+    def addPar(d: Doc): Doc = add(this, br).add(d)
+    def parAdd(d: Doc): Doc = add(this, br).add(d)
+    def add(d2: Doc): Doc = add(this, d2)
+    def add(d1: Doc, d2: Doc): Doc = {
       val newDocument = (d1, d2) match {
-        case (MarkdownText(t1), DocSequence(l)) => new DocSequence(List(TextDoc(t1)) ::: l).setDecorator(markdownDecorator)
-        case (MarkdownText(t1), b) => new DocSequence(List(TextDoc(t1), d2)).setDecorator(markdownDecorator)
-        case (DocSequence(l), MarkdownText(t2)) => new DocSequence(l ::: List(TextDoc(t2))).setDecorator(markdownDecorator)
-        case (a, MarkdownText(t2)) => new DocSequence(List(d1, TextDoc(t2))).setDecorator(markdownDecorator)
         case (DocSequence(l), DocSequence(l2)) => new DocSequence(l ::: l2)
-        case (a, b) => {
-          val nd = new DocSequence(List(d1, d2))
-          currentDocument.map(_.copyDecoratorTo(nd))
-          nd
-        }
+        case (l1, DocSequence(l)) => new DocSequence(l1 :: l)
+        case (DocSequence(l), l2) => new DocSequence(l ::: List(l2))
+        case (a, b) => new DocSequence(List(d1, d2))
       }
       currentDocument = Some(newDocument)
       currentDocument.get
@@ -107,11 +106,8 @@ trait DocumentsFactory { outer: BaseSpecification =>
     def paragraph: Doc = new Paragraph(this)
     def plus(d: Doc): Doc = add(this, d)
     def toXhtml: NodeSeq
-    def toLiterateDesc: LiterateDescription = LiterateDescription(<div>{ decorator(toXhtml) }</div>)
+    def toLiterateDesc: LiterateDescription = LiterateDescription(<div>{ toXhtml }</div>)
     
-    var decorator = (n: NodeSeq) => n
-    def setDecorator(d: NodeSeq => NodeSeq): this.type = { decorator = d; this }
-    def copyDecoratorTo(d: Doc): this.type = { d.setDecorator(this.decorator); this }
   }
   
   implicit def stringToSusList(desc: String) = new SusList(desc)
