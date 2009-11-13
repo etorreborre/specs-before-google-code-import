@@ -34,24 +34,45 @@ class SpecsFramework extends Framework {
 }
 import org.specs.util._
 
-class SpecsSbtRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner {
-  def run(classname: String, fingerprint: TestFingerprint, arguments: Array[String]): Array[Event] = {
-    createSpecification("", classname).map(results(_)).toList
+class SpecsSbtRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
+  def run(classname: String, fingerprint: TestFingerprint, args: Array[String]): Array[Event] = {
+    val specification = createObject[Specification](classname, true, args.contains("-v"))
+    val notifier = new SbtNotifier
+    specification.map(new NotifierRunner(_, notifier).reportSpecs)
+    notifier.events
   }
-  def results(s: Specification): List[Event] = {
-    s.subSpecifications.map(results(_)) ::: s.systems.map(results(_))
+}
+import scala.collection.mutable.ListBuffer
+
+class SbtNotifier extends Notifier {
+  def succeeded(name: String) = new Event {
+    def testName = name
+    def result = Result.Success
+    def error = null
   }
-  def results(sus: Sus): List[Event] = {
-    s.examples.map(results(_)) ::: thisResults(sus)
+  def failure(name: String, e: Throwable) = new Event {
+    def testName = name
+    def result = Result.Failure
+    def error = e
   }
-  def results(example: Examples): List[Event] = {
-    thisResults(example) ::: example.subExamples.map(results(_))
+  def error(name: String, e: Throwable) = new Event {
+    def testName = name
+    def result = Result.Error
+    def error = e
   }
-  def thisResults(example: Examples): List[Event] = {
-    example.successes.map(successResult(_)) :::
-    example.failures.map(failureResult(_)) :::
-    example.errors.map(errorResult(_)) :::
-    example.skipped.map(skippedResult(_))
+  def skipped(name: String) = new Event {
+    def testName = name
+    def result = Result.Skipped
+    def error = null
   }
-  
+  val eventsList: ListBuffer[Event] = new ListBuffer
+  def runStarting(examplesCount: Int) = {}
+  def exampleStarting(exampleName: String) = {}
+  def exampleSucceeded(testName: String) = eventsList.append(succeeded(testName))
+  def exampleFailed(testName: String, e: Throwable) = eventsList.append(failure(testName, e))
+  def exampleError(testName: String, e: Throwable) = eventsList.append(error(testName, e))
+  def exampleSkipped(testName: String) = eventsList.append(skipped(testName))
+  def systemStarting(systemName: String) = {}
+  def systemCompleted(systemName: String) = {}
+  def events: Array[Event] = eventsList.toArray
 }
