@@ -1,78 +1,83 @@
 package org.specs.runner
-import org.spex._
-import org.mockito.Mockito._
+import org.specs._
 import org.scalatools.testing._
+import scala.collection.mutable._
 
 class sbtRunnerSpec extends Specification {
   "the sbt test interface" should {
-    "report specifications" in {
-      
+    "report a sus" in {
+      logOutput must include("[info] this sus should")      
+    }
+    "report a success" in {
+      logOutput must include("[info]   + success")      
+    }
+    "report a failure" in {
+      logOutput must include("[info]   x failure")      
+    }
+    "report an error" in {
+      logOutput must include("[info]   x error")      
+    }
+    "report a skipped" in {
+      logOutput must include("[info]   o skipped")      
+    }
+    "log messages using colors if the logger supports them" in {
+      logColoredOutput must include(AnsiColors.red)      
+    }
+    "report a success event" in {
+      events must include("Success")      
+    }
+    "report a failure event" in {
+      events must include("Failure")      
+    }
+    "report an error event" in {
+      events must include("Error")      
+    }
+    "report a skipped event" in {
+      events must include("Skipped")      
     }
   }
-}
-class SpecsFramework extends Framework {
-  def name = "specs"
-  val specificationClass = new TestFingerprint {
-    def superClassName = "org.specs.Specification"
-    def isModule = false
+  class SbtLogger extends Logger {
+    var out = ""
+    def ansiCodesSupported = false;
+    def error(msg: String) = out += "[error] " + msg + "\n"
+    def warn(msg: String) = out += "[warn] " + msg + "\n"
+    def info(msg: String) = out += "[info] " + msg + "\n"
+    def debug(msg: String) = out += "[debug] " + msg + "\n"
   }
-  val specificationxClass = new TestFingerprint {
-    def superClassName = "org.spex.Specification"
-    def isModule = false
+  val sbtLogger = new SbtLogger
+  val sbtColoredLogger = new SbtLogger { override def ansiCodesSupported = true }
+  val handler = new EventHandler {
+    val events: ListBuffer[String] = new ListBuffer
+    def handle(event: Event)= events.append(event.result.toString)
   }
-  val specificationObject = new TestFingerprint {
-    def superClassName = "org.specs.Specification"
-    def isModule = true
-  }
-  val specificationxObject = new TestFingerprint {
-    def superClassName = "org.spex.Specification"
-    def isModule = true
-  }
-  def tests = Array(specificationClass, specificationxClass, specificationObject, specificationxObject)
-  
-  def testRunner(classLoader: ClassLoader, loggers: Array[Logger]) = new SpecsSbtRunner(classLoader, loggers)
-}
-import org.specs.util._
+  def execute = new SpecsSbtRunner(getClass.getClassLoader, Array(sbtLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
 
-class SpecsSbtRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
-  def run(classname: String, fingerprint: TestFingerprint, args: Array[String]): Array[Event] = {
-    val specification = createObject[Specification](classname, true, args.contains("-v"))
-    val notifier = new SbtNotifier
-    specification.map(new NotifierRunner(_, notifier).reportSpecs)
-    notifier.events
+  def logOutput = {
+    execute
+    sbtLogger.out
+  }
+  def logColoredOutput = {
+    new SpecsSbtRunner(getClass.getClassLoader, Array(sbtColoredLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
+    sbtColoredLogger.out
+  }
+  def events = {
+    execute
+    handler.events.mkString("\n")
   }
 }
-import scala.collection.mutable.ListBuffer
-
-class SbtNotifier extends Notifier {
-  def succeeded(name: String) = new Event {
-    def testName = name
-    def result = Result.Success
-    def error = null
+class sbtSpecification extends Specification {
+  "this sus" should {
+    "success" in {
+      1 must_== 1
+    }
+    "failure" in {
+      1 must_== 2
+    }
+    "error" in {
+      error("bad")
+    }
+    "skipped" in {
+      skip("dont do this")
+    }
   }
-  def failure(name: String, e: Throwable) = new Event {
-    def testName = name
-    def result = Result.Failure
-    def error = e
-  }
-  def error(name: String, e: Throwable) = new Event {
-    def testName = name
-    def result = Result.Error
-    def error = e
-  }
-  def skipped(name: String) = new Event {
-    def testName = name
-    def result = Result.Skipped
-    def error = null
-  }
-  val eventsList: ListBuffer[Event] = new ListBuffer
-  def runStarting(examplesCount: Int) = {}
-  def exampleStarting(exampleName: String) = {}
-  def exampleSucceeded(testName: String) = eventsList.append(succeeded(testName))
-  def exampleFailed(testName: String, e: Throwable) = eventsList.append(failure(testName, e))
-  def exampleError(testName: String, e: Throwable) = eventsList.append(error(testName, e))
-  def exampleSkipped(testName: String) = eventsList.append(skipped(testName))
-  def systemStarting(systemName: String) = {}
-  def systemCompleted(systemName: String) = {}
-  def events: Array[Event] = eventsList.toArray
 }
