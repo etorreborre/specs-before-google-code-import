@@ -1,5 +1,5 @@
 package org.specs.runner
-import org.specs._
+import org.spex._
 import org.scalatools.testing._
 import scala.collection.mutable._
 
@@ -50,10 +50,10 @@ class sbtRunnerSpec extends Specification {
     val events: ListBuffer[String] = new ListBuffer
     def handle(event: Event)= events.append(event.result.toString)
   }
-  def execute = new SpecsSbtRunner(getClass.getClassLoader, Array(sbtLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
+  def executeRunner = new SpecsSbtRunner(getClass.getClassLoader, Array(sbtLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
 
   def logOutput = {
-    execute
+    executeRunner
     sbtLogger.out
   }
   def logColoredOutput = {
@@ -61,7 +61,7 @@ class sbtRunnerSpec extends Specification {
     sbtColoredLogger.out
   }
   def events = {
-    execute
+    executeRunner
     handler.events.mkString("\n")
   }
 }
