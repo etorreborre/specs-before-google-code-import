@@ -29,7 +29,10 @@ object Classes extends Classes
  * This trait provides utility functions for classes.
  */
 trait Classes extends ConsoleOutput {
-    /**
+  
+  val classLoader = getClass.getClassLoader
+  
+  /**
    * Create an instance of a given class.
    */
   def createObject[T <: AnyRef](className: String)(implicit m: Manifest[T]): Option[T] = createObject[T](className, false)(m)
@@ -71,7 +74,7 @@ trait Classes extends ConsoleOutput {
    */
   private[util] def loadClass[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[Class[T]] = {
     try {
-      return Some(getClass.getClassLoader.loadClass(className).asInstanceOf[Class[T]])
+      return Some(classLoader.loadClass(className).asInstanceOf[Class[T]])
     } catch {
       case e => {
         if (printMessage || System.getProperty("debugLoadClass") != null) println("Could not load class " + className)
