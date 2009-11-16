@@ -99,6 +99,18 @@ trait Xhtml { outer =>
   class Collapsible(content: =>String) {
     def collapsible(title: String) = outer.collapsible(title, content)
   }
+  
+  implicit def toHtmlString(n: NodeSeq) = new ToHtmlString(n)
+  class ToHtmlString(xhtml: NodeSeq) {
+    def toHtml = {
+      if (xhtml.size == 1)
+        new scala.xml.PrettyPrinter(10000, 2).format(xhtml(0))
+      else if (xhtml.size > 1)
+        new scala.xml.PrettyPrinter(10000, 2).format(Group(xhtml))
+      else
+        xhtml.toString
+    }
+  }
 }
 object Xhtml extends Xhtml
 

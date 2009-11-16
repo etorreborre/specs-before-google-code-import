@@ -59,5 +59,19 @@ class xhtmlSpec extends spex.Specification {
         </tr> 
       </table>) must_== 2
     }
+    "have a toHtml method formatting xhtml with proper indentation" in {
+      <t>this is a list<ul>
+        <li>success</li>
+        <li>failure</li>
+        </ul>
+      </t>.toHtml  must_== 
+      """|<t>
+         |  this is a list
+         |  <ul>
+         |    <li>success</li>
+         |    <li>failure</li>
+         |  </ul>
+         |</t>""".stripMargin
+    }
   }
 }
