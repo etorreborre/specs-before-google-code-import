@@ -89,15 +89,50 @@ class documentSpec extends Specification with Documents {
          |  x failure 1""".stripMargin
     }
   }
+  "A sus doc as executed xhtml" should {
+    "display the examples as a ul list" in {
+      s.sus.toXhtml_!.toHtml must_==
+      """|<sus>
+         |  <t>sus should</t>
+         |  <ul>
+         |    <li>
+         |      <ex class="success">success 1</ex>
+         |    </li>
+         |    <li>
+         |      <ex class="failure">failure 1</ex>
+         |    </li>
+         |  </ul>
+         |</sus>""".stripMargin
+    }
+  }
   "A sus doc with an introductory text" should {
     "display the introduction before the examples" in {
-      noDetailedDiffs()
       s.susWithIntro.toText aka s.susWithIntro.toString must_==
       """|This is an intro text to
          |
          |sus should
          |  - success 1
          |  - failure 1""".stripMargin
+    }
+  }
+  "A sus doc with an introductory text, as executed xhtml" should {
+    "display the introduction before the examples" in {
+      s.susWithIntro.toXhtml_!.toHtml must_==
+      """|This is an intro text to
+         |<br></br>
+         |<br></br>
+         |<sus>
+         |  <t>sus should</t>
+         |  <ul>
+         |    <li>
+         |      <ex class="success">success 1</ex>
+         |    </li>
+         |    <li>
+         |      <ex class="failure">failure 1</ex>
+         |    </li>
+         |  </ul>
+         |</sus>
+         |""".stripMargin
     }
   }
 }

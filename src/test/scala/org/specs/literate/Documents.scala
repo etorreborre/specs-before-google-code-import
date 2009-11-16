@@ -138,7 +138,14 @@ trait DocumentsFactory { outer: BaseSpecification =>
         </ul>
       </sus> 
       
-    def toXhtml_! = reduce(documents, { (d: Document) => d.toXhtml_! })
+    def toXhtml_! = 
+      <sus>
+        <t>{sus.description + " " + sus.verb}</t>
+        <ul>
+          { reduce(documents, { (d: Document) => <li>{ d.toXhtml_! }</li> }) }
+        </ul>
+      </sus> 
+
     def toText = {
       ((sus.description + " " + sus.verb) :: documents.map("  - " + _.toText)).mkString("\n")
     }
