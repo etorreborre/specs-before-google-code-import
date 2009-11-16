@@ -1,6 +1,7 @@
 package org.specs.literate
 import org.specs.specification.{ BaseSpecification, Example, Sus, LiterateDescription }
 import org.specs.xml.NodeFunctions._
+import org.specs.form.ToXhtml
 import scala.xml._
 
 trait Documents extends BaseSpecification with Markdown with DocumentsFactory { 
@@ -23,7 +24,8 @@ trait DocumentsFactory { outer: BaseSpecification =>
 
   case class TextDoc(text: String) extends Doc {
     def txt = this
-    def toXhtml: NodeSeq = Text(text)
+    def toXhtml_! : NodeSeq = Text(text)
+    override def toXhtml: NodeSeq = Text(text)
     def toText = text
   }
   class MarkdownString(val text: String) {
@@ -42,32 +44,38 @@ trait DocumentsFactory { outer: BaseSpecification =>
   } 
   case class MarkdownText(text: String) extends Doc {
     override def paragraph = MarkdownText(text + "\n")
-    def toXhtml = <md>{markdownFormat(text)}</md>
+    def toXhtml_! = <md>{markdownFormat(text)}</md>
+    override def toXhtml = <md>{markdownFormat(text)}</md>
     def toText = text
   }
   def p = br \ br
   def br = new LineBreak
   class LineBreak extends Doc {
-    def toXhtml = <br></br>
+    def toXhtml_! = <br></br>
+    override def toXhtml = <br></br>
     def toText = "\n"
   }
   class ExampleDoc(e: Example) extends Doc {
     lazy val ex = e
-    def toXhtml = <ex>{ex.description}</ex>
+    def toXhtml_! = <ex class={ex.statusClass}>{ex.description}</ex>
+    override def toXhtml = <ex class="info">{ex.description}</ex>
     override def toText_! = ex.statusAsText + " " + ex.description
     def toText = ex.description
   }
   case class DocSequence(documents: List[Doc]) extends Doc {
-    def toXhtml = reduce(documents, { (d: Doc) => d.toXhtml })
+    def toXhtml_! = reduce(documents, { (d: Doc) => d.toXhtml_! })
+    override def toXhtml = reduce(documents, { (d: Doc) => d.toXhtml })
     def toText = documents.map(_.toText).mkString("")
   }
   case class Decorator(document: Doc, d: (NodeSeq => NodeSeq)) extends Doc {
-    def toXhtml = d(document.toXhtml)
+    def toXhtml_! = d(document.toXhtml_!)
+    override def toXhtml = d(document.toXhtml)
     def toText = toXhtml.text
   }
   class Paragraph(document: Doc) extends Doc 
   {
-    def toXhtml = <p>{ document.toXhtml }</p> 
+    def toXhtml_! = <p>{ document.toXhtml_! }</p> 
+    override def toXhtml = <p>{ document.toXhtml }</p> 
     def toText = document.toText + "\n\n"
   }
   
@@ -105,7 +113,6 @@ trait DocumentsFactory { outer: BaseSpecification =>
     }
     def paragraph: Doc = new Paragraph(this)
     def plus(d: Doc): Doc = add(this, d)
-    def toXhtml: NodeSeq
     def toLiterateDesc: LiterateDescription = LiterateDescription(<div>{ toXhtml }</div>)
     
   }
@@ -123,7 +130,15 @@ trait DocumentsFactory { outer: BaseSpecification =>
   class SusDoc(sus: Sus) extends Doc {
     lazy val s = sus
     def documents: List[Document] = s.examples.map(new ExampleDoc(_))
-    def toXhtml = reduce(documents, { (d: Document) => d.toXhtml })
+    override def toXhtml = 
+      <sus>
+        <t>{sus.description + " " + sus.verb}</t>
+        <ul>
+          { reduce(documents, { (d: Document) => <li>{ d.toXhtml }</li> }) }
+        </ul>
+      </sus> 
+      
+    def toXhtml_! = reduce(documents, { (d: Document) => d.toXhtml_! })
     def toText = {
       ((sus.description + " " + sus.verb) :: documents.map("  - " + _.toText)).mkString("\n")
     }
@@ -132,8 +147,9 @@ trait DocumentsFactory { outer: BaseSpecification =>
     }
   }
 }
-trait Document {
+trait Document extends ToXhtml {
   def toXhtml: NodeSeq
+  def toXhtml_! : NodeSeq
   def toText: String
   def toText_! : String = toText
 }
