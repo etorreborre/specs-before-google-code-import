@@ -86,7 +86,7 @@ h4. Literate descriptions
 
 h3. Summary
 
-<ex>A column with the list of systems should be available on the left to access a given system directly</ex>{systemsList}
+<ex>A column with the list of systems should be available on the left to access a given system directly</ex>{susList}
 <ex>Yet this column should only be displayed if there is more than one system</ex>{noSystemsListForOneOnly}
 <ex>This column should be collapsible/expensible by clicking on an icon</ex>{collapsibleColumn}
 

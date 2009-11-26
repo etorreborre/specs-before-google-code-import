@@ -24,9 +24,9 @@ import org.specs.matcher._
 
 class stringSpec extends SpecificationWithJUnit("String") with ScalaCheck {
 
-   "startsWith" verifies ((a: String, b: String) => (a + b).startsWith(a)).set(minTestsOk->25)
+   "startsWith" verifies ((a: String, b: String) => (a + b).startsWith(a))
    "endsWith" verifies { (a: String, b: String) => (a + b).endsWith(b) }
-   "concat" verifies { (a: String, b: String) => (a + b).length == a.length + b.length }
+   "concat" verifies { (a: String, b: String) => (a + b).length == (a.length + b.length) }
    "substring" verifies { (a: String, b: String) => (a + b).substring(a.length) == b }
 
 }

@@ -43,7 +43,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       notifier.exampleFailed("ex1-2", new FailureException("wrong")) was called
     }
     "the error of an example" in {
-      notifier.exampleError(is_==("ex2-2"), is_==("bad") ^^ ((_.getMessage))) was called
+      notifier.exampleError(is_==("ex2-2"), is_==("bad") ^^ ((e:Throwable) => e.getMessage)) was called
     }
     "a skipped example" in {
       notifier.exampleSkipped("ex2-3") was called

@@ -144,7 +144,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
 
 trait beforeAfterSpecification extends Specification with Console with MockOutput with Contexts {
   shareVariables()
-  def execute = { systems = Nil; executeSpec }
+  def execute = { systemsList = Nil; executeSpec }
   def executeSpec
   override val specs = List(this)
   override def main(args: Array[String]) = super[Console].main(args)
