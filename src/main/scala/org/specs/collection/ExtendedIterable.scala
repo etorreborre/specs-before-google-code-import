@@ -52,8 +52,11 @@ object ExtendedIterable {
       if (!xs.isEmpty && xs == xs.elements.next)
         xs.toString
       else
-        "[" + xs.toList.map { x =>
-            if (x.isInstanceOf[anyIterable]) x.asInstanceOf[anyIterable].toDeepString else x.toString
+        "[" + xs.toList.map { x => 
+		    x match {
+			  case i: Iterable[_] => i.toDeepString
+			  case _ => x.toString
+			}
         }.mkString(", ") + "]"
     }
     /**
@@ -106,7 +109,7 @@ object ExtendedIterable {
       var res = true
       (ita, itb) match {
         case (Nil, Nil) => true
-        case (a: anyIterable, b: anyIterable) => {
+        case (a: Iterable[_], b: Iterable[_]) => {
           if (a.firstOption.isDefined && b.firstOption.isDefined) {
             val (x, y, resta, restb) = (a.head, b.head, a.drop(1), b.drop(1))
             matchTwo(x, y) && resta.sameElementsAs(restb, f) ||

@@ -36,7 +36,8 @@ trait Notifier {
 /**
  * This reporter reports specification by executing them and specifying the results to Notifiers.
  */
-class NotifierRunner(val specs: Array[Specification], val notifiers: Array[Notifier]) extends Reporter {
+class NotifierRunner(val specifications: Array[Specification], val notifiers: Array[Notifier]) extends Reporter {
+  val specs = specifications.toList
   def this(s: Specification, n: Notifier) = this(Array(s), Array(n))
   override def report(specs: Seq[Specification]): this.type = {
     super.report(specs)

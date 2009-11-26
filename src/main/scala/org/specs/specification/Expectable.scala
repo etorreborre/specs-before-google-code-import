@@ -307,7 +307,7 @@ trait OrResults {
         result = r
         result.setAlreadyOk()
       } catch {
-        case f: HasResult[T] => return f.result.matchWith(m)
+        case f: HasResult[_] => return f.asInstanceOf[HasResult[T]].result.matchWith(m)
         case t => throw t
       }
       result
@@ -320,11 +320,11 @@ trait OrResults {
         try { 
           result.nextSignificantMatchMustFail().matchWith(m)
         } catch {
-          case f: HasResult[T] => return result
+          case f: HasResult[_] => return f.asInstanceOf[HasResult[T]].result.matchWith(m)
           case t => throw t
         }
       } catch {
-        case f: HasResult[T] => return f.result.matchWith(m)
+        case f: HasResult[_] => return f.asInstanceOf[HasResult[T]].result.matchWith(m)
         case t => throw t
       }
       result
@@ -336,7 +336,7 @@ trait OrResults {
  * This Exception is necessary to handle the "OR" case "value must be equalTo(bad) or be equalTo(good)"
  * where the first match is not ok.
  */
-case class FailureExceptionWithResult[T](m: String, result: Result[T]) extends FailureException(m) with HasResult[T]
+class FailureExceptionWithResult[T](m: String, val result: Result[T]) extends FailureException(m) with HasResult[T]
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
 

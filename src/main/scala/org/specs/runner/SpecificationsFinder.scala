@@ -109,7 +109,7 @@ trait SpecificationsFinder extends FileSystem with Classes {
    * Tries to load the class name and cast it to a specification
    * @return None in case of an exception.
    */
-  def createSpecification(className: String): Option[Specification] = tryToCreateObject[Specification](className, false, false)
+  def createSpecification(className: String): Option[Specification] = tryToCreateObject[Specification](className)
   /**
    * @return a <code>Specification</code> object from a className if that class is a <code>Specification</code> class.<br>
    * Tries to load the class name and cast it to a specification

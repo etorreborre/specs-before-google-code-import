@@ -69,6 +69,8 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   private[specs] val finalStatisticsOnly = Property(specsConfiguration().finalStatisticsOnly)
   /** this variable controls if the ANSI color sequences should be used to colorize output */
   private[specs] val colorize = Property(specsConfiguration().colorize)
+  /** this variable controls if the examples must not be executed and only high-level descriptions must be displayed */
+  private[specs] val planOnly = Property(false)
 
   /** set a new configuration object. */
   def setConfiguration(className: Option[String]): this.type = { 
@@ -86,6 +88,8 @@ trait Reporter extends SpecsFilter with ConsoleLog {
   def setFinalStatisticsOnly(): this.type = { finalStatisticsOnly(true); this }
   /** allow subclasses to add colorization to the output. */
   def setColorize(): this.type = { colorize(true); this }
+  /** allow subclasses to display high-level descriptions only. */
+  def setPlanOnly(): this.type = { planOnly(true); this }
   /** reset all options. */
   def resetOptions(): this.type = {
     args = Array()
@@ -145,6 +149,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     [[-acc | --accept] tag1,tag2,...] [[-rej | --reject] tag1,tag2,...]
     [-sus | --system]
     [-ex | --example]
+    [-plan | --planOnly]
     [-c | --color]""".stripMargin)
   }
   /** display the options description. */
@@ -160,6 +165,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
 -rej, --reject tags             reject the specified tags (comma-separated names)
 -sus, --system                  only the systems under specifications matching this regular expression will be executed
 -ex, --example                  only the examples matching this regular expression will be executed
+-plan, --planOnly               only display the sus and first level descriptions without executing the examples
 -c, --color                     report with color""".stripMargin)
   }
   /** regexp for filtering systems. */
@@ -189,6 +195,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
     if (argsContain("-finalstats", "-finalstatistics")) setFinalStatisticsOnly()
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
+    if (argsContain("-plan")) setPlanOnly()
     if (argsContain("-c", "--color")) setColorize()
     setTags(specs, args)
     debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
@@ -233,3 +240,4 @@ trait Reporter extends SpecsFilter with ConsoleLog {
 
   def ::(r: Reporter) = List(r, this)
 }
+ 

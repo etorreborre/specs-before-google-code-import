@@ -24,7 +24,7 @@ import org.specs.matcher._
  * 
  * Subclasses include MatcherConstraint (uses a matcher), FunctionConstraint (uses a function), AnyConstraint (uses a blockk.)
  */
-abstract case class Constraint[T]() extends {
+abstract class Constraint[T]() extends {
   def execute(expected: Option[T])
 }
 /**

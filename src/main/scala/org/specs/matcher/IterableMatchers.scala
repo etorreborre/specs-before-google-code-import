@@ -189,7 +189,7 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
   implicit def toArrayResultMatcher[T](result: Result[Array[T]]) = new ArrayResultMatcher(result)
   class ArrayResultMatcher[T](result: Result[Array[T]]) {
     def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
-    def contain(a: T) = result.matchWith(outer.contain(a))
+    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
   }
   implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)

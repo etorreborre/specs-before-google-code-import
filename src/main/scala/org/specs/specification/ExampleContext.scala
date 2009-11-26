@@ -27,7 +27,10 @@ trait ExampleContext extends ExampleLifeCycle {
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None
   /** the aroundExpectations function will be invoked around each expectations */
-  var aroundExpectations: Option[Any => Any] = None
+  var aroundExpectations: Option[(=>Any) => Any] = {
+    def id(a: =>Any) = a
+    Some(id(_))
+  }
   /** the firstActions function will be invoked before all examples */
   var firstActions: Option[() => Any] = None
   /** the after function will be invoked after each example */
@@ -43,15 +46,34 @@ trait ExampleContext extends ExampleLifeCycle {
       before.map(_.apply())
     }
   }
-  /** calls the executeExpectations method of the "parent" cycle. */
+  /** 
+   * calls the executeExpectations method of the "parent" cycle.
+   * 
+   * If the example is not a sus then the "around expectations" function is used
+   */
   override def executeExpectations(ex: Examples, t: =>Any): Any = {
-    aroundExpectations.map(f => f(parent.map(_.executeExpectations(ex, t)))).orElse(parent.map(_.executeExpectations(ex, t)))
+    ex match {
+      case sus: Sus => parent.map(_.executeExpectations(ex, t))
+      case e: Example => aroundExpectations.map { (f: (=>Any) =>Any) => 
+          f(parent.map(_.executeExpectations(ex, t)))
+        }.orElse(parent.map(_.executeExpectations(ex, t)))
+    }
+    
   }
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Examples): Unit = { 
     if (!(ex eq this)) {
       after.map {_.apply()}
-      if (!exampleList.isEmpty && ex == exampleList.last) lastActions.map(_.apply)
+      this match {
+        case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last) {
+          lastActions.map { actions =>
+            // force the execution of nested examples if there are last actions
+            ex.exampleList.foreach(_.failures)
+            actions.apply
+          }
+        }
+        case other => ()
+      }
     }
     parent.map(_.afterExample(ex))
   }
@@ -70,6 +92,7 @@ trait ExampleContext extends ExampleLifeCycle {
   def copyContextFrom(other: ExampleContext) = {
     before = other.before
     after = other.after
+    aroundExpectations = other.aroundExpectations
     untilPredicate = other.untilPredicate
     firstActions = other.firstActions
     lastActions = other.lastActions

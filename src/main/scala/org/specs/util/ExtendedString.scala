@@ -33,9 +33,7 @@ object ExtendedString {
      * @return a String where every occurrence of remove has been suppressed 
      */
     def removeAll(remove: String) = s.replaceAll(toReplace(remove), "")
-    private def toReplace(c: String) = c.toList.map { character => 
-       if ("()[]{}+-\\^$|?.*".contains(character)) ("\\" + character) else character
-    }.mkString("")
+    private def toReplace(c: String) = c.map { letter => if ("()[]{}+-\\^$|?.*".contains(letter)) ("\\" + letter) else letter }.mkString("")
     
     /**
      * Remove everything from the first occurrence of a given substring.

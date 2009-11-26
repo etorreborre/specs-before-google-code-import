@@ -211,11 +211,6 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
     def matchesSafely(a: T) = true
     def describeTo(d: org.hamcrest.Description) = {}
   }
-  /** always match the parameter */
-  def a[T] = `with`(trueMatcher[T])
-
-  /** always match the parameter */
-  def an[T] = `with`(trueMatcher[T])
 
   /** shortcut for expectations.`with`(new IsNull[T]) */
   def aNull[T](implicit m: Manifest[T]): T  = {expectations.`with`(new IsNull[T]); null.asInstanceOf[T]}

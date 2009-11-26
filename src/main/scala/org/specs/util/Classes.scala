@@ -54,6 +54,19 @@ trait Classes extends ConsoleOutput {
     return None
   }
   /**
+   * create an instance of a given class, checking that the created instance typechecks as expected
+   */
+  private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: Manifest[T]) = {
+    c match {
+      case Some(klass) => {
+        val instance: AnyRef = klass.newInstance
+        if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
+        Some(instance.asInstanceOf[T])
+      }
+      case None => None
+    }
+  }
+  /**
    * Load a class, given the class name
    */
   private[util] def loadClass[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[Class[T]] = {
@@ -68,48 +81,24 @@ trait Classes extends ConsoleOutput {
     return None
   }
   /**
-   * create an instance of a given class, checking that the created instance typechecks as expected
-   */
-  private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: Manifest[T]) = {
-    c.map((k: Class[T]) => checkInstance[T](k.newInstance))
-  }
-  /**
-   * create an instance of a given class, checking that the created instance typechecks as expected
-   */
-  private[util] def checkInstance[T <: AnyRef](instance: AnyRef)(implicit m: Manifest[T]): T = {
-    if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
-    instance.asInstanceOf[T]
-  }
-  /**
    * Try to create an instance of a given class by using whatever constructor is available
    * and trying to instantiate the first parameter recursively if there is a parameter for that constructor.
    * 
    * This is useful to instantiate nested classes which are referencing their outer class in their constructor
    */
   def tryToCreateObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
-	def createInstance(constructor: java.lang.reflect.Constructor[_], outer: Option[_])(implicit m: Manifest[T]): T = {
-      constructor.setAccessible(true)
-      val instance = outer match {
-    	case Some(o: Object) => constructor.newInstance(o).asInstanceOf[T]
-    	case None => constructor.newInstance().asInstanceOf[T]            
-      }
-      constructor.setAccessible(false)
-	  checkInstance(instance)
-	}
     loadClass(className, printMessage, printStackTrace) match {
       case None => None
-      case Some(c: Class[T]) => {
+      case Some(c: Class[_]) => {
         try {
           val constructors = c.getDeclaredConstructors.toList
           if (constructors.isEmpty)
             None
           else if (constructors.toList(0).getParameterTypes.isEmpty)
-            Some(createInstance(constructors.toList(0), None))
+            createInstanceOf[T](Some[Class[T]](c.asInstanceOf[Class[T]]))
           else if (constructors.toList(0).getParameterTypes.size == 1) {
             val outerClassName = getOuterClassName(c)
-            tryToCreateObject[Object](outerClassName, printMessage, printStackTrace).map { p => 
-              createInstance(constructors(0), Some(p))
-            }
+            tryToCreateObject[T](outerClassName, printMessage, printStackTrace).map(constructors(0).newInstance(_).asInstanceOf[T])
           }
           else
             None

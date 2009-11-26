@@ -38,7 +38,7 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** adds a "before" function to the last sus being defined */
   def doBefore(actions: =>Any) = usingBefore(() => actions)
   /** adds a "around" function to the last sus being defined */
-  def doAroundExpectations(actions: Any =>Any) = current.map(_.aroundExpectations = Some(actions))
+  def doAroundExpectations(actions: (=>Any) =>Any) = current.map(_.aroundExpectations = Some(actions))
   /**  adds an "after" function to the last sus being defined */
   def doAfter(actions: =>Any) = usingAfter(() => actions)
   /** adds a "firstActions" function to the last sus being defined */
@@ -56,7 +56,7 @@ trait BeforeAfter { outer: BaseSpecification =>
   /** actions are stacked so that several before actions can be triggered one after the other */
   private[specs] def stackBeforeActions(sus: Examples, actions: () => Any) = sus.before = stackActions(actions, sus.before)
   /** actions are stacked so that several before actions can be triggered one after the other */
-  private[specs] def stackAroundActions(sus: Examples, actions: Any => Any) = sus.aroundExpectations = stackAround(actions, sus.aroundExpectations)
+  private[specs] def stackAroundActions(sus: Examples, actions: (=>Any) => Any) = sus.aroundExpectations = stackAround(actions, sus.aroundExpectations)
   /** adds an "after" function to a sus */
   private[specs] def stackAfterActions(sus: Examples, actions: () => Any) = sus.after = reverseStackActions(actions, sus.after)
   /** adds "firstActions" to a sus */
@@ -75,10 +75,14 @@ trait BeforeAfter { outer: BaseSpecification =>
     })
   }
   /** @return a function with actions being stacked around. */
-  private def stackAround(actions: Any => Any, previousActions: Option[Any => Any]) = {
-    Some((a:Any) => {
-      actions(previousActions.map(f => f(a)))
-    })
+  private def stackAround(actions: (=>Any) => Any, previousActions: Option[(=>Any) => Any]) = {
+    def newActions(a: =>Any) = {
+      previousActions match {
+        case None => actions(a)
+        case Some(previous) => actions(previous(a))
+      }
+    }
+    Some(newActions(_))
   }
   /** @return a function with actions being executed before the previous actions. */
   private def reverseStackActions(actions: () => Any, previousActions: Option[() => Any]) = {
@@ -126,15 +130,34 @@ trait BeforeAfter { outer: BaseSpecification =>
   }
 }
 /**
- * This trait helps creating Context objects encapsulating the before/after actions which can be associated to a sus
+ * This trait helps creating Context objects encapsulating the before/after actions which can be associated to a sus.
+ * 
+ * It provides factory methods to create Context objects, with before example actions only, or after example actions only, etc,...
+ * 
+ * A context object can be passed to a sus description:<code>
+ *   "a system" ->-(context) should { ... }
+ * </code>
+ * 
+ * A context for a whole specification can also be created:<code>
+ * 
+ * object specWithDatabase extends Specification {
+ *   new SpecContext {
+ *     beforeSpec(initDb)
+ *     beforeExample(deleteUserTable)
+ *   }
+ *   "A repository" should { ... }
+ * }
+ * </code>
+ * 
+ * This context can contain beforeSpec/afterSpec methods and will be applied to every system in the specification.
  */
-trait Contexts extends BeforeAfter { this: BaseSpecification =>
+trait Contexts extends BaseSpecification with BeforeAfter { outer =>
   /** Factory method to create a context with beforeAll only actions */
   def contextFirst(actions: => Any) = new Context { first(actions) }
   /** Factory method to create a context with before only actions */
   def beforeContext(actions: => Any) = new Context { before(actions) }
   /** Factory method to create a context with around only actions */
-  def aroundExpectationsContext(actions: Any => Any) = new Context { aroundExpectations(actions) }
+  def aroundExpectationsContext(actions: (=>Any) => Any) = new Context { aroundExpectations(actions) }
   /** Factory method to create a context with before only actions and an until predicate */
   def beforeContext(actions: => Any, predicate: =>Boolean) = new Context { before(actions); until(predicate()) }
   /** Factory method to create a context with after only actions */
@@ -151,7 +174,7 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
   def context(b: => Any, a: =>Any, predicate: =>Boolean) = new Context { before(b); after(a); until(predicate()) }
   /** 
    * Syntactic sugar to create pass a new context before creating a sus.<p>
-   * Usage: <code>"a system" ->(context) should { 
+   * Usage: <code>"a system" ->-(context) should { 
    *  ..
    * </code>
    * In that case before/after actions defined in the context will be set on the defined sus.
@@ -165,14 +188,24 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
    * In that case before/after actions defined in the context will be set on the defined sus.
    */
   case class ToContext(desc: String) {
-    def ->-[S](context: Context): Sus = {
+    def when(context: Context): Sus = ->-(context)
+    def definedAs(context: Context): Sus = ->-(context)
+    def ->-(context: Context): Sus = {
       if (context == null) throw new NullPointerException("the context is null")
       specifySus(context, desc)
     } 
   }
+  /**
+   * Create a sus with a specific context
+   */
   private def specifySus(context: Context, desc: String): Sus = {
     if (context == null) throw new NullPointerException("the context is null")
-    val sus = specify(desc)
+    transferActionsToSus(specify(desc), context)
+  }
+  /**
+   * add all the actions defined on a Context object to a sus
+   */
+  private def transferActionsToSus(sus: Sus, context: Context) ={
     stackFirstActions(sus, context.firstActions())
     stackBeforeActions(sus, context.beforeActions)
     stackAroundActions(sus, context.aroundExpectationsActions)
@@ -181,9 +214,114 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
     until(sus, context.predicate())
     sus
   }
+  /**
+   * optional specification context
+   */
+  private[specs] var specContext: Option[Context] = None
+  /**
+   * Specification context possibly adding actions, before and after the specification.
+   * 
+   * This object can be created in a given specification and passed on to another specification with the apply method:<code>
+   * object DatabaseContext extends Specification {
+   *   val setup = new SpecContext {
+   *                     beforeSpec(initDb)
+   *                     beforeExample(deleteUserTable)
+   *               }
+   * }
+   * object DatabaseSpec1 extends Specification {
+   *   DatabaseContext.setup(this) // setup the context of this specification
+   *   ...
+   * } 
+   * </code>
+   */
+  case class SpecContext() extends Context { thisContext =>
+    /** the specification is automatically updated with this specification context */
+    specContext = Some(this)
+
+    /** 
+     * specification which must be setup with this context
+     * 
+     * By default the specification that needs to be setup with this context is 'outer'
+     * However this needs to be changed if this context is applied to another specification
+     */
+    private var specification: BaseSpecification with BeforeAfter = outer
+    
+    /**
+     * create a new context object and setup spec with it
+     * @return a new SpecContext setup on spec
+     */
+    def apply(spec: Contexts with BeforeAfter): SpecContext = {
+      val originalSpecification = outer
+      val newContext = new SpecContext {
+        specification = spec
+        originalSpecification.beforeSpec.map(actions => beforeSpec(actions()))
+        originalSpecification.afterSpec.map(actions => afterSpec(actions()))
+        first(thisContext.firstActions())
+        last(thisContext.lastActions())
+        before(thisContext.beforeActions())
+        after(thisContext.afterActions())
+        def around(a: =>Any) = thisContext.aroundExpectationsActions(a) 
+        aroundExpectations(around(_))
+        until(thisContext.predicate())
+      }
+      spec.specContext = Some(newContext)
+      newContext
+    }
+    /** adds a "beforeSpec" function to the current specification */
+    def beforeSpec(actions: =>Any) = specification.doBeforeSpec(actions)
+    /** adds a "afterSpec" function to the current specification */
+    def afterSpec(actions: =>Any) = specification.doAfterSpec(actions)
+    
+    /** register the before actions and propagate them to the specification systems */
+    override def before(actions: =>Any) = { 
+      super.before(actions); 
+      specification.systems.map(sus => stackBeforeActions(sus, () => beforeActions()))
+      this 
+    }
+    /** register the around actions and propagate them to the specification systems */
+    override def aroundExpectations(actions: (=>Any) =>Any) = { 
+      super.aroundExpectations(actions); 
+      specification.systems.map(sus => stackAroundActions(sus, aroundExpectationsActions))
+      this 
+    }
+    /** register the after actions and propagate them to the specification systems */
+    override def after(actions: =>Any) = { 
+      super.after(actions)
+      specification.systems.map(sus => stackAfterActions(sus, () => afterActions()))
+      this 
+    }
+    /** register the first actions and propagate them to the specification systems */
+    override def first(actions: =>Any) = { 
+      super.first(actions)
+      specification.systems.map(sus => stackFirstActions(sus, () => firstActions()))
+      this 
+    }
+    /** register the last actions and propagate them to the specification systems */
+    override def last(actions: =>Any) = { 
+      super.last(actions)
+      specification.systems.map(sus => stackLastActions(sus, () => lastActions()))
+      this 
+    }
+    /** register the until predicate and propagate it to the specification systems */
+    override def until(predicate: =>Boolean) = { 
+      super.until(predicate)
+      specification.systems.map(sus => specification.until(sus, predicate))
+      this 
+    }
+
+  }
+  /**
+   * When a sus is specified, transfer the context actions to it
+   */
+  override implicit def specifySus(desc: String): SpecifiedSus = {
+    val sus = new Sus(desc, this)
+    specContext map { c => transferActionsToSus(sus, c) }
+    new SpecifiedSus(addSus(sus))
+  }
+
 }
 /** 
- * Case class holding before and after functions to be set on a system under test.<p>
+ * class holding before and after functions to be set on a system under test.<p>
  * Context objects are usually created using the factory methods of the Contexts trait:<pre>
  * 
  * // this method returns a context object which can be passed to a System under test (with "a system" ->(context) should {... )
@@ -191,18 +329,36 @@ trait Contexts extends BeforeAfter { this: BaseSpecification =>
  * beforeContext(initSystem).until(enoughTestsAreExecuted)
  * </pre>
  */
-case class Context() {
+class Context {
   private[specs] var firstActions: () => Any = () => () 
   private[specs] var lastActions: () => Any = () => ()
   private[specs] var beforeActions: () => Any = () => () 
-  private[specs] var aroundExpectationsActions: Any => Any = (a:Any) => () 
+  private[specs] var aroundExpectationsActions: (=>Any) => Any = {
+    def id(a: =>Any) = a
+    id(_)
+  }
   private[specs] var afterActions: () => Any = () => ()
   private[specs] var predicate: () => Boolean = () => true
+  
+  /** actions to execute before each example */
   def before(actions: =>Any) = { beforeActions = () => actions; this }
-  def aroundExpectations(actions: Any =>Any) = { aroundExpectationsActions = actions; this }
+  /** alias for before */
+  def beforeExample(actions: =>Any) = before(actions)
+  /** around a simple example expectations */
+  def aroundExpectations(actions: (=>Any) =>Any) = { aroundExpectationsActions = actions; this }
+  /** actions to execute after each example */
   def after(actions: =>Any) = { afterActions = () => actions; this }
+  /** alias for after */
+  def afterExample(actions: =>Any) = after(actions)
+  /** actions to execute before each sus */
   def first(actions: =>Any) = { firstActions = () => actions; this }
+  /** alias for first */
+  def beforeSus(actions: =>Any) = first(actions)
+  /** actions to execute after each sus */
   def last(actions: =>Any) = { lastActions = () => actions; this }
+  /** alias for last */
+  def afterSus(actions: =>Any) = last(actions)
+  /** predicate used to determine when example execution should be stopped */
   def until(predicate: =>Boolean) = { this.predicate = () => predicate; this }
 }
 

@@ -17,14 +17,18 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.literate
-import com.petebevin.markdown.MarkdownProcessor
+import java.io._
+import javax.script._
 
 trait Markdown extends MarkdownFormatting with MarkdownWiki
 class MarkdownFormatter extends MarkdownFormatting
 trait MarkdownFormatting extends WikiFormatter {
-  override protected def parseToHtml(s: String) = {
-     val markup = new MarkdownProcessor
-     "<div>" + markup.markdown(s) + "</div>"
+  val jsEngine = new ScriptEngineManager().getEngineByName("js")
+  val showdown = getClass.getClassLoader.getResourceAsStream("showdown.js")
+  jsEngine.eval(new InputStreamReader(showdown))
+  val converter = jsEngine.eval("new Showdown.converter()")
+  override def parseToHtml(text: String): String = {
+    "<div>" + jsEngine.asInstanceOf[Invocable].invokeMethod(converter, "makeHtml", text) + "\n</div>"
   }
   override def escapeHtml(s: String) = s
 }
