@@ -20,8 +20,9 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val cglib 		= "cglib" % "cglib" % "2.1_3"  
   val cglibnodep	= "cglib" % "cglib-nodep" % "2.1_3"  
   val objenesis 	= "org.objenesis" % "objenesis" % "1.0"
+  val testInterfaces = "org.scala-tools.testing" % "test-interface" % "0.2"
 
-  override def crossScalaVersions = Set("2.7.5", "2.7.6", "2.7.7")
+  override def crossScalaVersions = List("2.7.5", "2.7.6", "2.7.7")
 
   override def managedStyle = ManagedStyle.Maven
   val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"

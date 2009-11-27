@@ -24,27 +24,27 @@ class SpecsFramework extends Framework {
     def superClassName = "org.spex.Specification"
     def isModule = true
   }
-  def tests = Array(specificationClass, specificationxClass, specificationObject, specificationxObject)
-  def testRunner(classLoader: ClassLoader, loggers: Array[Logger]) = new SpecsSbtRunner(classLoader, loggers)
+  def tests = Array[TestFingerprint](specificationClass, specificationxClass, specificationObject, specificationxObject)
+  def testRunner(classLoader: ClassLoader, loggers: Array[Logger]) = new TestInterfaceRunner(classLoader, loggers)
 }
 
 /**
- * Runner for SBT.
+ * Runner for TestInterface.
  * It creates a Specification class with the given classLoader the classes which can be executed by the specs library.
  * 
  * Then it uses a NotifierRunner to notify the EventHandler of the test events.
  */
-class SpecsSbtRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
+class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
     val specification = createObject[Specification](classname, true, args.contains("-v"))
-    specification.map(new NotifierRunner(_, new SbtNotifier(handler, loggers)).reportSpecs)
+    specification.map(new NotifierRunner(_, new TestInterfaceNotifier(handler, loggers)).reportSpecs)
   }
 }
 
 /**
- * The sbt notifier notifies the EventHandler of the specification execution
+ * The TestInterface notifier notifies the EventHandler of the specification execution
  */
-class SbtNotifier(handler: EventHandler, loggers: Array[Logger]) extends Notifier {
+class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) extends Notifier {
   class NamedEvent(name: String) extends Event {
     def testName = name
     def description = ""

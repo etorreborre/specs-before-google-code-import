@@ -3,8 +3,8 @@ import org.spex._
 import org.scalatools.testing._
 import scala.collection.mutable._
 
-class sbtRunnerSpec extends Specification {
-  "the sbt test interface" should {
+class kestInterfaceRunnerSpec extends Specification {
+  "the test interface runner" should {
     "report a sus" in {
       logOutput must include("[info] this sus should")      
     }
@@ -36,7 +36,7 @@ class sbtRunnerSpec extends Specification {
       events must include("Skipped")      
     }
   }
-  class SbtLogger extends Logger {
+  class TestInterfaceLogger extends Logger {
     var out = ""
     def ansiCodesSupported = false;
     def error(msg: String) = out += "[error] " + msg + "\n"
@@ -44,28 +44,28 @@ class sbtRunnerSpec extends Specification {
     def info(msg: String) = out += "[info] " + msg + "\n"
     def debug(msg: String) = out += "[debug] " + msg + "\n"
   }
-  val sbtLogger = new SbtLogger
-  val sbtColoredLogger = new SbtLogger { override def ansiCodesSupported = true }
+  val testInterfaceLogger = new TestInterfaceLogger
+  val testInterfaceColoredLogger = new TestInterfaceLogger { override def ansiCodesSupported = true }
   val handler = new EventHandler {
     val events: ListBuffer[String] = new ListBuffer
     def handle(event: Event)= events.append(event.result.toString)
   }
-  def executeRunner = new SpecsSbtRunner(getClass.getClassLoader, Array(sbtLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
+  def executeRunner = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run("org.specs.runner.testInterfaceSpecification", null, handler, Array())
 
   def logOutput = {
     executeRunner
-    sbtLogger.out
+    testInterfaceLogger.out
   }
   def logColoredOutput = {
-    new SpecsSbtRunner(getClass.getClassLoader, Array(sbtColoredLogger)).run("org.specs.runner.sbtSpecification", null, handler, Array())
-    sbtColoredLogger.out
+    new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceColoredLogger)).run("org.specs.runner.testInterfaceSpecification", null, handler, Array())
+    testInterfaceColoredLogger.out
   }
   def events = {
     executeRunner
     handler.events.mkString("\n")
   }
 }
-class sbtSpecification extends Specification {
+class testInterfaceSpecification extends Specification {
   "this sus" should {
     "success" in {
       1 must_== 1
