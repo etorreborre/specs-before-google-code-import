@@ -28,7 +28,7 @@ class specificationSpec extends SpecificationWithJUnit {
   "A specification" isSpecifiedBy (basicFeatures, advancedFeatures)
 }
 
-object basicFeatures extends SpecificationWithSamples {
+object basicFeatures extends Specification with SpecificationWithSamples {
   "A specification" should {
     "have a description being its unqualified class name by default" in {
       object mySpec extends Specification
@@ -110,7 +110,7 @@ object basicFeatures extends SpecificationWithSamples {
    }
  }
 }
-object advancedFeatures extends SpecificationWithSamples {
+object advancedFeatures extends Specification with SpecificationWithSamples {
   "A specification " can {
     "have a user-defined name" in {
       val spec = oneEx(that.isOk)
@@ -139,7 +139,7 @@ object advancedFeatures extends SpecificationWithSamples {
     "share examples with another specification.\n" +
     "Declare an example to be a collection of examples coming from another spec. " +
     "The specified example will have the other examples as sub-examples" in {
-      trait SharedExamples extends Specification {
+      trait SharedExamples { this: Specification =>
         def sharedExamples = {
           "this is a new example" in { 1 mustBe 1 }
         }
@@ -165,7 +165,7 @@ object advancedFeatures extends SpecificationWithSamples {
   }
 }
 
-trait SpecificationWithSamples extends Specification {
+trait SpecificationWithSamples { this: Specification =>
 
   abstract class TestSpec extends Specification {
     val success = () => true mustBe true

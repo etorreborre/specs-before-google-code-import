@@ -82,7 +82,7 @@ class taggedSpec extends SpecificationWithJUnit {
   "A tagged object with subcomponents" should { createTaggedTree.before
     "propagate its tags to the subcomponents" in {
       taggedTree.tag("1")
-      taggedTree.taggedComponents.first.tagList must haveSameElementsAs(List(Tag("1")))
+      taggedTree.taggedComponents.first.tagNames must haveSameElementsAs(List("1"))
     }
     "clear the subcomponents tags when clearing its own" in {
       taggedTree.tag("1")

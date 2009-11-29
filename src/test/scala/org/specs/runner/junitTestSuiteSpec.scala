@@ -117,8 +117,8 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
         override lazy val isExecutedFromMaven = false
       }
       import _root_.junit.framework._
-      case class aTest() extends TestCase("name")
-      description.asDescription(aTest()).toString must beMatching(".*\\(.*\\)")
+      class ATest() extends TestCase("name")
+      description.asDescription(new ATest()).toString must beMatching(".*\\(.*\\)")
     }
   }
   "A sus" should {

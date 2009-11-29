@@ -16,36 +16,21 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package org.specs.io
-import org.specs.runner._
+package org.specs.matcher
+import org.junit.Test
+import _root_.junit.framework.AssertionFailedError
 
-class fileSystemUnit extends TestData {
-  "A file system" should {
-    "provide a globToPattern function returning the regex pattern corresponding to a glob definition" in {
-      paths must pass { matchingPath: MatchingPath =>
-        matchingPath.path must beMatching(globToPattern(matchingPath.glob))
-      }
+class junitMatchersSpec extends org.spex.Specification {
+  "A junit test case" can {
+    "use specs matchers" in {
+      val test = new junitSampleTest
+      test.thisShouldFail must throwAn[AssertionFailedError]
     }
   }
 }
-import org.scalacheck.Gen._
-import org.scalacheck._
-import scala.collection.mutable.Queue
-import java.util.regex._
-import org.specs._
-import org.specs.Sugar._
-
-class TestData extends SpecificationWithJUnit with FileSystem with ConsoleOutput with ScalaCheck {
-  case class MatchingPath(path: String, glob: String)
-  def paths = for { glob <- elements("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
-                    path <- elements(pathsMatchingGlob(glob):_*)
-                  } yield MatchingPath(path, glob)
-
-  def pathsMatchingGlob(glob: String): List[String] = {
-    for { doubleStar   <- List("dir", "dir1/dir2")
-          specialChar <-  "!@#$%^&';{}[]".elements.toList
-          name         <- List("name", "name" + specialChar, "name2")
-          ext          <- List("ext1", "ext2")
-        } yield "./" + glob.replace("**", doubleStar).replace(".*", "." + ext).replace("*", name)
-  }
+@Test
+class junitSampleTest extends JUnitMatchers {
+  @Test
+  def thisShouldFail: Unit = 1 must_== 2
 }
+

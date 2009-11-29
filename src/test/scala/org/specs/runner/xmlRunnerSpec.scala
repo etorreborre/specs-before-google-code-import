@@ -19,9 +19,10 @@
 package org.specs.runner
 import org.specs.specification._
 import org.specs.util._
+import org.specs._
 import scala.xml._
 
-class xmlRunnerSpec extends RunnerFixture { "The specification for the XML runner" is <t>
+class xmlRunnerSpec extends HtmlSpecificationWithJUnit with RunnerFixture { "The specification for the XML runner" is <t>
 
   A specification can be run by a XML runner object. The XML runner object is responsible for
   collecting the results of sub-specifications, systems under test and examples and organize

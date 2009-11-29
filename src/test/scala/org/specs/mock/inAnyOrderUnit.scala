@@ -75,6 +75,7 @@ class inAnyOrderUnit extends SpecificationWithJUnit with TestData with ScalaChec
     }
   }
 }
+import org.scalacheck.Gen
 trait TestData extends ProtocolTypes {
   val (e, e1, e2) = (ExpectedCall("m"), ExpectedCall("m1"), ExpectedCall("m2"))
   val (r, r1, r2, rprime) = (ReceivedCall("m"), ReceivedCall("m1"), ReceivedCall("m2"), ReceivedCall("m"))
@@ -89,10 +90,11 @@ trait TestData extends ProtocolTypes {
                     yield (expected.map(new ExpectedCall(_)), expected.scramble.map(new ReceivedCall(_)))
 
   def receivedSizeIs(f: (Int, Int) => Boolean) = {
-    for (expected <- listOf(elements(methods: _*));
+    for (expected <- listOf(Gen.oneOf(methods.map(value(_)): _*));
          n <- choose(-2, 2);
-         val received = (expected.scramble:::expected.scramble).take(expected.size + n)
-                        if (f(n + expected.size, expected.size)))
+         val received = if (f(n + expected.size, expected.size)) 
+			              (expected.scramble:::expected.scramble).take(expected.size + n)
+		                else Nil)
      yield (expected.map(new ExpectedCall(_)), received.map(new ReceivedCall(_)))
   }
 }

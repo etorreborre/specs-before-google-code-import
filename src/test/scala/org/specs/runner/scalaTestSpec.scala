@@ -29,7 +29,7 @@ import org.specs.mock.Mockito
 import org.mockito.Mockito._
 import scala.collection.immutable._
 
-class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
+class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Contexts {
   "A ScalaTest runner" should {
     "create a ScalaTest suite named after the specification description" in {
       val spec = new SimpleSpecification(that.isOk)
@@ -93,7 +93,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks {
     }
   }
 }
-trait ScalaTestMocks extends BaseSpecification with Mockito with Contexts {
+trait ScalaTestMocks extends Mockito { this: BaseSpecification with Contexts =>
    var reporter = mock[org.scalatest.Reporter]
    var stopper = mock[org.scalatest.Stopper]
    val c = beforeContext {

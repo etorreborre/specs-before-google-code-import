@@ -142,7 +142,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
   }
 }
 
-trait beforeAfterSpecification extends Specification with Console with MockOutput with Contexts {
+abstract class beforeAfterSpecification extends Specification with Contexts with Console with MockOutput { 
   shareVariables()
   def execute = { systemsList = Nil; executeSpec }
   def executeSpec

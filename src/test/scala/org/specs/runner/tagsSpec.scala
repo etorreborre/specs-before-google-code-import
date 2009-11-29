@@ -66,7 +66,7 @@ class tagsSpec extends HtmlSpecificationWithJUnit with Fixtures {
 
 </t> isSus
 }
-trait Fixtures extends LiterateSpecification { this: LiterateSpecification =>
+trait Fixtures { this: LiterateSpecification =>
    object mySpec extends Specification with ScalaCheck {
      "example 1" in { 1 must_== 2 }
      "example 2" in {
@@ -86,7 +86,7 @@ trait Fixtures extends LiterateSpecification { this: LiterateSpecification =>
       } tag("be tagged")
     }
    def susExamplesAreNotTagged = eg {
-     specWithSus.systems.flatMap(_.examples).flatMap(_.tagList) must beEmpty
+     specWithSus.systems.flatMap(_.examples).flatMap(_.tagNames) must beEmpty
    }
    import org.specs.io.mock.MockOutput
    def specOutput = {

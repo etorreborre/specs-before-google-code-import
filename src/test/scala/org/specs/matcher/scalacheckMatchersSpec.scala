@@ -92,7 +92,7 @@ object specWithFailure extends Specification with ScalaCheck {
   forAll((a:Int) => {counter +=1; counter < 10}) must pass
 }
 
-trait ScalaCheckExamples extends Specification with ScalaCheck {
+trait ScalaCheckExamples extends ScalaCheck {  this: Specification =>
   val identityProp = forAll((a:Boolean) => a)
   val alwaysTrueProp = forAll((a:Int) => true)
   val alwaysTrue = elements(true)
