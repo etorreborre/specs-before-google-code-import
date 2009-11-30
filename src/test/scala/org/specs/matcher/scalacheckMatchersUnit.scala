@@ -38,7 +38,7 @@ class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock w
     }
     "provide a 'display' case class which can take parameters overriding the default values" in {
       display(minTestsOk->10)(minTestsOk) mustBe 10
-      display(minTestsOk->10)(maxDiscarded) mustBe defaultValues(maxDiscarded)
+      display(minTestsOk->10)(maxDiscarded).toString must_== defaultValues(maxDiscarded).toString
     }
     "provide a 'display' case class which is resilient to a value with a null key" in {
       val s: Symbol = null
@@ -46,7 +46,7 @@ class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock w
     }
     "provide a 'set' case class which can take parameters overriding the default values" in {
       set(minTestsOk->10)(minTestsOk) mustBe 10
-      set(minTestsOk->10)(maxDiscarded) mustBe defaultValues(maxDiscarded)
+      set(minTestsOk->10)(maxDiscarded).toString must_== defaultValues(maxDiscarded).toString
     }
     "provide a 'set' case class which is not verbose" in {
       set(minTestsOk->10).verbose mustBe false

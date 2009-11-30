@@ -30,7 +30,7 @@ import org.specs._
 class jmockSpec extends SpecificationWithJUnit {
   "The jMock integration".isSpecifiedBy(jmockGoodSpecification, jmockBadSpecification, countingNamingSchemeSpecification)
 }
-object jmockGoodSpecification extends Specification with Mocked {
+object jmockGoodSpecification extends Mocked {
   "The JMocker trait" should {
     "provide a 'one' method succeeding if only one method is called" in {
       expect { 
@@ -264,7 +264,7 @@ object jmockGoodSpecification extends Specification with Mocked {
   }
 }
 
-object jmockBadSpecification extends Specification with BadMocked {
+object jmockBadSpecification extends BadMocked {
   "The JMocker trait" should { 
     "provide a 'one' method failing if no method is called" in {
        expect { one(list).size }
@@ -327,7 +327,7 @@ object jmockBadSpecification extends Specification with BadMocked {
     }
   }
 }
-trait BadMocked extends Mocked { this: Specification =>
+class BadMocked extends Mocked {
   var checkAfterExpectations = true
   override def executeExpectations(ex: Examples, t: => Any) = {
     try {
@@ -347,7 +347,7 @@ trait BadMocked extends Mocked { this: Specification =>
         checkAfterExpectations = true
   }
 }
-trait Mocked extends JMocker with ClassMocker { this: Specification =>
+class Mocked extends Specification with JMocker with ClassMocker {
   class ToMock {
     def isEmpty = true
     def isEmpty2 = false
