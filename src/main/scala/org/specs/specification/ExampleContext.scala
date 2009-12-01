@@ -41,7 +41,7 @@ trait ExampleContext extends ExampleLifeCycle {
   override def beforeExample(ex: Examples): Unit = {
     parent.map(_.beforeExample(ex))
     if (!(ex eq this)) {
-      if (!exampleList.isEmpty && ex == exampleList.first)
+      if (!exampleList.isEmpty && ex == exampleList.head)
         firstActions.map(_.apply)
       before.map(_.apply())
     }

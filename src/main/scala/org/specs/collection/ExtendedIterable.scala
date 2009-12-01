@@ -40,7 +40,7 @@ object ExtendedIterable {
     /**
      * @return a Stream created from the iterable
      */
-    def toStream = Stream.fromIterator(xs.elements)
+    def toStream = xs.iterator.toStream
     /**
      * alias for any type of Iterable
      */
@@ -49,7 +49,7 @@ object ExtendedIterable {
      * @return the representation of the elements of the iterable using the toString method recursively
      */
     def toDeepString: String = {
-      if (!xs.isEmpty && xs == xs.elements.next)
+      if (!xs.isEmpty && xs == xs.iterator.next)
         xs.toString
       else
         "[" + xs.toList.map { x => 
@@ -63,8 +63,8 @@ object ExtendedIterable {
      * @return true if the 2 iterables contain the same elements, in the same order, according to a function f
      */
     def isSimilar[B >: A](that: Iterable[B], f: Function2[A, B, Boolean]): Boolean = {
-      val ita = xs.elements
-      val itb = that.elements
+      val ita = xs.iterator
+      val itb = that.iterator
       var res = true
       while (res && ita.hasNext && itb.hasNext) {
         res = f(ita.next, itb.next)
@@ -97,20 +97,20 @@ object ExtendedIterable {
      * @return true if the 2 iterables contain the same elements (according to a comparision function f) recursively, in any order
      */
     def sameElementsAs(that: Iterable[A], f: (A, A) => Boolean): Boolean = {
-      def isNotItsOwnIterable(a: Iterable[_]) = a.isEmpty || a.elements.next != a
+      def isNotItsOwnIterable(a: Iterable[_]) = a.isEmpty || a.iterator.next != a
 	  def matchTwo(x: A, y: A): Boolean = {
 		(x, y) match {
 		  case (a: Iterable[_], b:Iterable[_]) if (isNotItsOwnIterable(a)) => x.asInstanceOf[Iterable[A]].sameElementsAs(y.asInstanceOf[Iterable[A]], f)
 		  case _ => f(x, y)
 		}
 	  }
-      val ita = xs.elements.toList
-      val itb = that.elements.toList
+      val ita = xs.iterator.toList
+      val itb = that.iterator.toList
       var res = true
       (ita, itb) match {
         case (Nil, Nil) => true
         case (a: Iterable[_], b: Iterable[_]) => {
-          if (a.firstOption.isDefined && b.firstOption.isDefined) {
+          if (a.headOption.isDefined && b.headOption.isDefined) {
             val (x, y, resta, restb) = (a.head, b.head, a.drop(1), b.drop(1))
             matchTwo(x, y) && resta.sameElementsAs(restb, f) ||
             resta.exists(matchTwo(_, y)) && restb.exists(matchTwo(_, x)) &&

@@ -213,7 +213,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(arguments(i + 1).split(","):_*)
     def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(arguments(i + 1).split(","):_*)
     def setAcceptedTags(specifications: Seq[Specification], argumentNames: List[String], f: (Specification, Int) => Specification) = {
-      arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
+      arguments.map(_.toLowerCase).indexWhere(arg => argumentNames.contains(arg)) match {
         case -1 => ()
         case i if (i < arguments.length - 1) => filteredSpecs.foreach(f(_, i))
         case _ => if (!arguments.isEmpty) printWarning
@@ -228,7 +228,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
    * for example: argValue(Array("-ex", ".*ex.*"), List("-ex", "--example")) = Some(".*ex.*")
    */
   protected def argValue(arguments: Array[String], argumentNames: List[String]): Option[String] = {
-    arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
+    arguments.map(_.toLowerCase).indexWhere(arg => argumentNames.contains(arg)) match {
       case -1 => None
       case i if (i < arguments.length - 1) => Some(arguments(i + 1))
       case _ => {

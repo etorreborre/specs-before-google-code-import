@@ -315,7 +315,7 @@ trait MockitoStubs extends MocksCreation {
     def answers(function: Any => T) = mocker.when(c).thenAnswer(new MockAnswer(function))
     def throws[E <: Throwable](e: E*): OngoingStubbing[T] = {
       if (e.isEmpty) throw new java.lang.IllegalArgumentException("The parameter passed to throws must not be empty")
-      var stub = mocker.when(c).thenThrow(e.first)
+      var stub = mocker.when(c).thenThrow(e.head)
       e.drop(1) foreach { x =>
     	stub = stub.thenThrow(x)
       }

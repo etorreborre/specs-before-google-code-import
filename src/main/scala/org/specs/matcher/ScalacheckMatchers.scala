@@ -137,7 +137,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
      // display the final result if verbose = true
      if (verbose) {
        val s = prettyTestRes(results)(defaultPrettyParams)
-       printf("\r%s %s%s\n", if (results.passed) "+" else "!", s, List.make(70 - s.length, " ").mkString(""))
+       printf("\r%s %s%s\n", if (results.passed) "+" else "!", s, List.fill(70 - s.length)(" ").mkString(""))
      }
 
      results match {

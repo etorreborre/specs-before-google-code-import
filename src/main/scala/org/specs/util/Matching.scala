@@ -54,7 +54,7 @@ trait Matching {
         existingEdges((a, b))
       else {
         val newEdge = edgeFunction(a, b)
-        existingEdges = existingEdges.update((a, b), newEdge)
+        existingEdges = existingEdges.updated((a, b), newEdge)
         newEdge
       }
     }

@@ -28,5 +28,5 @@ trait LiterateDescriptionFormatter {
   def format(desc: Elem, examples: Iterable[Example]): Node
   def format(desc: Elem): Node = desc
   def formatDesc(example: Example): Node = Text(example.exampleDescription.toString) 
-  def makeExampleDescription(node: NodeSeq): ExampleDescription = ExampleDescription(node.first.text, node.first)
+  def makeExampleDescription(node: NodeSeq): ExampleDescription = ExampleDescription(node.head.text, node.head)
 }
