@@ -46,7 +46,7 @@ class LiterateSpecRules extends HtmlSpecificationWithJUnit with AllProperties {
    def checkSkipped(s: Specification) = {
      s.systems.flatMap(_.examples).flatMap(_.skipped).size aka "the number of skipped" must_== 1
    }
-   def desc(s: Specification) = s.systems.first.literateDesc.toString aka "the formatted description"
+   def desc(s: Specification) = s.systems.head.literateDesc.toString aka "the formatted description"
    def isText = desc(example1) must include("1 must be 1")
    def isTextile = desc(example2) must include("<strong>1 must be 1</strong>")
    def isMarkdown = desc(example5) must include("<em>1 must be 1</em>")

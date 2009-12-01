@@ -82,19 +82,19 @@ class taggedSpec extends SpecificationWithJUnit {
   "A tagged object with subcomponents" should { createTaggedTree.before
     "propagate its tags to the subcomponents" in {
       taggedTree.tag("1")
-      taggedTree.taggedComponents.first.tagNames must haveSameElementsAs(List("1"))
+      taggedTree.taggedComponents.head.tagNames must haveSameElementsAs(List("1"))
     }
     "clear the subcomponents tags when clearing its own" in {
       taggedTree.tag("1")
       taggedTree.clearTags
-      taggedTree.taggedComponents.first.tagList must beEmpty
+      taggedTree.taggedComponents.head.tagList must beEmpty
     }
     "be able to accept all tags if some tags were previously rejected" in {
       taggedTree.tag("1")
       taggedTree.acceptTag("1")
       taggedTree.acceptAnyTag
-      taggedTree.taggedComponents.first.accepted must beEmpty
-      taggedTree.taggedComponents.first.rejected must beEmpty
+      taggedTree.taggedComponents.head.accepted must beEmpty
+      taggedTree.taggedComponents.head.rejected must beEmpty
     }
   }
   var tagged = new Object with Tagged

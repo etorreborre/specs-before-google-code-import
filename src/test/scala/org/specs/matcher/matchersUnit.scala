@@ -71,9 +71,9 @@ import org.scalacheck.Gen._
 import org.specs.Sugar._
 trait MatcherCases {
   type TestCase = (Boolean, Matcher[Boolean], Matcher[Boolean])
-  val matcherCases = for (b1 <- elements(true, false);
-                          b2 <- elements(true, false);
-                          a  <- elements(true, false);
+  val matcherCases = for (b1 <- oneOf(true, false);
+                          b2 <- oneOf(true, false);
+                          a  <- oneOf(true, false);
                           val m1 = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok1", "ko1") };
                           val m2 = new Matcher[Boolean](){ def apply(b: => Boolean) = (b, "ok2", "ko2")}
                         ) yield (a, m1, m2)

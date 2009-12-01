@@ -32,7 +32,7 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
     "keep its verification mode when appended to another call" in {
       val calls1: MockCallsList = new MockCallsList(scala.List((m1.get(0) on m1).times(2)))
       val calls2: MockCallsList = (m1.get(0) on m1).times(2) then (m2.get(0) on m2).times(3)  
-      calls2.calls.first.verifInOrderMode.toString must_== org.mockito.Mockito.times(2).toString
+      calls2.calls.head.verifInOrderMode.toString must_== org.mockito.Mockito.times(2).toString
       calls2.calls(1).verifInOrderMode.toString must_== org.mockito.Mockito.times(3).toString
     }
   }

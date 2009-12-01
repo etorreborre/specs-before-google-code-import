@@ -37,13 +37,13 @@ import org.specs.Sugar._
 
 class TestData extends SpecificationWithJUnit with FileSystem with ConsoleOutput with ScalaCheck {
   case class MatchingPath(path: String, glob: String)
-  def paths = for { glob <- elements("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
-                    path <- elements(pathsMatchingGlob(glob):_*)
+  def paths = for { glob <- Gen.oneOf("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
+                    path <- Gen.oneOf(pathsMatchingGlob(glob):_*)
                   } yield MatchingPath(path, glob)
 
   def pathsMatchingGlob(glob: String): List[String] = {
     for { doubleStar   <- List("dir", "dir1/dir2")
-          specialChar <-  "!@#$%^&';{}[]".elements.toList
+          specialChar <-  "!@#$%^&';{}[]".iterator.toList
           name         <- List("name", "name" + specialChar, "name2")
           ext          <- List("ext1", "ext2")
         } yield "./" + glob.replace("**", doubleStar).replace(".*", "." + ext).replace("*", name)

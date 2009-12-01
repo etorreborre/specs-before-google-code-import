@@ -40,7 +40,7 @@ object basicFeatures extends Specification with SpecificationWithSamples {
       twoSystems(that.isOk, that.isOk).systems.size mustBe 2
     }
     "have zero or more examples, sorted by sus" in {
-      twoSystems(that.isOk, that.isKo).systems.first.statusClass must_== "success"
+      twoSystems(that.isOk, that.isKo).systems.head.statusClass must_== "success"
       twoSystems(that.isOk, that.isKo).systems.last.statusClass must_== "failure"
     }
    "have no failures if it contains no expectation" in {
@@ -119,7 +119,7 @@ object advancedFeatures extends Specification with SpecificationWithSamples {
     }
     "use 'can' instead of 'should' to describe the sus functionalities" in {
       val spec = oneEx(that.isOk)
-      spec.systems.first.verb must_== "can"
+      spec.systems.head.verb must_== "can"
     }
     "be composed of other specifications. The composite specification has subSpecifications.\n" +
     "Use the isSpecifiedBy method to do so [alias areSpecifiedBy]."  in {
@@ -156,11 +156,11 @@ object advancedFeatures extends Specification with SpecificationWithSamples {
     }
     "display detailed difference messages with the detailedDiff method" in {
       val spec = oneEx(that.isKoWithDetailedDiffs)
-      spec.failures.first.message must_== "'hel[l]o' is not equal to 'hel[t]o'"
+      spec.failures.head.message must_== "'hel[l]o' is not equal to 'hel[t]o'"
     }
     "display detailed difference messages with with other difference separators than '(' and ')'" in {
       val spec = oneEx(that.isKoWithDetailedDiffsAndAlternateSeparator)
-      spec.failures.first.message must_== "'hel(l)o' is not equal to 'hel(t)o'"
+      spec.failures.head.message must_== "'hel(l)o' is not equal to 'hel(t)o'"
     }
   }
 }

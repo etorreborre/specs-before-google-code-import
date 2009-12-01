@@ -33,9 +33,9 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
   "A specification" should {
     "have a description corresponding to its unqualified class name, whatever the class name" in {
       def classNames = for {
-        packageName <- elements("com", "scala")
-        className <- elements(packageName + "s", packageName + ".specs", packageName + ".other.normal")
-        name <- elements(className, className + "$inner", className + "$inner$", className + "$2", className + "$2$")
+        packageName <- Gen.oneOf("com", "scala")
+        className <- Gen.oneOf(packageName + "s", packageName + ".specs", packageName + ".other.normal")
+        name <- Gen.oneOf(className, className + "$inner", className + "$inner$", className + "$2", className + "$2$")
       } yield name
 
       classNames must pass { name : String =>
@@ -63,7 +63,7 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
       nudeSpecification.systems.head.examples.size mustBe 1
     }
     "create a default example named 'example 1'" in {
-      nudeSpecification.systems.head.examples.first.description must_== "example 1"
+      nudeSpecification.systems.head.examples.head.description must_== "example 1"
     }
     "count 1 expectation" in {
       nudeSpecification.expectationsNb mustBe 1

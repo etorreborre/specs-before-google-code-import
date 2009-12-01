@@ -47,17 +47,17 @@ class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples
   }
   "an extended Throwable with stack traces methods" ->- ex should provide {
     "a removeTracesWhileNameMatches function removing stacktraces until a line doesn't match the name" in {
-      e.removeTracesWhileNameMatches("extendedThrowableUnit").getStackTrace.toList.first.toString aka
+      e.removeTracesWhileNameMatches("extendedThrowableUnit").getStackTrace.toList.head.toString aka
       "the first element of the remaining stack" must_== "org.specs.specification.method0(Specification.scala:23)"
     }
     "a removeTracesAsFarAsNameMatches function removing stacktraces until the last match with a name is found" in {
-      e.removeTracesAsFarAsNameMatches("extendedThrowableUnit").getStackTrace.toList.first.toString aka
+      e.removeTracesAsFarAsNameMatches("extendedThrowableUnit").getStackTrace.toList.head.toString aka
       "the first element of the remaining stack" must_== "org.specs.specification.method1(Specification.scala:24)"
     }
     "a hideCallerAndThrow method to throw the exception but removing stack trace elements having the caller class name" in {
       try { e.hideCallerAndThrow(this) }
       catch {
-        case ex => ex.getStackTrace.toList.first.toString aka
+        case ex => ex.getStackTrace.toList.head.toString aka
                    "the first element of the thrown exception" must_== "org.specs.specification.method0(Specification.scala:23)"
       }
     }
@@ -66,7 +66,7 @@ class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples
       catch {
         case ex =>
                ex.getMessage must_== "failure"
-               ex.getStackTrace.toList.first.toString aka
+               ex.getStackTrace.toList.head.toString aka
                "the first element of the thrown exception" must_== "org.specs.Specification.apply(Specification.scala:5)"
       }
     }

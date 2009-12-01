@@ -95,9 +95,9 @@ object specWithFailure extends Specification with ScalaCheck {
 trait ScalaCheckExamples extends ScalaCheck {  this: Specification =>
   val identityProp = forAll((a:Boolean) => a)
   val alwaysTrueProp = forAll((a:Int) => true)
-  val alwaysTrue = elements(true)
-  val alwaysFalse = elements(false)
-  val random = elements(true, false)
+  val alwaysTrue = Gen.value(true)
+  val alwaysFalse = Gen.value(false)
+  val random = Gen.oneOf(true, false)
   val exceptionValues = Gen(p => throw new Exception("e"))
   val trueFunction = ((x: Boolean) => true)
   val falseFunction = ((x: Boolean) => false)
@@ -131,7 +131,7 @@ object CounterSpecification extends Commands {
   }
 
 
-  def genCommand(s: State): Gen[Command] = Gen.elements(Inc, Dec)
+  def genCommand(s: State): Gen[Command] = Gen.oneOf(Inc, Dec)
 
 }
 class Counter(private var n: Int) {

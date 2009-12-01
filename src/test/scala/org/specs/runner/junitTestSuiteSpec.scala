@@ -53,7 +53,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
         "sus1" should { "ex1" in { 1 must_== 1 }; "ex2" in { 1 must_== 1 }}
       }
       makeRunners(S1) foreach { r =>
-        val test1 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).first
+        val test1 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).head
         val test2 = r.suites.flatMap(_.asInstanceOf[JUnitSuite].testCases).last
         test1.toString must include("ex1")
         test2.toString must include("ex2")
@@ -108,7 +108,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       val suite = new ExamplesTestSuite("it should", List(s.e), None) {
         override lazy val isExecutedFromMaven = true
       }
-      suite.tests.first.toString aka "the example description" must include("it should be ok")
+      suite.tests.head.toString aka "the example description" must include("it should be ok")
     }
   }
   "A test description" should {

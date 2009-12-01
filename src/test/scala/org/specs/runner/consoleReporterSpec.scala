@@ -81,8 +81,8 @@ class reporterSpecification extends TestSpecs {
     }
     "display the failure message next to the corresponding example" in {
       specWithTwoExamples(that.isKo, that.isOk) verifies(messages =>
-            messages.findIndexOf(matches("first failure")) ==
-            messages.findIndexOf(matches("example 2.1 ok")) + 1)
+            messages.indexWhere(matches("first failure")) ==
+            messages.indexWhere(matches("example 2.1 ok")) + 1)
     }
     "report the elapsed time" in {
       specWithOneExample(that.isOk) mustContainMatch "Finished in"

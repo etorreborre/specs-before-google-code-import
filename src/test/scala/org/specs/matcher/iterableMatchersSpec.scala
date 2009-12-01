@@ -122,8 +122,8 @@ class iterableMatchersSpec extends MatchersSpecification {
       (Nil:Iterable[Int]) must be empty
       val list: List[Int] = Nil
       list must be empty
-      val collection: Collection[Int] = Nil
-      collection must be empty
+      val iterable: Iterable[Int] = Nil
+      iterable must be empty
       val seq: Seq[Int] = Nil
       seq must be empty
       val map: Map[Int, Int] = Map()

@@ -27,7 +27,7 @@ trait RunnerFixture extends RunnerTestData with literate.Html { this: HtmlSpecif
   def executeCompositeSpecRunner = { runner = compositeSpecRunner; executeRunner }
   def executeRunner = { runner.reset; runner.reportSpecs.shh }
   def runnerOutputDir = { runner.setOutputDir _ }
-  def checkXml = XML.loadString(runner.readFile(runner.files.keys.next)) must \\(xml())
+  def checkXml = XML.loadString(runner.readFile(runner.files.keysIterator.next)) must \\(xml())
 
   def checkFilePath = {
     createSimpleSpecRunner

@@ -131,8 +131,8 @@ object jmockGoodSpecification extends Mocked {
     }
     "provide a willReturn method to specify the a returned iterator" in {
       val expected = List[String]("hey")
-      expect { 1.of(scalaList).elements willReturn expected.elements }
-      scalaList.elements.next must_== "hey"
+      expect { 1.of(scalaList).iterator willReturn expected.iterator }
+      scalaList.iterator.next must_== "hey"
     }
     "provide a willReturn method to specify a returned iterable" in {
       expect { 1.of(scalaList).take(anyInt) willReturn List("hey") }

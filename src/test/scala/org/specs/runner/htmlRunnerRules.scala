@@ -75,7 +75,7 @@ class htmlRunnerRules(name: String) extends HtmlSpecificationWithJUnit(name) wit
   val runString = executeRunner.results.toString aka "the generated html"
   val runSmall = executeSmallRunner.results
 
-  val htmlFile = executeRunner.files.keySet.filter(_.toString.endsWith(".html")).first aka "the report file"
+  val htmlFile = executeRunner.files.keySet.filter(_.toString.endsWith(".html")).head aka "the report file"
   val createdDirs = executeRunner.createdDirs aka "the list of created directories"
 
   object smallRunner extends InstrumentedRunner(subSpecification)

@@ -45,7 +45,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Cont
       suiteWithGroups.nestedSuites.size must_== 2
     }
     "return groups corresponding to the tags on the specification" in {
-      val first = suiteWithGroups.nestedSuites.first
+      val first = suiteWithGroups.nestedSuites.head
       first.tags must_== Map("have a tag for the second example" -> Set("unit"))
     }
   }
