@@ -47,7 +47,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    *
    * @see Expectable
    */
-  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => Prop.forAll((a: Boolean) => true)
+  implicit val successValueToProp: SuccessValue => Prop = (s: SuccessValue) => Prop.forAll((a: Boolean) => a)
 
    /**
     * default parameters. Uses ScalaCheck default values and doesn't print anything to the console
@@ -66,11 +66,11 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    }
 
    /**
-    * Matches ok if the <code>function T => Boolean</code> returns <code>true</code> for any generated value<br>
+    * Matches ok if the <code>function T => Prop</code> returns a<code>true</code> Property for any generated value<br>
     * Usage: <code>generated_values must pass(function)</code>
     */
-   def pass[T](f: T => Boolean)(implicit params: Parameters) = new Matcher[Gen[T]](){
-     def apply(g: => Gen[T]) = checkFunction(g)(f)(params)
+   def pass[T](f: T => Prop)(implicit params: Parameters) = new Matcher[Gen[T]](){
+     def apply(g: => Gen[T]) = checkProperty(forAllProp(g)(f))(params)
    }
    /**
     * Matches ok if the <code>function T => Boolean</code> returns <code>true</code> for any generated value<br>

@@ -77,6 +77,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <url>http://scala-tools.org/repo-snapshots</url>
     </repository>
     <repository>
+      <id>scala-tools.org-nexus-releases</id>
+      <url>http://nexus.scala-tools.org/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>scala-tools.org-nexus-snapshots</id>
+      <url>http://nexus.scala-tools.org/content/repositories/snapshots</url>
+    </repository>
+    <repository>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2/</url>
@@ -151,8 +159,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest-1.0.1-for-scala</artifactId>
-      <version>2.8.0.Beta1-RC1-SNAPSHOT</version>
+      <artifactId>scalatest</artifactId>
+      <version>1.0.1-for-scala-2.8.0.Beta1-RC1-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>
     <dependency>
