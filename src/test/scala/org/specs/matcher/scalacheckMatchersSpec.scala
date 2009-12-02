@@ -119,17 +119,16 @@ object CounterSpecification extends Commands {
     def run(s: State) = counter.inc
     def nextState(s: State) = State(s.n + 1)
 
-    preCondition = s => true
+    preConditions += (s => true)
 
-    postCondition = (s,r) => counter.get == s.n + 1
+    postConditions += ((s,r,u) => counter.get == s.n + 1)
   }
 
   case object Dec extends Command {
     def run(s: State) = counter.dec
     def nextState(s: State) = State(s.n - 1)
-    postCondition = (s,r) => counter.get == s.n - 1
+    postConditions += ((s,r,u) => counter.get == s.n - 1)
   }
-
 
   def genCommand(s: State): Gen[Command] = Gen.oneOf(Inc, Dec)
 

@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
-import org.scalacheck.Gen.{ choose, sized, listOf }
+import org.scalacheck.Gen.{ choose, sized, listOfN, listOf }
 import org.scalacheck._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop._
@@ -52,9 +52,9 @@ trait SpecificationGenerator { self: Specification =>
   def genSizedSpec(size: Int): Gen[Specification] = {
     val generatedSpec = new Specification("spec with " + size + " max sus") {}
     for { systemsNb <- choose(0, size)
-          systems <- listOf(systemsNb, genSizedSus(size, generatedSpec))
+          systems <- listOfN(systemsNb, genSizedSus(size, generatedSpec))
           subSpecsNb <- choose(0, 1)
-          subSpecs <- listOf(subSpecsNb, genSizedSpec(size))
+          subSpecs <- listOfN(subSpecsNb, genSizedSpec(size))
     } yield {
       subSpecs.foreach(generatedSpec.include(_))
       generatedSpec

@@ -25,6 +25,7 @@ import org.specs.runner._
 import org.specs.util._
 import org.specs.util.ExtendedThrowable._
 import scala.collection.mutable._
+import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.specs.matcher.MatcherUtils._
 

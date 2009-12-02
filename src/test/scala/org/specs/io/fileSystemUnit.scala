@@ -38,7 +38,7 @@ import org.specs.Sugar._
 class TestData extends SpecificationWithJUnit with FileSystem with ConsoleOutput with ScalaCheck {
   case class MatchingPath(path: String, glob: String)
   def paths = for { glob <- Gen.oneOf("src/**/*.*", "src/**/hello/**/*.*", "src/test/*.*")
-                    path <- Gen.oneOf(pathsMatchingGlob(glob):_*)
+                    path <- Gen.oneOf(pathsMatchingGlob(glob).map(Gen.value(_)):_*)
                   } yield MatchingPath(path, glob)
 
   def pathsMatchingGlob(glob: String): List[String] = {

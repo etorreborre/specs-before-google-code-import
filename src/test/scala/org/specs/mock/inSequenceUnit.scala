@@ -54,7 +54,7 @@ class inSequenceUnit extends SpecificationWithJUnit with TestData with ScalaChec
     val emptyExpected: List[SpecifiedCall] = Nil
     val emptyReceived: List[ReceivedCall] = Nil
 
-    sameReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected: List[ExpectedCall], received: List[ReceivedCall]) = t
+    sameReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
       inSequence.consume(expected, received) must be_==((emptyExpected, emptyReceived)).when(expected == received)
     }(set(maxSize->5, maxDiscarded -> 1000))
   }

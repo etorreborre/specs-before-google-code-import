@@ -68,19 +68,19 @@ import Gen._
 trait PartialFunctionGen {
   implicit def listInt: Arbitrary[List[Int]] = Arbitrary[List[Int]] {
     for {length <- choose(1, 4)
-         l <- vectorOf(length, choose(1, 4))
+         l <- listOfN(length, choose(1, 4))
     } yield l.toList
   }
   implicit def genPartialFunction: Arbitrary[PartialFunction[Int, String]] = Arbitrary[PartialFunction[Int, String]] {
     for {length <- choose(0, 4)
-         keys <- vectorOf(length, choose(1, 4))
-         values <- vectorOf(length, Arbitrary.arbitrary[String])
+         keys <- listOfN(length, choose(1, 4))
+         values <- listOfN(length, Arbitrary.arbitrary[String])
     } yield Map(keys.toList zip values.toList map {kv => kv._1 -> kv._2} : _*)
   }
   implicit def genMap: Arbitrary[Map[Int, String]] = Arbitrary[Map[Int, String]] {
     for {length <- choose(0, 4)
-         keys <- vectorOf(length, choose(1, 4))
-         values <- vectorOf(length, Arbitrary.arbitrary[String])
+         keys <- listOfN(length, choose(1, 4))
+         values <- listOfN(length, Arbitrary.arbitrary[String])
     } yield Map(keys.toList zip values.toList map {kv => kv._1 -> kv._2} : _*)
   }
 }
