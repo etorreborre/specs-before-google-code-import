@@ -43,29 +43,26 @@ class inSequenceUnit extends SpecificationWithJUnit with TestData with ScalaChec
     }
   }
   "not consume received calls if it is a strict sublist of expected calls" in {
-    val lessReceivedCalls = receivedSizeIs(_ < _)
-    lessReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
-      inSequence.consume(expected, received)._2 must ((notBeEmpty).when(!expected.isEmpty) or
-                                                      (beEmpty).when(expected.isEmpty))
+    expectedAndReceived must pass { t: Calls => val (expected, received) = t
+      inSequence.consume(expected, received)._2 must (((notBeEmpty).when(!expected.isEmpty) or
+                                                      (beEmpty).when(expected.isEmpty))).unless(expected.size <= received.size)
     }(set(maxSize->5))
   }
   "consume all received calls if it is a the same list of calls in the same order" in {
-    val sameReceivedCalls = receivedSizeIs(_ == _)
     val emptyExpected: List[SpecifiedCall] = Nil
     val emptyReceived: List[ReceivedCall] = Nil
 
-    sameReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
+    expectedAndReceived must pass { t: Calls => val (expected, received) = t
       inSequence.consume(expected, received) must be_==((emptyExpected, emptyReceived)).when(expected == received)
     }(set(maxSize->5, maxDiscarded -> 1000))
   }
   "consume all expected calls if they are a prefix of received calls" in {
-    val moreReceivedCalls = receivedSizeIs(_ > _)
-    moreReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
+    expectedAndReceived must pass { t: Calls => val (expected, received) = t
       val receivedStartsWithExpected = received.map(_.method).startsWith(expected.map(_.method))
       val consumedReceived = inSequence.consume(expected, received)._2
 
       consumedReceived must (notBeEmpty.when(!received.isEmpty && receivedStartsWithExpected) and
-                             beEmpty.when(received.isEmpty))
+                             beEmpty.when(received.isEmpty)).unless(expected.size >= received.size)
     }(set(maxSize->5))
   }
 }

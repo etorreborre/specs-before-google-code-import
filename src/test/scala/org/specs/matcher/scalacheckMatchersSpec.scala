@@ -23,7 +23,7 @@ import org.scalacheck._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
-import org.scalacheck.Prop.forAll
+import org.scalacheck.Prop._
 import org.specs.mock._
 import org.specs.io._
 
@@ -94,15 +94,15 @@ object specWithFailure extends Specification with ScalaCheck {
 
 trait ScalaCheckExamples extends ScalaCheck {  this: Specification =>
   val identityProp = forAll((a:Boolean) => a)
-  val alwaysTrueProp = forAll((a:Int) => true)
+  val alwaysTrueProp = proved
   val alwaysTrue = Gen.value(true)
   val alwaysFalse = Gen.value(false)
   val random = Gen.oneOf(true, false)
-  val exceptionValues = Gen(p => throw new Exception("e"))
+  val exceptionValues = Gen(p => throw new java.lang.Exception("e"))
   val trueFunction = ((x: Boolean) => true)
   val falseFunction = ((x: Boolean) => false)
   val identityAssert: Boolean => Boolean = ((x: Boolean) => x mustBe true)
-  val exceptionProperty = ((x: Boolean) => {throw new Exception("e"); true})
+  val exceptionProperty = ((x: Boolean) => {throw new java.lang.Exception("e"); proved})
 }
 object CounterSpecification extends Commands {
 

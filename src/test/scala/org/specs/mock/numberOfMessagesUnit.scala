@@ -41,20 +41,19 @@ class numberOfMessagesUnit extends SpecificationWithJUnit with TestData with Sca
   "An exactly(N) protocol type" should {
     val exactly2 = new inAnyOrder(exactlyN(2))
     "not pass expected calls at all if there are less calls than expected" in {
-      val lessReceivedCalls = receivedSizeIs(_ < _)
-      lessReceivedCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
+      expectedAndReceived must pass { t: Calls => val (expected, received) = t
         exactly2.consume(expected, received)
-        expected.forall(_.passes) must be(false).unless(expected.isEmpty || received.isEmpty)
+        expected.forall(_.passes) must be(false).unless(expected.isEmpty || received.isEmpty || received.size >= expected.size)
       }(set(maxSize->5))
     }
     "consume all expected and received calls if it is a multiple of the expected calls" in {
-      sameCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, received) = t
+      sameCalls must pass { t: Calls => val (expected, received) = t
         exactly2.consume(expected, received:::(received.map((r: ReceivedCall)=>ReceivedCall(r.method))))
         expected.forall(_.passes) must be(true).unless(expected.isEmpty || received.isEmpty)
       }(set(maxSize->5))
     }
     "not pass the expected calls if the received calls are not an exact multiple of the expected calls" in {
-      sameCalls must pass { t: (List[ExpectedCall], List[ReceivedCall]) => val (expected, same) = t
+      sameCalls must pass { t: Calls => val (expected, same) = t
         exactly2.consume(expected, same:::same:::same)
         expected.forall(_.passes) must be(false).unless(expected.isEmpty || same.isEmpty)
       }(set(maxSize->5))

@@ -64,7 +64,9 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    def pass[T](g: Gen[T])(implicit params: Parameters) = new Matcher[T => Boolean]() {
      def apply(f: => (T => Boolean)) = checkFunction(g)(f)(params)
    }
-
+   implicit def booleanFunctionToPropFunction[T](f: T => Boolean): T => Prop = (t: T) => {
+     if (f(t)) proved else falsified
+   }
    /**
     * Matches ok if the <code>function T => Prop</code> returns a<code>true</code> Property for any generated value<br>
     * Usage: <code>generated_values must pass(function)</code>

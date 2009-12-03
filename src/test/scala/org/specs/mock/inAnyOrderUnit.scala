@@ -52,7 +52,6 @@ class inAnyOrderUnit extends SpecificationWithJUnit with TestData with ScalaChec
         exp.forall(_.passes) && r.consumed && !r1.consumed
       }
     }
-    type Calls = (List[ExpectedCall], List[ReceivedCall])
     "not consume all expected calls if it is a strict sublist of expected calls" in {
       expectedAndReceived must pass { t: Calls => val (expected, received) = t
         inAnyOrder.consume(expected, received)
@@ -93,4 +92,6 @@ trait TestData extends ProtocolTypes {
           n <- choose(-2, 2)
 	} yield (expected.map(new ExpectedCall(_)), (expected.scramble:::expected.scramble).take(expected.size + n).map(new ReceivedCall(_)))
   }
+  type Calls = (List[ExpectedCall], List[ReceivedCall])
+
 }
