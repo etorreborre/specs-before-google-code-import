@@ -93,14 +93,14 @@ object ExtendedList { outer =>
      */
     def toMap[D](defaultValue: D): scala.collection.immutable.Map[T, D] = {
       var newMap: scala.collection.immutable.Map[T, D] = new HashMap[T, D]
-      l.foreach { t:T => newMap = newMap.update(t, defaultValue)}  
+      l.foreach { t:T => newMap = newMap.updated(t, defaultValue)}  
       newMap
     }
 
     /**
      * @return a randomly mixed list
      */
-    def scramble = l.sort((a, b) => (new java.util.Random).nextInt(1) > 0)
+    def scramble = l.sortWith((a, b) => (new java.util.Random).nextInt(1) > 0)
     
     /**
      * @return a list without duplicates
@@ -164,7 +164,7 @@ object ExtendedList { outer =>
   /** @return the minimum value of a list according to a function f returning an Int value for each element of the list */
   def minimum[T](list: List[T], f: T => Int): Int = min(list, f)._2
   /** @return the minimum element and maximum value of a list according to a function f returning an Int value for each element of the list */
-  def min[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, (_<_), scala.Math.MAX_INT, None)
+  def min[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, (_<_), scala.Int.MaxValue, None)
   /**
    * Find the optimum element of a list according to a valuation function and a comparison function to determine if we require
    * the least or best values.

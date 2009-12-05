@@ -99,7 +99,7 @@ class Property[T](var value: () => Option[T]) {
   override def toString = toStringer(get)
   
   /** @return an iterator containing the value if present */
-  def elements = optionalValue.elements
+  def iterator = optionalValue.iterator
   /** return the property with the value being filtered according to a predicate */
   def filter(p: T => Boolean): this.type = { 
     val v = value() 

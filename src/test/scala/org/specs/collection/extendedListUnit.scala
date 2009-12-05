@@ -23,6 +23,7 @@ import org.specs.runner._
 import org.specs._
 
 class extendedListUnit extends SpecificationWithJUnit with TestData {
+
   "A removeFirst function" should {
     "remove nothing if the list is empty" in {
       (Nil: List[String]).removeFirst(_ == "a") must_== Nil

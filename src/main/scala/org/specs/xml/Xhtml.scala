@@ -32,13 +32,13 @@ trait Xhtml { outer =>
 
   private def spanLastTd(nodes: NodeSeq, spanSize: Int): NodeSeq = {
     nodes.toList match {
-      case List(<th>{ b }</th>) => <th colspan={spanSize.toString}>{b}</th> % nodes.toList.first.attributes
-      case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes
-      case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.first.attributes  ++ Text(x)
+      case List(<th>{ b }</th>) => <th colspan={spanSize.toString}>{b}</th> % nodes.toList.head.attributes
+      case List(<td>{ b }</td>) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.head.attributes
+      case List(<td>{ b }</td>, Text(x)) => <td colspan={spanSize.toString}>{b}</td> % nodes.toList.head.attributes ++ Text(x)
       /** don't set a colspan on the last cell of the biggest row */
-      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.first ++ spanLastTd(otherThs, spanSize)
-      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.first ++ spanLastTd(otherTds, spanSize)
-      case List(<table>{ x @ _*}</table>) => <table>{spanLastTd(x, spanSize)}</table> % nodes.toList.first.attributes
+      case <th>{ b }</th> :: otherThs if (nodes.toList.size < spanSize) => nodes.toList.head ++ spanLastTd(otherThs, spanSize)
+      case <td>{ b }</td> :: otherTds if (nodes.toList.size < spanSize) => nodes.toList.head ++ spanLastTd(otherTds, spanSize)
+      case List(<table>{ x @ _*}</table>) => <table>{spanLastTd(x, spanSize)}</table> % nodes.toList.head.attributes
       case <tr>{ y @ _*}</tr> :: otherRows => <tr>{spanLastTd(y, spanSize)}</tr> ++ spanLastTd(otherRows, spanSize)
       case Text(x) :: other => Text(x) ++ spanLastTd(other, spanSize)
       case other => other

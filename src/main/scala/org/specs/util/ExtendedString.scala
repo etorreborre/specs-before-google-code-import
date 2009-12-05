@@ -26,7 +26,7 @@ object ExtendedString {
   /** This class adds utility functions to Strings */
   case class ExtendedString(s: String) {
     /** @return the String s with its first character being uncapitalized: "HELLO".uncapitalize -> "hELLO" */
-    def uncapitalize = s.first.toLowerCase + s.drop(1)
+    def uncapitalize = s.head.toLower + s.drop(1)
 
     /** 
      * @param remove String to suppress from the original string
@@ -76,7 +76,7 @@ object ExtendedString {
         case Nil => Nil
       }
       if (s.isEmpty) ""
-      else List.toString(s.charAt(0) :: uncamelChars(s.substring(1).toList))
+      else (s.charAt(0) :: uncamelChars(s.substring(1).toList)).mkString("")
     }
   }
 }

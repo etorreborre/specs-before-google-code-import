@@ -76,9 +76,9 @@ trait MockFileSystem extends FileSystem {
   def setWritable(path: String) = if (!canWrite(path)) (writableFiles ::= path)
 
   /** sets a file as not readable */
-  def setNotReadable(path: String) = readableFiles = readableFiles.remove(_ == path)
+  def setNotReadable(path: String) = readableFiles = readableFiles.filterNot(_ == path)
   /** sets a file as not writable */
-  def setNotWritable(path: String) = writableFiles = writableFiles.remove(_ == path)
+  def setNotWritable(path: String) = writableFiles = writableFiles.filterNot(_ == path)
 
   /** overrides the canRead definition checking in the readableFiles list */
   override def canRead(path: String) = readableFiles.exists(_ == path)

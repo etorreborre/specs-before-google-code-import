@@ -45,7 +45,7 @@ trait EditDistance {
    */
   case class EditMatrix(s1: String, s2: String) {
     /* matrix containing the edit distance for any prefix of s1 and s2: matrix(i)(j) = edit distance(s1[0..i], s[0..j])*/
-    val matrix = new Array[Array[Int]](s1.length + 1, s2.length + 1)
+    val matrix = Array.ofDim[Int](s1.length + 1, s2.length + 1)
 
     /* initializing the matrix */
     for (i <- 0 to s1.length;
@@ -153,7 +153,7 @@ object DiffShortener {
     list.foldLeft("") { (res, cur) =>
       if (cur.startsWith(firstSep) && cur.endsWith(secondSep))
         res + cur
-      else if (list.first eq cur)
+      else if (list.head eq cur)
         res + shortenLeft(cur)
       else if (list.last eq cur)
         res + shortenRight(cur)
