@@ -1,6 +1,7 @@
 package org.specs.runner
 import org.spex._
 import org.specs.io.mock._
+import org.specs.Sugar
 import org.junit.runner.notification._
 
 class reporterPlanSpec extends Specification with Sugar {
