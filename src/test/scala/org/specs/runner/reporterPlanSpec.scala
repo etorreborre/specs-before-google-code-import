@@ -62,7 +62,7 @@ class reporterPlanSpec extends Specification with Sugar {
     def plan: String = { 
       xml.args = Array("-plan")
       xml.reportSpecs
-      xml.files.values.next
+      xml.files.valuesIterator.next
     }
     def expectations = "expectations=\"[1-9]\""
   }
