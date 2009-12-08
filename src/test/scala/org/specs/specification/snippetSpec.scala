@@ -23,19 +23,36 @@ import org.specs.util.Property
 
 class snippetSpec extends SpecificationWithJUnit with Snippets {
   "A snippet" should {
-    "have a prelude method adding some code to the snippet" in {
-      val s = Snippet("").prelude("prelude")
-      s.code must include("prelude")
+    "have a prelude method prepending some code to a snippet" in {
+      Snippet(body = "body").prelude("prelude").code must include("prelude")
     }
-    "cumulate preludes" in {
-      val s = Snippet("").prelude("prelude1").prelude("prelude2")
+    "have a body method appending some code to a snippet" in {
+      Snippet(prelude = "prelude").body("body").code must include("body")
+    }
+    "cumulate preludes when using the prelude update method" in {
+      val s = Snippet(prelude = "prelude1").prelude("prelude2")
       s.code must include("prelude1") and include("prelude2")
+    }
+    "cumulate bodies when using the body update method" in {
+      val s = Snippet("prelude", "body").body("body2")
+      s.code must include("body") and include("body2")
+    }
+    "have a ++ method adding 2 snippets together, appending preludes and bodies" in {
+      val s1 = Snippet("prelude", "body")
+      val s2 = Snippet("prelude2", "body2")
+      (s1 ++ s2).code must include("prelude\nprelude2") and include("body\nbody2")
+    }
+    "add a newline only if necessary between the prelude and the body" in {
+      Snippet("prelude\n", "body").code must_== "prelude\nbody"
+      Snippet("prelude", "body").code must_== "prelude\nbody"
     }
   }
   "The Snippets trait" should {
     "allow a property to store the current snippet" in {
       val it = Property[Snippet](Snippet(""))
       "import org.specs._" prelude it
+      it.get.code must include("import")
+
       "object s extends Specification" snip it
       it.get.code must include("import") and include("Specification")
     }

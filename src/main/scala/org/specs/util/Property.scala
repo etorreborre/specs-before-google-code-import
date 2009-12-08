@@ -77,7 +77,10 @@ class Property[T](var value: () => Option[T]) {
    * This avoids stack overflow errors when doing property(property() + 1) for example
    */
   def forceUpdate(newValue: T): this.type = withValue(newValue)
-
+  /**
+   * updates the value with a mapping function
+   */
+  def update(f: T => T): this.type = forceUpdate(f(get))
   /**
    * sets a new getter function
    */
