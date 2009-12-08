@@ -20,9 +20,31 @@ package org.specs.specification
 import org.specs.util._
 import org.specs.literate._
 
+/**
+ * This trait provides ways to create a piece of code, a "Snippet".
+ * 
+ * A Snippet can be created from a String and is stored in a Property[Snippet]
+ * <code>
+ * val it = Property(Snippet(""))
+ * 
+ * // update the "it" property with a Snippet object containing a specific prelude
+ * "import org.specs._" prelude it 
+ * 
+ * // update the it property with a Snippet containing both the prelude and the mySpec declaration 
+ * "object mySpec extends Specification" snip it
+ * 
+ * // update the it property with a Snippet containing both the prelude, the mySpec declaration
+ * // and the list declaration 
+ * "val l = List(mySpec)" addTo it
+ * 
+ * </code>
+ */
 trait Snippets extends ScalaInterpreter {
-  def formatCode(code: String): String = code
   implicit def asSnippet(s: java.lang.String) = new SnippetAdder(Snippet(s))
+
+  
+  def formatCode(code: String): String = code
+
   class SnippetAdder(snippet: Snippet) {
 	def add(prop: Property[Snippet]): String = addTo(prop)
 	def addTo(prop: Property[Snippet]): String = {

@@ -23,7 +23,7 @@ import org.specs.util.Property
 
 class snippetSpec extends SpecificationWithJUnit with Snippets {
   "A snippet" should {
-    "have a prelude method" in {
+    "have a prelude method adding some code to the snippet" in {
       val s = Snippet("").prelude("prelude")
       s.code must include("prelude")
     }
@@ -37,7 +37,7 @@ class snippetSpec extends SpecificationWithJUnit with Snippets {
       val it = Property[Snippet](Snippet(""))
       "import org.specs._" prelude it
       "object s extends Specification" snip it
-      it.get.code must include("import") //and include("Specification")
+      it.get.code must include("import") and include("Specification")
     }
   }
 }
