@@ -22,6 +22,41 @@ import org.specs.runner._
 import org.specs.util.Property
 
 class snippetSpec extends SpecificationWithJUnit with Snippets {
+  "The Snippets trait" should allow {
+    val it = Property(Snippet())
+    "a property to store a prelude current snippet" in {
+      "import org.specs._" prelude it
+      it.get.code must include("import")
+    }
+    "a property to store a body" in {
+      "object s extends Specification" snip it
+      it.get.code must include("Specification")
+    }
+    "a property to store a prelude and body" in {
+      "import org.specs._" prelude it
+      "object s extends Specification" snip it
+      it.get.code must include("import") and include("Specification")
+    }
+    "to add code to a body" in {
+      "object s extends Specification" snip it
+      "{}" addTo it
+      it.get.code must include("object") and include("{}")
+    }
+    "to reset added code to a body by re-snipping" in {
+      "object s extends Specification" snip it
+      "{}" addTo it
+      "println(1)" snip it
+      it.get.code must not include("object") and include("println(1)")
+    }
+    "to reset added code to a body by re-snipping, keeping the prelude" in {
+      "import org.specs._" prelude it
+      "object s extends Specification" snip it
+      "{}" addTo it
+      "println(1)" snip it
+      it.get.code must include("import")
+    }
+  }
+  def allow = addToSusVerb("allow")
   "A snippet" should {
     "have a prelude method prepending some code to a snippet" in {
       Snippet(body = "body").prelude("prelude").code must include("prelude")
@@ -45,16 +80,6 @@ class snippetSpec extends SpecificationWithJUnit with Snippets {
     "add a newline only if necessary between the prelude and the body" in {
       Snippet("prelude\n", "body").code must_== "prelude\nbody"
       Snippet("prelude", "body").code must_== "prelude\nbody"
-    }
-  }
-  "The Snippets trait" should {
-    "allow a property to store the current snippet" in {
-      val it = Property[Snippet](Snippet(""))
-      "import org.specs._" prelude it
-      it.get.code must include("import")
-
-      "object s extends Specification" snip it
-      it.get.code must include("import") and include("Specification")
     }
   }
 }

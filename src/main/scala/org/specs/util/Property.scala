@@ -80,7 +80,10 @@ class Property[T](var value: () => Option[T]) {
   /**
    * updates the value with a mapping function
    */
-  def update(f: T => T): this.type = forceUpdate(f(get))
+  def update(f: T => T): this.type = this.value() match {
+	  case Some(v) => forceUpdate(f(v))
+	  case _ => this
+  }
   /**
    * sets a new getter function
    */

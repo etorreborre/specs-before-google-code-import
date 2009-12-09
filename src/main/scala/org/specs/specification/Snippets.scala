@@ -91,7 +91,7 @@ trait Snippets extends ScalaInterpreter {
 	
 	private def updateSnippet(prop: Property[Snippet], f: Snippet => Snippet) = {
 	  prop.update(f) 
-	  formatCode(prop.get.code)
+	  prop.map(s => formatCode(s.code)).getOrElse("")
 	}
   }
 
