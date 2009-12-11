@@ -158,7 +158,7 @@ trait OutputReporter extends Reporter with Output {
    * prints one sus specification
    */
   def printSus(sus: Sus, padding: String) = {
-    var susDescription = if (sus.isAnonymous) "" else sus.description + " " + sus.verb
+    var susDescription = if (sus.isAnonymous) "" else sus.header
 
     if (!sus.literateDesc.isEmpty) 
       println(padding + sus.literateDescText)

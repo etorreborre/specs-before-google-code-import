@@ -27,6 +27,7 @@ object specificationSpecifications extends Specification {
 		new calculatorSpec,
         new exampleSpec,
         new specificationSpec,
+        new specificationSystemsSpec,
         new specificationExecutorSpec,
         new sugarSpec,
 		new taggedSpec,

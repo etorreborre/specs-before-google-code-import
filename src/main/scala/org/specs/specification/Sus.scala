@@ -52,7 +52,7 @@ case class Sus(desc: String, specification: BaseSpecification) extends Examples(
    */
   var literateDescription: Option[LiterateDescription] = None
   /** header for the full sus description: description + " " + verb */
-  def header = desc + " " + verb
+  def header = description + " " + verb
   /** @return true if the description is the generic one for anonymous systems */
   def isAnonymous = desc == "specifies"
   /** @return a description of this sus with all its examples (used for the ConsoleReporter) */
@@ -62,9 +62,15 @@ case class Sus(desc: String, specification: BaseSpecification) extends Examples(
     /** @return a String literate description of the sus */
   def literateDescText: String = literateDesc(0).text
   /** default way of defining the behaviour of a sus */
-  def should(ex: =>Any) = {
+  def should(ex: =>Examples) = {
     verb = "should"
     specifyExample(ex)
+    this
+  }
+  /** defining the behaviour of a sus, for examples which should be prefixed by the same word */
+  def should(ex: PrefixedExamples) = {
+    verb = ex.prepend("should")
+    ex.example.map(e => specifyExample(e()))
     this
   }
   /** alternately there may be no example given yet */
@@ -73,9 +79,15 @@ case class Sus(desc: String, specification: BaseSpecification) extends Examples(
     specifyExample(noExampleGiven)
   }
   /** Alias method to describe more advanced or optional behaviour. This will change the verb used to report the sus behavior */
-  def can(ex: =>Any) = { 
-    verb = "can" 
+  def can(ex: =>Examples) = { 
+    verb = "can"
     specifyExample(ex)
+    this
+  }
+  /** Alias method to describe the sus behavior, for examples which should be prefixed by the same word */
+  def can(ex: PrefixedExamples) = { 
+    verb = ex.prepend("can")
+    ex.example.map(e => specifyExample(e()))
     this
   }
   /** alternately there may be no example given yet */

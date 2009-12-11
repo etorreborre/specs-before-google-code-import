@@ -124,7 +124,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A sus" should {
     "report its exceptions if any" in {
       val messages = new SpecificationWithJUnit with MockOutput {
-        "a failing system"  should { error("bad") }
+        "a failing system"  should { error("bad"); "an example" in { 1 must_== 1 } }
       }.reportSpecs.messages 
       messages must containMatch("bad")
     }
