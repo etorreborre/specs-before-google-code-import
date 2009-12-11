@@ -319,8 +319,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <configuration>
           <instrumentation>
             <excludes>
-              <exclude>org/specs/**/*Spec.class</exclude>
-              <exclude>org/specs/**/*Unit.class</exclude>
+              <exclude>org/specs/**/*anon*.class</exclude>
+              <exclude>org/specs/**/*$*.class</exclude>
+              <exclude>org/specs/**/*$*$*.class</exclude>
+              <exclude>org/specs/**/*$*$*$*.class</exclude>
+              <exclude>org/specs/**/*anonfun*.class</exclude>
             </excludes>
           </instrumentation>
         </configuration>
