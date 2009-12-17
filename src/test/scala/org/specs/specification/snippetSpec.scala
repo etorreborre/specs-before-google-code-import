@@ -40,7 +40,7 @@ class snippetSpec extends SpecificationWithJUnit with Snippets {
     "to add code to a body" in {
       "object s extends Specification" snip it
       "{}" addTo it
-      it.get.code must include("object") and include("{}")
+      it.get.code must_== "object s extends Specification\n{}"
     }
     "to reset added code to a body by re-snipping" in {
       "object s extends Specification" snip it

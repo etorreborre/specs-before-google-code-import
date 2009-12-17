@@ -69,7 +69,7 @@ h3. Prelude
 trait Examples extends SnipIt with Expectations {
   def executeAndExpect(expected: String) = {
     val result = execute(it)
-    result must include(expected)
+    result aka it.get.code must include(expected)
     result
   }
 }
