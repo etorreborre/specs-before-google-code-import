@@ -65,7 +65,7 @@ trait Snippets extends ScalaInterpreter {
      * @return the resulting formatted code
      */	
 	def addTo(prop: Property[Snippet]): String = {
-	  prop.forceUpdate(prop.get ++ new Snippet(code))
+	  prop.forceUpdate(prop.get ++ new Snippet(body = code))
 	  formatCode(code)
 	}
     /** 
