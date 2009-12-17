@@ -11,7 +11,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val junit 		= "junit" % "junit" % "4.5"
   val wikitext 		= "org.eclipse.mylyn.wikitext" % "wikitext" % "0.9.4.I20090220-1600-e3x" 
   val wikitextile 	= "org.eclipse.mylyn.wikitext" % "wikitext.textile" % "0.9.4.I20090220-1600-e3x" 
-  val scalatest 	= "org.scalatest" % "scalatest" % "1.0.1-for-scala-2.8.0.Beta1-RC1-SNAPSHOT"
+  val scalatest 	= "org.scalatest" % "scalatest" % "1.0.1-for-scala-2.8.0.Beta1-RC3-with-test-interfaces-0.2-SNAPSHOT"
   val scalacheck 	= "org.scala-tools.testing" % "scalacheck_2.8.0.Beta1-RC1" % "1.7-SNAPSHOT" 
   val testinterface = "org.scala-tools.testing" % "test-interface" % "0.2" 
   val jmock 		= "org.jmock" % "jmock" % "2.4.0" 
@@ -27,7 +27,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val scriptjs   	= "javax.script" % "script-js" % "1.0"
   val jsengine  	= "javax.script" % "js-engine" % "1.0"
 
-  override def crossScalaVersions = Set("2.7.5", "2.7.6", "2.7.7")
+  override def crossScalaVersions = List("2.8.0.Beta1-RC3")
 
   override def managedStyle = ManagedStyle.Maven
   val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/releases/"
