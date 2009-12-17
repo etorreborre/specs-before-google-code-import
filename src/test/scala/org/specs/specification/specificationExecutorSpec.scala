@@ -18,6 +18,7 @@
  */
 package org.specs.specification
 import org.specs.util.Configuration
+import org.specs.runner._
 
 class specificationExecutorSpec extends spex.Specification {
   "An executed specification, with one spec instance per example" should {
@@ -40,6 +41,13 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithMockito,
           specificationWithANestedSpecification,
           specificationWithANestedCaseClassSpecification)
+  
+  "A specification for issue 102" should {
+    "not skip an example when run with the NotifierRunner" in {
+      notifiedSpecificationWithJMock.reportSpecs
+      testNotifier.skippedExample aka "the expectation is skipped" must beFalse
+    }
+  }
 }
 object specWithCountedExamples extends spex.Specification {
   "first ex" in {
@@ -118,5 +126,29 @@ object specificationWithSubexamples extends spex.Specification {
     }
   }
 }
+// from issue 102
+object specificationWithExpectation extends Specification {
+ "An example" should{
+   "assert expectations in example" in {
+     1.isExpectation
+   }
+ }
+ "Another example " should{
+   "be run in complete isolation" in{
+     1 mustEqual 1
+   }
+ }
+}
+object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
+object testNotifier extends Notifier {
+  var skippedExample = false
+  def runStarting(examplesCount: Int) = ()
+  def exampleStarting(exampleName: String)  = ()
+  def exampleSucceeded(testName: String) = ()
+  def exampleFailed(testName: String, e: Throwable) = ()
+  def exampleError(testName: String, e: Throwable) = ()
+  def exampleSkipped(testName: String) = skippedExample = true
+  def systemStarting(systemName: String) = ()
+  def systemCompleted(systemName: String) = ()
 
-
+}

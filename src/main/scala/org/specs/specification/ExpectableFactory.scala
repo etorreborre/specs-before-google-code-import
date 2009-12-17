@@ -33,7 +33,6 @@ import org.specs.matcher._
  */
 trait ExpectableFactory extends ExampleExpectationsListener with SuccessValues with FailureFactory {
 
-  var expectationsListener: ExampleExpectationsListener = this
   /** create a FailureExceptionWithResult when an expectation is failing */
   def createFailure[T](message: String, result: Result[T]): Throwable with HasResult[T] = new FailureExceptionWithResult(message, result)
 
