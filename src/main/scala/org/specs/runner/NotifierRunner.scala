@@ -68,8 +68,9 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
     notifiers.foreach { _.systemCompleted(system.header) }
     this
   }
-  def reportExample(example: Example): this.type = {
+  def reportExample(example: Examples): this.type = {
     notifiers.foreach { _.exampleStarting(example.description) }
+    
     example.examples.foreach(reportExample(_))
     if (example.isOk)
       notifiers.foreach { _.exampleSucceeded(example.description) }
