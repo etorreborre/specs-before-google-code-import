@@ -19,6 +19,7 @@
 package org.specs.specification
 import org.specs.util.Configuration
 import org.specs.runner._
+import org.specs.Specification
 
 class specificationExecutorSpec extends org.spex.Specification {
   "An executed specification, with one spec instance per example" should {
