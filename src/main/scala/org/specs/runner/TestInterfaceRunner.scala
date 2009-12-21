@@ -12,19 +12,11 @@ class SpecsFramework extends Framework {
     def superClassName = "org.specs.Specification"
     def isModule = false
   }
-  val specificationxClass = new TestFingerprint {
-    def superClassName = "org.spex.Specification"
-    def isModule = false
-  }
   val specificationObject = new TestFingerprint {
     def superClassName = "org.specs.Specification"
     def isModule = true
   }
-  val specificationxObject = new TestFingerprint {
-    def superClassName = "org.spex.Specification"
-    def isModule = true
-  }
-  def tests = Array[TestFingerprint](specificationClass, specificationxClass, specificationObject, specificationxObject)
+  def tests = Array[TestFingerprint](specificationClass, specificationObject)
   def testRunner(classLoader: ClassLoader, loggers: Array[Logger]) = new TestInterfaceRunner(classLoader, loggers)
 }
 
