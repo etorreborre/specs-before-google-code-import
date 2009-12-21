@@ -44,6 +44,11 @@ trait ExpectationsListener {
  */
 trait ExampleExpectationsListener extends ExpectationsListener {
   
+  /** 
+   * By default the listener is this. However it may be changed to another listener
+   * when the specification is cloned for isolated execution
+   * @see SpecificationExecutor
+   */
   var expectationsListener: ExampleExpectationsListener = this
 
   def addExpectation: Examples = addExpectation(None)
