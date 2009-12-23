@@ -160,7 +160,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest</artifactId>
-      <version>1.0.1-for-scala-2.8.0.Beta1-RC3-with-test-interfaces-0.2-SNAPSHOT</version>
+      <version>1.0.1-for-scala-2.8.0.Beta1-RC5-with-test-interfaces-0.2-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>
     <dependency>
