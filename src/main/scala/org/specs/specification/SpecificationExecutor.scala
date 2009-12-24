@@ -41,6 +41,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
           case Some(s) => {
             s.executeOneExampleOnly = true
             s.expectationsListener = this
+            s.beforeSpecFailure = this.beforeSpecFailure
             s.parent = Some(this)
             val cloned = s.getExample(path)
             cloned match {

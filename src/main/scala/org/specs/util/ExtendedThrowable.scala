@@ -28,12 +28,12 @@ object ExtendedThrowable {
   /**
    * Implicit method to add additional methods to Throwable objects
    */
-  implicit def toExtendedThrowable(t: Throwable) = new ExtendedThrowable(t)
+  implicit def toExtendedThrowable[T <: Throwable](t: T) = new ExtendedThrowable(t)
   
   /**
    * See the ExtendedThrowable object description
    */
-  class ExtendedThrowable(t: Throwable) {
+  class ExtendedThrowable[T <: Throwable](t: T) {
     private def fileName = t.getStackTrace()(0).getFileName
     private def className = t.getStackTrace()(0).getClassName.removeFrom("$")
     private def lineNumber = t.getStackTrace()(0).getLineNumber
@@ -86,12 +86,16 @@ object ExtendedThrowable {
      * throw an exception using the stacktrace of another one.
      * @param other other exception whose stacktrace should be used 
      */
-    def throwWithStackTraceOf(other: Throwable) = {
+    def throwWithStackTraceOf(other: Throwable) = throw t.setAs(other)
+    /**
+     * set an exception with the stacktrace of another one.
+     * @param other other exception whose stacktrace should be used 
+     */
+    def setAs(other: Throwable): T = {
       t.setStackTrace(other.getStackTrace)
       t.initCause(other.getCause)
-      throw t
+      t
     }
-    
     /**
      * return the class name of an object without $.
      */

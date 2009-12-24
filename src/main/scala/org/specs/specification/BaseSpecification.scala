@@ -195,17 +195,18 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * first example of the first sus
    */
   override def beforeExample(ex: Examples) = {
-    if (beforeSpecFailure.isDefined)
-      throw beforeSpecFailure.get
+    beforeSpecFailure.map(throw _)
+    
     if (!executeOneExampleOnly && !beforeSpecHasBeenExecuted) {
       beforeSpecHasBeenExecuted = true
       beforeSpec.map(_.apply)
       beforeSpec.map { b => 
         val initErrors = systemsList.filter(s => (s.description == "specifies")).flatMap(_.failureAndErrors)
         if (!initErrors.isEmpty) {
-          beforeSpecHasBeenExecuted = true      
-          beforeSpecFailure = Some(new FailureException("Before specification:\n" + initErrors.map(_.getMessage).mkString("\n")).throwWithStackTraceOf(initErrors(0)))
-          throw beforeSpecFailure.get
+          val failure = new FailureException("Before specification:\n" + 
+                                             initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
+          beforeSpecFailure = Some(failure)
+          beforeSpecFailure.map(throw _)
         }
       }
     }
