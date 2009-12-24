@@ -23,6 +23,7 @@ import scala.reflect.Manifest
 import org.specs.execute._
 import org.specs.util._
 import org.specs.util.ExtendedString._
+import org.specs.util.ExtendedThrowable._
 /**
  * This class provides the base structure of a specification.<br>
  * A specification has a name, a description and is composed of:<ul>
@@ -194,6 +195,12 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     if (!executeOneExampleOnly && !beforeSpecHasBeenExecuted) {
       beforeSpecHasBeenExecuted = true
       beforeSpec.map(_.apply)
+      beforeSpec.map { b => 
+        val initErrors = systemsList.filter(_ != ex).flatMap(_.failureAndErrors)
+        if (!initErrors.isEmpty) {
+          throw new FailureException("Before specification:\n" + initErrors.map(_.getMessage).mkString("\n")).throwWithStackTraceOf(initErrors(0))
+        }
+      }
     }
     super.beforeExample(ex)
   }

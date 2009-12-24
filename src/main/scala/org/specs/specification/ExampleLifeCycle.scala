@@ -55,8 +55,10 @@ trait LifeCycle {
   private[specs] protected var sequential = false
   /** @return true if if examples should be executed as soon as defined  */
   def isSequential = sequential
-  /** this variable defines if examples should be executed as soon as defined */
+  /** examples should be executed as soon as defined */
   def setSequential() = sequential = true
+  /** examples should not be executed as soon as defined */
+  def setNotSequential() = sequential = false
   /** execute a block of code with a specific list of examples as the container to use for examples created by the block */
   private[specs] def withCurrent(ex: Examples)(a: => Any) = {
     val c = current.orElse(parent.flatMap(_.current))
@@ -183,6 +185,14 @@ class ExampleExecution(var example: Examples, var expectations: Examples => Any)
     var failed = false
     // try the "before" methods. If there is an exception, add an error and return the current example
     try { example.beforeExample(example) } catch {
+      case f: FailureException => {
+        example.addFailure(f)
+        failed = true
+      }
+      case s: SkippedException => {
+        example.addSkipped(s)
+        failed = true
+      }
       case t: Throwable => {
         example.addError(t)
         failed = true
