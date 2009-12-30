@@ -47,8 +47,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
             cloned match {
               case None => throw PathException(path + "not found for " + example)
               case Some(c) => {
-                c.tagWith(example)
-                c.examplesFilter = example.examplesFilter
+                c.prepareExecutionContextFrom(example)
                 c.execution.map(_.execute)
                 example.copyExecutionResults(c)
               }

@@ -42,15 +42,16 @@ trait BeforeAfter { outer: BaseSpecification =>
   /**  adds an "after" function to the last sus being defined */
   def doAfter(actions: =>Any) = usingAfter(() => actions)
   /** adds a "firstActions" function to the last sus being defined */
-  def doFirst(actions: =>Any) = current.map(stackFirstActions(_, actions))
+  def doFirst(actions: =>Any) = current.map(stackFirstActions(_, sequentially(actions)))
   /** adds a "lastActions" function to the last sus being defined */
-  def doLast(actions: =>Any) = current.map(stackLastActions(_, actions)) 
+  def doLast(actions: =>Any) = current.map(stackLastActions(_, sequentially(actions))) 
   /** adds a "beforeSpec" function to the current specification */
   def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => sequentially(actions), beforeSpec)
   /** this method is added to make sure that expectation declared in beforeSpec blocks are executed right away */
   private def sequentially(actions: =>Any) = {
+    val isSeq = isSequential
     setSequential()
-    try { actions } finally { setNotSequential() }
+    try { actions } finally { sequential = isSeq }
   }
   /** adds a "afterSpec" function to the current specification */
   def doAfterSpec(actions: =>Any) = afterSpec = reverseStackActions(() => sequentially(actions), afterSpec)

@@ -35,5 +35,6 @@ object specificationSpecifications extends Specification {
 }
 object specificationUnits extends Specification {
     "The specification unit tests" areSpecifiedBy (
+        new beforeAfterUnit,
         new specificationsUnit)
 }
