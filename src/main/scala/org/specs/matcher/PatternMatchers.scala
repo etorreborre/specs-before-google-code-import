@@ -103,6 +103,21 @@ trait PatternBaseMatchers {
   }
 
   /**
+   * Matches if the value <code>v</code> is Some(x)
+   */
+  def beSome[T](expected: T) = new CaseMatcher[T]() {
+    def someApply(v: => Option[T]) = {
+      val value = v
+      (value match {
+         case Some(`expected`) => true
+         case _ => false
+       },
+       d(value) + " is " + q("Some("+expected+")"),
+       d(value) + " is not " + q("Some("+expected+")"))
+    }
+  }
+
+  /**
    * Alias for beSome[Any]
    */
   def beSomething = beSome[Any]
