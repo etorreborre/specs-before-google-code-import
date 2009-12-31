@@ -55,6 +55,11 @@ class patternMatchersSpec extends MatchersSpecification {
       List(2).find {_ == 2} must beSomething
       expectation(List().find {_ == 2} must beSomething) must failWith("'None' is not Some(x)")
     }
+    "provide a beSome(value) matcher checking the value of an option" in {
+      List(2).find {_ == 2} must beSome(2)
+      expectation(List().find {_ == 2} must beSome(2)) must failWith("'None' is not 'Some(2)'")
+      expectation(List(2).find {_ == 2} must beSome(3)) must failWith("'Some(2)' is not 'Some(3)'")
+    }
     "provide a be like matcher" in {
       "a" must be like { case "a" => ok }
     }
