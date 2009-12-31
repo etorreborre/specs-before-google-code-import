@@ -19,7 +19,7 @@
 package org.specs.specification
 
 class executionSpec extends spex.Specification {
-  include(new execution1, new execution2, new execution3)
+  include(new execution0, new execution1, new execution2, new execution3)
 }
 class execution0 extends spex.Specification {
   var x = 1
@@ -32,8 +32,12 @@ class execution1 extends spex.Specification {
   var x = 1
   "A sus" should {
     x = x + 1
-    "execute the first example with local variables" in { x must_== 2; x = x + 1 }
-    "execute the second example with a reinitialized variable" in { x must_== 2; x = x + 1 }
+    "execute the first example with local variables" in { 
+      x aka "ex1" must_== 2; 
+      x = x + 1 }
+    "execute the second example with a reinitialized variable" in { 
+      x aka "ex2" must_== 2; 
+      x = x + 1 }
   }
   "Another sus " should {
     x = x + 1

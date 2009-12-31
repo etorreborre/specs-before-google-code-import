@@ -86,6 +86,13 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
     thisSkipped.clear
     this
   }
+  /**
+   * set the execution context for a cloned example: tags, filter, beforeFirst failure
+   */
+  private[specification] def prepareExecutionContextFrom(other: Examples) = {
+    this.tagWith(other)
+    this.examplesFilter = other.examplesFilter
+  }
   /** 
    * copy the execution results from another example. This method is used to copy the results from another example
    * executed in isolation in another specification.

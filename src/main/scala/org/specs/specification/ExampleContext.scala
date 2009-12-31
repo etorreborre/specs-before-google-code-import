@@ -38,8 +38,6 @@ trait ExampleContext extends ExampleLifeCycle {
   var after: Option[() => Any] = None
   /** the lastActions function will be invoked after all examples */
   var lastActions: Option[() => Any] = None
-  /** if this variable is true then the doFirst block is not executed and the example execution must fail */
-  private[specification] var beforeSystemFailure: Option[FailureException] = None
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Examples): Unit = {
     beforeSystemFailure.map(throw _)
@@ -58,8 +56,8 @@ trait ExampleContext extends ExampleLifeCycle {
             beforeSystemFailure = Some(failure)
             beforeSystemFailure.map(throw _)
           }
+        }
       }
-}
       before.map(_.apply())
     }
   }

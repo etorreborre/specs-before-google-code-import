@@ -51,6 +51,8 @@ trait LifeCycle {
   private[specs] var current: Option[Examples] = None
   /** a predicate which will decide if an example must be re-executed */
   private[specs] var untilPredicate: Option[() => Boolean] = None
+  /** if this variable is true then the doFirst block is not executed and the example execution must fail */
+  private[specification] var beforeSystemFailure: Option[FailureException] = None
   /** this variable defines if examples should be executed as soon as defined */
   private[specs] protected var sequential = false
   /** @return true if if examples should be executed as soon as defined  */
@@ -104,6 +106,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
   private[specs] var execution: Option[ExampleExecution] = None
   /** @return true if the execution has been executed */
   private[specs] def executed = execution.map(_.executed).getOrElse(true)
+
   /** abstract method (defined in Example) executing the example itself */
   def executeThis: Unit
   /** 

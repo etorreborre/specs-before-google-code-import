@@ -117,15 +117,13 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
     addExample(ex)
     ex
   }
-  
   /**
    * set the execution context for a cloned example: tags, filter, beforeFirst failure
    */
-  private[specification] def prepareExecutionContextFrom(other: Examples) = {
-    this.tagWith(other)
-    this.examplesFilter = other.examplesFilter
-    other.parent match {
-      case Some(p: ExampleContext) =>  this.beforeSystemFailure = p.beforeSystemFailure
+  override private[specification] def prepareExecutionContextFrom(other: Examples) = {
+    super.prepareExecutionContextFrom(other)
+    other.parentCycle match {
+      case Some(p) => this.beforeSystemFailure = p.beforeSystemFailure
       case None => ()
     }
   }
