@@ -30,6 +30,10 @@ trait Notifier {
   def exampleError(testName: String, e: Throwable)
   def exampleSkipped(testName: String)
   def systemStarting(systemName: String)
+  def systemSucceeded(testName: String)
+  def systemFailed(testName: String, e: Throwable)
+  def systemError(testName: String, e: Throwable)
+  def systemSkipped(testName: String)
   def systemCompleted(systemName: String)
 }
 /**
@@ -61,6 +65,23 @@ class NotifierRunner(val specs: Array[Specification], val notifiers: Array[Notif
   }
   def reportSystem(system: Sus): this.type = {
     notifiers.foreach { _.systemStarting(system.header) }
+    
+    if (!system.failures.isEmpty)
+      notifiers.foreach { notifier =>
+        system.failures.foreach { failure =>
+          notifier.systemFailed(system.description, failure) 
+        }
+      }
+    else if (!system.errors.isEmpty)
+      notifiers.foreach { notifier =>
+        system.errors.foreach { error =>
+          notifier.systemError(system.description, error) 
+        }
+      }
+    else if (!system.skipped.isEmpty)
+      notifiers.foreach { notifier =>
+        notifier.systemSkipped(system.description) 
+      }
     for (example <- system.examples)
       reportExample(example)
     notifiers.foreach { _.systemCompleted(system.header) }
