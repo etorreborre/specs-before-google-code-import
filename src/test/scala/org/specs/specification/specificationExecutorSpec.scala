@@ -150,6 +150,9 @@ object testNotifier extends Notifier {
   def exampleError(testName: String, e: Throwable) = ()
   def exampleSkipped(testName: String) = skippedExample = true
   def systemStarting(systemName: String) = ()
+  def systemSucceeded(testName: String) = ()
+  def systemFailed(testName: String, e: Throwable) = ()
+  def systemError(testName: String, e: Throwable) = ()
+  def systemSkipped(testName: String) = skippedExample = true
   def systemCompleted(systemName: String) = ()
-
 }
