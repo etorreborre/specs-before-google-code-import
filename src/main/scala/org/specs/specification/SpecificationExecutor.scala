@@ -67,7 +67,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
   }
   /** @return a clone of the specification */
   private[specification] def cloneSpecification = {
-    tryToCreateObject[BaseSpecification with ExpectableFactory](getClass.getName, false, false)
+    tryToCreateObject[BaseSpecification with ExpectableFactory with NeverSequentialExecution](getClass.getName, false, false)
   }
 }
 case class PathException(m: String) extends Exception(m)
