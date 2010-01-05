@@ -40,7 +40,8 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithChangedConfiguration,
           specificationWithMockito,
           specificationWithANestedSpecification,
-          specificationWithANestedCaseClassSpecification)
+          specificationWithANestedCaseClassSpecification,
+          specificationWithSetSequential)
   
   "A specification for issue 102" should {
     "not skip an example when run with the NotifierRunner" in {
@@ -135,10 +136,24 @@ object specificationWithExpectation extends Specification {
  }
  "Another example " should{
    "be run in complete isolation" in{
-     1 mustEqual 1
+     1 must_== 1
    }
  }
 }
+// from issue 105
+object specificationWithSetSequential extends Specification {
+  setSequential()
+  "Foo" should {
+    var x = 0 
+    "not go to busyloop" in {
+      x must_== 0; x = x + 1
+    }
+    "not go to busyloop2" in {
+      x must_== 0; x = x + 1
+    }
+  }
+}
+
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
