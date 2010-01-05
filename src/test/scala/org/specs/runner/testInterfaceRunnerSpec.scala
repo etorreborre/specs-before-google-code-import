@@ -3,7 +3,7 @@ import org.spex._
 import org.scalatools.testing._
 import scala.collection.mutable._
 
-class kestInterfaceRunnerSpec extends Specification {
+class testInterfaceRunnerSpec extends Specification {
   "the test interface runner" should {
     "report a sus" in {
       logOutput must include("[info] this sus should")      
