@@ -95,5 +95,20 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   def systemStarting(systemName: String) = {
     logInfo(systemName, AnsiColors.blue)
   }
+  def systemFailed(testName: String, e: Throwable) = {
+    logStatus(testName, AnsiColors.red, "x")
+    handler.handle(failure(testName, e))
+    decrementPadding
+  }
+  def systemError(testName: String, e: Throwable) = {
+    logStatus(testName, AnsiColors.red, "x")
+    handler.handle(error(testName, e))
+    decrementPadding
+  }
+  def systemSkipped(testName: String) = {
+    logStatus(testName, AnsiColors.yellow, "o")
+    handler.handle(skipped(testName))
+    decrementPadding
+  }
   def systemCompleted(systemName: String) = {}
 }
