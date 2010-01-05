@@ -95,6 +95,11 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   def systemStarting(systemName: String) = {
     logInfo(systemName, AnsiColors.blue)
   }
+  def systemSucceeded(testName: String) = {
+    logStatus(testName, AnsiColors.green, "+")
+    handler.handle(succeeded(testName))
+    decrementPadding
+  }
   def systemFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
     handler.handle(failure(testName, e))
