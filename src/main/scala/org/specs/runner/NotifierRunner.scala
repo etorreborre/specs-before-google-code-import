@@ -66,21 +66,23 @@ class NotifierRunner(val specs: Array[Specification], val notifiers: Array[Notif
   def reportSystem(system: Sus): this.type = {
     notifiers.foreach { _.systemStarting(system.header) }
     
-    if (!system.failures.isEmpty)
+    if (!system.ownFailures.isEmpty)
       notifiers.foreach { notifier =>
-        system.failures.foreach { failure =>
+        system.ownFailures.foreach { failure =>
           notifier.systemFailed(system.description, failure) 
         }
       }
-    else if (!system.errors.isEmpty)
+    else if (!system.ownErrors.isEmpty)
       notifiers.foreach { notifier =>
-        system.errors.foreach { error =>
+        system.ownErrors.foreach { error =>
           notifier.systemError(system.description, error) 
         }
       }
-    else if (!system.skipped.isEmpty)
+    else if (!system.ownSkipped.isEmpty)
       notifiers.foreach { notifier =>
-        notifier.systemSkipped(system.description) 
+        system.ownSkipped.foreach { skipped =>
+          notifier.systemSkipped(skipped.getMessage)
+        }
       }
     for (example <- system.examples)
       reportExample(example)
