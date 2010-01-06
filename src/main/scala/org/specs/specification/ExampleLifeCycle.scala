@@ -150,7 +150,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
 /** Default LifeCycle with no actions before or after. */
 object DefaultLifeCycle extends Example("default life cycle")
 
-/** This trait defines if the examplse*/
+/** This trait defines if the examples must be executed as soon as they are defined */
 trait SequentialExecution {
   /** this variable defines if examples should be executed as soon as defined */
   private[specs] protected var sequential = false
@@ -160,10 +160,6 @@ trait SequentialExecution {
   def setSequential() = sequential = true
   /** examples should not be executed as soon as defined */
   def setNotSequential() = sequential = false
-}
-trait NeverSequentialExecution extends SequentialExecution {
-  /** @return always false */
-  override def isSequential = false
 }
 
 /**

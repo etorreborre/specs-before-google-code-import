@@ -59,7 +59,6 @@ trait SpecificationSystems { this: BaseSpecification =>
   private[specs] def addSus(sus: Sus): Sus = {
     addChild(sus)
     systemsList = systemsList ::: List(sus)
-    if (this.isSequential) sus.setSequential
     sus
   }
   /**
