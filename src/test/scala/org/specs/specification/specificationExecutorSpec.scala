@@ -145,9 +145,10 @@ object specificationWithSetSequential extends Specification {
   object Watcher {
     var messages = ""
     var count = 0
+    def reset = { messages = ""; count = 0 }
     def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
   }
-  object spec extends Specification {
+  object sequentialSpec extends Specification {
     setSequential()
     "Foo" should {
       var x = 0 
@@ -158,15 +159,35 @@ object specificationWithSetSequential extends Specification {
       }
       Watcher.addMessage("define ex2")
       "not go to busyloop2" in {
-        Watcher.addMessage("ex2")
         Watcher.messages must include("0-define ex1")
         Watcher.messages must include("1-ex1")
         x aka "x twice" must_== 0
       }
     }
   }
-  "The first example must be executed when defined and there should be no shared variable" in {
-    spec.failures must be empty
+  Watcher.reset
+  object notSequentialSpec extends Specification {
+    setNotSequential()
+    "Foo" should {
+      var x = 0 
+      Watcher.addMessage("define ex1")
+      "not go to busyloop" in {
+        Watcher.addMessage("ex1")
+        x must_== 0; x = x + 1
+      }
+      Watcher.addMessage("define ex2")
+      "not go to busyloop2" in {
+        Watcher.messages must include("0-define ex1")
+        Watcher.messages must include("1-define ex2")
+        x aka "x twice" must_== 0
+      }
+    }
+  }
+  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
+    sequentialSpec.failures must be empty
+  }
+  "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
+    notSequentialSpec.failures must be empty
   }
 }
 
