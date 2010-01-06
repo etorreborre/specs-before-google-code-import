@@ -106,7 +106,7 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
    */
   def specifyExample(a: =>Any): Unit = {
     execution = Some(new ExampleExecution(this, (ex) => withCurrent(ex) { a }))
-    if (parent.map(_.isSequential).getOrElse(false))
+    if (isSequential)
       executeExamples
   }
   /** increment the number of expectations in this example */
