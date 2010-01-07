@@ -42,7 +42,8 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithANestedSpecification,
           specificationWithANestedCaseClassSpecification,
           specificationWithSetSequential,
-          sequentialSpecWithNotifier)
+          sequentialSpecWithNotifier,
+          specWithSeparateContexts)
   
   "A specification for issue 102" should {
     "not skip an example when run with the NotifierRunner" in {
@@ -198,6 +199,33 @@ object sequentialSpecWithNotifier extends Specification {
   notifiedSequentialSpecification.reportSpecs
   "There must be no side-effects" in { testNotifier.failures must_== 0 }
   "Examples must only be executed once" in { testNotifier.succeeded must_== 4 }
+}
+// from issue 107
+object specWithSeparateContexts extends Specification {
+   object specWithContexts extends ContextsDefinition {
+    var context: String = "" 
+    "sus" ->-(context1) should {
+      "accesses context1" in {
+        println("context is " + context)
+        context must be("context1")
+      }
+    }
+    "sus2" ->-(context2) should {
+      "accesses context2" in{
+        context must be("context2")
+      }
+    }
+  }
+  trait ContextsDefinition extends Specification {
+    var context: String 
+    val context1 = beforeContext(context = "context1")
+    val context2 = beforeContext(context = "context2")
+  }
+  "The first example must not fail" in {
+    testNotifier.reset
+    new NotifierRunner(specWithContexts, testNotifier).reportSpecs
+    testNotifier.failures must be(0)
+  }
 }
 object notifiedSequentialSpecification extends NotifierRunner(sequentialSpec, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
