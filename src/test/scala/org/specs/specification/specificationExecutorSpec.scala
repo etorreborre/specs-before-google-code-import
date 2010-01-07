@@ -41,7 +41,8 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithMockito,
           specificationWithANestedSpecification,
           specificationWithANestedCaseClassSpecification,
-          specificationWithSetSequential)
+          specificationWithSetSequential,
+          sequentialSpecWithNotifier)
   
   "A specification for issue 102" should {
     "not skip an example when run with the NotifierRunner" in {
@@ -142,47 +143,6 @@ object specificationWithExpectation extends Specification {
 }
 // from issue 105
 object specificationWithSetSequential extends Specification {
-  object Watcher {
-    var messages = ""
-    var count = 0
-    def reset = { messages = ""; count = 0 }
-    def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
-  }
-  object sequentialSpec extends Specification {
-    setSequential()
-    "Foo" should {
-      var x = 0 
-      Watcher.addMessage("define ex1")
-      "not go to busyloop" in {
-        Watcher.addMessage("ex1")
-        x must_== 0; x = x + 1
-      }
-      Watcher.addMessage("define ex2")
-      "not go to busyloop2" in {
-        Watcher.messages must include("0-define ex1")
-        Watcher.messages must include("1-ex1")
-        x aka "x twice" must_== 0
-      }
-    }
-  }
-  Watcher.reset
-  object notSequentialSpec extends Specification {
-    setNotSequential()
-    "Foo" should {
-      var x = 0 
-      Watcher.addMessage("define ex1")
-      "not go to busyloop" in {
-        Watcher.addMessage("ex1")
-        x must_== 0; x = x + 1
-      }
-      Watcher.addMessage("define ex2")
-      "not go to busyloop2" in {
-        Watcher.messages must include("0-define ex1")
-        Watcher.messages must include("1-define ex2")
-        x aka "x twice" must_== 0
-      }
-    }
-  }
   "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
     sequentialSpec.failures must be empty
   }
@@ -190,15 +150,68 @@ object specificationWithSetSequential extends Specification {
     notSequentialSpec.failures must be empty
   }
 }
+object Watcher {
+  var messages = ""
+  var count = 0
+  def reset = { messages = ""; count = 0 }
+  def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
+}
+object sequentialSpec extends Specification {
+  setSequential()
+  "Foo" should {
+    var x = 0 
+    Watcher.addMessage("define ex1")
+    "not go to busyloop" in {
+      Watcher.addMessage("ex1")
+      x must_== 0; x = x + 1
+    }
+    Watcher.addMessage("define ex2")
+    "not go to busyloop2" in {
+      Watcher.messages must include("0-define ex1")
+      Watcher.messages must include("1-ex1")
+      x aka "x twice" must_== 0
+    }
+  }
+}
+object notSequentialSpec extends Specification {
+  Watcher.reset
+  setNotSequential()
+  "Foo" should {
+    var x = 0 
+    Watcher.addMessage("define ex1")
+    "not go to busyloop" in {
+      Watcher.addMessage("ex1")
+      x must_== 0; x = x + 1
+    }
+    Watcher.addMessage("define ex2")
+    "not go to busyloop2" in {
+      Watcher.messages must include("0-define ex1")
+      Watcher.messages must include("1-define ex2")
+      x aka "x twice" must_== 0
+    }
+  }
+}
 
+// from issue 106
+object sequentialSpecWithNotifier extends Specification {
+  testNotifier.reset
+  notifiedSequentialSpecification.reportSpecs
+  "There must be no side-effects" in { testNotifier.failures must_== 0 }
+  "Examples must only be executed once" in { testNotifier.succeeded must_== 4 }
+}
+object notifiedSequentialSpecification extends NotifierRunner(sequentialSpec, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
+  var failures = 0
+  var errors = 0
+  var succeeded = 0
+  def reset = failures = 0; errors = 0; succeeded = 0
   def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
-  def exampleSucceeded(testName: String) = ()
-  def exampleFailed(testName: String, e: Throwable) = ()
-  def exampleError(testName: String, e: Throwable) = ()
+  def exampleSucceeded(testName: String) = {succeeded += 1}
+  def exampleFailed(testName: String, e: Throwable) = failures += 1
+  def exampleError(testName: String, e: Throwable) = errors += 1
   def exampleSkipped(testName: String) = skippedExample = true
   def systemStarting(systemName: String) = ()
   def systemSucceeded(testName: String) = ()
