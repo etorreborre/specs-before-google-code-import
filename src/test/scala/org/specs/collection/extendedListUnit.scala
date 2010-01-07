@@ -64,11 +64,10 @@ class extendedListUnit extends SpecificationWithJUnit with TestData {
       mix("a", List("b")) must be like { case List(List("a", "b"), List("b", "a")) => ok }
     }
     "create 3 lists with a list of 2 elements" in {
-	1 must_== 1 // otherwise the compiler breaks for now
-	/*mix("a", List("b", "c")) must be like { case List(List("a", "b", "c"),
+	  mix("a", List("b", "c")) must be like { case List(List("a", "b", "c"),
                                                        List("b", "a", "c"),
                                                        List("b", "c", "a")) => ok }
-	*/
+	
     }
   }
   "A 'prefixes' function" should {
