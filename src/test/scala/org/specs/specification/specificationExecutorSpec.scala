@@ -144,10 +144,10 @@ object specificationWithExpectation extends Specification {
 // from issue 105
 object specificationWithSetSequential extends Specification {
   "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
-    sequentialSpec.failures must be empty
+    sequentialSpecification.failures must be empty
   }
   "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
-    notSequentialSpec.failures must be empty
+    notSequentialSpecification.failures must be empty
   }
 }
 object Watcher {
@@ -156,7 +156,7 @@ object Watcher {
   def reset = { messages = ""; count = 0 }
   def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
 }
-object sequentialSpec extends Specification {
+object sequentialSpecification extends Specification {
   setSequential()
   "Foo" should {
     var x = 0 
@@ -173,7 +173,7 @@ object sequentialSpec extends Specification {
     }
   }
 }
-object notSequentialSpec extends Specification {
+object notSequentialSpecification extends Specification {
   Watcher.reset
   setNotSequential()
   "Foo" should {
@@ -199,7 +199,7 @@ object sequentialSpecWithNotifier extends Specification {
   "There must be no side-effects" in { testNotifier.failures must_== 0 }
   "Examples must only be executed once" in { testNotifier.succeeded must_== 4 }
 }
-object notifiedSequentialSpecification extends NotifierRunner(sequentialSpec, testNotifier)
+object notifiedSequentialSpecification extends NotifierRunner(sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
