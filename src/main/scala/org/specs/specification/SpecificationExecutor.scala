@@ -40,6 +40,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
           case None => example.executeThis
           case Some(s) => {
             s.executeOneExampleOnly = true
+            s.setNotSequential()
             s.expectationsListener = this
             s.beforeSpecFailure = this.beforeSpecFailure
             s.parent = Some(this)

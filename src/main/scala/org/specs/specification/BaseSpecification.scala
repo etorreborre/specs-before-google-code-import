@@ -144,7 +144,9 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * <code>forExample("return 0 when asked for (0+0)").in {...}</code>
    */
   implicit def specifyExample(desc: String): ExampleSpecification = {
-    new ExampleSpecification(exampleContainer.createExample(desc))
+    val example = exampleContainer.createExample(desc)
+    if (sequential) example.setSequential()
+    new ExampleSpecification(example)
   }
   class ExampleSpecification(val example: Example) {
     def in(expectations: =>Any) = example.in(expectations)

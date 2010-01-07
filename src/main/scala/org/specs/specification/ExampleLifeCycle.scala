@@ -41,7 +41,7 @@ import org.specs.util.ExtendedThrowable._
  * </ul>
  *  
  */
-trait LifeCycle {
+trait LifeCycle extends SequentialExecution {
   /** lifecycles can be chained via parent-child relationships */
   private[specs] var parent: Option[LifeCycle] = None
   /** 
@@ -53,14 +53,6 @@ trait LifeCycle {
   private[specs] var untilPredicate: Option[() => Boolean] = None
   /** if this variable is true then the doFirst block is not executed and the example execution must fail */
   private[specification] var beforeSystemFailure: Option[FailureException] = None
-  /** this variable defines if examples should be executed as soon as defined */
-  private[specs] protected var sequential = false
-  /** @return true if if examples should be executed as soon as defined  */
-  def isSequential = sequential
-  /** examples should be executed as soon as defined */
-  def setSequential() = sequential = true
-  /** examples should not be executed as soon as defined */
-  def setNotSequential() = sequential = false
   /** execute a block of code with a specific list of examples as the container to use for examples created by the block */
   private[specs] def withCurrent(ex: Examples)(a: => Any) = {
     val c = current.orElse(parent.flatMap(_.current))
@@ -157,6 +149,18 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
 }
 /** Default LifeCycle with no actions before or after. */
 object DefaultLifeCycle extends Example("default life cycle")
+
+/** This trait defines if the examples must be executed as soon as they are defined */
+trait SequentialExecution {
+  /** this variable defines if examples should be executed as soon as defined */
+  private[specs] protected var sequential = false
+  /** @return true if if examples should be executed as soon as defined  */
+  def isSequential = sequential
+  /** examples should be executed as soon as defined */
+  def setSequential() = sequential = true
+  /** examples should not be executed as soon as defined */
+  def setNotSequential() = sequential = false
+}
 
 /**
  * This class encapsulates the execution of an example.
