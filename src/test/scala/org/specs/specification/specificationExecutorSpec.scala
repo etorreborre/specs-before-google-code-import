@@ -142,24 +142,16 @@ object specificationWithExpectation extends Specification {
  }
 }
 // from issue 105
-object specificationWithSetSequential extends Specification {
-  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
-    sequentialSpecification.failures must be empty
-  }
-  "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
-    notSequentialSpecification.failures must be empty
-  }
-}
 object Watcher {
   var messages = ""
   var count = 0
   def reset = { messages = ""; count = 0 }
   def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
 }
-object sequentialSpecification extends Specification {
+class sequentialSpecification extends Specification {
   setSequential()
+  var x = 0 
   "Foo" should {
-    var x = 0 
     Watcher.addMessage("define ex1")
     "not go to busyloop" in {
       Watcher.addMessage("ex1")
@@ -180,7 +172,7 @@ object sequentialSpecification extends Specification {
     }
   }
 }
-object notSequentialSpecification extends Specification {
+class notSequentialSpecification extends Specification {
   Watcher.reset
   setNotSequential()
   "Foo" should {
@@ -198,6 +190,14 @@ object notSequentialSpecification extends Specification {
     }
   }
 }
+object specificationWithSetSequential extends Specification {
+  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
+    (new sequentialSpecification).failures must be empty
+  }
+  "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
+    (new notSequentialSpecification).failures must be empty
+  }
+}
 
 // from issue 106
 object sequentialSpecWithNotifier extends Specification {
@@ -207,7 +207,7 @@ object sequentialSpecWithNotifier extends Specification {
   "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
 
-object notifiedSequentialSpecification extends NotifierRunner(sequentialSpecification, testNotifier)
+object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
