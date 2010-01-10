@@ -143,24 +143,16 @@ object specificationWithExpectation extends Specification {
  }
 }
 // from issue 105
-object specificationWithSetSequential extends Specification {
-  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
-    sequentialSpecification.failures must be empty
-  }
-  "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
-    notSequentialSpecification.failures must be empty
-  }
-}
 object Watcher {
   var messages = ""
   var count = 0
   def reset = { messages = ""; count = 0 }
   def addMessage(m: String) = { messages += count + "-" + m + "\n"; count +=1 }
 }
-object sequentialSpecification extends Specification {
+class sequentialSpecification extends Specification {
   setSequential()
+  var x = 0 
   "Foo" should {
-    var x = 0 
     Watcher.addMessage("define ex1")
     "not go to busyloop" in {
       Watcher.addMessage("ex1")
@@ -168,13 +160,20 @@ object sequentialSpecification extends Specification {
     }
     Watcher.addMessage("define ex2")
     "not go to busyloop2" in {
+      Watcher.addMessage("ex2")
       Watcher.messages must include("0-define ex1")
       Watcher.messages must include("1-ex1")
       x aka "x twice" must_== 0
     }
+    Watcher.addMessage("define ex3")
+    "have 3 examples" in {
+      Watcher.messages must include("4-define ex2")
+      Watcher.messages must include("6-ex2")
+      x aka "x thrice" must_== 0
+    }
   }
 }
-object notSequentialSpecification extends Specification {
+class notSequentialSpecification extends Specification {
   Watcher.reset
   setNotSequential()
   "Foo" should {
@@ -192,53 +191,79 @@ object notSequentialSpecification extends Specification {
     }
   }
 }
+object specificationWithSetSequential extends Specification {
+  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
+    (new sequentialSpecification).failures must be empty
+  }
+  "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
+    (new notSequentialSpecification).failures must be empty
+  }
+}
 
 // from issue 106
 object sequentialSpecWithNotifier extends Specification {
   testNotifier.reset
   notifiedSequentialSpecification.reportSpecs
   "There must be no side-effects" in { testNotifier.failures must_== 0 }
-  "Examples must only be executed once" in { testNotifier.succeeded must_== 4 }
+  "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
 // from issue 107
 object specWithSeparateContexts extends Specification {
-   object specWithContexts extends ContextsDefinition {
-    var context: String = "" 
-    "sus" ->-(context1) should {
-      "accesses context1" in {
-        println("context is " + context)
-        context must be("context1")
-      }
-    }
-    "sus2" ->-(context2) should {
-      "accesses context2" in{
-        context must be("context2")
-      }
-    }
-  }
-  trait ContextsDefinition extends Specification {
-    var context: String 
-    val context1 = beforeContext(context = "context1")
-    val context2 = beforeContext(context = "context2")
-  }
   "The first example must not fail" in {
     testNotifier.reset
     new NotifierRunner(specWithContexts, testNotifier).reportSpecs
-    testNotifier.failures must be(0)
+    testNotifier.failures must be empty
   }
 }
-object notifiedSequentialSpecification extends NotifierRunner(sequentialSpecification, testNotifier)
+object specWithContexts extends ContextsDefinition {
+  var context: String = "" 
+  "sus" ->-(context1) should {
+    "access context1" in {
+      context must be("context1")
+    }
+  }
+  "sus2" ->-(context2) should {
+    "access context2" in{
+      context must be("context2")
+    }
+  }
+}
+object FooSpecs extends FooContext{
+  "Foo" ->-(myContext) should{
+    "be able to access context" in{
+      foo mustEqual "b"
+    }
+  }
+  "Bar" ->-(anotherContext) should{
+    "be able to access context" in{
+      foo mustEqual "c"
+    }
+  }
+}
+trait FooContext extends Specification{
+  var foo = "a"
+  val myContext = beforeContext(foo = "b")
+  val anotherContext = beforeContext(foo = "c")
+}
+trait ContextsDefinition extends Specification {
+  var context: String 
+  val context1 = beforeContext { 
+    context = "context1" 
+  }
+  val context2 = beforeContext(context = "context2")
+}
+object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
-  var failures = 0
+  var failures: List[String] = Nil
   var errors = 0
   var succeeded = 0
-  def reset = failures = 0; errors = 0; succeeded = 0
+  def reset = failures = Nil; errors = 0; succeeded = 0
   def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
   def exampleSucceeded(testName: String) = {succeeded += 1}
-  def exampleFailed(testName: String, e: Throwable) = failures += 1
+  def exampleFailed(testName: String, e: Throwable) = failures = failures ::: List(e.getMessage)
   def exampleError(testName: String, e: Throwable) = errors += 1
   def exampleSkipped(testName: String) = skippedExample = true
   def systemStarting(systemName: String) = ()

@@ -54,6 +54,12 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
               }
             }
             executed = true
+            // Very special case,... (see  issue 106)
+            // If the spec is sequential, the second example of the first system
+            // will have its closure set to the cloned specification, unless
+            // the change below is done
+            if (isSequential)
+              s.setCurrent(Some(this.systems(0)))
           }
         }
       }
