@@ -215,43 +215,25 @@ object specWithSeparateContexts extends Specification {
     testNotifier.failures must be empty
   }
 }
-object specWithContexts extends ContextsDefinition {
-  var context: String = "" 
+object specWithContexts extends ContextDefinition {
   "sus" ->-(context1) should {
     "access context1" in {
       context must be("context1")
     }
   }
-  "sus2" ->-(context2) should {
-    "access context2" in{
-      context must be("context2")
+  "sus2" ->-(context1) should {
+    "access context1" in{
+      context must be("context1")
     }
   }
 }
-object FooSpecs extends FooContext{
-  "Foo" ->-(myContext) should{
-    "be able to access context" in{
-      foo mustEqual "b"
-    }
-  }
-  "Bar" ->-(anotherContext) should{
-    "be able to access context" in{
-      foo mustEqual "c"
-    }
-  }
-}
-trait FooContext extends Specification{
-  var foo = "a"
-  val myContext = beforeContext(foo = "b")
-  val anotherContext = beforeContext(foo = "c")
-}
-trait ContextsDefinition extends Specification {
-  var context: String 
+trait ContextDefinition extends Specification {
+  var context = "1"
   val context1 = beforeContext { 
     context = "context1" 
   }
-  val context2 = beforeContext(context = "context2")
 }
+object notifiedSpecWithContexts extends NotifierRunner(specWithContexts, new ConsoleNotifier)
 object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
