@@ -205,7 +205,7 @@ object specificationWithSetSequential extends Specification {
 object sequentialSpecWithNotifier extends Specification {
   testNotifier.reset
   notifiedSequentialSpecification.reportSpecs
-  "There must be no side-effects" in { testNotifier.failures must_== 0 }
+  "There must be no side-effects" in { testNotifier.failures must be empty }
   "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
 // from issue 107
