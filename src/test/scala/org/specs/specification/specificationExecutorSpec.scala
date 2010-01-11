@@ -42,7 +42,8 @@ class specificationExecutorSpec extends spex.Specification {
           specificationWithANestedSpecification,
           specificationWithANestedCaseClassSpecification,
           specificationWithSetSequential,
-          sequentialSpecWithNotifier)
+          sequentialSpecWithNotifier,
+          specWithSeparateContexts)
   
   "A specification for issue 102" should {
     "not skip an example when run with the NotifierRunner" in {
@@ -206,19 +207,45 @@ object sequentialSpecWithNotifier extends Specification {
   "There must be no side-effects" in { testNotifier.failures must_== 0 }
   "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
-
+// from issue 107
+object specWithSeparateContexts extends Specification {
+  "The first example must not fail" in {
+    testNotifier.reset
+    new NotifierRunner(specWithContexts, testNotifier).reportSpecs
+    testNotifier.failures must be empty
+  }
+}
+object specWithContexts extends ContextDefinition {
+  "sus" ->-(context1) should {
+    "access context1" in {
+      context must be("context1")
+    }
+  }
+  "sus2" ->-(context1) should {
+    "access context1" in{
+      context must be("context1")
+    }
+  }
+}
+trait ContextDefinition extends Specification {
+  var context = "1"
+  val context1 = beforeContext { 
+    context = "context1" 
+  }
+}
+object notifiedSpecWithContexts extends NotifierRunner(specWithContexts, new ConsoleNotifier)
 object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
-  var failures = 0
+  var failures: List[String] = Nil
   var errors = 0
   var succeeded = 0
-  def reset = failures = 0; errors = 0; succeeded = 0
+  def reset = failures = Nil; errors = 0; succeeded = 0
   def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
   def exampleSucceeded(testName: String) = {succeeded += 1}
-  def exampleFailed(testName: String, e: Throwable) = failures += 1
+  def exampleFailed(testName: String, e: Throwable) = failures = failures ::: List(e.getMessage)
   def exampleError(testName: String, e: Throwable) = errors += 1
   def exampleSkipped(testName: String) = skippedExample = true
   def systemStarting(systemName: String) = ()

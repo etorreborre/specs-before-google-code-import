@@ -196,26 +196,26 @@ trait Contexts extends BaseSpecification with BeforeAfter { outer =>
   case class ToContext(desc: String) {
     def when(context: Context): Sus = ->-(context)
     def definedAs(context: Context): Sus = ->-(context)
-    def ->-(context: Context): Sus = {
-      if (context == null) throw new NullPointerException("the context is null")
+    def ->-(context: =>Context): Sus = {
+//      if (context == null) throw new NullPointerException("the context is null")
       specifySus(context, desc)
     } 
   }
   /**
    * Create a sus with a specific context
    */
-  private def specifySus(context: Context, desc: String): Sus = {
-    if (context == null) throw new NullPointerException("the context is null")
+  private def specifySus(context: =>Context, desc: String): Sus = {
+//    if (context == null) throw new NullPointerException("the context is null")
     transferActionsToSus(specify(desc), context)
   }
   /**
    * add all the actions defined on a Context object to a sus
    */
-  private def transferActionsToSus(sus: Sus, context: Context) ={
+  private def transferActionsToSus(sus: Sus, context: =>Context) ={
     stackFirstActions(sus, context.firstActions())
-    stackBeforeActions(sus, context.beforeActions)
-    stackAroundActions(sus, context.aroundExpectationsActions)
-    stackAfterActions(sus, context.afterActions)
+    stackBeforeActions(sus, () => context.beforeActions())
+    stackAroundActions(sus, x => context.aroundExpectationsActions(x))
+    stackAfterActions(sus, () => context.afterActions())
     stackLastActions(sus, context.lastActions())
     until(sus, context.predicate())
     sus
