@@ -35,6 +35,9 @@ class kestInterfaceRunnerSpec extends Specification {
     "report a skipped event" in {
       events must include("Skipped")      
     }
+    "work ok with a specification created as an object" in {
+      logOutput$ must include("[info] this sus should")      
+    }
   }
   class TestInterfaceLogger extends Logger {
     var out = ""
@@ -51,9 +54,14 @@ class kestInterfaceRunnerSpec extends Specification {
     def handle(event: Event)= events.append(event.result.toString)
   }
   def executeRunner = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run("org.specs.runner.testInterfaceSpecification", null, handler, Array())
+  def executeRunner$ = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run("org.specs.runner.testInterfaceSpecification$", null, handler, Array())
 
   def logOutput = {
     executeRunner
+    testInterfaceLogger.out
+  }
+  def logOutput$ = {
+    executeRunner$
     testInterfaceLogger.out
   }
   def logColoredOutput = {
@@ -81,3 +89,4 @@ class testInterfaceSpecification extends Specification {
     }
   }
 }
+object testInterfaceSpecification extends testInterfaceSpecification
