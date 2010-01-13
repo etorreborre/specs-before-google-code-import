@@ -169,9 +169,16 @@ object sequentialSpecification extends Specification {
     }
     Watcher.addMessage("define ex2")
     "not go to busyloop2" in {
+      Watcher.addMessage("ex2")
       Watcher.messages must include("0-define ex1")
       Watcher.messages must include("1-ex1")
       x aka "x twice" must_== 0
+    }
+    Watcher.addMessage("define ex3")
+    "have 3 examples" in {
+      Watcher.messages must include("4-define ex2")
+      Watcher.messages must include("6-ex2")
+      x aka "x thrice" must_== 0
     }
   }
 }
@@ -199,7 +206,7 @@ object sequentialSpecWithNotifier extends Specification {
   testNotifier.reset
   notifiedSequentialSpecification.reportSpecs
   "There must be no side-effects" in { testNotifier.failures must_== 0 }
-  "Examples must only be executed once" in { testNotifier.succeeded must_== 4 }
+  "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
 // from issue 107
 object specWithSeparateContexts extends Specification {
@@ -228,6 +235,7 @@ object specWithSeparateContexts extends Specification {
     testNotifier.failures must be(0)
   }
 }
+
 object notifiedSequentialSpecification extends NotifierRunner(sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
