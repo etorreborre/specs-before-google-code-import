@@ -89,13 +89,13 @@ trait MockitoLifeCycle extends LifeCycle {
  * mockedList.get(0) was called.once // similar to was called
  * mockedList.get(0) was called.twice
  * mockedList.get(0) was called(3.times)
- * mockedList.get(0) was called.atLeastOnce // or called.atLeast(oncee)
+ * mockedList.get(0) was called.atLeastOnce // or called.atLeast(once)
  * mockedList.get(0) was called.atLeastTwice
  * mockedList.get(0) was called.atLeast(3.times)
  * mockedList.get(0) was called.atMostOnce
  * mockedList.get(0) was called.atMostTwice
  * mockedList.get(0) was called.atMost(3.times)
- * mockedList.get(0) was called.exclusively // equivalent to called(0.timess)
+ * mockedList.get(0) was called.exclusively // equivalent to called(0.times)
  * 
  * </code>
  */
@@ -149,8 +149,8 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
  * This trait provides functions to set the verification mode for InOrder verifications.
  * This means that it only supports AtLeast and Times verification modes.
  */
-trait HasInOrderVerificationMode extends Sugar {
-  
+trait HasInOrderVerificationMode  {
+  import Sugar._
   protected var verificationMode = org.mockito.Mockito.times(1)
   /** verification mode = times(1). This is the default. */
   def once: this.type = this
@@ -174,7 +174,7 @@ trait HasInOrderVerificationMode extends Sugar {
  * This trait provides functions to set the verification mode
  */
 trait HasVerificationMode extends HasInOrderVerificationMode {
-  
+  import Sugar._
   /** verification mode = atMost(1). */
   def atMostOnce: this.type = atMost(1) 
   /** verification mode = atMost(2). */

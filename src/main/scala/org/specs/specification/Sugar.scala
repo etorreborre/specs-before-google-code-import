@@ -77,3 +77,4 @@ trait NumberOfTimes {
     def times = this 
   }
 }
+object NumberOfTimes extends NumberOfTimes 
