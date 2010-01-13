@@ -210,32 +210,31 @@ object sequentialSpecWithNotifier extends Specification {
 }
 // from issue 107
 object specWithSeparateContexts extends Specification {
-   object specWithContexts extends ContextsDefinition {
-    var context: String = "" 
-    "sus" ->-(context1) should {
-      "accesses context1" in {
-        println("context is " + context)
-        context must be("context1")
-      }
-    }
-    "sus2" ->-(context2) should {
-      "accesses context2" in{
-        context must be("context2")
-      }
-    }
-  }
-  trait ContextsDefinition extends Specification {
-    var context: String 
-    val context1 = beforeContext(context = "context1")
-    val context2 = beforeContext(context = "context2")
-  }
   "The first example must not fail" in {
     testNotifier.reset
     new NotifierRunner(specWithContexts, testNotifier).reportSpecs
-    testNotifier.failures must be(0)
+    testNotifier.failures must be empty
   }
 }
-
+object specWithContexts extends ContextDefinition {
+  "sus" ->-(context1) should {
+    "access context1" in {
+      context must be("context1")
+    }
+  }
+  "sus2" ->-(context1) should {
+    "access context1" in{
+      context must be("context1")
+    }
+  }
+}
+trait ContextDefinition extends Specification {
+  var context = "1"
+  val context1 = beforeContext { 
+    context = "context1" 
+  }
+}
+object notifiedSpecWithContexts extends NotifierRunner(specWithContexts, new ConsoleNotifier)
 object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpecification, testNotifier)
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
