@@ -85,7 +85,6 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
         system.ownSkipped.foreach { skipped =>
           notifier.systemSkipped(skipped.getMessage)
         }
-      }
     for (example <- system.examples)
       reportExample(example)
     notifiers.foreach { _.systemCompleted(system.header) }

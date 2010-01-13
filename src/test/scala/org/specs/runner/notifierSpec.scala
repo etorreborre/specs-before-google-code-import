@@ -33,6 +33,9 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     "the start of a system" in {
       notifier.systemStarting("system1 should") was called
     }
+    "the failure of a system" in {
+      notifier.systemFailed("system1", new FailureException("sus failed")) was called
+    }
     "the start of an example" in {
       notifier.exampleStarting("ex1-1") was called
     }
@@ -56,6 +59,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     "system1"  should {
       "ex1-1" in { 1 must_== 1 }
       "ex1-2" in { fail("wrong") }
+      fail("sus failed")
     }
     "system2"  should {
       "ex2-1" in { 1 must_== 1 }
