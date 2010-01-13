@@ -59,7 +59,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     "system1"  should {
       "ex1-1" in { 1 must_== 1 }
       "ex1-2" in { fail("wrong") }
-      fail("sus failed")
+      fail("sus failed"); ()
     }
     "system2"  should {
       "ex2-1" in { 1 must_== 1 }

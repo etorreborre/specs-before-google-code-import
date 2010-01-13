@@ -239,14 +239,14 @@ object notifiedSequentialSpecification extends NotifierRunner(new sequentialSpec
 object notifiedSpecificationWithJMock extends NotifierRunner(specificationWithExpectation, testNotifier)
 object testNotifier extends Notifier {
   var skippedExample = false
-  var failures = 0
+  var failures: List[String] = Nil
   var errors = 0
   var succeeded = 0
-  def reset = failures = 0; errors = 0; succeeded = 0
+  def reset = failures = Nil; errors = 0; succeeded = 0
   def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
   def exampleSucceeded(testName: String) = {succeeded += 1}
-  def exampleFailed(testName: String, e: Throwable) = failures += 1
+  def exampleFailed(testName: String, e: Throwable) = failures = failures ::: List(e.getMessage)
   def exampleError(testName: String, e: Throwable) = errors += 1
   def exampleSkipped(testName: String) = skippedExample = true
   def systemStarting(systemName: String) = ()
