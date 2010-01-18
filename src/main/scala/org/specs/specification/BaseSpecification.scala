@@ -54,7 +54,8 @@ import org.specs.Specification
  * </ul>
  */
 class BaseSpecification extends TreeNode with SpecificationSystems with SpecificationExecutor with ExampleExpectationsListener with Tagged 
-  with HasResults with LinkedSpecification with SpecificationConfiguration { outer =>
+  with HasResults with LinkedSpecification with SpecificationConfiguration 
+  with ComposedSpecifications with LazyParameters { outer =>
     
   /** name of the specification */
   var name = createDescription(getClass.getName)
@@ -87,36 +88,25 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     parentSpecification.map(List(_)).getOrElse(Nil) ::: parentSpecification.map(_.parentSpecifications).getOrElse(Nil)   
   } 
   /** this declares that a specification is composed of other specifications */
-  def isSpecifiedBy[T <: Specification](specifications: T*) = {
-    this.description = this.name + " is specified by"
+  def isSpecifiedBy(specifications: LazyParameter[Specification]*) = {
+    addToName(" is specified by")
     include(specifications:_*)
   }
   /** alias for isSpecifiedBy */
-  def areSpecifiedBy[T <: Specification](specifications: T*) = {
-    this.description = this.name + " are specified by"
+  def areSpecifiedBy(specifications: LazyParameter[Specification]*) = {
+    addToName(" are specified by")
     include(specifications:_*)
+  }
+  private def addToName(s: String) {
+    this.description = this.name + s
   }
   /**
    * include a list of specifications inside this one
    */
-  def include[T <: Specification](specifications: T*) = {
-    val toInclude = specifications.toList.filter((s: Specification) => !(s eq this) && !s.contains(this))
-    toInclude.foreach(_.setParent(this))
-    subSpecifications = subSpecifications ::: toInclude 
-  }
-  /**
-   * implicit definition allowing to declare a composition inside the current specification:
-   * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code>
-   * It changes the name of this specification with the parameter
-   */
-  implicit def declare(newName: String): ComposedSpecification = { 
-    name = newName
-    new ComposedSpecification(this) 
-  }
-  class ComposedSpecification(s: BaseSpecification) {
-    def isSpecifiedBy(specifications: Specification*) = s.isSpecifiedBy(specifications:_*)
-    def areSpecifiedBy(specifications: Specification*) = s.areSpecifiedBy(specifications:_*)
-    def include(specifications: Specification*) = s.include(specifications:_*)
+  def include(specifications: LazyParameter[Specification]*) = {
+    val toInclude = specifications.toStream.filter((s: LazyParameter[Specification]) => !(s() eq this) && !s().contains(this)).
+                    map { s => s().setParent(this); s() }
+    subSpecifications = subSpecifications ++ toInclude 
   }
   /** @return recursively all the systems included in this specification */
   def allSystems: List[Sus] = {
@@ -273,4 +263,20 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   override def taggedComponents: List[Tagged] = this.systems.toList ::: this.subSpecifications 
   /** @return the name of the specification */
   override def toString = name
+}
+trait ComposedSpecifications extends LazyParameters { this: BaseSpecification =>
+/**
+   * implicit definition allowing to declare a composition inside the current specification:
+   * <code>"A complex specification".isSpecifiedBy(spec1, spec2)</code>
+   * It changes the name of this specification with the parameter
+   */
+  implicit def declare(newName: String): ComposedSpecification = { 
+    name = newName
+    new ComposedSpecification(this) 
+  }
+  class ComposedSpecification(s: BaseSpecification) {
+    def isSpecifiedBy(specifications: LazyParameter[Specification]*) = s.isSpecifiedBy(specifications:_*)
+    def areSpecifiedBy(specifications: LazyParameter[Specification]*) = s.areSpecifiedBy(specifications:_*)
+    def include(specifications: LazyParameter[Specification]*) = s.include(specifications:_*)
+  }
 }

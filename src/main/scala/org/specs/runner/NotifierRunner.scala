@@ -19,6 +19,7 @@
 package org.specs.runner
 import org.specs.specification._
 import org.specs._
+import org.specs.util.LazyParameter
 
 /**
  * This is a generic trait for defining a notified object which will know about the state of a run.
@@ -48,7 +49,7 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
     val specToRun = if (specs.size == 1)
                       specs(0)
                     else {
-                      object totalSpecification extends Specification { include(specs:_*) }
+                      object totalSpecification extends Specification { include(specs.map(s => new LazyParameter(() => s)):_*) }
                       totalSpecification
                     }
     

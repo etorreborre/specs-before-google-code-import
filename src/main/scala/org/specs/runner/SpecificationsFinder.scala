@@ -23,12 +23,12 @@ import java.util.regex._
 import scala.collection.mutable.Queue
 import org.specs.util.Classes
 import org.specs.Specification
-
+import org.specs.util.LazyParameter
 /**
  * Companion SpecsFinder object to create a SpecsFinder returning an aggregate Specification of
  * all the found specifications.
  */
-object SpecsFinder {
+ object SpecsFinder {
   def apply(path: String, pattern: String) = new SpecsFinder(path, pattern, true)
 }
 
@@ -38,24 +38,18 @@ object SpecsFinder {
  */
 case class SpecsFinder(path: String, pattern: String, asOneSpecification: Boolean) extends SpecificationsFinder with SpecsFilter {
 
-  lazy val specs = collectSpecs(asOneSpecification)
+  lazy val specs: Seq[Specification] = collectSpecs(asOneSpecification)
 
-  protected def collectSpecs(asOneSpecification: Boolean) = {
-    val collected = new scala.collection.mutable.ListBuffer[Specification]
-    val specNames = specificationNames(path, pattern)
-    specNames foreach { className =>
-      createSpecification(className).foreach { 
-    	  collected.append(_) 
-      }
-    }
+  protected def collectSpecs(asOneSpecification: Boolean): Seq[Specification] = {
+    val collected = specificationNames(path, pattern).toStream.flatMap(createSpecification(_)) 
     if (asOneSpecification) {
 	    object totalSpecification extends Specification {
-	      new java.io.File(path).getAbsolutePath isSpecifiedBy(collected: _*)
+	      declare(new java.io.File(path).getAbsolutePath).isSpecifiedBy(collected.map(s => new LazyParameter(() => s)).toSeq:_*)
 	    }
 	    List(totalSpecification)
     }
     else
-      collected.toList
+      collected.toSeq
   }
 }
 /**
