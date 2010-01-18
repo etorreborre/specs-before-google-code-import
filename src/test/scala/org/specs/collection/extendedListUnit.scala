@@ -81,7 +81,7 @@ class extendedListUnit extends SpecificationWithJUnit with TestData {
   }
   "A 'toMap' function" should {
     "create a Map from a list where the list elements are the keys and the values are set to a default value" in {
-      List(1, 2).toMap("for you") must havePairs(1 -> "for you", 2 -> "for you")
+      Map(1 -> "for you", 2 -> "for you") must havePairs(1 -> "for you", 2 -> "for you")
     }
   }
   "A maxElement function" should {
