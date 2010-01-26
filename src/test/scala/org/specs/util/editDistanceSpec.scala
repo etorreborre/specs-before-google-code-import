@@ -66,10 +66,10 @@ class editDistanceSpec extends SpecificationWithJUnit with EditDistance with Dat
     "work on 0-sized strings" in {
        "a"	| "b" 		| "result" 			|>
        "" 	! ""	   	! ("", "")    		|
-       "" 	! "a"	   	! ("[]", "[a]")  		|
+       "" 	! "a"	   	! ("[]", "[a]")     |
        "a" 	! ""	   	! ("[a]", "[]")    	|
-       "" 	! "ab"	   	! ("[]", "[ab]")		|
-       "ab" ! ""   		! ("[ab]", "[]") 		|
+       "" 	! "ab"	   	! ("[]", "[ab]")	|
+       "ab" ! ""   		! ("[ab]", "[]") 	|
        { (a: String, b: String, result: (String, String)) =>
          showDistance(a, b) must_== result
        }
@@ -79,7 +79,7 @@ class editDistanceSpec extends SpecificationWithJUnit with EditDistance with Dat
        "a" 	! "a"	   	! ("a", "a")    	|
        "a" 	! "b"	   	! ("[a]", "[b]")	|
        "a" 	! "bc"	   	! ("[a]", "[bc]")  	|
-       "a" 	! "ab"	   	! ("a[]", "a[b]")		|
+       "a" 	! "ab"	   	! ("a[]", "a[b]")	|
        { (a: String, b: String, result: (String, String)) =>
          showDistance(a, b) must_== result
        }
@@ -113,6 +113,13 @@ class editDistanceSpec extends SpecificationWithJUnit with EditDistance with Dat
     }
     "shorten left, center and right" in {
       shorten("abcdefg(zz)abcdefghijklmno(xx)abcdefg") must_== "...cdefg(zz)ab...no(xx)abcde..."
+    }
+  }
+  "The edit distance algorithm" should {
+    "dont use too much memory on a big string comparison" in {
+      val factor = 1000
+      editDistance("kitten\n" * factor, "kitsin\n" * factor) must be > 0
+      showDistance("kitten\n" * factor, "kitsin\n" * factor)._1.size must be > 0
     }
   }
 }

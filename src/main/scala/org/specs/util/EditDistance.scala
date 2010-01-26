@@ -116,10 +116,21 @@ trait EditDistance {
     }
   }
   /** @return the edit distance between 2 strings = the minimum number of insertions/suppressions/substitutions to pass from one string to the other */
-  def editDistance(s1: String, s2: String): Int = EditMatrix(s1, s2).distance
+  def editDistance(s1: String, s2: String): Int = foldSplittedStrings(s1, s2, 0, { 
+    (r: Int, s1: String, s2: String) => r + new EditMatrix(s1, s2).distance }
+  ) 
+    
+  /** apply edit distance functions on strings splitted on newlines so that there are no memory issues */
+  private def foldSplittedStrings[T](s1: String, s2: String, init: T, f: (T, String, String) => T): T = {
+    s1.split("\n").toList.zip(s2.split("\n").toList).foldLeft(init) { (result, current) =>
+      f(result, current._1, current._2)
+    }
+  }
 
   /** prints on the console the edit matrix for 2 strings */
-  def showMatrix(s1: String, s2: String) = EditMatrix(s1, s2).print
+  def showMatrix(s1: String, s2: String) = foldSplittedStrings(s1, s2, (), { 
+    (r: Any, s1: String, s2: String) => new EditMatrix(s1, s2).print }
+  )
 
   /** @return a (String, String) displaying the differences between each input strings. The used separators are brackets: '(' and ')'*/
   def showDistance(s1: String, s2: String): (String, String) = showDistance(s1, s2, "[]", 20)
@@ -133,7 +144,13 @@ trait EditDistance {
    * @return a (String, String) displaying the differences between each input strings. 
    * The used separators are specified by the caller. The string is shortened before and after differences if necessary. <p>
    */
-  def showDistance(s1: String, s2: String, sep: String, shortenSize: Int): (String, String) = EditMatrix(s1, s2).showDistance(sep, shortenSize)
+  def showDistance(s1: String, s2: String, sep: String, shortenSize: Int): (String, String) = {
+    foldSplittedStrings(s1, s2, ("", ""), { (r: (String, String), s1: String, s2: String) => 
+        val showDistance = EditMatrix(s1, s2).showDistance(sep, shortenSize) 
+        (r._1 + "\n" + showDistance._1, r._2 + "\n" + showDistance._2) 
+      }
+    ) 
+  }
 
   private def separators(s: String) = (firstSeparator(s), secondSeparator(s))
   private def firstSeparator(s: String) = if (s.isEmpty) "" else s.substring(0, s.size / 2 + s.size % 2)
