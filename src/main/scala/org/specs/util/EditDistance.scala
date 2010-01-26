@@ -146,8 +146,9 @@ trait EditDistance {
    */
   def showDistance(s1: String, s2: String, sep: String, shortenSize: Int): (String, String) = {
     foldSplittedStrings(s1, s2, ("", ""), { (r: (String, String), s1: String, s2: String) => 
-        val showDistance = EditMatrix(s1, s2).showDistance(sep, shortenSize) 
-        (r._1 + "\n" + showDistance._1, r._2 + "\n" + showDistance._2) 
+        val showDistance = EditMatrix(s1, s2).showDistance(sep, shortenSize)
+        def skipLine(s: String) = if (s.isEmpty) s else (s + "\n") 
+        (skipLine(r._1) + showDistance._1, skipLine(r._2) + showDistance._2) 
       }
     ) 
   }
