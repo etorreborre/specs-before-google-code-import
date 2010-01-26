@@ -38,6 +38,10 @@ class testInterfaceRunnerSpec extends Specification {
     "work ok with a specification created as an object" in {
       logOutput$ must include("[info] this sus should")      
     }
+    "work ok if an error is launch before any example is specified - issue 111" in {
+      import org.specs.Sugar._
+      logOutput("org.specs.runner.issue111Specification").pp must not(throwAn[Error])
+    }
   }
   class TestInterfaceLogger extends Logger {
     var out = ""
@@ -53,8 +57,9 @@ class testInterfaceRunnerSpec extends Specification {
     val events: ListBuffer[String] = new ListBuffer
     def handle(event: Event)= events.append(event.result.toString)
   }
-  def executeRunner = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run("org.specs.runner.testInterfaceSpecification", null, handler, Array())
-  def executeRunner$ = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run("org.specs.runner.testInterfaceSpecification$", null, handler, Array())
+  def executeRunner: Any = executeRunner("org.specs.runner.testInterfaceSpecification")
+  def executeRunner$ = executeRunner("org.specs.runner.testInterfaceSpecification$")
+  def executeRunner(className: String): Any = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run(className, null, handler, Array())
 
   def logOutput = {
     executeRunner
@@ -62,6 +67,10 @@ class testInterfaceRunnerSpec extends Specification {
   }
   def logOutput$ = {
     executeRunner$
+    testInterfaceLogger.out
+  }
+  def logOutput(className: String) = {
+    executeRunner(className)
     testInterfaceLogger.out
   }
   def logColoredOutput = {
@@ -90,3 +99,8 @@ class testInterfaceSpecification extends Specification {
   }
 }
 object testInterfaceSpecification extends testInterfaceSpecification
+class issue111Specification extends Specification {
+  "this sus" should {
+    throw new Error("here")
+  }
+}
