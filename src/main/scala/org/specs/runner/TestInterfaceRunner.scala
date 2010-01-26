@@ -68,7 +68,7 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
  
   var padding = ""
   def incrementPadding = padding += "  " 
-  def decrementPadding = padding = padding.take(padding.size - 2)
+  def decrementPadding = if (padding.size >= 2) padding = padding.take(padding.size - 2)
   def runStarting(examplesCount: Int) = {}
 
   def exampleStarting(exampleName: String) = incrementPadding
