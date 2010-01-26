@@ -17,7 +17,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
-
+import org.specs.execute.FailureException
+import org.specs.util.ExtendedThrowable._
 /**
  * This trait extends the ExampleLifeCycle with the capability to store actions 
  * to be executed before and after examples.
@@ -39,10 +40,24 @@ trait ExampleContext extends ExampleLifeCycle {
   var lastActions: Option[() => Any] = None
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Examples): Unit = {
+    beforeSystemFailure.map(throw _)
     parent.map(_.beforeExample(ex))
     if (!(ex eq this)) {
-      if (!exampleList.isEmpty && ex == exampleList.head)
-        firstActions.map(_.apply)
+      if (!exampleList.isEmpty && ex == exampleList.first) {
+        val susListener = new Sus("", new org.specs.Specification {})
+        firstActions.map { a =>
+          withCurrent(susListener)(a.apply) 
+        }
+        firstActions.map { b => 
+          val initErrors = susListener.failureAndErrors
+          if (!initErrors.isEmpty) {
+            val failure = new FailureException("Before system:\n" + 
+                                             initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
+            beforeSystemFailure = Some(failure)
+            beforeSystemFailure.map(throw _)
+          }
+        }
+      }      
       before.map(_.apply())
     }
   }
@@ -95,6 +110,7 @@ trait ExampleContext extends ExampleLifeCycle {
     aroundExpectations = other.aroundExpectations
     untilPredicate = other.untilPredicate
     firstActions = other.firstActions
+    beforeSystemFailure = other.beforeSystemFailure
     lastActions = other.lastActions
   }
 }

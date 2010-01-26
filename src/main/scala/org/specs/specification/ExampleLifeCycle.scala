@@ -191,6 +191,14 @@ class ExampleExecution(var example: Examples, var expectations: Examples => Any)
     var failed = false
     // try the "before" methods. If there is an exception, add an error and return the current example
     try { example.beforeExample(example) } catch {
+      case f: FailureException => {
+        example.addFailure(f)
+        failed = true
+      }
+      case s: SkippedException => {
+        example.addSkipped(s)
+        failed = true
+      }
       case t: Throwable => {
         example.addError(t)
         failed = true

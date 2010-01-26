@@ -42,13 +42,13 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
             s.executeOneExampleOnly = true
             s.setNotSequential()
             s.expectationsListener = this
+            s.beforeSpecFailure = this.beforeSpecFailure
             s.parent = Some(this)
             val cloned = s.getExample(path)
             cloned match {
               case None => throw PathException(path + "not found for " + example)
               case Some(c) => {
-                c.tagWith(example)
-                c.examplesFilter = example.examplesFilter
+                c.prepareExecutionContextFrom(example)
                 c.execution.map(_.execute)
                 example.copyExecutionResults(c)
               }

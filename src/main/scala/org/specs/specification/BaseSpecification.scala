@@ -24,6 +24,7 @@ import org.specs.execute._
 import org.specs.util._
 import org.specs.util.ExtendedString._
 import org.specs.Specification
+import org.specs.util.ExtendedThrowable._
 /**
  * This class provides the base structure of a specification.<br>
  * A specification has a name, a description and is composed of:<ul>
@@ -178,17 +179,28 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   var beforeSpec: Option[() => Any] = None
   /** the afterAllSystems function will be invoked after all systems */
   var afterSpec: Option[() => Any] = None
-  private var beforeSpecHasBeenExecuted = false
-  /**
+  /** if this variable is true then the doBeforeSpec block is not executed */
+  private[specification] var beforeSpecHasBeenExecuted = false
+  /** if this variable is true then the doBeforeSpec block is not executed and the example execution must fail */
+  private[specification] var beforeSpecFailure: Option[FailureException] = None  /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
    */
   override def beforeExample(ex: Examples) = {
+    beforeSpecFailure.map(throw _)
     if (!executeOneExampleOnly && !beforeSpecHasBeenExecuted) {
       beforeSpecHasBeenExecuted = true
       beforeSpec.map(_.apply)
+      beforeSpec.map { b => 
+        val initErrors = systemsList.filter(s => (s.description == "specifies")).flatMap(_.failureAndErrors)
+        if (!initErrors.isEmpty) {
+          val failure = new FailureException("Before specification:\n" + 
+                                             initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
+          beforeSpecFailure = Some(failure)
+          beforeSpecFailure.map(throw _)
+        }
+      }
     }
-    super.beforeExample(ex)
   }
   /**
    * override the afterExample method to execute actions after the

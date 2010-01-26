@@ -39,8 +39,7 @@ class testInterfaceRunnerSpec extends Specification {
       logOutput$ must include("[info] this sus should")      
     }
     "work ok if an error is launch before any example is specified - issue 111" in {
-      import org.specs.Sugar._
-      logOutput("org.specs.runner.issue111Specification").pp must not(throwAn[Error])
+      logOutput("org.specs.runner.issue111Specification") must not(throwAn[Error])
     }
   }
   class TestInterfaceLogger extends Logger {
@@ -103,5 +102,6 @@ object testInterfaceSpecification extends testInterfaceSpecification
 class issue111Specification extends Specification {
   "this sus" should {
     throw new Error("here")
+    "an example" in { 1 must_== 1 }
   }
 }
