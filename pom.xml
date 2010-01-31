@@ -318,7 +318,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <version>2.10.1</version>
         <configuration>
           <jvmArgs>
-            <jvmArg>-Xmx512m</jvmArg>
+            <jvmArg>-Xmx1024m</jvmArg>
           </jvmArgs>
         <!--  <vscaladocVersion>1.2-SNAPSHOT</vscaladocVersion> -->
           <scalaVersion>${scala.version}</scalaVersion>
