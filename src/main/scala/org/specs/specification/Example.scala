@@ -49,6 +49,10 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
   def this(desc: String, parent: ExampleContext) = this(ExampleDescription(desc), Some(parent))
   /** constructor with a simple string */
   def this(desc: String) = this(ExampleDescription(desc), None)
+  /** is set to true if this example contains subexamples, which we know by the type of the object passed to the in method */
+  private var hasSomeSubExamples = false
+  /** @return true if this example contains subexamples */
+  override def hasSubExamples = hasSomeSubExamples
   /**
    * create a new Example object and store as an ExampleExecution object the expectations to be executed.
    * This <code>expectations</code> parameter is a block of code which may contain expectations with matchers.
@@ -62,7 +66,11 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
     this
   }
   /** this version of in allows to declare examples inside examples */
-  def in(example: =>Examples): Unit = specifyExample(example)
+  def in(example: =>Examples): Unit = {
+    specifyExample(example)
+    hasSomeSubExamples = true
+    this
+  }
   /** alias for the <code>in</code> method */
   def >>(expectations: =>Any) = in(expectations)
   /** alias for the <code>in</code> method to create subexamples */
