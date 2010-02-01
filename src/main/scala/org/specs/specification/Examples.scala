@@ -52,12 +52,12 @@ import org.specs.execute._
 abstract class Examples(var exampleDescription: ExampleDescription, val parentCycle: Option[LifeCycle]) extends
   ExampleContext with DefaultResults {
   parent = parentCycle
-  
+  /** this function gives a hint if this object has possibly subexamples */
+  def hasSubExamples = true 
   /** example description as a string */
   def description = exampleDescription.toString
   /** @return the example description */
   override def toString = description
-
   /** @return a user message with failures and messages, spaced with a specific tab string (used in ConsoleReport) */
   def pretty(tab: String) = tab + description + failures.foldLeft("") {_ + addSpace(tab) + _.message} +
                                                 errors.foldLeft("") {_ + addSpace(tab) + _.getMessage}

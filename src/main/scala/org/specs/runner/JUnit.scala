@@ -105,13 +105,12 @@ trait JUnit extends JUnitSuite with Reporter {
       setName(this.getClass.getName.replaceAll("\\$", ""))
     else
       setName(filteredSpecs.firstOption.map(_.description).getOrElse("no specs"))
-    filteredSpecs foreach {
-      specification =>
-              specification.subSpecifications.foreach{s: Specification => addTest(new JUnit3(s))}
-              specification.systems foreach { sus => 
-                val examples = if (!planOnly() && sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
-                addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.firstOption))
-              }
+    filteredSpecs foreach { specification =>
+      specification.subSpecifications.foreach(s => addTest(new JUnit3(s)))
+      specification.systems foreach { sus => 
+        val examples = if (!planOnly() && sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
+        addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.firstOption))
+      }
     }
   }
 }
@@ -154,7 +153,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
       // if the test is run with Maven the sus description is added to the example description for a better
       // description in the console
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      if (JUnitOptions.planOnly() || example.examples.isEmpty)
+      if (JUnitOptions.planOnly() || !example.hasSubExamples)
         addTest(new ExampleTestCase(example, exampleDescription))
       else
         addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))

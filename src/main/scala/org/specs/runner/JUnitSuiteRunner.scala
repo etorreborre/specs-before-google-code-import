@@ -40,9 +40,9 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
    * runs the test suite by passing a JUnit4 RunNotifier which is wrapped in a JUnit3 TestListener to be able to run JUnit3 tests
    */
   override def run(notifier: RunNotifier) = {
-	  val result = new TestResult
-	  result.addListener(createAdaptingListener(notifier));
-	  testSuite.run(result);
+	val result = new TestResult
+	result.addListener(createAdaptingListener(notifier));
+	testSuite.run(result);
   }
 
   /**
@@ -105,7 +105,6 @@ trait TestDescription extends Stacktraces {
        "("+test.hashCode+")"
 
     }
-
     createSuiteDescription(getName(test) + testcode(test), null)
   }
 
@@ -120,15 +119,15 @@ trait TestDescription extends Stacktraces {
    * create a Description from a TestCase or a JUnitSuite object
    */
   def makeDescription(test: Test): Description = {
-	  if (test.isInstanceOf[JUnitSuite]) {
+	if (test.isInstanceOf[JUnitSuite]) {
   	  val ts = test.asInstanceOf[JUnitSuite];
       val description = asDescription(ts)
       for (suite <- ts.suites)
-		    description.addChild(makeDescription(suite))
+		description.addChild(makeDescription(suite))
       for (t <- ts.testCases)
         description.addChild(makeDescription(t))
 	    description
-	  }
+    } 
     else if (test.isInstanceOf[TestCase])
 	    asDescription(test.asInstanceOf[TestCase])
     else
