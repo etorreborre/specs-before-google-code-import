@@ -23,6 +23,7 @@ import org.specs._
 object matcherSpecifications extends Specification {
   "Matchers" areSpecifiedBy (
 	new beMatcherSpec,
+    new eventuallyMatchersSpec,
 	new haveMatcherSpec,
 	new iterableMatchersSpec,
 	new fileMatchersSpec,
