@@ -22,6 +22,7 @@ import org.specs._
 import org.specs.specification._
 import org.specs.collection.ExtendedIterable._
 import org.specs.util.ExtendedThrowable._
+import org.specs.util.Duration
 import org.specs.matcher.MatcherUtils._
 import org.specs.execute._
 import scala.xml.Node
@@ -43,7 +44,8 @@ trait Matchers extends AnyMatchers with
                        PatternMatchers with 
                        XmlMatchers with 
                        FileMatchers with 
-                       MatcherResult
+                       MatcherResult with 
+                       EventuallyMatchers
 /**
  * <p>The <code>BaseMatchers</code> trait provides all existing Matchers to the 
  * <code>Specification</code> trait</p> 
@@ -58,7 +60,8 @@ trait BaseMatchers extends AnyBaseMatchers with
                            PatternBaseMatchers with 
                            XmlBaseMatchers with 
                            FileBaseMatchers with 
-                           MatcherResult
+                           MatcherResult with 
+                           EventuallyMatchers
                        
 /**
  * <p>The <code>AbstractMatcher</code> class is the base class for Matchers.
@@ -248,6 +251,15 @@ abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer
    *  Alias for orSkipExample
    */   
   def orSkip = orSkipExample
+  
+  /**
+   * @return a matcher that needs to eventually match, after 40 retries and a sleep time of 100 milliseconds
+   */
+  def eventually: Matcher[T] = EventuallyMatchers.eventually(this)
+  /**
+   * @return a matcher that needs to eventually match, after a given number of retries and a sleep time
+   */
+  def eventually(retries: Int, sleep: Duration): Matcher[T] = EventuallyMatchers.eventually(retries, sleep)(this) 
 }
 /**
  * Result of <code>Matcher.apply</code>. Provides a method named 'success' to get the result

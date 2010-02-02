@@ -16,29 +16,15 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package org.specs.util
-import org.specs._
-
-object utilSpecifications extends Specification {
-    "The util specifications" areSpecifiedBy (
-        new classSpec,
-        new configurationSpec,
-        new editDistanceSpec,
-		new extendedStringSpec,
-        new includeExcludeSpec,
-        new matchingSpec,
-        new propertySpec,
-     //   new scalaInterpreterSpec,
-        new timeSpec,
-        new timerSpec
-    )
+package org.specs.matcher
+import org.specs.specification._
+  
+class eventuallyMatchersSpec extends MatchersSpecification {
+  "matchers can be checked to eventually match after the first try" in {
+    1 must eventually(be(1))
+  }
+  "matchers can be checked to eventually match after a number of retries" in {
+    val iterator = List(1, 2, 3).elements
+    iterator.next must be(3).eventually
+  }
 }
-
-object utilUnits extends Specification {
-  "The unit tests for the util package" areSpecifiedBy (
-      new dataRowUnit,
-      new dataTableHeaderUnit,
-      new dataTableUnit,
-	  new extendedThrowableUnit)
-}
-
