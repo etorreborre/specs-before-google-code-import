@@ -49,6 +49,7 @@ class testInterfaceRunnerSpec extends Specification {
     def warn(msg: String) = out += "[warn] " + msg + "\n"
     def info(msg: String) = out += "[info] " + msg + "\n"
     def debug(msg: String) = out += "[debug] " + msg + "\n"
+    def trace(t: Throwable) = out += "[trace] " + t.getMessage + "\n"
   }
   val testInterfaceLogger = new TestInterfaceLogger
   val testInterfaceColoredLogger = new TestInterfaceLogger { override def ansiCodesSupported = true }
