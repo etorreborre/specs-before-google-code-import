@@ -12,9 +12,10 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val wikitext 		= "org.eclipse.mylyn.wikitext" % "wikitext" % "0.9.4.I20090220-1600-e3x" 
   val wikitextile 	= "org.eclipse.mylyn.wikitext" % "wikitext.textile" % "0.9.4.I20090220-1600-e3x" 
   val scalatest 	= "org.scalatest" % "scalatest" % "1.0.1-for-scala-2.8.0.Beta1-RC4-with-test-interfaces-0.2-SNAPSHOT"
-  val scalacheck 	= "org.scala-tools.testing" % "scalacheck_2.8.0.Beta1-RC1" % "1.7-SNAPSHOT" 
-  val testinterface = "org.scala-tools.testing" % "test-interface" % "0.2" 
-  val jmock 		= "org.jmock" % "jmock" % "2.4.0" 
+  val scalacheck 	= "org.scala-tools.testing" % "scalacheck_2.8.0.Beta1" % "1.7-SNAPSHOT" 
+  val testinterface = "org.scala-tools.testing" % "test-interface" % "0.4" 
+  val jmock 		= "org.jmock" % "jmock" % "2.5.1" 
+  val jmock-legacy  = "org.jmock" % "jmock-legacy" % "2.5.1" 
   val easymock 		= "org.easymock" % "easymock" % "2.5.1" 
   val easymockclass	= "org.easymock" % "easymockclassextension" % "2.4" 
   val mockito 		= "org.mockito" % "mockito-all" % "1.8.0" 
@@ -27,7 +28,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val scriptjs   	= "javax.script" % "script-js" % "1.0"
   val jsengine  	= "javax.script" % "js-engine" % "1.0"
 
-  override def crossScalaVersions = List("2.8.0.Beta1-RC7")
+  override def crossScalaVersions = List("2.8.0.Beta1")
 
   override def managedStyle = ManagedStyle.Maven
   val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/releases/"
