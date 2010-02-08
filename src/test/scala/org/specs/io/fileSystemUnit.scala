@@ -24,7 +24,7 @@ class fileSystemUnit extends TestData {
     "provide a globToPattern function returning the regex pattern corresponding to a glob definition" in {
       paths must pass { matchingPath: MatchingPath =>
         matchingPath.path must beMatching(globToPattern(matchingPath.glob))
-      }
+      } set (minTestsOk->5)
     }
   }
 }
