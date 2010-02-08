@@ -94,5 +94,14 @@ class iterableMatchersUnit extends MatchersSpecification {
       lazy val fromTwo = Numbers(3);
       { fromTwo must containAll(List(1, 2)); "" } must throwA[org.specs.execute.FailureException]
     }
+    import scala.xml._
+    "provide a haveSize method working on a NodeSeq" in {
+      val xml: NodeSeq = Group(<a></a><b></b>)
+      xml must haveSize(2)
+    }
+    "provide a have size method working on a NodeSeq" in {
+      val xml: NodeSeq = Group(<a></a><b></b>)
+      xml.toList must have size(2)
+    }
   }
 }
