@@ -74,5 +74,14 @@ class iterableMatchersUnit extends MatchersSpecification {
     "allow to use 'contain' matcher on a heterogeneous list of elements" in {
       List("one", 2) must contain("one")
     }
+    import scala.xml._
+    "provide a haveSize method working on a NodeSeq" in {
+      val xml: NodeSeq = Group(<a></a><b></b>)
+      xml must haveSize(2)
+    }
+    "provide a have size method working on a NodeSeq" in {
+      val xml: NodeSeq = Group(<a></a><b></b>)
+      xml.toList must have size(2)
+    }
   }
 }
