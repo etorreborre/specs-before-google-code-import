@@ -99,9 +99,9 @@ class iterableMatchersUnit extends MatchersSpecification {
       val xml: NodeSeq = Group(<a></a><b></b>)
       xml must haveSize(2)
     }
-    "provide a have size method working on a NodeSeq" in {
-      val xml: NodeSeq = Group(<a></a><b></b>)
-      xml.toList must have size(2)
+    "provide a have size method working on a Group, even with list implicits - see issue 117" in {
+      import org.specs.Sugar._
+      Group(<test></test><secondtest></secondtest>) must have size(2)
     }
   }
 }
