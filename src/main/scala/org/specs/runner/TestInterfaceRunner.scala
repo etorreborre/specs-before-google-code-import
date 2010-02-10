@@ -97,11 +97,13 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   }
   def exampleFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
+    logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(failure(testName, e))
     decrementPadding
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
+    logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(error(testName, e))
     decrementPadding
   }
@@ -120,11 +122,13 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   }
   def systemFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
+    logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(failure(testName, e))
     decrementPadding
   }
   def systemError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
+    logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(error(testName, e))
     decrementPadding
   }
