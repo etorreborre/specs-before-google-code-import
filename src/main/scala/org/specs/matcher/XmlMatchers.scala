@@ -146,6 +146,14 @@ trait XmlBeHaveMatchers { this: XmlBaseMatchers =>
   class ElemResultMatcher(result: Result[Elem]) {
     def equalToIgnoringSpace(node: Elem) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
+  implicit def toNodeSeqResult(result: Result[NodeSeq]) = new NodeSeqResultMatcher(result)
+  class NodeSeqResultMatcher(result: Result[NodeSeq]) {
+    def size(n: Int) = result.matchWithMatcher(new SizeMatcher(2))
+  }
+  implicit def toGroupResult(result: Result[Group]) = new GroupResultMatcher(result)
+  class GroupResultMatcher(result: Result[Group]) {
+    def size(n: Int) = result.matchWithMatcher(new SizeMatcher(2))
+  }
 }
 /**
  * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
