@@ -104,4 +104,13 @@ class extendedStringSpec extends SpecificationWithJUnit with DataTables {
       "hello".findAll("l") must_== List("l", "l")
     }
   }
+  "the splitToSize function" should {
+    "not split a string if its size is less than or equal the split size" in {
+      "hello".splitToSize(5) must_== List("hello")
+    }
+    "split a string if its size is greater than the split size" in {
+      "hello".splitToSize(3) must_== List("hel", "lo")
+      "hello world".splitToSize(3) must_== List("hel", "lo ", "wor", "ld")
+    }
+  }
 }

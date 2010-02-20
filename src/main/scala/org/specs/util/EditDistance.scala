@@ -122,11 +122,22 @@ trait EditDistance {
     
   /** apply edit distance functions on strings splitted on newlines so that there are no memory issues */
   private def foldSplittedStrings[T](s1: String, s2: String, init: T, f: (T, String, String) => T): T = {
-    s1.split("\n").toList.zip(s2.split("\n").toList).foldLeft(init) { (result, current) =>
+    val (splitted1, splitted2) = split(s1, s2)
+    splitted1.zip(splitted2).foldLeft(init) { (result, current) =>
       f(result, current._1, current._2)
     }
   }
 
+  /** 
+   * In order to avoid CPU and memory issues, split the 2 strings to compare:
+   *  - along newlines. This is useful if the 2 strings represent a file content
+   *  - otherwise split the strings so that they are less than 200 characters long
+   */
+  private def split(s1: String, s2: String): (List[String], List[String]) = {
+    val (splitted1, splitted2) = (s1.split("\n").toList, s2.split("\n").toList)
+    def splitToSize(strings: List[String]) = strings.flatMap(_.splitToSize(200))
+    (splitToSize(splitted1), splitToSize(splitted2))
+  }
   /** prints on the console the edit matrix for 2 strings */
   def showMatrix(s1: String, s2: String) = foldSplittedStrings(s1, s2, (), { 
     (r: Any, s1: String, s2: String) => new EditMatrix(s1, s2).print }
