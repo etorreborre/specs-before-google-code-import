@@ -327,13 +327,13 @@ trait AnyBaseMatchers {
        (isThrown(value, exception, (e => exception.getClass == e.getClass && exception.getMessage == e.getMessage), description).isDefined,
         okMessage(exception, description), koMessage(exception, description))
      }
-     def like(f: =>PartialFunction[Throwable, Boolean]) = new Matcher[Any](){
+     def like(f: =>PartialFunction[E, Boolean]) = new Matcher[Any](){
        def apply(v: => Any) = {
          val thrown = isThrown(v, exception, (e => exception.getClass.isAssignableFrom(e.getClass)), description)
          if (!thrown.isDefined)
            (false, okMessage(exception, description), koMessage(exception, description))
          else
-           beLike(f)(thrown.get)
+           beLike(f)(thrown.get.asInstanceOf[E])
        }
      }
   }
