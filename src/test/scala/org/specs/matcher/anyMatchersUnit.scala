@@ -182,8 +182,13 @@ class anyMatchersUnit extends MatchersSpecification {
   }
   "A throwA + exception matcher" can {
     "specify a like clause to add pattern matching" in {
-      throwThis(SimpleException("Message")).like {case SimpleException(x) => !x.isEmpty}(
+      throwThis(SimpleException("Message")).like { case SimpleException(x) => !x.isEmpty}(
           throw new SimpleException("Message")) must beLike {case (true, _, _) => ok}
+    }
+    "specify a like clause to add pattern matching for a simple exception, with type inference" in {
+      class MyException extends Throwable { def foo = 42 }
+      throwThis(new MyException).like { case e => e.foo == 42 }(
+          throw new MyException)._1 must beTrue
     }
   }
   "Any matchers" should {
