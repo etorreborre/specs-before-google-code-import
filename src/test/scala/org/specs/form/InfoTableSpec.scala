@@ -37,6 +37,6 @@ class InfoTableSpec extends SpecificationWithJUnit {
     val table = new InfoTable("title") {
       line("value11".successValue, "value12")
     }
-    table.toXhtml.pp must \\(<td>value11</td>, "class"->"success")
+    table.toXhtml must \\(<td>value11</td>, "class"->"success")
   }
 }
