@@ -78,7 +78,7 @@ trait SeqFormEnabled[T] extends TableFormEnabled {
   def tr(l: EntityLineForm[T]): LineForm = line { (actual: Option[T]) => 
     l.entityIs(actual)
   }
-  def setHeader[F <: LineForm](line: F): F = {
+  override def setHeader[F <: LineForm](line: F): F = {
     if (rowsNb == 0) inNewRow(line.header)
     line
   }

@@ -47,7 +47,7 @@ trait DataTableFormEnabled extends TableFormEnabled with DataTables {
     appendRows(line.rows)
     line
   }
-  def setHeader[F <: LineForm](line: F): F = {
+  override def setHeader[F <: LineForm](line: F): F = {
     if (unsetHeader && tableHeader.isDefined) {
       tableHeader.map((header: TableHeader) => inNewRow(reduce(header.titles, { (s: String) => <th>{s}</th> })))
       unsetHeader = false
