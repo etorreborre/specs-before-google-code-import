@@ -145,6 +145,8 @@ trait DecoratedXhtml {
   def copy(c: DecoratedXhtml) = {
     def copyList[T](l: List[T]) = l.foldLeft(Nil:List[T]) { (res, cur) => cur :: res }.reverse
     c.labelsDecorators = copyList(labelsDecorators)
+    c.labelsCellsDecorators = copyList(labelsCellsDecorators)
     c.valuesDecorators = copyList(valuesDecorators)
+    c.valuesCellsDecorators = copyList(valuesCellsDecorators)
   }
 }
