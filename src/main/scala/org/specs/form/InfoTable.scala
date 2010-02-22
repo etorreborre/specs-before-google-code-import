@@ -7,9 +7,5 @@ class InfoTable(title: String) extends TableForm(title) {
   /**
    * add a new line
    */
-  def line(values: String*) = tr(new TableLine(values:_*))
-  
-  class TableLine(values: String*) extends LineForm {
-    tr(values.toList.map((v: String) => field(v, v)):_*)
-  }
+  def line(v: LabeledXhtml*) = addProps(v.toList)
 }

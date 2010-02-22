@@ -1,5 +1,6 @@
 package org.specs.form
 import org.specs._
+import org.specs.Sugar._
 
 class InfoTableSpec extends SpecificationWithJUnit {
   "An info table can be created with a title" in {
@@ -36,6 +37,6 @@ class InfoTableSpec extends SpecificationWithJUnit {
     val table = new InfoTable("title") {
       line("value11".successValue, "value12")
     }
-    table.toXhtml must \\(<td class="success">value11</td>)
+    table.toXhtml.pp must \\(<td>value11</td>, "class"->"success")
   }
 }
