@@ -58,20 +58,26 @@ trait TableFormEnabled extends FormEnabled {
   /**
    * adding a new form on a line. If this form is a LineForm, add a new header before, from the LineForm header 
    */
-  def tr[F <: Form](line: F): F = {
-    if (unsetHeader) {
-      line match {
-        case l: LineForm => { unsetHeader = false; inNewRow(l.header) }
-        case _ => ()
-      }
-    } else {
-      line match {
-        case l: LineForm => ()
-        case _ => unsetHeader = true
-      }
-    }
+  def tr[F <: LineForm](line: F): F = {
+    setHeader(line)
     super.form(line)
     trs(line.rows)
+    line
+  }
+  /**
+   * sets a header on the table
+   */
+  def header(names: String*) = {
+    setHeader(new LineForm { names.map(n => field(n, n)) })
+  }
+  
+  def setHeader[F <: LineForm](line: F): F = {
+    if (unsetHeader) {
+      unsetHeader = false
+      inNewRow(line.header) 
+    } else {
+      unsetHeader = true
+    }
     line
   }
 }

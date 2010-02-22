@@ -59,7 +59,7 @@ trait BagFormEnabled[T] extends TableFormEnabled {
     }
     l
   }
-  def setHeader[F <: LineForm](line: F): F = {
+  override def setHeader[F <: LineForm](line: F): F = {
     if (rowsNb == 0) inNewRow(line.header)
     line
   }
