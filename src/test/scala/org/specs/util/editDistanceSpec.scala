@@ -123,9 +123,8 @@ class editDistanceSpec extends SpecificationWithJUnit with EditDistance with Dat
     }
     "dont use too much memory on a big string comparison on any type of string" in {
       val factor = 1000
-      import org.specs.Sugar._
-      editDistance("kitten" * factor, "kitsin" * factor).pp must be > 0
-      showDistance("kitten" * factor, "kitsin" * factor).pp._1.size must be > 0
+      editDistance("kitten" * factor, "kitsin" * factor) must be > 0
+      showDistance("kitten" * factor, "kitsin" * factor)._1.size must be > 0
     }
   }
 }
