@@ -104,6 +104,9 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
     logStatus(e.getMessage, AnsiColors.red, "  ")
+    e.getStackTrace().foreach { trace =>
+      logStatus(trace.toString, AnsiColors.red, "  ")
+    }
     handler.handle(error(testName, e))
     decrementPadding
   }
