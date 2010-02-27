@@ -50,4 +50,18 @@ class beforeAfterUnit extends SpecificationWithJUnit {
     s.failures.size aka "the number of system failures" must_== 2
     s.failures(0).toString must include("Before system") and include("not equal to '2'")
   }
+  "A specification with 1 expectation in the afterSpec clause must not throw an exception - see issue 122" in {
+    s1.reportSpecs
+    s1.failures.pp.size aka "the number of system failures" must_== 1
+    s1.failures(0).toString must include("After system") and include("not equal to '2'")
+  }
 }
+    object s1 extends Specification {//with MockOutput {
+      doAfterSpec { 
+        1 must_== 2
+      }
+      "sys1" should {
+        "have one ex ok-1" in { 1 must_== 1 }
+        "have one ex ok-2" in { 1 must_== 2 }
+      }
+    }

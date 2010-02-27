@@ -190,8 +190,10 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   var afterSpec: Option[() => Any] = None
   /** if this variable is true then the doBeforeSpec block is not executed */
   private[specification] var beforeSpecHasBeenExecuted = false
-  /** if this variable is true then the doBeforeSpec block is not executed and the example execution must fail */
+  /** failure which may occur during the clean up of the spec */
   private[specification] var beforeSpecFailure: Option[FailureException] = None
+  /** failure which may occur during the clean up of the spec */
+  private[specification] var afterSpecFailure: Option[FailureException] = None
   /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
@@ -219,12 +221,24 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * last example of the last sus
    */
   override def afterExample(ex: Examples) = {
+    afterSpecFailure.map(throw _)
     super.afterExample(ex)
     if (!systems.isEmpty && 
          systems.last.executed && 
         !systems.last.exampleList.isEmpty && 
-         systems.last.exampleList.last == ex)
+         systems.last.exampleList.last == ex) {
       afterSpec.map(_.apply)
+      afterSpec.map { a => 
+        val endErrors = systemsList.filter(s => (s.description == "specifies")).flatMap(_.failureAndErrors)
+        if (!endErrors.isEmpty) {
+          val failure = new FailureException("After specification:\n" + 
+                                             endErrors.map(_.getMessage).mkString("\n")).setAs(endErrors(0))
+          afterSpecFailure = Some(failure)
+          afterSpecFailure.map(throw _)
+        }
+      }
+
+    }
   }
   /** 
    * this variable commands if the specification has been instantiated to execute one example only, 
