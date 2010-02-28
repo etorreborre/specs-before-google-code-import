@@ -23,6 +23,7 @@ object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
         new classSpec,
         new configurationSpec,
+        new controlSpec,
         new editDistanceSpec,
 		new extendedStringSpec,
         new includeExcludeSpec,

@@ -43,6 +43,9 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
             s.setNotSequential()
             s.expectationsListener = this
             s.beforeSpecFailure = this.beforeSpecFailure
+            s.beforeSpecHasBeenExecuted = this.beforeSpecHasBeenExecuted
+            s.afterSpecFailure = this.afterSpecFailure
+            s.afterSpecHasBeenExecuted = this.afterSpecHasBeenExecuted
             s.parent = Some(this)
             val cloned = s.getExample(path)
             cloned match {

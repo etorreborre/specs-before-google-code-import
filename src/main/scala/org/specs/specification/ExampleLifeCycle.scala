@@ -160,6 +160,9 @@ trait SequentialExecution {
   def setSequential() = sequential = true
   /** examples should not be executed as soon as defined */
   def setNotSequential() = sequential = false
+  /** setter for is sequential */
+  def setSequentialIs(b: Boolean) = sequential = b
+
 }
 
 /**
@@ -223,7 +226,20 @@ class ExampleExecution(var example: Examples, var expectations: Examples => Any)
       try {
         if (!failed)
           example.afterExample(example)
-      } catch { case t: Throwable => example.addError(t) }
+      } catch { 
+        case f: FailureException => {
+          example.addFailure(f)
+          failed = true
+        }
+        case s: SkippedException => {
+          example.addSkipped(s)
+          failed = true
+        }
+        case t: Throwable => {
+          example.addError(t)
+          failed = true
+        }
+      }
       example
   }
   /** execute the example, setting a flag to make sure that it is only executed once */
