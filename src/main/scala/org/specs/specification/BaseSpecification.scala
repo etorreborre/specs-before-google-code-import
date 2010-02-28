@@ -22,6 +22,7 @@ import org.specs.SpecUtils._
 import scala.reflect.Manifest
 import org.specs.execute._
 import org.specs.util._
+import org.specs.util.Control._
 import org.specs.util.ExtendedString._
 import org.specs.Specification
 import org.specs.util.ExtendedThrowable._
@@ -183,27 +184,29 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   private[specification] var beforeSpecHasBeenExecuted = false
   /** if this variable is true then the doBeforeSpec block is not executed and the example execution must fail */
   /** failure which may occur during the clean up of the spec */
-  private[specification] var beforeSpecFailure: Option[FailureException] = None
+  private[specification] var beforeSpecFailure: Property[SpecFailureException] = Property()
   /** failure which may occur during the clean up of the spec */
-  private[specification] var afterSpecFailure: Option[FailureException] = None
+  private[specification] var afterSpecFailure: Property[SpecFailureException] = Property()
+  /** if this variable is true then the doAfterSpec block is not executed */
+  private[specification] var afterSpecHasBeenExecuted = false
+  /** return true if no examples have been executed in this spec */
+  private[specification] def isBeforeAllExamples = !beforeSpecHasBeenExecuted
+  /** return true if this example is the last one of the spec */
+  private[specification] def isTheLastExample(ex: Examples) = {
+    !systems.isEmpty && 
+     systems.last.executed &&
+    !systems.last.exampleList.isEmpty && 
+     systems.last.exampleList.last == ex
+  }
   /**
    * override the beforeExample method to execute actions before the
    * first example of the first sus
    */
   override def beforeExample(ex: Examples) = {
-    beforeSpecFailure.map(throw _)
-    if (!executeOneExampleOnly && !beforeSpecHasBeenExecuted) {
+    beforeSpecFailure.foreach(throw _)
+    if (!executeOneExampleOnly && isBeforeAllExamples) {
+      executeSpecAction(beforeSpec, beforeSpecFailure, new BeforeSpecFailureException(_:FailureException))
       beforeSpecHasBeenExecuted = true
-      beforeSpec.map(_.apply)
-      beforeSpec.map { b => 
-        val initErrors = systemsList.filter(s => (s.description == "specifies")).flatMap(_.failureAndErrors)
-        if (!initErrors.isEmpty) {
-          val failure = new FailureException("Before specification:\n" + 
-                                             initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
-          beforeSpecFailure = Some(failure)
-          beforeSpecFailure.map(throw _)
-        }
-      }
     }
   }
   /**
@@ -211,23 +214,36 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * last example of the last sus
    */
   override def afterExample(ex: Examples) = {
-    afterSpecFailure.map(throw _)
+    afterSpecFailure.foreach(throw _)
     super.afterExample(ex)
-    if (!systems.isEmpty && 
-         systems.last.executed && 
-        !systems.last.exampleList.isEmpty && 
-         systems.last.exampleList.last == ex) {
-      afterSpec.map(_.apply)
-      afterSpec.map { a => 
-        val endErrors = systemsList.filter(s => (s.description == "specifies")).flatMap(_.failureAndErrors)
-        if (!endErrors.isEmpty) {
-          val failure = new FailureException("After specification:\n" + 
-                                             endErrors.map(_.getMessage).mkString("\n")).setAs(endErrors(0))
-          afterSpecFailure = Some(failure)
-          afterSpecFailure.map(throw _)
-        }
+    if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted && isTheLastExample(ex)) {
+      afterSpecHasBeenExecuted = true
+      executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+    }
+  }
+  /**
+   * execute the before or after specification action.
+   * 
+   * @param action the action to execute (possibly none)
+   * @param specFailure a Property storing the possible FailureException created during the execution of the action
+   *        this can happen if there are expectations in the action
+   * @exceptionWrapper wrapper to create a specific action type around the failure which occurred during the action
+   */
+  private[specification] def executeSpecAction(action: Option[() => Any], 
+                                               specFailure: Property[SpecFailureException],
+                                               exceptionWrapper: FailureException => SpecFailureException) {
+    
+    setTemporarily(isSequential, true, (b:Boolean) => setSequentialIs(b),
+                   executeOneExampleOnly, true, (b:Boolean) => executeOneExampleOnly = b,
+                   expectationsListener, new DefaultExampleExpectationsListener {}, (e:ExampleExpectationsListener) => expectationsListener = e) {
+      try {
+        action.map(_())
+      } catch {
+        case e: FailureException => specFailure(exceptionWrapper(e))
+        case other => throw other 
+      } finally {
+        specFailure.foreach(throw _)
       }
-
     }
   }
   /** 
@@ -307,4 +323,11 @@ trait ComposedSpecifications extends LazyParameters { this: BaseSpecification =>
     def areSpecifiedBy(specifications: LazyParameter[Specification]*) = s.areSpecifiedBy(specifications:_*)
     def include(specifications: LazyParameter[Specification]*) = s.include(specifications:_*)
   }
+}
+abstract class SpecFailureException(message: String) extends FailureException(message)
+class BeforeSpecFailureException(e: FailureException) extends SpecFailureException("Before specification:\n" + e.getMessage) {
+  this.setAs(e)
+}
+class AfterSpecFailureException(e: FailureException) extends SpecFailureException("After specification:\n" + e.getMessage) {
+  this.setAs(e)
 }
