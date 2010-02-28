@@ -5,7 +5,7 @@ import org.specs.util.Control._
 class controlSpec extends SpecificationWithJUnit {
   "the setTemporarily function can be used to give a temporary value to an attribute" in {
     var flag = true
-    setTemporarily(flag, false, flag = (_:Boolean)) {
+    setTemporarily(flag, false, (b:Boolean) => flag = b) {
       flag must beFalse
     }
     flag must beTrue
@@ -13,8 +13,8 @@ class controlSpec extends SpecificationWithJUnit {
   "the setTemporarily function can be used to give a temporary value to 2 attributes" in {
     var flag = true
     var flag2 = "hello"
-    setTemporarily(flag, false, flag = (_:Boolean),
-                   flag2, "world", flag2 = (_:String)) {
+    setTemporarily(flag, false, (b:Boolean) => flag = b,
+                   flag2, "world", (s:String) => flag2 = s) {
       flag must beFalse
       flag2 must_== "world"
     }
@@ -25,9 +25,9 @@ class controlSpec extends SpecificationWithJUnit {
     var flag = true
     var flag2 = "hello"
     var flag3 = 1
-    setTemporarily(flag, false, flag = (_:Boolean),
-                   flag2, "world", flag2 = (_:String),
-                   flag3, 2, flag3 = (_:Int)) {
+    setTemporarily(flag, false, (b:Boolean) => flag = b,
+                   flag2, "world", (s:String) => flag2 = s,
+                   flag3, 2, (i:Int) => flag3 = i) {
       flag must beFalse
       flag2 must_== "world"
       flag3 must_== 2
