@@ -207,6 +207,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <scope>test</scope>
       <optional>true</optional>
     </dependency>
+	<dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>script-api</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+	<dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>script-js</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+	<dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>js-engine</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
