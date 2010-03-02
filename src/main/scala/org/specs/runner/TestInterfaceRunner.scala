@@ -48,7 +48,17 @@ class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends o
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
     val specification = createObject[Specification](classname + "$", false, args.contains("-v")).orElse(
                         createObject[Specification](classname, true, args.contains("-v")))
-    specification.map(new NotifierRunner(_, new TestInterfaceNotifier(handler, loggers)).reportSpecs)
+    run(specification, handler)
+  }
+  def run(specification: Option[Specification]): Option[Specification] = run(specification, new DefaultEventHandler)
+  def run(specification: Option[Specification], handler: EventHandler): Option[Specification] = {
+    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers)) 
+    specification.map(testInterfaceRunner(_).reportSpecs)
+    specification match {
+      case Some(s: org.specs.runner.File) => s.reportSpecs
+      case _ => ()
+    }
+    specification
   }
 }
 
@@ -142,4 +152,9 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
     decrementPadding
   }
   def systemCompleted(systemName: String) = {}
+}
+class DefaultEventHandler extends EventHandler {
+  import scala.collection.mutable._
+  val events: ListBuffer[String] = new ListBuffer
+  def handle(event: Event)= events.append(event.result.toString)
 }
