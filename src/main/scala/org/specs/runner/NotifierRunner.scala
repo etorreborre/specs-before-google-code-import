@@ -54,12 +54,12 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
                     }
     
     notifiers.foreach { _.runStarting(specToRun.firstLevelExamplesNb) } 
-    reportASpecification(specToRun)
+    reportASpecification(specToRun, specToRun.planOnly())
   }
-  def reportASpecification(spec: Specification): this.type = {
+  def reportASpecification(spec: Specification, planOnly: Boolean): this.type = {
     notifiers.foreach { _.systemStarting(spec.description) }
     for (subSpec <- spec.subSpecifications) {
-      reportASpecification(subSpec)
+      reportASpecification(subSpec, planOnly)
     }
     for (system <- spec.systems)
       reportSystem(system, spec.planOnly())
