@@ -109,7 +109,7 @@ class issue111Specification extends Specification with MockOutput {
     "an example" in { 1 must_== 1 }
   }
 }
-
+import org.specs._
 object sbtLiterateSpecification extends HtmlSpecification with MockOutput with MockFileSystem {
  "this" is <t>
    A literate specification with an example { 1 must_== 1 }
