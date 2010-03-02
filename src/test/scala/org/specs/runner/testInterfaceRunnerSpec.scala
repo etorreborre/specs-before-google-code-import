@@ -2,6 +2,8 @@ package org.specs.runner
 import org.spex._
 import org.scalatools.testing._
 import scala.collection.mutable._
+import org.specs.literate._
+import org.specs.io.mock._
 
 class testInterfaceRunnerSpec extends Specification {
   "the test interface runner" should {
@@ -41,6 +43,10 @@ class testInterfaceRunnerSpec extends Specification {
     "work ok if an error is launch before any example is specified - issue 111" in {
       logOutput("org.specs.runner.issue111Specification") must not(throwAn[Error])
     }
+    "create the html page for a literate spec" in {
+      testRunner.run(Some(sbtLiterateSpecification))
+      sbtLiterateSpecification.files must not be empty
+    }
   }
   class TestInterfaceLogger extends Logger {
     var out = ""
@@ -53,13 +59,11 @@ class testInterfaceRunnerSpec extends Specification {
   }
   val testInterfaceLogger = new TestInterfaceLogger
   val testInterfaceColoredLogger = new TestInterfaceLogger { override def ansiCodesSupported = true }
-  val handler = new EventHandler {
-    val events: ListBuffer[String] = new ListBuffer
-    def handle(event: Event)= events.append(event.result.toString)
-  }
+  val handler = new DefaultEventHandler
   def executeRunner: Any = executeRunner("org.specs.runner.testInterfaceSpecification")
-  def executeRunner$ = executeRunner("org.specs.runner.testInterfaceSpecification$")
-  def executeRunner(className: String): Any = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger)).run(className, null, handler, Array())
+  def executeRunner$ = executeRunner("org.specs.runner.testInterfaceSpecification")
+  def testRunner = new TestInterfaceRunner(getClass.getClassLoader, Array(testInterfaceLogger))  
+  def executeRunner(className: String): Any = testRunner.run(className, null, handler, Array())
 
   def logOutput = {
     executeRunner
@@ -98,10 +102,16 @@ class testInterfaceSpecification extends Specification {
     }
   }
 }
-object testInterfaceSpecification extends testInterfaceSpecification
-class issue111Specification extends Specification {
+object testInterfaceSpecification extends testInterfaceSpecification with MockOutput
+class issue111Specification extends Specification with MockOutput {
   "this sus" should {
     throw new Error("here")
     "an example" in { 1 must_== 1 }
   }
+}
+
+object sbtLiterateSpecification extends HtmlSpecification with MockOutput with MockFileSystem {
+ "this" is <t>
+   A literate specification with an example { 1 must_== 1 }
+  </t>
 }
