@@ -44,10 +44,10 @@ case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName
    * object runner extends Runner(spec1 :: spec2, HtmlRunner() :: XmlRunner())
    * </pre>
    */
-  def this() = this(Nil, "./", XmlNamingFunction.default)
+  def this() = this(Nil, "./target", XmlNamingFunction.default)
   
   /** alternate constructor with the specification only. The output dir is the current directory */
-  def this(specifications: Specification*) = this(specifications, ".", XmlNamingFunction.default)
+  def this(specifications: Specification*) = this(specifications, "./target", XmlNamingFunction.default)
 
   /** alternate constructor with one specification only. The output dir is the current directory */
   def this(spec: Specification, outputDirPath: String) = this(List(spec), outputDirPath, XmlNamingFunction.default)
@@ -74,7 +74,7 @@ case class XmlSuite(val specs: Seq[Specification], outputDirPath: String, fName:
    * object runner extends Runner(spec1 :: spec2, HtmlSuite() :: XmlSuite())
    * </pre>
    */
-  def this() = this(Nil, "./", XmlNamingFunction.default)
+  def this() = this(Nil, "./target", XmlNamingFunction.default)
   
   /** alternate constructor with the specification only. The output dir is the current directory */
   def this(specifications: Specification*) = this(specifications, ".", XmlNamingFunction.default)
@@ -110,7 +110,7 @@ trait Xml extends File {
   override def fileName(spec: BaseSpecification): String = XmlNamingFunction.default(spec) 
 
   /** definition of the output directory of the report. */
-  override def outputDir = "."
+  override def outputDir = "./target"
   
   /** definition of xml output. */
   def specOutput(spec: Specification): String = new PrettyPrinter(200, 2).format(asXml(spec))
