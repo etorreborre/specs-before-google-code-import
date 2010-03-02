@@ -46,7 +46,8 @@ class SpecsFramework extends Framework {
  */
 class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
-    val specification = createObject[Specification](classname, true, args.contains("-v"))
+    val specification = createObject[Specification](classname + "$", false, args.contains("-v")).orElse(
+                        createObject[Specification](classname, true, args.contains("-v")))
     specification.map(new NotifierRunner(_, new TestInterfaceNotifier(handler, loggers)).reportSpecs)
   }
 }
