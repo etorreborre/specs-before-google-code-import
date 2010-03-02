@@ -75,7 +75,7 @@ trait Html extends File {
       {anchorName("top")}
       {summaryTable(spec)}
       <div id="bodyColumn">
-        {specificationTable(spec)}
+        {specificationTable(spec, spec.planOnly())}
       </div>
     </body>
   </html>
@@ -150,7 +150,7 @@ trait Html extends File {
 
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
-    <td>{statusIcon(sus)}</td>
+    <td>{statusIcon(sus, spec.planOnly())}</td>
     <td>{anchorRef(susName(sus, spec))}</td>
   </tr>
 
@@ -172,22 +172,22 @@ trait Html extends File {
   def shorten(s: String) = if (s.size <= 27) s else (s.take(27) + "...")
 
   /** create tables for all the subspecifications. */
-  def subspecsTables(subSpecs: List[Specification]): NodeSeq = reduce[Specification](subSpecs, specificationTable(_))
+  def subspecsTables(subSpecs: List[Specification], planOnly: Boolean): NodeSeq = reduce[Specification](subSpecs, specificationTable(_, planOnly))
 
   /** create a table for one specification. */
-  def specificationTable(spec: Specification) = {
+  def specificationTable(spec: Specification, planOnly: Boolean) = {
     spec.linkedSpecifications.foreach(_.reportSpecs)
-    <h2>{spec.description}</h2> ++ subspecsTables(spec.unlinkedSpecifications.toList) ++ susTables(spec)
+    <h2>{spec.description}</h2> ++ subspecsTables(spec.unlinkedSpecifications.toList, planOnly) ++ susTables(spec, planOnly)
   }
   /** create tables for systems. */
-  def susTables(spec: Specification): NodeSeq = reduce[Sus](spec.systems, susTable(_, spec))
+  def susTables(spec: Specification, planOnly: Boolean): NodeSeq = reduce[Sus](spec.systems, susTable(_, spec, planOnly))
 
   /** create a table for a system. */
-  def susTable(sus: Sus, spec: Specification): NodeSeq = {
+  def susTable(sus: Sus, spec: Specification, planOnly: Boolean): NodeSeq = {
     anchorName(susName(sus, spec)) ++
     susHeader(sus) ++
     sus.literateDesc ++
-    examplesTable(sus)
+    examplesTable(sus, planOnly)
   }
 
   /** return the sus header if it is not empty, otherwise return the spec name. */
@@ -201,17 +201,17 @@ trait Html extends File {
       NodeSeq.Empty
   }
 
-  def examplesTable(sus: Sus) = {
+  def examplesTable(sus: Sus, planOnly: Boolean) = {
     sus.literateDescription match {
       case None => {
         <table class="bodyTable">
-           {exampleRows(sus.examples, sus.isFullSuccess)}
+           {exampleRows(sus.examples, sus.isFullSuccess, planOnly)}
          </table>}
       case Some(_) if !sus.examples.isEmpty => {
         <h3><img src="images/collapsed.gif" onclick={"toggleImage(this); showHideTable('sus:" + System.identityHashCode(sus) + "')"}/>Examples summary</h3>
         <div id={"sus:" + System.identityHashCode(sus)} style="display:none">
           <table class="bodyTable">
-             {exampleRows(sus.examples, sus.isFullSuccess)}
+             {exampleRows(sus.examples, sus.isFullSuccess, planOnly)}
           </table>
         </div>
       }
@@ -222,9 +222,9 @@ trait Html extends File {
   def upArrow = <a href="#top">   <img src="images/up.gif"/></a>
 
   /** create rows for each example, alternating style. */
-  def exampleRows(examples: Iterable[Example], fullSuccess: Boolean): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) =>
+  def exampleRows(examples: Iterable[Example], fullSuccess: =>Boolean, planOnly: Boolean): NodeSeq = examples.toList.foldLeft((NodeSeq.Empty.toSeq, true)) { (result, ex) =>
     val (node, alternation) = result
-    (node ++ example(ex, alternation, fullSuccess), !alternation)
+    (node ++ example(ex, alternation, fullSuccess, planOnly), !alternation)
   }._1
 
   /**
@@ -232,44 +232,49 @@ trait Html extends File {
    *
    * If the example has subexamples, a small header is created.
    */
-  def example(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
+  def example(example: Example, alternation: Boolean, fullSuccess: =>Boolean, planOnly: Boolean) = {
     example.examples.toList match {
-      case Nil => exampleRow(example, alternation, fullSuccess)
-      case subexamples => <h4>{example.exampleDescription.toXhtml.text}</h4> ++ exampleRows(subexamples, fullSuccess)
+      case Nil => exampleRow(example, alternation, fullSuccess, planOnly)
+      case subexamples => <h4>{example.exampleDescription.toXhtml.text}</h4> ++ exampleRows(subexamples, fullSuccess, planOnly)
     }
   }
   /**
    * create a row for an example with its status, description and message.
    */
-  def exampleRow(example: Example, alternation: Boolean, fullSuccess: Boolean) = {
+  def exampleRow(example: Example, alternation: Boolean, fullSuccess: =>Boolean, planOnly: Boolean) = {
     <tr class={if (alternation) "b" else "a"}>
-      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example)} {example.exampleDescription.toXhtml}</td>{message(example, fullSuccess)}
+      <td id={"rowdesc:" + System.identityHashCode(example)}>{statusIcon(example, planOnly)} {example.exampleDescription.toXhtml}</td>{message(example, fullSuccess, planOnly)}
     </tr>
   }
 
   /**
    * status icon for anything having results (errors, failures, skipped).
    */
-  def statusIcon(result: HasResults) = {
-    <img src={image(result)} id={"rowicon:" + System.identityHashCode(result)}/>
+  def statusIcon(result: HasResults): NodeSeq = statusIcon(result, false)
+  def statusIcon(result: HasResults, planOnly: Boolean): NodeSeq = {
+    <img src={image(result, planOnly)} id={"rowicon:" + System.identityHashCode(result)}/>
   }
-  def image(result: HasResults) = {
-    "images/icon_" + result.statusClass + "_sml.gif"
+  def image(result: HasResults, planOnly: Boolean) = {
+    if (planOnly)
+      "images/icon_success_sml.gif"
+    else
+      "images/icon_" + result.statusClass + "_sml.gif"
   }
 
   /** Message for an example. */
-  def message(example: Example, fullSuccess: Boolean) = {
+  def message(example: Example, fullSuccess: =>Boolean): NodeSeq = message(example, fullSuccess, false)
+  def message(example: Example, fullSuccess: =>Boolean, planOnly: Boolean): NodeSeq = {
     def msg = {
-      if (!example.failures.isEmpty)
+      if (!planOnly && !example.failures.isEmpty)
           reduce[FailureException](example.failures, failure(_))
-        else if (!example.errors.isEmpty)
+        else if (!planOnly && !example.errors.isEmpty)
           reduce[Throwable](example.errors, e => exceptionText(e))
-        else if (!example.skipped.isEmpty)
+        else if (!planOnly && !example.skipped.isEmpty)
           reduce[SkippedException](example.skipped, s => exceptionText(s))
         else
           ""
     }
-    if (fullSuccess)
+    if (planOnly || fullSuccess)
       NodeSeq.Empty
     else
       <td id={"rowmess:" + System.identityHashCode(example)}>{msg}</td>
