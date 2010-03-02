@@ -55,11 +55,22 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       notifier.systemCompleted("system1 should") was called
     }
   }
-  "A notifier for a specification" should beNotifiedOf { 
-    "only the systems and examples when a specification is planOnly" in {
+  "A notifier for a planOnly specification" should beNotifiedOf { 
+    "only the systems and examples when a specification" in {
       s.planOnly(true)
       new NotifierRunner(s, notifier).reportSpecs
       notifier.exampleSucceeded("ex1-1") was notCalled
+    }
+    "only the systems and examples even of a subspecification" in {
+      object s extends Specification {
+        object included extends Specification {
+          "ex1" in { 1 must_== 1 }
+        }
+        setPlanOnly()
+        include(included)
+      }
+      new NotifierRunner(s, notifier).reportSpecs
+      notifier.exampleSucceeded("ex1") was notCalled
     }
   }
   val s = new Specification {

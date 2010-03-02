@@ -62,7 +62,7 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
       reportASpecification(subSpec, planOnly)
     }
     for (system <- spec.systems)
-      reportSystem(system, spec.planOnly())
+      reportSystem(system, planOnly)
     notifiers.foreach { _.systemCompleted(spec.description) }
     this
   }
