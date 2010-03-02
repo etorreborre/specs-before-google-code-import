@@ -59,55 +59,56 @@ class NotifierRunner(val specs: Array[Specification], val notifiers: Array[Notif
       reportASpecification(subSpec)
     }
     for (system <- spec.systems)
-      reportSystem(system)
+      reportSystem(system, spec.planOnly())
     notifiers.foreach { _.systemCompleted(spec.description) }
     this
   }
-  def reportSystem(system: Sus): this.type = {
+  def reportSystem(system: Sus, planOnly: Boolean): this.type = {
     notifiers.foreach { _.systemStarting(system.header) }
     
-    if (!system.ownFailures.isEmpty)
+    if (!planOnly && !system.ownFailures.isEmpty)
       notifiers.foreach { notifier =>
         system.ownFailures.foreach { failure =>
           notifier.systemFailed(system.description, failure) 
         }
       }
-    else if (!system.ownErrors.isEmpty)
+    else if (!planOnly && !system.ownErrors.isEmpty)
       notifiers.foreach { notifier =>
         system.ownErrors.foreach { error =>
           notifier.systemError(system.description, error) 
         }
       }
-    else if (!system.ownSkipped.isEmpty)
+    else if (!planOnly && !system.ownSkipped.isEmpty)
       notifiers.foreach { notifier =>
         system.ownSkipped.foreach { skipped =>
           notifier.systemSkipped(skipped.getMessage)
         }
       }
     for (example <- system.examples)
-      reportExample(example)
+      reportExample(example, planOnly)
     notifiers.foreach { _.systemCompleted(system.header) }
     this
   }
-  def reportExample(example: Examples): this.type = {
+  def reportExample(example: Examples, planOnly: Boolean): this.type = {
     notifiers.foreach { _.exampleStarting(example.description) }
     
-    example.examples.foreach(reportExample(_))
-    if (example.isOk)
+    if (!planOnly)
+      example.examples.foreach(e => reportExample(e, planOnly))
+    if (!planOnly && example.isOk)
       notifiers.foreach { _.exampleSucceeded(example.description) }
-    else if (!example.failures.isEmpty)
+    else if (!planOnly && !example.failures.isEmpty)
       notifiers.foreach { notifier =>
         example.failures.foreach { failure =>
           notifier.exampleFailed(example.description, failure) 
         }
       }
-    else if (!example.errors.isEmpty)
+    else if (!planOnly && !example.errors.isEmpty)
       notifiers.foreach { notifier =>
         example.errors.foreach { error =>
           notifier.exampleError(example.description, error) 
         }
       }
-    else if (!example.skipped.isEmpty)
+    else if (!planOnly && !example.skipped.isEmpty)
       notifiers.foreach { notifier =>
         notifier.exampleSkipped(example.description) 
       }
