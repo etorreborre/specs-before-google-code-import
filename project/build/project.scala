@@ -1,7 +1,7 @@
 import sbt._
 
 class Project(info: ProjectInfo) extends DefaultProject(info) {
-  val mavenLocal = "Local Maven Repository" at "file://D:/mvn-repository"
+  val mavenLocal = "Local Maven Repository" at "file:///D:/mvn-repository"
   override def outputDirectoryName = "build"
   override def managedDependencyPath = "project" / "lib_managed"
   override def compileOptions = Unchecked :: super.compileOptions.toList
@@ -22,10 +22,16 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val objenesis 	= "org.objenesis" % "objenesis" % "1.0"
   val testInterfaces = "org.scala-tools.testing" % "test-interface" % "0.2"
 
-  override def crossScalaVersions = List("2.7.5", "2.7.6", "2.7.7")
+  val scriptapi 	= "javax.script" % "script-api" % "1.0"
+  val scriptjs   	= "javax.script" % "script-js" % "1.0"
+  val jsengine  	= "javax.script" % "js-engine" % "1.0"
 
-  override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  override def crossScalaVersions = List("2.7.7")
+
+  val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/snapshots/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
+
+  val snapshotsRepo = Resolver.url("snapshots-repo", new java.net.URL("http://nexus-direct.scala-tools.org/content/repositories/snapshots"))
+  val specsRepo = Resolver.url("specs-repo", new java.net.URL("http://specs.googlecode.com/svn/maven2"))
 
 }
