@@ -47,7 +47,7 @@ case class XmlRunner(val specs: Seq[Specification], outputDirPath: String, fName
   def this() = this(Nil, "./target", XmlNamingFunction.default)
   
   /** alternate constructor with the specification only. The output dir is the current directory */
-  def this(specifications: Specification*) = this(specifications, ".", XmlNamingFunction.default)
+  def this(specifications: Specification*) = this(specifications, "./target", XmlNamingFunction.default)
 
   /** alternate constructor with one specification only. The output dir is the current directory */
   def this(spec: Specification, outputDirPath: String) = this(List(spec), outputDirPath, XmlNamingFunction.default)
