@@ -31,6 +31,10 @@ trait DataTables {
    * @return a table header which first column is the string <code>a</code>
    */
   implicit def toTableHeader(a: String) = new TableHeader(List(a))
+  /**
+   * @return a table header with a context
+   */
+  implicit def toTableHeaderWithContext(c: Context) = new TableHeader(c)
 
   /**
    * @return a table row whose type will be <code>T</code> for each element and
@@ -47,12 +51,13 @@ trait DataTables {
  * A header can be closed using the | method which will return the TableHeader object<p>
  * A header can be followed by data rows which only requirement is to have a <code>def header_=(t: TableHeader)</code> function
  */
-case class TableHeader(var titles: List[String], var isOk: Boolean) {
+case class TableHeader(var titles: List[String], var isOk: Boolean, var context: Option[Context]) {
+  /** Default constructor. */
+  def this(titles: List[String]) = this(titles, true, None)
+  /** constructor with a context. */
+  def this(c: Context) = this(Nil, true, Some(c))
   /** Mutator to indicate a failure in the rest of the table. */
   def setFailed() = isOk = false
-
-  /** Default constructor. */
-  def this(titles: List[String]) = this(titles, true)
   /**
    * Adds a new column to the header
    * @returns the extended header
@@ -60,10 +65,19 @@ case class TableHeader(var titles: List[String], var isOk: Boolean) {
   def |(s: String) = { titles = titles ::: List(s); this }
 
   /**
-  * Used to close the header
-  * @returns the header
-  */
+   * Used to close the header
+   * @returns the header
+   */
   def | = this
+
+  /**
+   * Used to close the header and set a context
+   * @returns the header
+   */
+  def |(c: Context) = {
+    context = Some(c)
+    this
+  }
 
   /**
    * Accepts any object on which a header can be set. Sets the header on that object and returns it
@@ -118,7 +132,7 @@ case class TableHeader(var titles: List[String], var isOk: Boolean) {
  * Abstract representation of a row without the column types.
  */
 trait AbstractDataRow extends DefaultResults {
-  var header: TableHeader = new TableHeader(Nil, true)
+  var header: TableHeader = new TableHeader(Nil, true, None)
   var shouldExecute = false;
   def valuesList: List[Any]
 }
@@ -207,6 +221,11 @@ trait ExecutableDataTable extends HasResults {
   def skipped: Seq[SkippedException] = rows.flatMap(_.skipped)
   def reset() = { rows.foreach { r => r.reset() }}
   def whenFailing(f: ExecutableDataTable => Unit): this.type
+  var context : Option[Context] = None
+  def contextIs(c: Context) = {
+    context = Some(c)
+    this
+  }
 }
 
 /**
@@ -278,7 +297,11 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
   /**
    * executes the function on each table row if the function exists
    */
-  def execute: this.type = execute { if (function != null) { function() } }
+  def execute: this.type = execute { 
+    if (function != null) { 
+      function() 
+    } 
+  }
   def execute(f: =>Any): this.type = {
     reset()
     f
@@ -313,13 +336,19 @@ case class DataTable[T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13,
    */
   private def executeRow(row: AbstractDataRow, value: => Any) = {
     try {
-      value
+      header.context.map(_.beforeActions())
+      header.context match {
+        case Some(c) => c.aroundExpectationsActions(value)
+        case None => value
+      }
     }
     catch {
       case f: FailureException => row.addFailure(f)
       case s: SkippedException => row.addSkipped(s)
       case e: Throwable => { e.printStackTrace; row.addError(e) }
-    }
+    } finally {
+      header.context.map(_.afterActions())
+    } 
   }
   /**
    * apply a function of one argument to the table and set the table for execution
