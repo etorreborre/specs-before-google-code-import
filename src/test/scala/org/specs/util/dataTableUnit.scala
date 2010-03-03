@@ -148,5 +148,31 @@ class dataTableUnit extends SpecificationWithJUnit with DataTables {
          <tr class="success"><td>2</td><td>2</td><td>4</td><td/></tr>
        </table>)
     }
+    "allow a context to be used around rows" in {
+       var v = 1
+       beforeContext(v = 0)|
+       "a"|"b"|"c"|  
+        2 ! 2 ! 4 | 
+        1 ! 2 ! 3 |> { (a, b, c) =>
+         v must_== 0
+         v = 1
+        } 
+    }
+  }
+  "A datatable" can {
+    "have a context associated to its header" in {
+      val h = "a"|"b"|"c"|(beforeContext())
+      h.context must beSome
+      (h|1!2!3).header.context must beSome
+    }
+    "use the associated context when executing the table" in {
+      var d = 1
+      "a"|"b"|"c"| beforeContext(d = 0) |
+       1 ! 2 ! 3 |
+       2 ! 2 ! 4 |> { (a, b, c) => 
+         d must_== 0
+         (a+b) must_== c
+       }
+    }
   }
 }
