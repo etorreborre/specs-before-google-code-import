@@ -26,7 +26,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val scriptjs   	= "javax.script" % "script-js" % "1.0"
   val jsengine  	= "javax.script" % "js-engine" % "1.0"
 
-  override def crossScalaVersions = List("2.7.7")
+  //override def crossScalaVersions = List("2.7.7")
 
   val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/snapshots/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
