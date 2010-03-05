@@ -83,14 +83,14 @@ case class TableHeader(var titles: List[String], var isOk: Boolean, var context:
    * Accepts any object on which a header can be set. Sets the header on that object and returns it
    * @returns the header-accepting object (usually a DataRow object)
    */
-  def |[T <: Any {def header_=(t: TableHeader)}](d: T) = { d.header_=(this); d }
+  def |[T <: ExecutableHeader](d: T) = { d.header_=(this); d }
 
   /**
    * Accepts any object on which a header can be set and which is executable.
    * Sets the header on the object, marks it as "should be executed" and returns it.
    * @returns the header-accepting object (usually a DataRow object), ready to execute
    */
-  def |>[T <: Any {def header_=(t: TableHeader); def shouldExecute_=(b: Boolean)}](d: T) = { d.header_=(this); d.shouldExecute_=(true); d }
+  def |>[T <: ExecutableHeader](d: T) = { d.header_=(this); d.shouldExecute_=(true); d }
 
   /**
    * @returns the header as string: |"a" | "b" | "c = a + b"|
@@ -127,11 +127,17 @@ case class TableHeader(var titles: List[String], var isOk: Boolean, var context:
      this
    }
 }
-
+/**
+ * Helper trait to support the passing of a header from row to row
+ */
+private[util] trait ExecutableHeader {
+  def header_=(t: TableHeader)
+  def shouldExecute_=(b: Boolean)
+}
 /**
  * Abstract representation of a row without the column types.
  */
-trait AbstractDataRow extends DefaultResults {
+trait AbstractDataRow extends DefaultResults with ExecutableHeader {
   var header: TableHeader = new TableHeader(Nil, true, None)
   var shouldExecute = false;
   def valuesList: List[Any]
