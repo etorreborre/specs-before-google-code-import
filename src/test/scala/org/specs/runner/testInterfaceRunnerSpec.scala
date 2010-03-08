@@ -99,6 +99,7 @@ class testInterfaceRunnerSpec extends Specification {
   }
 }
 class testInterfaceSpecification extends Specification {
+  val exception = new Exception("bad")
   "this sus" should {
     "success" in {
       1 must_== 1
@@ -107,7 +108,7 @@ class testInterfaceSpecification extends Specification {
       1 must_== 2
     }
     "error" in {
-      error("bad")
+      throw exception
     }
     "skipped" in {
       skip("dont do this")
