@@ -47,6 +47,18 @@ class testInterfaceRunnerSpec extends Specification {
       testRunner.run(Some(sbtLiterateSpecification))
       sbtLiterateSpecification.files must not be empty
     }
+    "use the passed arguments to filter out examples in the specification" in {
+      testRunner.run("org.specs.runner.testInterfaceSpecification", null, handler, Array("-ex", "success"))
+      testInterfaceLogger.out must not include("error")
+    }
+    "use the passed arguments to remove stacktraces in the output" in {
+      testRunner.run("org.specs.runner.testInterfaceSpecification", null, handler, Array("-ns"))
+      testInterfaceLogger.out must not include(testInterfaceSpecification.exception.getStackTrace()(0).toString)
+    }
+    "use the passed arguments to filter tags for the examples to execute" in {
+      testRunner.run("org.specs.runner.testInterfaceSpecification", null, handler, Array("-rej", "tag1"))
+      testInterfaceLogger.out must include("o success")
+    }
   }
   class TestInterfaceLogger extends Logger {
     var out = ""
@@ -90,7 +102,7 @@ class testInterfaceSpecification extends Specification {
   "this sus" should {
     "success" in {
       1 must_== 1
-    }
+    } tag "tag1"
     "failure" in {
       1 must_== 2
     }

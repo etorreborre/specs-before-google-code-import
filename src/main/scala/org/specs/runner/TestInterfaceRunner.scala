@@ -30,11 +30,12 @@ class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends o
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
     val specification = createObject[Specification](classname + "$", false, args.contains("-v")).orElse(
                         createObject[Specification](classname, true, args.contains("-v")))
+    specification.map(_.args = args)
     run(specification, handler)
   }
   def run(specification: Option[Specification]): Option[Specification] = run(specification, new DefaultEventHandler)
   def run(specification: Option[Specification], handler: EventHandler): Option[Specification] = {
-    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers)) 
+    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers, s.runConfiguration)) 
     specification.map(testInterfaceRunner(_).reportSpecs)
     specification match {
       case Some(s: org.specs.runner.File) => s.reportSpecs
@@ -47,7 +48,8 @@ class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends o
 /**
  * The TestInterface notifier notifies the EventHandler of the specification execution
  */
-class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) extends Notifier {
+class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], configuration: Configuration) extends Notifier {
+  def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultConfiguration)
   class NamedEvent(name: String) extends Event {
     def testName = name
     def description = ""
@@ -95,6 +97,12 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger]) exten
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
+    logStatus(e.getMessage, AnsiColors.red, "  ")
+    if (configuration.stacktrace) {
+      e.getStackTrace().foreach { trace =>
+        logStatus(trace.toString, AnsiColors.red, "  ")
+      }
+    }
     handler.handle(error(testName, e))
     decrementPadding
   }

@@ -46,10 +46,11 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
   def this(s: Specification, n: Notifier) = this(Array(s), Array(n))
   override def report(specs: Seq[Specification]): this.type = {
     super.report(specs)
-    val specToRun = if (specs.size == 1)
-                      specs(0)
+    val filteredSpecs = specs.flatMap(_.filteredSpecs)
+    val specToRun = if (filteredSpecs.size == 1)
+                      filteredSpecs(0)
                     else {
-                      object totalSpecification extends Specification { include(specs.map(s => new LazyParameter(() => s)):_*) }
+                      object totalSpecification extends Specification { include(filteredSpecs.map(s => new LazyParameter(() => s)):_*) }
                       totalSpecification
                     }
     
