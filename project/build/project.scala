@@ -1,6 +1,8 @@
 import sbt._
+import webbytest.HtmlTestsProject
 
-class Project(info: ProjectInfo) extends DefaultProject(info) {
+class Project(info: ProjectInfo) extends DefaultProject(info) with HtmlTestsProject {
+
   val mavenLocal = "Local Maven Repository" at "file:///D:/mvn-repository"
   override def outputDirectoryName = "build"
   override def managedDependencyPath = "project" / "lib_managed"
