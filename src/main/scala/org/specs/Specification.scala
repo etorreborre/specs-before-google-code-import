@@ -64,6 +64,14 @@ abstract class Specification extends BaseSpecification with Expectations with Fa
 
   /** implementation of the error method for a Specification */
   def error(msg: String) = Predef.error(msg)
+
+  /**
+   * when setting the arguments on this specification, make sure that the tags are set accordingly
+   */
+  override def args_=(a: Array[String]) = {
+    super.args_=(a)
+    super.setTags(List(this))
+  }
 }
 
 /**

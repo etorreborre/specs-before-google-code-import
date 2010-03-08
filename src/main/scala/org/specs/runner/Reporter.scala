@@ -57,17 +57,17 @@ trait SpecsHolder {
  * object runner extends Runner(spec) with Html with Xml for example
  */
 trait Reporter extends SpecsFilter with ConsoleLog {
-  val specsConfiguration: Property[Configuration] = Property(config)
+  private val userConfiguration: Property[Configuration] = Property(config)
   /** this variable controls if stacktraces should be printed. */
-  private[specs] val stacktrace = Property(specsConfiguration().stacktrace)
+  private[specs] val stacktrace = Property(userConfiguration().stacktrace)
   /** this variable controls if ok examples should be printed. */
-  private[specs] val failedAndErrorsOnly = Property(specsConfiguration().failedAndErrorsOnly)
+  private[specs] val failedAndErrorsOnly = Property(userConfiguration().failedAndErrorsOnly)
   /** this variable controls if the statistics should be printed. */
-  private[specs] val statistics = Property(specsConfiguration().statistics)
+  private[specs] val statistics = Property(userConfiguration().statistics)
   /** this variable controls if the final statistics should be printed. */
-  private[specs] val finalStatisticsOnly = Property(specsConfiguration().finalStatisticsOnly)
+  private[specs] val finalStatisticsOnly = Property(userConfiguration().finalStatisticsOnly)
   /** this variable controls if the ANSI color sequences should be used to colorize output */
-  private[specs] val colorize = Property(specsConfiguration().colorize)
+  private[specs] val colorize = Property(userConfiguration().colorize)
   /** this variable controls if the examples must not be executed and only high-level descriptions must be displayed */
   private[specs] val planOnly = Property(false)
 
@@ -95,20 +95,34 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     setOptionsFromConfig()
   }
   def setOptionsFromConfig(): this.type = {
-    specsConfiguration(config)
-    stacktrace(specsConfiguration().stacktrace)
-    failedAndErrorsOnly(specsConfiguration().failedAndErrorsOnly)
-    colorize(specsConfiguration().colorize)
-    statistics(specsConfiguration().statistics)
-    finalStatisticsOnly(specsConfiguration().finalStatisticsOnly)
+    userConfiguration(config)
+    stacktrace(userConfiguration().stacktrace)
+    failedAndErrorsOnly(userConfiguration().failedAndErrorsOnly)
+    colorize(userConfiguration().colorize)
+    statistics(userConfiguration().statistics)
+    finalStatisticsOnly(userConfiguration().finalStatisticsOnly)
     this
   }
 
+  def runConfiguration = {
+    val outer = this
+    new Configuration {
+      override def stacktrace = outer.stacktrace()
+      override def failedAndErrorsOnly = outer.failedAndErrorsOnly()
+      override def statistics = outer.statistics()
+      override def finalStatisticsOnly = outer.finalStatisticsOnly()
+      override def colorize = outer.colorize()
+    }
+  }
   /**
    * optional arguments to be used in the main method and which can be set from the code directly.
    */
-  var args: Array[String] = Array()
-
+  private var specArgs: Array[String] = Array()
+  def args = specArgs
+  def args_=(a: Array[String]) = {
+    specArgs = a
+    overrideConfigurationWithUserArgs()
+  }
   /**
    * Main method for the Reporter trait.
    *
@@ -189,6 +203,15 @@ trait Reporter extends SpecsFilter with ConsoleLog {
    * to allow the chaining of several reporters as traits.
    */
   def report(specs: Seq[Specification]): this.type = {
+    overrideConfigurationWithUserArgs()
+    setTags(specs)
+    debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
+    this
+  }
+  /**
+   * set the specification configuration from the user arguments
+   */
+  private def overrideConfigurationWithUserArgs() = {
     if (argsContain("-config", "--configuration")) setConfiguration(argValue(args, List("-config", "--configuration")))
     if (argsContain("-ns", "--nostacktrace")) setNoStacktrace()
     if (argsContain("-nostats", "--nostatistics")) setNoStatistics()
@@ -196,9 +219,6 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     if (argsContain("-xonly", "--failedonly")) setFailedAndErrorsOnly()
     if (argsContain("-plan")) setPlanOnly()
     if (argsContain("-c", "--color")) setColorize()
-    setTags(specs, args)
-    debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
-    this
   }
   /** @return true if the args contain one of the options, regardless of the case. */
   private def argsContain(options: String*) = args.map(_.toLowerCase).exists(options.contains(_))
@@ -207,15 +227,15 @@ trait Reporter extends SpecsFilter with ConsoleLog {
    * @param specifications list of specifications
    * @param arguments user-defined arguments containing either -acc, --accept, -rej, --reject
    */
-  private def setTags(specifications: Seq[Specification], arguments: Array[String]) = {
-    def printWarning = warning("accept/reject tags omitted in: " + arguments.mkString(", "))
-    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(arguments(i + 1).split(","):_*)
-    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(arguments(i + 1).split(","):_*)
+  private[specs] def setTags(specifications: Seq[Specification]) = {
+    def printWarning = warning("accept/reject tags omitted in: " + specArgs.mkString(", "))
+    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(specArgs(i + 1).split(","):_*)
+    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(specArgs(i + 1).split(","):_*)
     def setAcceptedTags(specifications: Seq[Specification], argumentNames: List[String], f: (Specification, Int) => Specification) = {
-      arguments.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
+      specArgs.map(_.toLowerCase).findIndexOf(arg => argumentNames.contains(arg)) match {
         case -1 => ()
-        case i if (i < arguments.length - 1) => filteredSpecs.foreach(f(_, i))
-        case _ => if (!arguments.isEmpty) printWarning
+        case i if (i < specArgs.length - 1) => filteredSpecs.foreach(f(_, i))
+        case _ => if (!specArgs.isEmpty) printWarning
       }
     }
     setAcceptedTags(specifications, List("-acc", "--accept"), acceptSpecTags(_, _))
