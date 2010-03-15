@@ -19,6 +19,7 @@
 package org.specs.runner
 import org.scalatools.testing._
 import org.specs.util._
+import org.specs.util.ExtendedThrowable._
 
 /**
  * Implementation of the Framework interface for the sbt tool.
@@ -110,13 +111,13 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], confi
   }
   def exampleFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage, AnsiColors.red, " ")
+    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     handler.handle(failure(testName, e))
     decrementPadding
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage, AnsiColors.red, " ")
+    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " " )
     if (configuration.stacktrace) {
       e.getStackTrace().foreach { trace =>
         logStatus(trace.toString, AnsiColors.red, " ")
