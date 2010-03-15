@@ -16,8 +16,20 @@ class testInterfaceRunnerSpec extends Specification {
     "report a failure" in {
       logOutput must include("[info]   x failure")      
     }
+    "report a message" in {
+      logOutput must include("[info]     '1' is not equal to '2'")      
+    }
+    "report the location of the failure" in {
+      logOutput must beMatching("'1' is not equal to '2'.*testInterfaceRunnerSpec.scala")      
+    }
     "report an error" in {
       logOutput must include("[info]   x error")      
+    }
+    "report the stacktrace of an error" in {
+      logOutput must include("[info]     " + testInterfaceSpecification.exception.getStackTrace()(0))      
+    }
+    "report the location of the error" in {
+      logOutput must beMatching("bad.*testInterfaceRunnerSpec.scala")      
     }
     "report a skipped" in {
       logOutput must include("[info]   o skipped")      
