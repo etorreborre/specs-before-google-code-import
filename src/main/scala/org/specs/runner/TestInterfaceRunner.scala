@@ -2,6 +2,7 @@ package org.specs.runner
 import org.scalatools.testing._
 import org.specs.util._
 import org.specs._
+import org.specs.util.ExtendedThrowable._
 /**
  * Implementation of the Framework interface for the sbt tool.
  * It declares the classes which can be executed by the specs library.
@@ -92,13 +93,13 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], confi
   }
   def exampleFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage, AnsiColors.red, " ")
+    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     handler.handle(failure(testName, e))
     decrementPadding
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage, AnsiColors.red, " ")
+    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     if (configuration.stacktrace) {
       e.getStackTrace().foreach { trace =>
         logStatus(trace.toString, AnsiColors.red, " ")
