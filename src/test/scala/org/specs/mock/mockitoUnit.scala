@@ -79,4 +79,8 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
     mock[Hello].get(0) must beNull
     smartMock[Hello].get(0) must_== ""
   }
+  "A mock can be created with a name" in {
+    mockAs[scala.List[String]]("my list").isExpectation
+    mock[scala.List[String]].as("my list").isExpectation
+  }
 }

@@ -337,6 +337,18 @@ trait MocksCreation {
    */
   def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
   /**
+   * create a mock object with a name: val m = mockAs[java.util.List[String]]("name")
+   */
+  def mockAs[T](name: String)(implicit m: scala.reflect.Manifest[T]): T = mocker.mock(name)(m)
+  /**
+   * implicit allowing the following syntax for a named mock: val m = mock[java.util.List[String]],as("name")
+   */
+  implicit def mockToAs[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) = new NamedMock(t)(m)
+  class NamedMock[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) {
+    def as(name: String): T = mockAs[T](name)
+  }
+
+  /**
    * create a mock object with smart return values: val m = smartMock[java.util.List[Stringg]]
    * 
    * This is the equivalent of Mockito.mock(List.class, SMART_NULLVALUES) but testing shows that it is not working well with Scala.
