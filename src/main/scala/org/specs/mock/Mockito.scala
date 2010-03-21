@@ -22,8 +22,10 @@ import org.specs.NumberOfTimes
 import org.mockito.stubbing.Answer
 import org.mockito.internal.stubbing.StubberImpl
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.internal.InOrderImpl 
 import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
-import org.mockito.internal.verification.api.{ VerificationInOrderMode, VerificationMode }
+import org.mockito.internal.verification.api.VerificationInOrderMode
+import org.mockito.verification.{ VerificationMode }
 import org.mockito.internal.stubbing._
 import org.mockito.stubbing.{ OngoingStubbing, Stubber }
 import org.mockito.internal.progress._
@@ -106,7 +108,7 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
   implicit def theMethod(c: =>Any) = new CalledMock(c)
 
   /** provides methods creating calls expectations. */
-  class CalledMock(c: =>Any) {
+  class CalledMock[T](c: =>T) {
     def was(callMatcher: CalledMatcher) = {
       theValue(c) must callMatcher
     }
@@ -114,6 +116,14 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInO
       theValue(c) must (callMatcher.times(0))
     }
     def on(m: AnyRef) = MockCall(Some(m), () => c)
+    def had: T = {
+      mocker.verify(c, org.mockito.Mockito.times(1))
+      c
+    }
+    def twice: T = {
+      mocker.verify(c, org.mockito.Mockito.times(2))
+      c
+    }
   }
   /** @return a new CalledMatcher. */
   def called = new CalledMatcher
@@ -220,7 +230,7 @@ trait CalledInOrderMatchers extends ExpectableFactory with NumberOfTimes {
         val mocksToBeVerifiedInOrder = java.util.Arrays.asList(calls.flatMap(_.mock).toArray: _*)  
         calls.foreach { call =>
            call.mock.map(mocker.verify(_, new InOrderWrapper(call.verifInOrderMode, 
-                                                             mocksToBeVerifiedInOrder)))
+                                                             new InOrderImpl(mocksToBeVerifiedInOrder))))
            call.result()
         }    
       } catch {
