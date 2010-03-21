@@ -84,6 +84,11 @@ class reporterSpecification extends TestSpecs {
             messages.findIndexOf(matches("first failure")) ==
             messages.findIndexOf(matches("example 2.1 ok")) + 1)
     }
+    "display nested examples in the right order" in {
+      specWithOneExampleAndTwoNestedExamples verifies(messages =>
+            messages.findIndexOf(matches("ex 1.1")) ==
+            messages.findIndexOf(matches("ex 1.2")) - 1)
+    }
     "report the elapsed time" in {
       specWithOneExample(that.isOk) mustContainMatch "Finished in"
     }
@@ -208,7 +213,7 @@ class consoleTraitSpecification extends TestSpecs {
 class TestSpecs extends org.specs.Specification {
   def specWithOneExample(expectations: (that.Value)*) = new SpecWithOneExample(expectations.toList).run
   def specWithTwoExamples(expectations: (that.Value)*) = new SpecWithTwoExamples(expectations.toList).run
-
+  def specWithOneExampleAndTwoNestedExamples = new SpecWithOneExampleAndTwoNestedExamples().run 
   def specTwoSystems = new Specification {
     "this is system one" should { "do nothing" in { 1 must_== 1 } }
     "this is system two" should { "do nothing" in { 1 must_== 1 } }
@@ -314,7 +319,18 @@ with MockOutput with Textile {
     messages
   }
 }
-
+class SpecWithOneExampleAndTwoNestedExamples extends Specification with MockOutput {
+  "this system" should {
+    "ex 1" in {
+      "ex 1.1" in { 1.isExpectation }
+      "ex 1.2" in { 1.isExpectation }
+    }
+  }
+  def run = {
+    reportSpecs
+    messages
+  }
+}
 object that extends Enumeration {
   val isKo, isOk, isKoTwice, isKoWithTheFailMethod,
       throwsAnException, throwsAnExceptionWithACause, isSkipped, isSkippedBecauseOfAFaultyMatcher = Value
