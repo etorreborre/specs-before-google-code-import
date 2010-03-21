@@ -75,12 +75,6 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
   def >>(expectations: =>Any) = in(expectations)
   /** alias for the <code>in</code> method to create subexamples */
   def >>(example: =>Examples) = in(example)
-  
-  /**
-   * by construction sub-examples needs to be reversed before they're returned as a list.
-   * This is not the case with examples in a sus
-   */
-  override def examples = super.examples.reverse
 }
 
 /**
