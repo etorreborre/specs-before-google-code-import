@@ -25,6 +25,7 @@ class ConsoleNotifier extends Notifier {
   def runStarting(examplesCount: Int) = println("runStarting - count is " + examplesCount)
   def exampleStarting(name: String) = println("exampleStarting: " + name)
   def exampleSucceeded(name: String) = println("exampleSucceeded: " + name)
+  def exampleCompleted(name: String) = println("exampleCompleted: " + name)
   def exampleFailed(name: String, e: Throwable) = println("exampleFailed: " + name + " " + e.getMessage)
   def exampleError(name: String, e: Throwable) = println("exampleError: " + name + " " + e.getMessage)
   def exampleSkipped(name: String) = println("examplekipped: " + name)

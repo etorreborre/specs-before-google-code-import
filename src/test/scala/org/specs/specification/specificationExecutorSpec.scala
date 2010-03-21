@@ -245,6 +245,7 @@ object testNotifier extends Notifier {
   def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
   def exampleSucceeded(testName: String) = {succeeded += 1}
+  def exampleCompleted(testName: String) = {}
   def exampleFailed(testName: String, e: Throwable) = failures = failures ::: List(e.getMessage)
   def exampleError(testName: String, e: Throwable) = errors += 1
   def exampleSkipped(testName: String) = skippedExample = true

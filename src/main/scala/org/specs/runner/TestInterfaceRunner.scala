@@ -104,16 +104,16 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], confi
   def runStarting(examplesCount: Int) = {}
 
   def exampleStarting(exampleName: String) = incrementPadding
+  def exampleCompleted(exampleName: String) = decrementPadding
+
   def exampleSucceeded(testName: String) = {
     logStatus(testName, AnsiColors.green, "+")
     handler.handle(succeeded(testName))
-    decrementPadding
   }
   def exampleFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
     logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     handler.handle(failure(testName, e))
-    decrementPadding
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
@@ -124,12 +124,10 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], confi
       }
     }
     handler.handle(error(testName, e))
-    decrementPadding
   }
   def exampleSkipped(testName: String) = {
     logStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
-    decrementPadding
   }
   def systemStarting(systemName: String) = {
     logInfo(systemName, AnsiColors.blue)
@@ -137,26 +135,22 @@ class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], confi
   def systemSucceeded(testName: String) = {
     logStatus(testName, AnsiColors.green, "+")
     handler.handle(succeeded(testName))
-    decrementPadding
   }
   def systemFailed(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
     logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(failure(testName, e))
-    decrementPadding
   }
   def systemError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
     logStatus(e.getMessage, AnsiColors.red, "  ")
     handler.handle(error(testName, e))
-    decrementPadding
   }
   def systemSkipped(testName: String) = {
     logStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
-    decrementPadding
   }
-  def systemCompleted(systemName: String) = {}
+  def systemCompleted(systemName: String) = decrementPadding
 }
 class DefaultEventHandler extends EventHandler {
   import scala.collection.mutable._
