@@ -31,6 +31,7 @@ trait Notifier {
   def exampleFailed(testName: String, e: Throwable)
   def exampleError(testName: String, e: Throwable)
   def exampleSkipped(testName: String)
+  def exampleCompleted(exampleName: String)
   def systemStarting(systemName: String)
   def systemSucceeded(name: String)
   def systemFailed(name: String, e: Throwable)
@@ -96,8 +97,6 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
   def reportExample(example: Examples, planOnly: Boolean): this.type = {
     notifiers.foreach { _.exampleStarting(example.description) }
     
-    if (!planOnly)
-      example.examples.foreach(e => reportExample(e, planOnly))
     if (!planOnly && example.isOk)
       notifiers.foreach { _.exampleSucceeded(example.description) }
     else if (!planOnly && !example.failures.isEmpty)
@@ -116,6 +115,10 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
       notifiers.foreach { notifier =>
         notifier.exampleSkipped(example.description) 
       }
+    if (!planOnly)
+      example.examples.foreach(e => reportExample(e, planOnly))
+
+    notifiers.foreach { _.exampleCompleted(example.description) }
     this
   }
 }
