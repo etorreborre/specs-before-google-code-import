@@ -25,12 +25,9 @@ import org.mockito.stubbing.Answer
 import org.mockito.internal.stubbing.StubberImpl
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.internal.InOrderImpl 
-import org.mockito.internal.verification.{ VerificationModeFactory, InOrderWrapper }
-import org.mockito.internal.verification.api.VerificationInOrderMode
 import org.mockito.verification.{ VerificationMode }
 import org.mockito.internal.stubbing._
 import org.mockito.stubbing.{ OngoingStubbing, Stubber }
-import org.mockito.internal.progress._
 import org.specs.matcher._
 import org.specs.matcher.MatcherUtils._
 
@@ -77,7 +74,7 @@ trait MocksCreation extends TheMockitoMocker {
    */
   implicit def mockToAs[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) = new NamedMock(t)(m)
   
-  /** create a mock object with a name */
+  /** support class to create a mock object with a name */
   class NamedMock[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) {
     def as(name: String): T = mockAs[T](name)
   }
@@ -128,10 +125,6 @@ trait MockitoLifeCycle extends LifeCycle {
  * there was one(mockedList).get(0)
  * there was no(mockedList).get(0)
  * 
- * </code>
- * 
- * where called is a Matcher which accepts supplementary methods to change the Mockito verification method:<code>
- * 
  * there was two(mockedList).get(0)
  * there was three(mockedList).get(0)
  * there was 4.times(mockedList).get(0)
@@ -153,8 +146,9 @@ trait MockitoLifeCycle extends LifeCycle {
  * </code>
  */
 trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockitoMocker {
+  /** temporary inOrder object to accumulate mocks to verify in order */
   private var inOrderMode: Option[InOrderImpl] = None
-  /** */
+  /** this matcher evaluates an expression containing mockito calls verification */
   private class CallsMatcher[T] extends Matcher[T] {
     def apply(v: =>T) = {
       var result = (true, "The mock was called as expected", "The mock was not called as expected")
@@ -169,15 +163,15 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockit
     }
   }
   
-  /** */
+  /** create an object supporting 'was' and 'were' methods */
   def there = new Calls
-  def got[T](t: =>T) = there was t
   class Calls {
     def were[T](calls: =>T) = was(calls)
     def was[T](calls: =>T) = {
       calls must new CallsMatcher[T]
     }
   }
+  def got[T](t: =>T) = there was t
   implicit def rangeIntToTimes(r: RangeInt) = new RangeIntToTimes(r)
   class RangeIntToTimes(r: RangeInt) {
     def apply[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(r.n))
