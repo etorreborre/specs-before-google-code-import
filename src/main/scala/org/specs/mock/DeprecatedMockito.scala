@@ -60,19 +60,23 @@ trait DeprecatedCalledMatchers extends ExpectableFactory with NumberOfTimes with
   
   /** 
    * create a CalledMock object for a method call.
-   * @deprecated
+   * @deprecated use the new methods the CalledMatchers trait
    */
   implicit def theMethod(c: =>Any) = new CalledMock(c)
 
   /** provides methods creating calls expectations. */
   class CalledMock[T](c: =>T) {
+    /** @deprecated use the new methods the CalledMatchers trait */
     def was(callMatcher: CalledMatcher) = {
       theValue(c) must callMatcher
     }
+    /** @deprecated use the new methods the CalledMatchers trait */
     def wasnt(callMatcher: CalledMatcher) = {
       theValue(c) must (callMatcher.times(0))
     }
+    /** @deprecated use the new methods the CalledMatchers trait */
     def on(m: AnyRef) = MockCall(Some(m), () => c)
+    /** @deprecated use the new methods the CalledMatchers trait */
     def had: T = {
       mocker.verify(c, org.mockito.Mockito.times(1))
       c
