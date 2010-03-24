@@ -19,6 +19,8 @@
 package org.specs.specification
 import org.specs.matcher.Matcher
 import org.specs.matcher.BeNull
+import org.specs.util.Property
+
 /** 
  * Result of a match
  * 
@@ -52,6 +54,7 @@ class Result[T](expectable: => Expectable[T], display: SuccessValue => String) e
   def a(m: => Matcher[T]) = matchWith(m)
   def an(m: => Matcher[T]) = matchWith(m)
   def the(m: => Matcher[T]) = matchWith(m)
+  def valueProperty = Property(expectable.valueProperty())
 }
 /**
  * Trait marking anything that holds a Result. It is used to find a commonality between Specs and JUnit failures

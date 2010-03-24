@@ -17,8 +17,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.mock
+import org.specs.util.Control._
 import org.specs.specification._
 import org.specs.NumberOfTimes
+import org.mockito.InOrder
 import org.mockito.stubbing.Answer
 import org.mockito.internal.stubbing.StubberImpl
 import org.mockito.invocation.InvocationOnMock
@@ -37,7 +39,7 @@ import org.specs.matcher.MatcherUtils._
  * 
  * It provides some syntactic sugar on top of the Mockito methods and is integrated with specs expectations:<code>
  * 
- * object spec extends Specification with Mockito {
+ * class specification extends Specification with Mockito {
  *   
  *   val m = mock[java.util.List[String]] // a concrete class would be mocked with: mock(new java.util.LinkedList[String])
  *   
@@ -48,14 +50,58 @@ import org.specs.matcher.MatcherUtils._
  *   m.get(0)
  * 
  *   // verify that the call happened, this is an expectation which will throw a FailureException if that is not the case
- *   m.get(0) was called
- *   m.get(1) wasnt called // we can also check that other calls did not occur
+ *   there was one(m).get(0)
+ *   there was no(m).get(1) // we can also check that other calls did not occur
  * }
  * </code>
  * 
  * See the method descriptions for more usage examples.  
  */
-trait Mockito extends MockitoLifeCycle with CalledMatchers with InteractionMatchers with CalledInOrderMatchers with MockitoStubs with MockitoMatchers
+trait Mockito extends MockitoLifeCycle with CalledMatchers with DeprecatedCalledMatchers with InteractionMatchers with MockitoStubs with MockitoMatchers 
+   with MockitoFunctions 
+
+/**
+ * This trait provides methods to create mocks and spies.
+ */
+trait MocksCreation extends TheMockitoMocker {
+  /**
+   * create a mock object: val m = mock[java.util.List[Stringg]]
+   */
+  def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
+  /**
+   * create a mock object with a name: val m = mockAs[java.util.List[String]]("name")
+   */
+  def mockAs[T](name: String)(implicit m: scala.reflect.Manifest[T]): T = mocker.mock(name)(m)
+  /**
+   * implicit allowing the following syntax for a named mock: val m = mock[java.util.List[String]],as("name")
+   */
+  implicit def mockToAs[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) = new NamedMock(t)(m)
+  
+  /** create a mock object with a name */
+  class NamedMock[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) {
+    def as(name: String): T = mockAs[T](name)
+  }
+
+  /**
+   * create a mock object with smart return values: val m = smartMock[java.util.List[Stringg]]
+   * 
+   * This is the equivalent of Mockito.mock(List.class, SMART_NULLVALUES) but testing shows that it is not working well with Scala.
+   */
+  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.smartMock(m)
+  /**
+   * create a spy on an object. 
+   * 
+   * A spy is a real object but can still have some of its methods stubbed. However the syntax for stubbing a spy is a bit different than 
+   * with a mock:<code>
+   * 
+   * val s = spy(new LinkedList[String])
+   * doReturn("one").when(s).get(0) // instead of s.get(0) returns "one" which would throw an exception
+   * 
+   * </code>
+   */
+  def spy[T](m: T): T = mocker.spy(m)
+}
+
 /**
  * This trait allows the initialization of mocks when defined with an annotation:
  * @Mock val l: List[String] = null
@@ -79,205 +125,103 @@ trait MockitoLifeCycle extends LifeCycle {
 /**
  * This trait provides methods to declare expectations on mock calls:<code>
  * 
- * mockedList.get(0) was called
- * mockedList.get(0) wasnt called
- * mockedList.get(0) was notCalled
+ * there was one(mockedList).get(0)
+ * there was no(mockedList).get(0)
  * 
  * </code>
  * 
  * where called is a Matcher which accepts supplementary methods to change the Mockito verification method:<code>
  * 
- * mockedList.get(0) was called.once // similar to was called
- * mockedList.get(0) was called.twice
- * mockedList.get(0) was called(3.times)
- * mockedList.get(0) was called.atLeastOnce // or called.atLeast(oncee)
- * mockedList.get(0) was called.atLeastTwice
- * mockedList.get(0) was called.atLeast(3.times)
- * mockedList.get(0) was called.atMostOnce
- * mockedList.get(0) was called.atMostTwice
- * mockedList.get(0) was called.atMost(3.times)
- * mockedList.get(0) was called.exclusively // equivalent to called(0.timess)
+ * there was two(mockedList).get(0)
+ * there was three(mockedList).get(0)
+ * there was 4.times(mockedList).get(0)
+ *
+ * there was atLeastOne(mockedList).get(0)
+ * there was atLeastTwo(mockedList).get(0)
+ * there was atLeastThree(mockedList).get(0)
+ * there was atLeast(4)(mockedList).get(0)
+ * there was atMostOne(mockedList).get(0)
+ * there was atMostTwo(mockedList).get(0)
+ * there was atMostThree(mockedList).get(0)
+ * there was atMost(4)(mockedList).get(0)
+ * 
+ * It is also possible to use a different wording:
+ * 
+ * there were two(mockedList).get(0)
+ * got { two(mockedList).get(0) }
  * 
  * </code>
  */
-trait CalledMatchers extends ExpectableFactory with NumberOfTimes with CalledInOrderMatchers {
-  /** delegate to Mockito. */
-  protected val mocker: org.mockito.MockitoMocker
-  
-  /** create a CalledMock object for a method call. */
-  implicit def theMethod(c: =>Any) = new CalledMock(c)
-
-  /** provides methods creating calls expectations. */
-  class CalledMock[T](c: =>T) {
-    def was(callMatcher: CalledMatcher) = {
-      theValue(c) must callMatcher
-    }
-    def wasnt(callMatcher: CalledMatcher) = {
-      theValue(c) must (callMatcher.times(0))
-    }
-    def on(m: AnyRef) = MockCall(Some(m), () => c)
-    def had: T = {
-      mocker.verify(c, org.mockito.Mockito.times(1))
-      c
-    }
-    def twice: T = {
-      mocker.verify(c, org.mockito.Mockito.times(2))
-      c
-    }
-  }
-  /** @return a new CalledMatcher. */
-  def called = new CalledMatcher
-  /** @return a new CalledMatcher().times(range.n) */
-  def called(r: RangeInt): CalledMatcher = new CalledMatcher().times(r.n)
-  /** @return a CalledMatcher with times(0). */
-  def notCalled = new CalledMatcher().times(0)
-  /** @return a new CalledInOrder */
-  def calledInOrder: CalledInOrderMatcher = called.inOrder
-  /** this value can be used in mock.method was called.atLeast(once). */
-  val once = new RangeInt(1)
-
-  /** Matcher accepting a call and checking if the method was called according to the verification mode: once, times(2), atLeast(once,...) */
-  class CalledMatcher extends Matcher[Any] with HasVerificationMode {
-    def apply(v: =>Any) = {
-      mocker.verify(this.verificationMode)
-      var result = (true, "The method was called", "The method was not called")
+trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockitoMocker {
+  private var inOrderMode: Option[InOrderImpl] = None
+  /** */
+  private class CallsMatcher[T] extends Matcher[T] {
+    def apply(v: =>T) = {
+      var result = (true, "The mock was called as expected", "The mock was not called as expected")
       try { 
         v 
       } catch {
         case e => { 
-          result = (false, "The method was called", "The method was not called as expected:" + e.getMessage)
+          result = (false, "The mock was called as expected", "The mock was not called as expected: " + e.getMessage)
         }
       }
       result
     }
-    /** create a CalledInOrderMatcher. Alias for calledInOrder. */
-    def inOrder = new CalledInOrderMatcher
   }
-}
-/**
- * This trait provides functions to set the verification mode for InOrder verifications.
- * This means that it only supports AtLeast and Times verification modes.
- */
-trait HasInOrderVerificationMode extends Sugar {
   
-  protected var verificationMode = org.mockito.Mockito.times(1)
-  /** verification mode = times(1). This is the default. */
-  def once: this.type = this
-  /** verification mode = times(2). */
-  def twice: this.type = this.times(2)
-  /** verification mode = times(i). */
-  def times(i: Int): this.type = setVerificationMode(org.mockito.Mockito.times(i))
-  /** verification mode = atLeast(1). */
-  def atLeastOnce: this.type = this.atLeast(1) 
-  /** verification mode = atLeast(2). */
-  def atLeastTwice: this.type = this.atLeast(2)
-  /** verification mode = atLeast(range.n). */
-  def atLeast(r: RangeInt): this.type = setVerificationMode(VerificationModeFactory.atLeast(r.n))
-  /** sets the verification mode. */
-  def setVerificationMode(v: VerificationMode): this.type = {
-    verificationMode = v
-    this
-  }
-}
-/**
- * This trait provides functions to set the verification mode
- */
-trait HasVerificationMode extends HasInOrderVerificationMode {
-  
-  /** verification mode = atMost(1). */
-  def atMostOnce: this.type = atMost(1) 
-  /** verification mode = atMost(2). */
-  def atMostTwice: this.type = atMost(2)
-  /** verification mode = atMost(range.n). */
-  def atMost(r: RangeInt): this.type = { 
-    verificationMode = VerificationModeFactory.atMost(r.n)
-    this
-  }
-}
-/**
- * This trait provides an additional matcher to check if some methods methods have been called in the right order on mocks:<code>
- *    theMethod(m1.get(0)).on(m1).atLeastOnce then
- *    theMethod(m2.get(0)).on(m2)             were called.inOrder
- * 
- *    // the implicit definition can also be removed but additional parenthesis are needed
- * 
- *    (m1.get(0) on m1).atLeastOnce then
- *    (m2.get(0) on m2)             were called.inOrder
- * 
- * </code>
- */
-trait CalledInOrderMatchers extends ExpectableFactory with NumberOfTimes {
-  
-  /** delegate to Mockito. */
-  protected val mocker: org.mockito.MockitoMocker
-  
-  /** provides methods creating in order calls expectations. */
-  case class MockCall(mock: Option[AnyRef], result: () => Any) extends HasInOrderVerificationMode { 
-    def this(result: () => Any) = this(None, result)
-    def verifInOrderMode = verificationMode.asInstanceOf[VerificationInOrderMode]
-    def then(other: MockCall): MockCallsList = MockCallsList(List(this)).then(other)
-  }
-  /** represent a sequence of in order calls. */
-  case class MockCallsList(calls: List[MockCall]) {
-    def then(call: MockCall): MockCallsList = MockCallsList(calls ::: List(call))
-    def were(matcher: CalledInOrderMatcher) = calls must matcher
-  }
-  /** Matcher accepting a list of call and checking if they happened in the specified order. */
-  class CalledInOrderMatcher extends Matcher[List[MockCall]] {
-    def apply(calls: =>List[MockCall]) = {
-      var result = (true, "The methods were called in the right order", "The methods were not called in the right order")
-      try { 
-        val mocksToBeVerifiedInOrder = java.util.Arrays.asList(calls.flatMap(_.mock).toArray: _*)  
-        calls.foreach { call =>
-           call.mock.map(mocker.verify(_, new InOrderWrapper(call.verifInOrderMode, 
-                                                             new InOrderImpl(mocksToBeVerifiedInOrder))))
-           call.result()
-        }    
-      } catch {
-        case e => result = (false, "The methods were called in the right order", "The methods were not called in the right order:" + 
-                              e.getMessage.replace("Verification in order failure", "").
-                              replace("\n", " ").replace("  ", " "))
-      }
-      result
+  /** */
+  def there = new Calls
+  def got[T](t: =>T) = there was t
+  class Calls {
+    def were[T](calls: =>T) = was(calls)
+    def was[T](calls: =>T) = {
+      calls must new CallsMatcher[T]
     }
   }
-}
-
-
-/**
- * This trait provides an additional matcher to check if no more methods have been called on a mock:<code>
- *   mock had noMoreCalls
- * </code>
- */
-trait InteractionMatchers extends ExpectableFactory {
-  /** delegate to Mockito. */
-  protected val mocker: org.mockito.MockitoMocker
-
-  /** @return an object allowing the creation of expectations for mock interactions.*/
-  implicit def theMock[T <: AnyRef](m: =>T) = new MockObject(m)
-  /** object allowing the creation of expectations for mock interactions like: mock had noMoreCalls. */
-  class MockObject[T <: AnyRef](m: =>T) {
-    def had(interactionMatcher: InteractionMatcher[T]) = {
-      m must interactionMatcher
-    }
+  implicit def rangeIntToTimes(r: RangeInt) = new RangeIntToTimes(r)
+  class RangeIntToTimes(r: RangeInt) {
+    def apply[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(r.n))
   }
-  /** @return a NoMoreCallsMatcher. */
-  def noMoreCalls[T <: AnyRef] = new NoMoreCalls[T]
-  /** This class allows the expecations to potentially use other ways of checking the interactions on a mock.*/
-  abstract class InteractionMatcher[T <: AnyRef] extends Matcher[T] 
-
-  /** This matcher checks if the mock had no more calls by calling Mockito.verifyNoMoreInteractions */
-  class NoMoreCalls[T <: AnyRef] extends InteractionMatcher[T] {
-    def apply(m: =>T) = {
-      var result = (true, "The mock wasn't called anymore", "The mock was called")
-      try { 
-        mocker.verifyNoMoreInteractions(m)
-      } catch {
-        case e => {
-          result = (false, "The method wasn't called anymore", e.getMessage)
-        }
+  private def verify[T <: AnyRef](mock: =>T, v: VerificationMode) = {
+    inOrderMode map { ordered => 
+      val mocksList = ordered.getMocksToBeVerifiedInOrder()
+      if (!mocksList.contains(mock)) {
+        mocksList.add(mock)
+        inOrderMode = Some(new InOrderImpl(mocksList))
       }
-      result
+    }
+    mocker.verify(inOrderMode, mock, v)
+  }
+  def no[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.never())
+  def one[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(1))
+  def two[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(2))
+  def three[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(3))
+  def atLeast[T <: AnyRef](i: Int)(mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(i))
+  def atLeastOne[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(1))
+  def atLeastTwo[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(2))
+  def atLeastThree[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(3))
+  def atMost[T <: AnyRef](i: Int)(mock: =>T) = verify(mock, org.mockito.Mockito.atMost(i))
+  def atMostOne[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(1))
+  def atMostTwo[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(2))
+  def atMostThree[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(3))
+  def noMoreCallsTo[T <: AnyRef](mock: =>T) = mocker.verifyNoMoreInteractions(mock)
+  implicit def toInOrderMode[T](calls: =>T) = new ToInOrderMode(calls)
+  class ToInOrderMode[T](calls: =>T) {
+    def then[U](otherCalls: =>U) = {
+      val newOrderMode = inOrderMode match {
+        case Some(o) => Some(o)
+        case None => Some(new InOrderImpl(new java.util.ArrayList[Object]))
+      }
+      val f = () => setTemporarily(inOrderMode, newOrderMode, (o:Option[InOrderImpl]) => inOrderMode = o) {
+        calls
+        otherCalls 
+      }
+      f() must new CallsMatcher
+    }
+    def orderedBy(mocks: AnyRef*) = {
+      setTemporarily(inOrderMode, Some(new InOrderImpl(java.util.Arrays.asList(mocks.toArray: _*) )), (o:Option[InOrderImpl]) => inOrderMode = o) {
+        calls
+      } 
     }
   }
 }
@@ -300,8 +244,9 @@ trait InteractionMatchers extends ExpectableFactory {
  * </code>
  */
 trait MockitoStubs extends MocksCreation {
-  /** delegate to Mockito. */
-  protected val mocker: org.mockito.MockitoMocker
+  /** delegate to MockitoMocker doAnswer with a MockAnswer object using the function f. */
+  def doAnswer[T](f: Any => T) = mocker.doAnswer(new MockAnswer(f))
+  
   /** @return an object supporting the stub methods. */
   implicit def theStubbed[T](c: =>T) = new Stubbed(c)
 
@@ -337,57 +282,8 @@ trait MockitoStubs extends MocksCreation {
   implicit def argThat[T](m: org.specs.matcher.Matcher[T]): T = org.mockito.Matchers.argThat(new org.specs.mock.HamcrestMatcherAdapter(m))
   /** allows to use a hamcrest matchers to match parameters. */
   def argThat[T](m: org.hamcrest.Matcher[T]): T = org.mockito.Matchers.argThat(m)
-}
-trait MocksCreation {
-  /** delegate to Mockito static methods. */
-  protected val mocker = new org.mockito.MockitoMocker
 
-  /**
-   * create a mock object: val m = mock[java.util.List[Stringg]]
-   */
-  def mock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.mock(m)
-  /**
-   * create a mock object with a name: val m = mockAs[java.util.List[String]]("name")
-   */
-  def mockAs[T](name: String)(implicit m: scala.reflect.Manifest[T]): T = mocker.mock(name)(m)
-  /**
-   * implicit allowing the following syntax for a named mock: val m = mock[java.util.List[String]],as("name")
-   */
-  implicit def mockToAs[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) = new NamedMock(t)(m)
-  class NamedMock[T](t: =>T)(implicit m: scala.reflect.Manifest[T]) {
-    def as(name: String): T = mockAs[T](name)
-  }
-
-  /**
-   * create a mock object with smart return values: val m = smartMock[java.util.List[Stringg]]
-   * 
-   * This is the equivalent of Mockito.mock(List.class, SMART_NULLVALUES) but testing shows that it is not working well with Scala.
-   */
-  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = mocker.smartMock(m)
-  /**
-   * create a spy on an object. 
-   * 
-   * A spy is a real object but can still have some of its methods stubbed. However the syntax for stubbing a spy is a bit different than 
-   * with a mock:<code>
-   * 
-   * val s = spy(new LinkedList[String])
-   * doReturn("one").when(s).get(0) // instead of s.get(0) returns "one" which would throw an exception
-   * 
-   * </code>
-   */
-  def spy[T](m: T): T = mocker.spy(m)
-  
-  /** delegate to MockitoMocker doReturn. */
-  def doReturn[T](t: T) = mocker.doReturn(t)
-  /** delegate to MockitoMocker doAnswer with a MockAnswer object using the function f. */
-  def doAnswer[T](f: Any => T) = mocker.doAnswer(new MockAnswer(f))
-  /** delegate to MockitoMocker doAnswer. */
-  def doAnswer[T](a: Answer[T]) = mocker.doAnswer(a)
-  /** delegate to MockitoMocker doThrow. */
-  def doThrow[E <: Throwable](e: E) = mocker.doThrow(e)
-  /** delegate to MockitoMocker doNothing. */
-  def doNothing = mocker.doNothing
-  /** 
+    /** 
    * This class is an implementation of the Answer interface allowing to pass functions as an answer.
    * 
    * It does a bit of work for the client:
@@ -428,6 +324,23 @@ trait MocksCreation {
      } 
   }
 }
+trait MockitoFunctions extends TheMockitoMocker {
+    /** delegate to MockitoMocker doReturn. */
+  def doReturn[T](t: T) = mocker.doReturn(t)
+  /** delegate to MockitoMocker doAnswer. */
+  def doAnswer[T](a: Answer[T]) = mocker.doAnswer(a)
+  /** delegate to MockitoMocker doThrow. */
+  def doThrow[E <: Throwable](e: E) = mocker.doThrow(e)
+  /** delegate to MockitoMocker doNothing. */
+  def doNothing = mocker.doNothing
+}
+/**
+ * Type-inference friendly Mockito matcher
+ */
 trait MockitoMatchers {
   def any[T](implicit m: scala.reflect.Manifest[T]): T = org.mockito.Matchers.isA(m.erasure).asInstanceOf[T]
+}
+/** delegate to Mockito static methods with appropriate type inference. */
+trait TheMockitoMocker {
+  private[specs] val mocker = new org.mockito.MockitoMocker
 }

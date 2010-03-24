@@ -18,17 +18,137 @@
  */
 package org.specs.mock
 import org.specs._
+import org.specs.execute._
 import org.specs.runner._
 
 class mockitoUnit extends SpecificationWithJUnit with Mockito {
   import java.util.List
   val m1 = mock[List[String]]
   val m2 = mock[List[String]]
-  val d = new CalledInOrderMatcher      
-  "A mock call" can {
+  val d = new CalledInOrderMatcher
+  "Mockito" can {
     "check if a method has been called" in {
-      (m1 had).get(0) must throwA[FailureException]
+      m1.get(0)
+      there was one(m1).get(0)
+      got { one(m1).get(0) }
     }
+    "check if a method has been called, throwing a FailureException if not" in {
+      there was one(m1).get(0) must throwA[FailureException]
+      got { one(m1).get(0) } must throwA[FailureException]
+    }
+    "check if a method hasn't been called" in {
+      there was no(m1).get(0)
+      got { no(m1).get(0) }
+    }
+    "check if a method hasn't been called, throwing a FailureException if it has" in {
+      m1.get(0)
+      there was no(m1).get(0) must throwA[FailureException]
+      got { no(m1).get(0) } must throwA[FailureException]
+    }
+    "check if a method has been called an exact number of times" in {
+      m1.get(0)
+      m1.get(0)
+      there was 2.times(m1).get(0)
+    }
+    "check if a method has been called at least a number of times" in {
+      "once" in {
+        m1.get(0)
+        there was atLeastOne(m1).get(0)
+      }
+      "twice" in {
+        m1.get(0)
+        m1.get(0)
+        there was atLeastTwo(m1).get(0)
+      }
+      "any" in {
+        m1.get(0)
+        m1.get(0)
+        there was atLeast(2)(m1).get(0)
+      }
+    }
+    "check if a method has been called at least a number of times - with a failure" in {
+      "once" in {
+        there was atLeastOne(m1).get(0) must throwA[FailureException]
+      }
+      "twice" in {
+        m1.get(0)
+        there was atLeastTwo(m1).get(0) must throwA[FailureException]
+      }
+      "any" in {
+        m1.get(0)
+        there was atLeast(2)(m1).get(0) must throwA[FailureException]
+      }
+    }
+    "check if a method has been called at most a number of times" in {
+      "once" in {
+        m1.get(0)
+        there was atMostOne(m1).get(0)
+      }
+      "twice" in {
+        m1.get(0)
+        m1.get(0)
+        there was atMostTwo(m1).get(0)
+      }
+      "any" in {
+        m1.get(0)
+        m1.get(0)
+        there was atMost(2)(m1).get(0)
+      }
+    }
+    "check if a method has been called at most a number of times - with a failure" in {
+      "once" in {
+        m1.get(0)
+        m1.get(0)
+        there was atMostOne(m1).get(0) must throwA[FailureException]
+      }
+      "twice" in {
+        m1.get(0)
+        m1.get(0)
+        m1.get(0)
+        there was atMostTwo(m1).get(0) must throwA[FailureException]
+      }
+      "any" in {
+        m1.get(0)
+        m1.get(0)
+        m1.get(0)
+        there was atMost(2)(m1).get(0) must throwA[FailureException]
+      }
+    }
+    "check if a method has been called in order" in {
+      m1.get(0)
+      m1.get(1)
+      there was one(m1).get(0) then one(m1).get(1)    // without brackets
+      there was (one(m1).get(0) then one(m1).get(1))  // with brackets
+    }
+    "check if a method has been called in order - with a failure" in {
+      m1.get(0)
+      m1.get(1)
+
+      { there was one(m1).get(1) then one(m1).get(0) } must throwA(new FailureException("")).like { 
+             case e => e.getMessage contains "Verification in order" 
+           }
+    }
+    "check if several mocks have been called in order" in {
+      m1.add("1")
+      m1.add("1")
+      m2.add("2")
+      there was two(m1).add("1") then one(m2).add("2") orderedBy (m1, m2)
+      got {
+        two(m1).add("1") then one(m2).add("2") 
+      }
+    }
+    "check if several mocks have been called in order - with failure" in {
+      m1.add("1")
+      m1.add("1")
+      m2.add("2")
+      
+      there was one(m2).add("2") then two(m1).add("1") orderedBy (m1, m2) must throwA[FailureException]
+      got {
+        one(m2).add("2") then two(m1).add("1") orderedBy (m1, m2) 
+      } must throwA[FailureException]
+    }
+  }
+  "A mock call" can {
     "change its verification mode when applied one of the times, atLeast,... methods" in {
       (m1.get(0) on m1).times(2).verifInOrderMode.toString must_== org.mockito.Mockito.times(2).toString
     }
