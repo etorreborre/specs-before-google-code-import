@@ -137,5 +137,5 @@ class stringMatchersSpec extends MatchersSpecification {
       "hello" must not have length(6)
     }
   }
-  def beOkWith(e: => org.specs.specification.Example) = addToSusVerb("be ok with ")(e)
+  def beOkWith= addToSusVerb("be ok with ")
 }

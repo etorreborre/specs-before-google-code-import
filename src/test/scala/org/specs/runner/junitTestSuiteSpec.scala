@@ -92,6 +92,25 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       suite(that.isSkipped).run(result)
       listener.desc must beSome[Description]
     }
+    "create one test per nested example whatever the depth" in {
+      object specsWithNestedExamples extends Specification {
+        "sus1" should { 
+          "ex" in { 
+            "first nested" in { 
+              "second nested" in { 
+                1 must_== 1
+              }
+            }
+          } 
+        }
+      }
+      makeRunners(specsWithNestedExamples) foreach { r =>
+        r.suites(0).asInstanceOf[JUnitSuite].
+          suites(0).asInstanceOf[JUnitSuite].
+          suites(0).asInstanceOf[JUnitSuite].
+          tests(0).toString must include("second nested")
+      }
+    }
   }
   def suite(behaviours: that.Value*) = new JUnit4(new SimpleSpecification(behaviours.toList))
   def makeRunners(spec: Specification) = {

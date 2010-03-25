@@ -104,11 +104,14 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
    * 
    * If the lifecycle specifies that the specification is sequential, then the example is executed right away.
    */
-  def specifyExample(a: =>Any): Unit = {
+  def specifyExample(a: =>Any): this.type = {
     execution = Some(new ExampleExecution(this, (ex) => withCurrent(ex) { a }))
     if (isSequential)
       executeExamples
+    this
   }
+  /** alias for specifyExample */
+  def specifies(a: =>Any): this.type = specifyExample(a)
   /** increment the number of expectations in this example */
   def addExpectation: Examples = { thisExpectationsNumber += 1; this }
   /** create a new example with a description and add it to this. */

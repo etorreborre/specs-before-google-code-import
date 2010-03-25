@@ -150,10 +150,9 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     new ExampleSpecification(example)
   }
   class ExampleSpecification(val example: Example) {
-    def in(expectations: =>Any) = example.in(expectations)
-    def in(e: =>Examples): Unit = example.in(e)
-    def >>(expectations: =>Any) = example.>>(expectations)
-    def >>(e: =>Examples) = example.>>(e)
+    def specifies[T](expectations: =>T) = example.specifies(expectations)
+    def in[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = example.in(expectations)(m)
+    def >>[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = example.>>(expectations)(m)
   }
   def forExample(desc: String): Example = {
     specifyExample(desc).example

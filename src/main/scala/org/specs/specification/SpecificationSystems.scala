@@ -68,8 +68,8 @@ trait SpecificationSystems { this: BaseSpecification =>
    * if the following function is declared:
    * <code>def provide = addToSusVerb("provide")</code>
    */
-  def addToSusVerb(complement: String) = new Function1[Example, Example] {
-    def apply(e: Example) = { 
+  def addToSusVerb(complement: String) = new Function1[Any, Any] {
+    def apply(e: Any) = { 
       current match { 
         case Some(sus: Sus) => sus.verb += " " + complement 
         case _ => 
