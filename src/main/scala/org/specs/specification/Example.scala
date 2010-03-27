@@ -68,8 +68,17 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
       hasSomeSubExamples = true
     this
   }
+
   /** alias for the <code>in</code> method to create subexamples */
   def >>[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = in(expectations)
+  /**
+   * when an example has been executed in another specification to guarantee its isolation
+   * copy its state
+   */
+  override def copyExecutionResults(other: Examples) = {
+    this.hasSomeSubExamples = other.hasSubExamples
+    super.copyExecutionResults(other)
+  }
 }
 
 /**
