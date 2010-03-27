@@ -43,8 +43,7 @@ trait Classes extends ConsoleOutput {
    */
   def createObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
     try {
-      val c = loadClass[T](className, printMessage, printStackTrace)
-      return createInstanceOf[T](c)
+      return createInstanceOf[T](loadClass[T](className))
     } catch {
       case e => {
         if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className + ": " + e.getMessage)
@@ -57,25 +56,24 @@ trait Classes extends ConsoleOutput {
    * create an instance of a given class, checking that the created instance typechecks as expected
    */
   private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: Manifest[T]) = {
-    c match {
-      case Some(klass) => {
-        val instance: AnyRef = klass.newInstance
-        if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
-        Some(instance.asInstanceOf[T])
-      }
-      case None => None
+    c map { klass => 
+      val instance: AnyRef = klass.newInstance
+      if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
+      instance.asInstanceOf[T]
     }
   }
   /**
    * Load a class, given the class name
    */
-  private[util] def loadClass[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean): Option[Class[T]] = {
+  private[util] def loadClass[T <: AnyRef](className: String): Option[Class[T]] = {
     try {
       return Some(getClass.getClassLoader.loadClass(className).asInstanceOf[Class[T]])
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugLoadClass") != null) println("Could not load class " + className)
-        if (printStackTrace || System.getProperty("debugLoadClass") != null) e.printStackTrace()
+        if (System.getProperty("debugLoadClass") != null) {
+          println("Could not load class " + className)
+          e.printStackTrace()
+        }
       }
     }
     return None
@@ -87,7 +85,7 @@ trait Classes extends ConsoleOutput {
    * This is useful to instantiate nested classes which are referencing their outer class in their constructor
    */
   def tryToCreateObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
-    loadClass(className, printMessage, printStackTrace) match {
+    loadClass(className) match {
       case None => None
       case Some(c: Class[_]) => {
         try {
