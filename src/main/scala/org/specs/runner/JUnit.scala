@@ -45,7 +45,8 @@ import org.specs.util.Property
 trait JUnitSuite extends Test {
   /** embedded JUnit3 TestSuite object */
   val testSuite = new TestSuite
-
+  
+  private[specs] val isPlanOnly = JUnitOptions.planOnly()
   /**this variable is set to true if the suite has been initialized */
   private var initialized = false
 
@@ -153,7 +154,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
       // if the test is run with Maven the sus description is added to the example description for a better
       // description in the console
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      if (JUnitOptions.planOnly() || !example.hasSubExamples)
+      if (isPlanOnly || !example.hasSubExamples)
         addTest(new ExampleTestCase(example, exampleDescription))
       else
         addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
@@ -167,7 +168,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
    * and the JUnitSuiteRunner will interpret this as an ignored test (this functionality wasn't available in JUnit3)
    */
   override def run(result: TestResult) = {
-    if (!JUnitOptions.planOnly()) skipped.map(e => result.addFailure(this, new SkippedAssertionError(e)))
+    if (!isPlanOnly) skipped.map(e => result.addFailure(this, new SkippedAssertionError(e)))
     super.run(result)
   }
 }
