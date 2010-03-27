@@ -61,20 +61,15 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
    * Execution will be triggered when requesting status information on that example: failures, errors, expectations number, subexamples
    * @return a new <code>Example</code>
    */
-  def in(expectations: =>Any): this.type = {
-    specifyExample(expectations)
-    this
-  }
   /** this version of in allows to declare examples inside examples */
-  def in(example: =>Examples): Unit = {
-    specifyExample(example)
-    hasSomeSubExamples = true
+  def in[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]): this.type = {
+    specifyExample(expectations)
+    if (m.erasure == this.getClass)
+      hasSomeSubExamples = true
     this
   }
-  /** alias for the <code>in</code> method */
-  def >>(expectations: =>Any) = in(expectations)
   /** alias for the <code>in</code> method to create subexamples */
-  def >>(example: =>Examples) = in(example)
+  def >>[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = in(expectations)
 }
 
 /**

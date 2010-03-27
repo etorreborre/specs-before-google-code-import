@@ -268,8 +268,8 @@ class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecificati
 class SpecWithTwoExamples(behaviours: List[(that.Value)]) extends TestSpecification {
   def run = {
     "A specification" should {
-      "have example 2.1 ok" in { expectations(behaviours).head.apply}
-      "have example 2.2 ok" in { expectations(behaviours).last.apply }
+      "have example 2.1 ok".specifies { expectations(behaviours).head.apply; () }
+      "have example 2.2 ok".specifies { expectations(behaviours).last.apply; () }
     }
     reportSpecs
     messages

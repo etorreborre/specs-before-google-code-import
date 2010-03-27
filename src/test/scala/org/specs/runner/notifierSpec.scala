@@ -85,5 +85,5 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       "ex2-3" in { skip("skip this one") }
     }
   }
-  def beNotifiedOf(a : =>Example) = { addToSusVerb(" be notified of "); a }
+  def beNotifiedOf = addToSusVerb(" be notified of ")
 }
