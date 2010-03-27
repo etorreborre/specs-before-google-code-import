@@ -73,7 +73,7 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
       this.copyExecutionResults(e.example) 
     }
   }
-  
+
   /** execute this example to  be able to get all subexamples if any. */
   def executeExamples = {
     if (!executed) 
