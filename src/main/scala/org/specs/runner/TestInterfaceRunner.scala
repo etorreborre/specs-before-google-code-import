@@ -29,7 +29,7 @@ class SpecsFramework extends Framework {
  */
 class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
-    val specification = createObject[Specification](classname + "$", false, args.contains("-v")).orElse(
+    val specification = createObject[Specification](classname + "$", true, true).orElse(
                         createObject[Specification](classname, true, true))
     specification.map(_.args = args)
     run(specification, handler)
