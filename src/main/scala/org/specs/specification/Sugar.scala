@@ -77,7 +77,7 @@ trait NumberOfTimes {
 trait RepeatedActions {
   /** 
    * This implicit definition allows to write short loops, ruby-style:<br/>
-   * <code> 3.times { i => doThis() } </code>. 
+   * <code> 3.times { doThis() } </code>. 
    */
   implicit def integerToRepeatedAction(n: Int) = new RepeatedAction(n)
   case class RepeatedAction(n: Int) { 
@@ -85,4 +85,4 @@ trait RepeatedActions {
     def times(f: => Unit)  = for (i <- 1 to n) f 
   }
 }
-object NumberOfTimes extends NumberOfTimes 
+object RepeatedActions extends RepeatedActions

@@ -36,8 +36,8 @@ The number of invocations can be checked with different methods on the @called@ 
 
     m.add("one")
 
-    2.times { i => m.add("two") } 
-    3.times { i => m.add("three") } 
+    1 to 2 foreach { i => m.add("two") } 
+    1 to 3 foreach { i => m.add("three") } 
   } 
 """ prelude it }
 
