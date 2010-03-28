@@ -20,6 +20,7 @@ package org.specs.specification
 import org.specs.matcher._
 import org.specs.matcher.Matchers._
 import org.specs.util.ExtendedThrowable._
+import org.specs.util.Property
 import org.specs.Sugar._
 import org.specs.execute._
 
@@ -46,7 +47,7 @@ import org.specs.execute._
  * }
  * </pre>
  */
-class Expectable[T](value: => T) {
+class Expectable[T](expectableValue: => T) {
   /** related example. */
   private var example: Option[Examples] = None
   /** function used to display success values as a result of a match. By default nothing is displayed. */
@@ -94,10 +95,10 @@ class Expectable[T](value: => T) {
       val (result, okMessage, koMessage) = {
         if (nextMatcherMustBeNegated) {
           nextMatcherMustBeNegated = false
-          matcher.not.apply(value)
+          matcher.not.apply(expectableValue)
         } 
         else 
-          matcher.apply(value)
+          matcher.apply(expectableValue)
       }
       result match {
         case false => {
@@ -146,6 +147,8 @@ class Expectable[T](value: => T) {
    * Set a new function to render success values
    */
   def setSuccessValueToString(f: SuccessValue =>String) = successValueToString = f
+  
+  def valueProperty: Property[T] = Property(expectableValue)
 }
 /**
  * The Expect class adds matcher methods to objects which are being specified<br>

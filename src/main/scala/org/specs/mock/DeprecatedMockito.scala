@@ -60,7 +60,11 @@ trait DeprecatedCalledMatchers extends ExpectableFactory with NumberOfTimes with
   
   /** 
    * create a CalledMock object for a method call.
+<<<<<<< HEAD
    * @deprecated use the new methods the CalledMatchers trait
+=======
+   * @deprecated
+>>>>>>> c13324b... significant changes of syntax to adapt to mockito 1.8.4
    */
   implicit def theMethod(c: =>Any) = new CalledMock(c)
 
