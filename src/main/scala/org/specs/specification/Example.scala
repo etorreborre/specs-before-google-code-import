@@ -50,7 +50,7 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
   /** constructor with a simple string */
   def this(desc: String) = this(ExampleDescription(desc), None)
   /** is set to true if this example contains subexamples, which we know by the type of the object passed to the in method */
-  private var hasSomeSubExamples = false
+  private[specification] var hasSomeSubExamples = false
   /** @return true if this example contains subexamples */
   override def hasSubExamples = hasSomeSubExamples
   /**

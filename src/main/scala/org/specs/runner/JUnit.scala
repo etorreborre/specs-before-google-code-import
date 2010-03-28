@@ -32,7 +32,7 @@ import org.specs.util.Property
  * -the specifications are used to create JUnit3 TestSuite and TestCase objects
  * -however, since TestSuite is not an interface, a JUnitSuite trait is used to represent it (and the JUnitSuite uses a TestSuite internally to hold the tests)
  *   -a specification is represented as a JUnitSuite
- *   -a system under test (sus) is represented as an ExamplesTestSuite <: JUnitSuite
+ *   -a system under specification (sus) is represented as an ExamplesTestSuite <: JUnitSuite
  *   -an example is represented as an ExampleTestCase <: TestCase
  *
  * Then, the JUnitSuite which implements the junit.framework.Test interface can be run using
@@ -42,11 +42,10 @@ import org.specs.util.Property
  * The suite is initialized once whenever some information is required, like getName, or countTestCases
  */
 @RunWith(classOf[JUnitSuiteRunner])
-trait JUnitSuite extends Test {
+trait JUnitSuite extends Test with JUnitOptions {
   /** embedded JUnit3 TestSuite object */
   val testSuite = new TestSuite
   
-  private[specs] val isPlanOnly = JUnitOptions.planOnly()
   /**this variable is set to true if the suite has been initialized */
   private var initialized = false
 
@@ -156,8 +155,9 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
       val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
       if (isPlanOnly || !example.hasSubExamples)
         addTest(new ExampleTestCase(example, exampleDescription))
-      else
+      else {
         addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
+      }
     }
   }
 
@@ -180,9 +180,9 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
  *
  * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
-class ExampleTestCase(val example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
+class ExampleTestCase(val example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) with JUnitOptions {
   override def run(result: TestResult) = {
-    if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
+    if (isPlanOnly || example.ownSkipped.isEmpty)
       result.startTest(this)
     def report(ex: Examples, context: String) = {
       ex.ownFailures foreach {
@@ -198,11 +198,11 @@ class ExampleTestCase(val example: Examples, description: String) extends TestCa
                 result.addError(this, new SpecError(UserError(error, context)))
       }
     }
-    if (!JUnitOptions.planOnly()) { 
+    if (!isPlanOnly) { 
       report(example, "")
       example.examples foreach {subExample => report(subExample, subExample.description + " -> ")}
     }
-    if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
+    if (isPlanOnly || example.ownSkipped.isEmpty)
       result.endTest(this)
   }
 }
@@ -254,6 +254,6 @@ class SkippedAssertionError(t: Throwable) extends SpecAssertionFailedError(t)
 /**
  * This trait allows to pass system options to Tests and TestSuites
  */
-object JUnitOptions {
-  val planOnly = Property(System.getProperty("plan") != null)
+trait JUnitOptions {
+  lazy val isPlanOnly = System.getProperty("plan") != null
 }

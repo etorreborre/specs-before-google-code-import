@@ -38,8 +38,6 @@ class specsRunnerSpec extends SpecificationWithJUnit with TestRunner {
       messages mustHaveMatch "specification2"
     }
   }
-  "A specs file runner" should {
-  }
 }
 trait MockSpecsFinder extends SpecsFinder {
   var classNames: List[String] = Nil

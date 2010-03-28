@@ -104,6 +104,7 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
       val ex = this.createExample(e.description.toString)
       ex.execution = e.execution
       ex.tagWith(e)
+      ex.hasSomeSubExamples = e.hasSomeSubExamples
       ex.execution.map(_.resetForExecution)
     }
     thisExpectationsNumber = other.thisExpectationsNumber
