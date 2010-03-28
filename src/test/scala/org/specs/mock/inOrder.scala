@@ -57,7 +57,7 @@ With the following mocks: {"""
       there was one(m2).get(0) then
                 atLeastOne(m1).get(0) orderedBy (m1, m2)
      }.failures.first.getMessage""" snip it } 
-{ >("The methods were not called in the right order: Wanted but not invoked: list.get(0)")}
+{ >("The mock was not called as expected:")}
 
   </wiki> isSus
 }

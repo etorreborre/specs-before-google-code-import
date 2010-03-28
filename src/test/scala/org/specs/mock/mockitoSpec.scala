@@ -58,7 +58,7 @@ A mock is created with the @mock@ method: {"""
 
 h4. Failures
 
-If one method has not been called on a mock, <ex>the @was called@ matcher must throw a @FailureException@</ex>: {"""
+If one method has not been called on a mock, <ex>the expression @there was one(m).method@ must throw a @FailureException@</ex>: {"""
 
   object s2 extends Specification with Mockito {
     val m = mock[List[String]]
@@ -121,7 +121,7 @@ h3. Annotations
     @Mock val m: List[String] = null  
     "this needs to be inside an example because otherwise a NPE is thrown" in {
       m.clear()
-      m.clear() was called
+      there was one(m).clear()
     }
   }
 """ snip it }
