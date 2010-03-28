@@ -147,8 +147,8 @@ trait MockitoLifeCycle extends LifeCycle {
  * </code>
  */
 trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockitoMocker {
-  /** temporary inOrder object to accumulate mocks to verify in order */
-  private var inOrderMode: Option[InOrderImpl] = None
+  /** temporary InOrder object to accumulate mocks to verify in order */
+  private var inOrder: Option[InOrderImpl] = None
   /** this matcher evaluates an expression containing mockito calls verification */
   private class CallsMatcher[T] extends Matcher[T] {
     def apply(v: =>T) = {
@@ -166,55 +166,95 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockit
   
   /** create an object supporting 'was' and 'were' methods */
   def there = new Calls
+  /** 
+   * class supporting 'was' and 'were' methods to forward mockito calls to the CallsMatcher matcher 
+   */
   class Calls {
     def were[T](calls: =>T) = was(calls)
     def was[T](calls: =>T) = {
       calls must new CallsMatcher[T]
     }
   }
+  /**
+   * alias for 'there was'
+   */
   def got[T](t: =>T) = there was t
+  /**
+   * implicit definition to be able to declare a number of calls 3.times(m).clear()
+   */
   implicit def rangeIntToTimes(r: RangeInt) = new RangeIntToTimes(r)
+  /**
+   * class providing a apply method to be able to declare a number of calls:
+   *   3.times(m).clear() is actually 3.times.apply(m).clear()
+   */
   class RangeIntToTimes(r: RangeInt) {
     def apply[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(r.n))
   }
+  /**
+   * verify that a mock has been called appropriately
+   * if an inOrder object has been previously created (which means we're verifying the mocks calls order),
+   * then the mock is added to the inOrder object and the inOrder object is used for the verification.
+   * 
+   * Otherwise a normal verification is performed
+   */
   private def verify[T <: AnyRef](mock: =>T, v: VerificationMode) = {
-    inOrderMode map { ordered => 
+    inOrder map { ordered => 
       val mocksList = ordered.getMocksToBeVerifiedInOrder()
       if (!mocksList.contains(mock)) {
         mocksList.add(mock)
-        inOrderMode = Some(new InOrderImpl(mocksList))
+        inOrder = Some(new InOrderImpl(mocksList))
       }
     }
-    mocker.verify(inOrderMode, mock, v)
+    mocker.verify(inOrder, mock, v)
   }
+  /** no call made to the mock */
   def no[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.never())
+  /** one call only made to the mock */
   def one[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(1))
+  /** two calls only made to the mock */
   def two[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(2))
+  /** three calls only made to the mock */
   def three[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.times(3))
+  /** at least n calls made to the mock */
   def atLeast[T <: AnyRef](i: Int)(mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(i))
+  /** at least 1 call made to the mock */
   def atLeastOne[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(1))
+  /** at least 2 calls made to the mock */
   def atLeastTwo[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(2))
+  /** at least 3 calls made to the mock */
   def atLeastThree[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atLeast(3))
+  /** at most n calls made to the mock */
   def atMost[T <: AnyRef](i: Int)(mock: =>T) = verify(mock, org.mockito.Mockito.atMost(i))
+  /** at most 1 call made to the mock */
   def atMostOne[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(1))
+  /** at most 2 calls made to the mock */
   def atMostTwo[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(2))
+  /** at most 3 calls made to the mock */
   def atMostThree[T <: AnyRef](mock: =>T) = verify(mock, org.mockito.Mockito.atMost(3))
+  /** no more calls made to the mock */
   def noMoreCallsTo[T <: AnyRef](mock: =>T) = mocker.verifyNoMoreInteractions(mock)
+  /** implicit def supporting calls in order */
   implicit def toInOrderMode[T](calls: =>T) = new ToInOrderMode(calls)
+  /** 
+   * class defining a then method to declare that calls must be made in a specific order.
+   * 
+   * The orderedBy method can be used to declare the mock order if there are several mocks
+   */
   class ToInOrderMode[T](calls: =>T) {
     def then[U](otherCalls: =>U) = {
-      val newOrderMode = inOrderMode match {
+      val newOrder = inOrder match {
         case Some(o) => Some(o)
         case None => Some(new InOrderImpl(new java.util.ArrayList[Object]))
       }
-      val f = () => setTemporarily(inOrderMode, newOrderMode, (o:Option[InOrderImpl]) => inOrderMode = o) {
+      val f = () => setTemporarily(inOrder, newOrder, (o:Option[InOrderImpl]) => inOrder = o) {
         calls
         otherCalls 
       }
       f() must new CallsMatcher
     }
+    /** specify the mocks which are to be checked in order */
     def orderedBy(mocks: AnyRef*) = {
-      setTemporarily(inOrderMode, Some(new InOrderImpl(java.util.Arrays.asList(mocks.toArray: _*) )), (o:Option[InOrderImpl]) => inOrderMode = o) {
+      setTemporarily(inOrder, Some(new InOrderImpl(java.util.Arrays.asList(mocks.toArray: _*) )), (o:Option[InOrderImpl]) => inOrder = o) {
         calls
       } 
     }
@@ -331,6 +371,9 @@ trait MockitoStubs extends MocksCreation {
      } 
   }
 }
+/**
+ * shortcuts to standard Mockito functions
+ */
 trait MockitoFunctions extends TheMockitoMocker {
     /** delegate to MockitoMocker doReturn. */
   def doReturn[T](t: T) = mocker.doReturn(t)
@@ -342,7 +385,7 @@ trait MockitoFunctions extends TheMockitoMocker {
   def doNothing = mocker.doNothing
 }
 /**
- * Type-inference friendly Mockito matcher
+ * Type-inference friendly Mockito matcher for 'any'
  */
 trait MockitoMatchers {
   def any[T](implicit m: scala.reflect.Manifest[T]): T = org.mockito.Matchers.isA(m.erasure).asInstanceOf[T]
