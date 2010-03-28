@@ -18,7 +18,7 @@
  */
 package org.mockito
 import org.mockito.stubbing.Answer
-import org.mockito.internal.verification.api.VerificationMode
+import org.mockito.verification.VerificationMode
 
 /**
  * This class is created to get an access to the MOCKING_PROGRESS Mockito package variable which is package protected.

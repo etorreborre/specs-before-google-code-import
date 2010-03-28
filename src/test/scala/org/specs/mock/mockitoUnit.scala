@@ -25,7 +25,10 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
   val m1 = mock[List[String]]
   val m2 = mock[List[String]]
   val d = new CalledInOrderMatcher      
-  "A mock call" should {
+  "A mock call" can {
+    "check if a method has been called" in {
+      (m1 had).get(0) must throwA[FailureException]
+    }
     "change its verification mode when applied one of the times, atLeast,... methods" in {
       (m1.get(0) on m1).times(2).verifInOrderMode.toString must_== org.mockito.Mockito.times(2).toString
     }
