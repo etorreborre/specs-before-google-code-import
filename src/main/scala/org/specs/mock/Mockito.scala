@@ -55,8 +55,7 @@ import org.specs._
  * 
  * See the method descriptions for more usage examples.  
  */
-trait Mockito extends MockitoLifeCycle with CalledMatchers with DeprecatedCalledMatchers with InteractionMatchers with MockitoStubs with MockitoMatchers 
-   with MockitoFunctions 
+trait Mockito extends MockitoLifeCycle with CalledMatchers with MockitoStubs with MockitoMatchers with MockitoFunctions 
 
 /**
  * This trait provides methods to create mocks and spies.

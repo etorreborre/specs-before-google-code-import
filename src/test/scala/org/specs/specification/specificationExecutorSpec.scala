@@ -87,7 +87,6 @@ object specificationWithChangedConfiguration extends org.spex.Specification {
 }
 object specificationWithMockito extends org.spex.Specification {
   var l = mock[java.util.List[String]]
-  val d = new CalledInOrderMatcher      
   "When using the Mockito trait" should {
     "mocks should be setup ok" in { 
       l.get(0) returns "hello"

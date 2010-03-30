@@ -62,15 +62,19 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Cont
     }
     "use the tags defined on the examples when executing included groups only" in {
       suiteWithGroups.run(None, reporter, stopper, new Filter(Some(Set("unit")), Set()), Map(), None, new Tracker())
-      reporter.apply(any[SuiteStarting]) was called.atLeastOnce
-      reporter.apply(any[TestSucceeded]) was called.once
-      reporter.apply(any[SuiteCompleted]) was called.atLeastOnce
+      got {
+        atLeastOne(reporter).apply(any[SuiteStarting])
+        one(reporter).apply(any[TestSucceeded]) 
+        atLeastOne(reporter).apply(any[SuiteCompleted]) 
+	  }
     }
     "use the tags defined on the examples, and not executing excluded groups" in {
       suiteWithGroups.run(None, reporter, stopper, new Filter(None, Set("functional")), Map(), None, new Tracker())
-      reporter.apply(any[SuiteStarting]) was called.atLeastOnce
-      reporter.apply(any[TestSucceeded]) was called.twice
-      reporter.apply(any[SuiteCompleted]) was called.atLeastOnce
+      got {
+        atLeastOne(reporter).apply(any[SuiteStarting]) 
+        two(reporter).apply(any[TestSucceeded]) 
+        atLeastOne(reporter).apply(any[SuiteCompleted]) 
+	  }
     }
   }
   def suite(behaviours: that.Value*) = new ScalaTestSuite(new SimpleSpecification(behaviours.toList))
