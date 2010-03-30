@@ -28,38 +28,38 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
   "A notifier for a specification" should beNotifiedOf { 
     new NotifierRunner(s, notifier).reportSpecs
     "the start of a run with the total number of examples" in {
-      notifier.runStarting(5) was called
+      there was one(notifier).runStarting(5)
     }
     "the start of a system" in {
-      notifier.systemStarting("system1 should") was called
+      there was one(notifier).systemStarting("system1 should")
     }
     "the failure of a system" in {
-      notifier.systemFailed("system1", new FailureException("sus failed")) was called
+      there was one(notifier).systemFailed("system1", new FailureException("sus failed")) 
     }
     "the start of an example" in {
-      notifier.exampleStarting("ex1-1") was called
+      there was one(notifier).exampleStarting("ex1-1") 
     }
     "the success of an example" in {
-      notifier.exampleSucceeded("ex1-1") was called
+      there was one(notifier).exampleSucceeded("ex1-1") 
     }
     "the failure of an example" in {
-      notifier.exampleFailed("ex1-2", new FailureException("wrong")) was called
+      there was one(notifier).exampleFailed("ex1-2", new FailureException("wrong"))
     }
     "the error of an example" in {
-      notifier.exampleError(is_==("ex2-2"), is_==("bad") ^^ ((_.getMessage))) was called
+      there was one(notifier).exampleError(is_==("ex2-2"), is_==("bad") ^^ ((_.getMessage)))
     }
     "a skipped example" in {
-      notifier.exampleSkipped("ex2-3") was called
+      there was one(notifier).exampleSkipped("ex2-3")
     }
     "the end of a system" in {
-      notifier.systemCompleted("system1 should") was called
+      there was one(notifier).systemCompleted("system1 should")
     }
   }
   "A notifier for a planOnly specification" should beNotifiedOf { 
     "only the systems and examples when a specification" in {
       s.planOnly(true)
       new NotifierRunner(s, notifier).reportSpecs
-      notifier.exampleSucceeded("ex1-1") was notCalled
+      there was no(notifier).exampleSucceeded("ex1-1")
     }
     "only the systems and examples even of a subspecification" in {
       object s extends Specification {
@@ -70,7 +70,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
         include(included)
       }
       new NotifierRunner(s, notifier).reportSpecs
-      notifier.exampleSucceeded("ex1") was notCalled
+      there was no(notifier).exampleSucceeded("ex1")
     }
   }
   val s = new Specification {

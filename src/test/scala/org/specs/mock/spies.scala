@@ -60,7 +60,7 @@ A spy is created with the @spy@ method: {"""
                                           
    new s {
      spiedList.add("one")
-     spiedList.add("one") was called 
+     there was one(spiedList).add("one") 
    }.isOk""" snip it }
 
 { >("true") }

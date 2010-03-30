@@ -18,7 +18,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) with HtmlTestsProj
   val jmock 		= "org.jmock" % "jmock" % "2.4.0" 
   val easymock 		= "org.easymock" % "easymock" % "2.5.1" 
   val easymockclass	= "org.easymock" % "easymockclassextension" % "2.4" 
-  val mockito 		= "org.mockito" % "mockito-all" % "1.8.0" 
+  val mockito 		= "org.mockito" % "mockito-all" % "1.8.4" 
   val cglib 		= "cglib" % "cglib" % "2.1_3"  
   val cglibnodep	= "cglib" % "cglib-nodep" % "2.1_3"  
   val objenesis 	= "org.objenesis" % "objenesis" % "1.0"

@@ -32,45 +32,45 @@ h3. Number of invocations
 The number of invocations can be checked with different methods on the @called@ matcher: {"""
 
   class s4 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
+    val m = mock[List[String]]
 
-    mockedList.add("one")
+    m.add("one")
 
-    2.times { i => mockedList.add("two") } 
-    3.times { i => mockedList.add("three") } 
+    1 to 2 foreach { i => m.add("two") } 
+    1 to 3 foreach { i => m.add("three") } 
   } 
 """ prelude it }
 
-<ex>@was called.once@ is the same as @was called@</ex>:
+<ex>@there was one(mock).call()@ checks if the mock has been called only one time</ex>:
 
-{ "new s4 { mockedList.add(\"one\") was called.once }.isOk" snip it }
+{ "new s4 { there was one(m).add(\"one\") }.isOk" snip it }
 { >("true") }
 
-<ex>@was called.twice@ checks if the method was called twice</ex>:
+<ex>@there was two(mock).call()@ checks if the mock has been called twice</ex>:
 
-{ "new s4 { mockedList.add(\"two\") was called.twice }.isOk" snip it }
+{ "new s4 { there was two(m).add(\"two\") }.isOk" snip it }
 { >("true") }
 
 <ex>It is also possible to check that a method was called at least a number of times</ex>:
 
-{ "new s4 { mockedList.add(\"two\") was called.atLeastOnce }.isOk" snip it }
+{ "new s4 { there was atLeastOne(m).add(\"two\") }.isOk" snip it }
 { >("true") }
 
 <ex>If the method wasn't called the expected number of times, there must be a @FailureException@</ex>:
   
-{ "new s4 { mockedList.add(\"one\") was called.twice }.failures" snip it }
+{ "new s4 { there was two(m).add(\"one\") }.failures" snip it }
 { >("Wanted 2 times") }
 
-<ex>@wasnt called@ checks that the method wasn't called at all (never in Mockito)</ex>:
+<ex>@no(m).call()@ checks that the method wasn't called at all (never in Mockito)</ex>:
   
-{ "new s4 { mockedList.add(\"one\") wasnt called }.failures" snip it }
+{ "new s4 { there was no(m).add(\"one\") }.failures" snip it }
 { >("Never wanted here") }
 
 <ex>It is also possible to check that there are no unexpected calls on a mock</ex>:
   
 { """  new s4 { 
-    mockedList.add("one") was called
-    mockedList had noMoreCalls
+    there was one(m).add("one")
+    there were noMoreCallsTo(m)
   }.failures.first""" snip it }
 { 
   execute(it) must (include("No interactions wanted here") and 

@@ -43,26 +43,26 @@ A mock is created with the @mock@ method: {"""
   object s extends Specification with Mockito {
 
     // mock creation
-    val mockedList = mock[List[String]]
+    val m = mock[List[String]]
 
     // using mock object
-    mockedList.add("one")
-    mockedList.clear()""" snip it }
+    m.add("one")
+    m.clear()""" snip it }
 
   // <ex>It is possible to check that some methods have been called on the mock with the @called@ matcher</ex>:
 
 {"""    // verification
-    mockedList.add("one") was called
-    mockedList.clear() was called
+    there was one(m).add("one")
+    there was one(m).clear()
   } """ add it }{ executeIsNot("error") }
 
 h4. Failures
 
-If one method has not been called on a mock, <ex>the @was called@ matcher must throw a @FailureException@</ex>: {"""
+If one method has not been called on a mock, <ex>the expression @there was one(m).method@ must throw a @FailureException@</ex>: {"""
 
   object s2 extends Specification with Mockito {
     val m = mock[List[String]]
-    m.clear() was called
+    there was one(m).clear()
   }
   s2.failures
   """ snip it }
@@ -77,27 +77,27 @@ h3. How about some stubbing?
 <ex>You can mock concrete classes, not only interfaces</ex> {"""
 
   object s3 extends Specification with Mockito {
-    val mockedList = mock[LinkedList[String]]
+    val m = mock[LinkedList[String]]
 
     // stubbing
-    mockedList.get(0) returns "first"
-    mockedList.clear() throws new RuntimeException
+    m.get(0) returns "first"
+    m.clear() throws new RuntimeException
   }
 """ prelude it }{ executeIsNot("error") }
 
 <ex>Calling a stubbed method with @returns@ returns the expected value</ex>. For example, the following prints "first":
 
-{ "s3.mockedList.get(0)" snip it }
+{ "s3.m.get(0)" snip it }
 { >("first") }
 
 <ex>Calling a stubbed method with @throws@ throws the expected exception</ex>. For example, the following throws a RuntimeException:
 
-{ "s3.mockedList.clear()" snip it }
+{ "s3.m.clear()" snip it }
 { >("RuntimeException") }
 
 <ex>Calling a non-stubbed method should return a default value</ex>. For example, the following returns @null@ because @get(999)@ was not stubbed:
   
-{ "s3.mockedList.get(999)" snip it }
+{ "s3.m.get(999)" snip it }
 { >("null") }
 
 h3. Verifying the number of invocations
@@ -118,10 +118,10 @@ h3. Annotations
 
   object s5 extends Specification with Mockito {
     // do we gain anything using Scala, compared to val mockedList = mock[List[String]]?
-    @Mock val mockedList: List[String] = null  
+    @Mock val m: List[String] = null  
     "this needs to be inside an example because otherwise a NPE is thrown" in {
-      mockedList.clear()
-      mockedList.clear() was called
+      m.clear()
+      there was one(m).clear()
     }
   }
 """ snip it }
@@ -136,34 +136,34 @@ Sometimes we need to stub with different return value/exception for the same met
 In rare scenarios stubbing consecutive calls could be useful, though: {"""
 
   object s6 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
-    mockedList.get(0) returns "hello" thenReturns "world"
+    val m = mock[List[String]]
+    m.get(0) returns "hello" thenReturns "world"
   } """ snip it }
 
 <ex>The first call returns the first value</ex>:
 
-{ "s6.mockedList.get(0)" add it }
+{ "s6.m.get(0)" add it }
 { >("hello") }
 
 <ex>The second call returns the second value</ex>:
 
-{ "s6.mockedList.get(0)" add it }
+{ "s6.m.get(0)" add it }
 { >("world") }
 
 When several values need to be stubbed this version of returns would also work: {"""
 
   object s7 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
-    mockedList.get(0) returns ("hello", "world")
+    val m = mock[List[String]]
+    m.get(0) returns ("hello", "world")
   }
 """ snip it }
 
 <ex>The first value is "hello"</ex>:
-{ "s7.mockedList.get(0)" add it }
+{ "s7.m.get(0)" add it }
 { >("hello") }
 
 <ex>The second value is "world"</ex>:
-{ "s7.mockedList.get(0)" add it }
+{ "s7.m.get(0)" add it }
 { >("world") }
 
 h3. Spies

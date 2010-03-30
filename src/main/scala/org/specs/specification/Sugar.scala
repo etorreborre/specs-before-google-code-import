@@ -29,7 +29,7 @@ object Sugar extends Sugar
  * Synctactic sugar for specifications. Since it makes heavy uses of implicit definitions,<br>
  * The name reminds that it must be used with caution
  */
-trait Sugar extends Products with ConsoleOutput with NumberOfTimes { outer =>
+trait Sugar extends Products with ConsoleOutput with RepeatedActions { outer =>
   
   /** alias for the value true. Allows to write <code> myObject.status mustBe ok </code>*/
   val ok = true
@@ -66,14 +66,23 @@ trait Sugar extends Products with ConsoleOutput with NumberOfTimes { outer =>
 }
 trait NumberOfTimes {
   /** 
-   * This implicit definition allows to write short loops, ruby-style:<br/>
-   * <code> 3.times { i => doThis() } </code>. 
-   * Warning: an integer variable i must be declared otherwise there will be a runtime exception
+   * This implicit definition allows to declare a number of times
+   * <code>3.times</code>
    */
   implicit def integerToRange(n: Int): RangeInt = new RangeInt(n)
   case class RangeInt(n: Int) { 
-    def times[T](f: (Int) => T)  = for (i <- 1 to n) f(i) 
-    def times(f: => Unit)  = for (i <- 1 to n) f 
     def times = this 
   }
 }
+trait RepeatedActions {
+  /** 
+   * This implicit definition allows to write short loops, ruby-style:<br/>
+   * <code> 3.times { doThis() } </code>. 
+   */
+  implicit def integerToRepeatedAction(n: Int) = new RepeatedAction(n)
+  case class RepeatedAction(n: Int) { 
+    def times[T](f: (Int) => T)  = for (i <- 1 to n) f(i) 
+    def times(f: => Unit)  = for (i <- 1 to n) f 
+  }
+}
+object RepeatedActions extends RepeatedActions

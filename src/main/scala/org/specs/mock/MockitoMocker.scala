@@ -18,7 +18,7 @@
  */
 package org.mockito
 import org.mockito.stubbing.Answer
-import org.mockito.internal.verification.api.VerificationMode
+import org.mockito.verification.VerificationMode
 
 /**
  * This class is created to get an access to the MOCKING_PROGRESS Mockito package variable which is package protected.
@@ -35,6 +35,12 @@ class MockitoMocker {
   def spy[T](m: T): T = Mockito.spy(m)
   def when[V](v: V) = Mockito.when(v)
   def times(i: Int): org.mockito.internal.verification.Times = Mockito.times(i).asInstanceOf[org.mockito.internal.verification.Times]
+  def verify[M <: AnyRef](inOrder: Option[InOrder], m: M, v: VerificationMode) = {
+    inOrder match {
+      case Some(ordered) => ordered.verify(m, v)
+      case None => Mockito.verify(m, v)
+    }
+  }
   def verify[M](m: M, v: VerificationMode) = Mockito.verify(m, v)
   def doReturn[T](t: T) = Mockito.doReturn(t)
   def doAnswer[T](a: Answer[T]) = Mockito.doAnswer(a)

@@ -36,21 +36,21 @@ We recommend using simple stubbing with @returns@ or @throws@ only. Those two sh
 Here is a specification where the stubbed return values depend on the method parameters: {"""
 
   object s extends Specification with Mockito {
-    val mockedList = mock[List[String]]
+    val m = mock[List[String]]
     
     // stubbing using built-in anyInt() argument matcher
-    mockedList.get(anyInt()) answers { i => "The parameter is " + i.toString } 
+    m.get(anyInt()) answers { i => "The parameter is " + i.toString } 
   }
 """ snip it }
 
 <ex>The function passed to @returns@ will be called with each parameter passed to the stubbed method</ex>: 
   
-{ "s.mockedList.get(0)" add it } 
+{ "s.m.get(0)" add it } 
 { >("The parameter is 0")}
 
 <ex>The second call returns a different value</ex>:
   
-{ "s.mockedList.get(1)" add it } 
+{ "s.m.get(1)" add it } 
 { >("The parameter is 1")}
 
   </wiki> isSus

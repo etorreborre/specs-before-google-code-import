@@ -39,41 +39,41 @@ Let's import some definitions first: {"""
 And create a specification with mocks: {"""
 
   object args1 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
+    val m = mock[List[String]]
     
     // stubbing using built-in anyInt() argument matcher
-    mockedList.get(anyInt()) returns "element"
+    m.get(anyInt()) returns "element"
 
     // stubbing using hamcrest (let's say IsNull returns your own hamcrest matcher):
-    mockedList.contains(argThat(new IsNull[String])) returns true
+    m.contains(argThat(new IsNull[String])) returns true
   }
 """ prelude it }
 
 Then, <ex>calling the mocked list with any argument must return "element"</ex>: 
   
-{ "args1.mockedList.get(999)" snip it } 
+{ "args1.m.get(999)" snip it } 
 { >("element")}
 
 and <ex>calling the mocked list @contains@ method with a valid argument must return "true" if the passed argument is null</ex>:
   
-{ "args1.mockedList.contains(null)" snip it } 
+{ "args1.m.contains(null)" snip it } 
 { >("true")}
 
 <ex>It is also possible to verify that a mock was called with an argument matcher</ex>: {"""
 
   object args2 extends Specification with Mockito {
-    args1.mockedList.get(999)
-    args1.mockedList.get(isEq(999)) was called
+    args1.m.get(999)
+    there was one(args1.m).get(isEq(999))
   }
   args2.successes""" snip it }
   { >("example 1")}
  
 <ex>Instead of Hamcrest matchers, a specs matcher can be used</ex>:{"""
   object args3 extends Specification with Mockito {
-    val mockedList = mock[List[String]]
-    mockedList.get(==(123)) returns "one"
+    val m = mock[List[String]]
+    m.get(==(123)) returns "one"
   }
-  args3.mockedList.get(123)
+  args3.m.get(123)
   """ snip it } 
   { >("one")}
   
