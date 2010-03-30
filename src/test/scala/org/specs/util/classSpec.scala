@@ -34,6 +34,14 @@ class classSpec extends spex.Specification {
   "the class name of a String should be String" in {
     getClassName("1") must_== "String"
   }
+  "create object" should {
+    "return an instance if the instance can be created" in {
+      create[String]("java.lang.String") must be right(new String)
+    }
+    "return an exception if the class can't be loaded" in {
+      create[String]("missing") must beLeft("java.lang.ClassNotFoundException: missing") ^^ (_.left.map(_.toString))
+    }
+  }
   "A tryToCreateObject function" should {
     "try to create an instance using the first available constructor" in {
       class spec extends spex.Specification

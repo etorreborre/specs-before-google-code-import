@@ -29,7 +29,17 @@ object Classes extends Classes
  * This trait provides utility functions for classes.
  */
 trait Classes extends ConsoleOutput {
-    /**
+  /**
+   * Create an instance of a given class, returning either the instance, or an exception
+   */
+  def create[T <: AnyRef](className: String)(implicit m: Manifest[T]): Either[Throwable, T] = {
+    try {
+      return Right(createInstanceFor(loadClassOf[T](className)))
+    } catch {
+      case e => return Left(e)
+    }
+  }
+  /**
    * Create an instance of a given class.
    */
   def createObject[T <: AnyRef](className: String)(implicit m: Manifest[T]): Option[T] = createObject[T](className, false)(m)
@@ -56,18 +66,22 @@ trait Classes extends ConsoleOutput {
    * create an instance of a given class, checking that the created instance typechecks as expected
    */
   private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: Manifest[T]) = {
-    c map { klass => 
-      val instance: AnyRef = klass.newInstance
-      if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
-      instance.asInstanceOf[T]
-    }
+    c map { klass => createInstanceFor(klass) }
+  }
+  /**
+   * create an instance of a given class, checking that the created instance typechecks as expected
+   */
+  private[util] def createInstanceFor[T <: AnyRef](klass: Class[T])(implicit m: Manifest[T]) = {
+    val instance: AnyRef = klass.newInstance
+    if (!m.erasure.isInstance(instance)) error(instance + " is not an instance of " + m.erasure.getName)
+    instance.asInstanceOf[T]
   }
   /**
    * Load a class, given the class name
    */
   private[util] def loadClass[T <: AnyRef](className: String): Option[Class[T]] = {
     try {
-      return Some(getClass.getClassLoader.loadClass(className).asInstanceOf[Class[T]])
+      return Some(loadClassOf(className))
     } catch {
       case e => {
         if (System.getProperty("debugLoadClass") != null) {
@@ -77,6 +91,12 @@ trait Classes extends ConsoleOutput {
       }
     }
     return None
+  }
+  /**
+   * Load a class, given the class name, without catching exceptions
+   */
+  private[util] def loadClassOf[T <: AnyRef](className: String): Class[T] = {
+    getClass.getClassLoader.loadClass(className).asInstanceOf[Class[T]]
   }
   /**
    * Try to create an instance of a given class by using whatever constructor is available

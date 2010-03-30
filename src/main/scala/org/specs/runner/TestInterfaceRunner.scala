@@ -47,10 +47,14 @@ class SpecsFramework extends Framework {
  */
 class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
-    val specification = createObject[Specification](classname + "$", true, true).orElse(
-                        createObject[Specification](classname, true, true))
-    specification.map(_.args = args)
-    run(specification, handler)
+    val specification: Either[Throwable, Specification] = create[Specification](classname + "$") match {
+      case Right(s) => Right(s)
+      case Left(e) => create[Specification](classname)
+    }
+    specification.left.map(throw(_))
+    val specificationOption = specification.right.toOption
+    specificationOption.map(_.args = args)
+    run(specificationOption, handler)
   }
   def run(specification: Option[Specification]): Option[Specification] = run(specification, new DefaultEventHandler)
   def run(specification: Option[Specification], handler: EventHandler): Option[Specification] = {
