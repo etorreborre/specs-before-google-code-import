@@ -41,6 +41,7 @@ trait Matchers extends AnyMatchers with
                        IterableMatchers with
                        MapMatchers with
                        NumericMatchers with
+                       EitherMatchers with
                        PatternMatchers with 
                        XmlMatchers with 
                        FileMatchers with 
@@ -57,6 +58,7 @@ trait BaseMatchers extends AnyBaseMatchers with
                            IterableBaseMatchers with
                            MapBaseMatchers with
                            NumericBaseMatchers with
+                           EitherBaseMatchers with
                            PatternBaseMatchers with 
                            XmlBaseMatchers with 
                            FileBaseMatchers with 
