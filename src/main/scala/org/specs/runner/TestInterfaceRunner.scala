@@ -27,13 +27,19 @@ class SpecsFramework extends Framework {
  * 
  * Then it uses a NotifierRunner to notify the EventHandler of the test events.
  */
-class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes {
+class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes 
+  with HandlerEvents with TestLoggers {
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
     val specification: Either[Throwable, Specification] = create[Specification](classname + "$") match {
       case Right(s) => Right(s)
       case Left(e) => create[Specification](classname)
     }
-    specification.left.map(throw(_))
+    specification.left.map { e =>
+      handler.handle(error(classname, e))
+      logError("Could not create an instance of "+classname+"\n")
+      logError("  "+e.getMessage+"\n")
+      e.getStackTrace foreach { s => logError("  "+s.toString) }
+    }
     val specificationOption = specification.right.toOption
     specificationOption.map(_.args = args)
     run(specificationOption, handler)
@@ -53,42 +59,11 @@ class TestInterfaceRunner(loader: ClassLoader, loggers: Array[Logger]) extends o
 /**
  * The TestInterface notifier notifies the EventHandler of the specification execution
  */
-class TestInterfaceNotifier(handler: EventHandler, loggers: Array[Logger], configuration: Configuration) extends Notifier {
+class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], configuration: Configuration) extends Notifier 
+  with HandlerEvents with TestLoggers {
   def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultConfiguration)
-  class NamedEvent(name: String) extends Event {
-    def testName = name
-    def description = ""
-    def result = Result.Success
-    def error: Throwable = null
-  }
-  def succeeded(name: String) = new NamedEvent(name)
-  def failure(name: String, e: Throwable) = new NamedEvent(name) {
-    override def result = Result.Failure
-    override def error = e
-  }
-  def error(name: String, e: Throwable) = new NamedEvent(name) {
-    override def result = Result.Error
-    override def error = e
-  }
-  def skipped(name: String) = new NamedEvent(name) {
-    override def result = Result.Skipped
-    override def error = null
-  }
-  def logInfo(message: String, color: String) = loggers.foreach { logger =>
-    if (logger.ansiCodesSupported)
-      logger.info(color + message + AnsiColors.reset)
-    else
-      logger.info(message)
-  }
-  def logStatus(name: String, color: String, status: String) = {
-    logInfo(padding + status + " " + name, color)
-  }
- 
-  var padding = ""
-  def incrementPadding = padding += "  " 
-  def decrementPadding = if (padding.size >= 2) padding = padding.take(padding.size - 2)
-  def runStarting(examplesCount: Int) = {}
 
+  def runStarting(examplesCount: Int) = {}
   def exampleStarting(exampleName: String) = incrementPadding
   def exampleCompleted(exampleName: String) = decrementPadding
 
@@ -141,3 +116,46 @@ class DefaultEventHandler extends EventHandler {
   val events: ListBuffer[String] = new ListBuffer
   def handle(event: Event)= events.append(event.result.toString)
 }
+trait HandlerEvents {
+  class NamedEvent(name: String) extends Event {
+    def testName = name
+    def description = ""
+    def result = Result.Success
+    def error: Throwable = null
+  }
+  def succeeded(name: String) = new NamedEvent(name)
+  def failure(name: String, e: Throwable) = new NamedEvent(name) {
+    override def result = Result.Failure
+    override def error = e
+  }
+  def error(name: String, e: Throwable) = new NamedEvent(name) {
+    override def result = Result.Error
+    override def error = e
+  }
+  def skipped(name: String) = new NamedEvent(name) {
+    override def result = Result.Skipped
+    override def error = null
+  }
+}
+trait TestLoggers {
+  val loggers: Array[Logger]
+  def logError(message: String) = loggers.foreach { logger =>
+    if (logger.ansiCodesSupported)
+      logger.error(AnsiColors.red + message + AnsiColors.reset)
+    else
+      logger.error(message)
+  }
+  def logInfo(message: String, color: String) = loggers.foreach { logger =>
+    if (logger.ansiCodesSupported)
+      logger.info(color + message + AnsiColors.reset)
+    else
+      logger.info(message)
+  }
+  def logStatus(name: String, color: String, status: String) = {
+    logInfo(padding + status + " " + name, color)
+  }
+ 
+  var padding = ""
+  def incrementPadding = padding += "  " 
+  def decrementPadding = if (padding.size >= 2) padding = padding.take(padding.size - 2)
+} 
