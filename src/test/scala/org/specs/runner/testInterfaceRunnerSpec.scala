@@ -25,6 +25,14 @@ import org.specs.io.mock._
 
 class testInterfaceRunnerSpec extends Specification {
   "the test interface runner" should {
+    "report an error for a specification class that could not be loaded or instantiated" in {
+      testRunner.run("missing", null, handler, Array())
+      testInterfaceLogger.out must include("[error] Could not create an instance of missing") and
+                                   include("[error]   missing")
+      "report the associated exception stacktrace" in {
+         testInterfaceLogger.out must include("[error]   java.net.URLClassLoader")
+      }
+    }
     "report a sus" in {
       logOutput must include("[info] this sus should")      
     }
@@ -70,7 +78,7 @@ class testInterfaceRunnerSpec extends Specification {
     "work ok with a specification created as an object" in {
       logOutput$ must include("[info] this sus should")      
     }
-    "work ok if an error is launch before any example is specified - issue 111" in {
+    "work ok if an error is thrown before any example is specified - issue 111" in {
       logOutput("org.specs.runner.issue111Specification") must not(throwAn[Error])
     }
     "create the html page for a literate spec" in {
