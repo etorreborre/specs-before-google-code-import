@@ -15,7 +15,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val scalacheck 	= "org.scala-tools.testing" % "scalacheck_2.8.0.Beta1" % "1.7-SNAPSHOT" 
   val testinterface = "org.scala-tools.testing" % "test-interface" % "0.4" 
   val jmock 		= "org.jmock" % "jmock" % "2.5.1" 
-  val jmock-legacy  = "org.jmock" % "jmock-legacy" % "2.5.1" 
+  val jmocklegacy  = "org.jmock" % "jmock-legacy" % "2.5.1" 
   val easymock 		= "org.easymock" % "easymock" % "2.5.1" 
   val easymockclass	= "org.easymock" % "easymockclassextension" % "2.4" 
   val mockito 		= "org.mockito" % "mockito-all" % "1.8.4" 

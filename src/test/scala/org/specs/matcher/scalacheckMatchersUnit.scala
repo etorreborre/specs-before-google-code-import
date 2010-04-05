@@ -52,6 +52,14 @@ class scalacheckMatchersUnit extends MatchersSpecification with ScalaCheckMock w
       set(minTestsOk->10).verbose mustBe false
     }
   }
+  "A simple expectation" should {
+    "pass if the expectation passes for all values" in {
+	  Prop.forAll { i: Int => i must_== i } must pass
+	}
+	"fail if there is a value for which the expectation fails" in {
+      { Prop.forAll { i: Int => i must be_<=(10) } must pass } must throwA[FailureException]
+	}
+  }
   "The checkFunction method" should {
     "call the forAll function of scalacheck to create a property that will be checked for all generated values" in {
       expect { matcher.forAllProp(any[Gen[Boolean]])(x => Prop.proved) }
