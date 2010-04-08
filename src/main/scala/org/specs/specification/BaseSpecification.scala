@@ -201,7 +201,9 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /** return true if this example is the last one of the spec */
   private[specification] def isTheLastExample(ex: Examples) = {
     !systems.isEmpty && 
-     systems.last.executed &&
+     // if the spec is sequential the last system will not be executed when its last example is executed
+     // however this is the right moment to execute the After block
+     (isSequential || systems.last.executed) && 
     !systems.last.exampleList.isEmpty && 
      systems.last.exampleList.last == ex
   }

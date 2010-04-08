@@ -140,6 +140,20 @@ class beforeAfterSpec extends SpecificationWithJUnit {
       specWithUntil.counter must_== 10
     }
   }
+  "A specification with an afterSpec method" should {
+    "execute the afterSpec method even if the spec execution is sequential - see issue 134" in {
+      var after = false
+      object s extends Specification with MockOutput {
+        "a system" should {
+          setSequential()
+          "with an example" in { 1.isExpectation }
+        }
+        (after = true).afterSpec
+      }
+      s.reportSpecs
+      after must beTrue
+    }
+  }
 }
 
 trait beforeAfterSpecification extends Specification with Console with MockOutput with Contexts {
