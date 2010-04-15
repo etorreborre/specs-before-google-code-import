@@ -26,27 +26,36 @@ import org.specs.util.Property
 class MatcherPropIterable[T](override val label: String,
                              expectedIt: Property[Iterable[T]],
                              actual: Property[Iterable[T]], constraint: Option[MatcherConstraint[Iterable[T]]]) extends
-  MatcherProp[Iterable[T]](label, expectedIt, actual, constraint) with ValuesFormatter[T] {
+  MatcherProp[Iterable[T]](label, expectedIt, actual, constraint) {
 
+  val valuesFormatter = new ValuesFormatter[T] {}
+  
   override def copy: MatcherPropIterable[T] = {
     val p = new MatcherPropIterable(label, expectedIt, actual, constraint)
     super[MatcherProp].copy(p)
-    super[ValuesFormatter].copy(p)
+    valuesFormatter.copy(p.valuesFormatter)
     p
   }
   /**
    * change the value formatter to display the value differently
    */
   override def formatWith(function: Option[Iterable[T]] => String): this.type = { 
-    formatIterableWith(function)
-    super.formatWith(function)
+    valuesFormatter.formatIterableWith(function)
+    formatWith(function)
   }
   /**
    * change the value formatter to display the value differently. This formatter displays "" for a missing value
    */
-  override def formatterIs(function: T => String): this.type = {
-    super[ValuesFormatter].formatterIs(function)
-    super.formatterIs(function)
+  def formatterIs(function: T => String) = {
+    valuesFormatter.formatterIs(function)
+    this
+  }
+
+  def formatValue(v: T) = {
+    valuesFormatter.formatValue(v)
+  }
+  def formatValueWith(f: Option[T] => String): this.type = {
+    valuesFormatter.formatValueWith(f)
     this
   }
 
@@ -65,10 +74,10 @@ class MatcherPropIterable[T](override val label: String,
   }
   
   private def formatStringValue(v: Option[Iterable[T]]) = {
-    v.map(formatIterable(_)).getOrElse("_")
+    v.map(valuesFormatter.formatIterable(_)).getOrElse("_")
   }
   
-  override private[form] def formattedValue = decorateValue(formatIterable(expected.getOrElse(actual.getOrElse(Nil: Iterable[T]))))
+  override private[form] def formattedValue = decorateValue(valuesFormatter.formatIterable(expected.getOrElse(actual.getOrElse(Nil: Iterable[T]))))
 }
 /**
  * Companion object containing default factory methods

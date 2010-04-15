@@ -26,7 +26,7 @@ class propIterableSpec extends org.specs.Specification {
   }
   "An iterable Prop" should {
     "be able to change its value formatter" in {
-      val p = PropIterable("label", List(1, 2))
+      val p = PropIterable[Int]("label", List(1, 2))
       p.formatterIs((i:Int) => "v: "+i.toString)
       p.formattedValue.toString must_== "v: 1, v: 2"
     }
@@ -46,7 +46,7 @@ class propIterableSpec extends org.specs.Specification {
     }
     "display values with another separator if the valuesFormatter is changed" in {
       val p = PropIterable("", l)
-      p.formatIterableWith((l:Option[Iterable[Double]]) => l match { 
+      p.formatWith((l:Option[Iterable[Double]]) => l match { 
         case None => ""
         case Some(x) => x.map(p.formatValue(_)).mkString("/")
       })
