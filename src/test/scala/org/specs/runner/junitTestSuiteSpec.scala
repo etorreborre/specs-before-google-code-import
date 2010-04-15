@@ -36,7 +36,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       val Composite = new Specification { "this composite spec" isSpecifiedBy (S1, S2) }
 
       makeRunners(Composite) foreach { r =>
-        r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("S1", "S2")
+        r.suites must have size(2)
       }
     }
     "create one test suite per sus" in {
