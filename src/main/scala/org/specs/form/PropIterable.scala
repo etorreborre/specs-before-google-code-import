@@ -47,6 +47,7 @@ class MatcherPropIterable[T](override val label: String,
   override def formatterIs(function: T => String): this.type = {
     super[ValuesFormatter].formatterIs(function)
     super.formatterIs(function)
+    this
   }
 
   /** apply method with multiple args for better readability */
