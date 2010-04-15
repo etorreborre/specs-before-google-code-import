@@ -31,16 +31,16 @@ import org.specs._
 class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
-      object S1 extends Specification { 1 must_== 1 }
-      object S2 extends Specification { 1 must_== 1 }
-      object Composite extends Specification { "this composite spec" isSpecifiedBy (S1, S2) }
+      val S1 = new Specification { 1 must_== 1 }
+      val S2 = new Specification { 1 must_== 1 }
+      val Composite = new Specification { "this composite spec" isSpecifiedBy (S1, S2) }
 
       makeRunners(Composite) foreach { r =>
         r.suites.map(_.asInstanceOf[JUnitSuite].getName) must_== List("S1", "S2")
       }
     }
     "create one test suite per sus" in {
-      object S1 extends Specification {
+      val S1 = new Specification {
         "sus1" should { "ex" in { 1 must_== 1 } }
         "sus2" should { "ex" in { 1 must_== 1 } }
       }
@@ -49,7 +49,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       }
     }
     "create one test case per example" in {
-      object S1 extends Specification {
+      val S1 = new Specification {
         "sus1" should { "ex1" in { 1 must_== 1 }; "ex2" in { 1 must_== 1 }}
       }
       makeRunners(S1) foreach { r =>
@@ -94,7 +94,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       listener.desc must beSome[Description]
     }
     "create one test per nested example whatever the depth" in {
-      object specsWithNestedExamples extends Specification {
+      val specsWithNestedExamples = new Specification {
         "sus1" should { 
           "ex" in { 
             "first nested" in { 
@@ -121,7 +121,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
   }
   "An example test suite" should {
     "append the description of the sus to the example description if the runner is Maven" in {
-      object s extends Specification {
+      val s = new Specification {
         val e = "be ok" in { 1 must_== 1 }
       }
       val suite = new ExamplesTestSuite("it should", List(s.e), None) {

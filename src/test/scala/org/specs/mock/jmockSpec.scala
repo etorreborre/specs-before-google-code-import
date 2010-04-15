@@ -86,11 +86,11 @@ object jmockGoodSpecification extends Mocked {
       list.get(0)
     }
     "provide an any[Type] matcher which can match any parameter of a given type with vargs" in {
-      case class Param(name: String)
+      class Param(name: String)
       trait ToMock { def method(p: Param*) = () }
       val mocked: ToMock = mock[ToMock]
       expect { 1.of(mocked).method(any[Param]) }
-      mocked.method(Param("hello"))
+      mocked.method(new Param("hello"))
     }
     "provide an a[T] matcher which can be used to specify that any instance of type T will match - alias an[T]" in {
       val listString: List[String] = mock[List[String]]
