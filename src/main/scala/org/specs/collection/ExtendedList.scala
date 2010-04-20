@@ -105,7 +105,7 @@ object ExtendedList { outer =>
     /**
      * @return a list without duplicates
      */
-    def unique = l.removeDuplicates
+    def unique = l.distinct
     
     /**
      * @return the max element according the function f

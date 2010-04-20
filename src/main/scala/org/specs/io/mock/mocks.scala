@@ -123,7 +123,12 @@ trait MockFileSystem extends FileSystem {
   
   override def exists(path: String) = files.contains(path)
   
-  override def inputStream(filePath: String) = new java.io.StringBufferInputStream(readFile(filePath))
+  override def inputStream(filePath: String) = new java.io.InputStream {
+	val reader = new java.io.StringReader(readFile(filePath))
+	def read() = {
+	  reader.read()
+	}
+  }
 }
 
 /**

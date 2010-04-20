@@ -19,7 +19,7 @@
 package org.specs.util
 import Matching.bestMatch
 import org.specs.collection.ExtendedList.listToExtendedList
-import scala.Math._
+import scala.math._
 import org.scalacheck.{ Prop, Gen }
 
 class matchingSpec extends org.spex.Specification {

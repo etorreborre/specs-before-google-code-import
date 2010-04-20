@@ -18,7 +18,7 @@
  */
 package org.specs.xml
 import scala.xml._
-import scala.Math._
+import scala.math._
 
 /**
  * utility functions on Xhtml elements.

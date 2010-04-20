@@ -18,7 +18,7 @@
  */
 package org.specs.form
 
-class propIterableSpec extends org.specs.Specification {
+class propIterableSpec extends org.specs.SpecificationWithJUnit {
   "An iterable Prop toString function" should {
     "display iterable values" in {
       PropIterable("label", List(1.234, 2.456)).toString must_== "label: 1.234, 2.456 (expected: _)"

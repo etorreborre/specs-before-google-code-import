@@ -43,7 +43,7 @@ trait ExampleContext extends ExampleLifeCycle {
     beforeSystemFailure.map(throw _)
     parent.map(_.beforeExample(ex))
     if (!(ex eq this)) {
-      if (!exampleList.isEmpty && ex == exampleList.first) {
+      if (!exampleList.isEmpty && ex == exampleList.head) {
         val susListener = new Sus("", new org.specs.Specification {})
         firstActions.map { a =>
           withCurrent(susListener)(a.apply) 

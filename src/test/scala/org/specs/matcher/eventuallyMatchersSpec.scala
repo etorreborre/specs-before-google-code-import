@@ -24,7 +24,7 @@ class eventuallyMatchersSpec extends MatchersSpecification {
     1 must eventually(be(1))
   }
   "matchers can be checked to eventually match after a number of retries" in {
-    val iterator = List(1, 2, 3).elements
+    val iterator = List(1, 2, 3).iterator
     iterator.next must be(3).eventually
   }
 }

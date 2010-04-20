@@ -17,7 +17,7 @@ class SpecsFramework extends Framework {
     def superClassName = "org.specs.Specification"
     def isModule = true
   }
-  def tests = Array[TestFingerprint](specificationClass, specificationObject)
+  def tests = Array[Fingerprint](specificationClass, specificationObject)
   def testRunner(classLoader: ClassLoader, loggers: Array[Logger]) = new TestInterfaceRunner(classLoader, loggers)
 }
 

@@ -71,7 +71,7 @@ The number of invocations can be checked with different methods on the @called@ 
 { """  new s4 { 
     there was one(m).add("one")
     there were noMoreCallsTo(m)
-  }.failures.first""" snip it }
+  }.failures.head""" snip it }
 { 
   execute(it) must (include("No interactions wanted here") and 
     include("But found this interaction:"))

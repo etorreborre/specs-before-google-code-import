@@ -56,7 +56,7 @@ With the following mocks: {"""
 { """new s {
       there was one(m2).get(0) then
                 atLeastOne(m1).get(0) orderedBy (m1, m2)
-     }.failures.first.getMessage""" snip it } 
+     }.failures.head.getMessage""" snip it } 
 { >("The mock was not called as expected:")}
 
   </wiki> isSus
