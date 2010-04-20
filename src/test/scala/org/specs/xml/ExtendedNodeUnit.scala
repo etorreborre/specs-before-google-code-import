@@ -46,6 +46,12 @@ class extendedNodeUnit extends SpecificationWithJUnit {
     "true for <a> ==/ <a>" in {
       <a/> ==/ <a/> mustBe true
     }
+    """true for <a class="1"> ==/ <a class="1">""" in {
+      <a class="1"/> ==/ <a class="1"/> mustBe true
+    }
+    """true for <a class="1" other="2"> ==/ <a other="2" class="1">""" in {
+      <a class="1" other="2"/> ==/ <a other="2" class="1"/> mustBe true
+    }
     "true for <a></a> ==/ <a></a>" in {
       <a></a> ==/ <a></a> mustBe true
     }

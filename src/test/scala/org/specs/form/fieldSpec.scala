@@ -71,7 +71,7 @@ class fieldSpec extends org.spex.Specification {
     }
     "set the bg color of a cell, setting the class attribute to 'none'" in {
       val f = Field("Result", 1.12).valueBgcolor("#FF6699").toXhtml(1)
-      f must ==/(<td class="none" bgcolor="#FF6699">1.12</td>)
+	  f must ==/(<td bgcolor="#FF6699" class="none">1.12</td>)
     }
   }
   "The Field object" can {

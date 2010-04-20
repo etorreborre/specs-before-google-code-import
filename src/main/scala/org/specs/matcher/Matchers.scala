@@ -284,7 +284,7 @@ class NotMatcher[T] extends Matcher[T] {
 }
 class BeVerbMatcher[T] extends OkWordMatcher[T] { 
   def apply(v: =>T) = (true, "", "")
-  def ==/(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
+  def ==/(node: Seq[Node]) = new EqualIgnoringSpaceMatcher(node)
   def ==/(s: String) = new BeEqualToIgnoringCase(s)
   def !=/(s: String) = new BeEqualToIgnoringCase(s).not
   def <[T](n: T)(implicit d: T => Double, e: T => Ordered[T]) = new BeLessThan(n) 

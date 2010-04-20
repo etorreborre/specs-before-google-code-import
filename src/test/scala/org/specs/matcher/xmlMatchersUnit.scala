@@ -101,7 +101,7 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
       expectation(<a><b><c></c></b></a> must \(<b><d></d></b>)) must failWith("<a><b><c></c></b></a> doesn't contain <b><d></d></b>")
     }
     "not evaluate the expressions twice" in {
-      val nodes: Iterable[scala.xml.Node] = <c/>
+      val nodes: Seq[scala.xml.Node] = <c/>
       \("c") must evalOnce(exp(nodes))
     }
   }
@@ -155,7 +155,7 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
       expectation(expected must \\(<b>world</b>)) must failWith("<a><b>hello</b></a> doesn't contain <b>world</b>")
     }
     "not evaluate the expressions twice" in {
-      val nodes: Iterable[scala.xml.Node] = <c/>
+      val nodes: Seq[scala.xml.Node] = <c/>
       \\("c") must evalOnce(exp(nodes))
     }
   }

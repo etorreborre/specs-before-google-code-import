@@ -120,27 +120,27 @@ trait XmlBaseMatchers {
    * Matches if <code>node</code> is equal to the tested node without testing empty text
    * @deprecated use beEqualToIgnoringSpace instead
    */   
-  def equalIgnoreSpace(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
+  def equalIgnoreSpace(node: Seq[Node]) = new EqualIgnoringSpaceMatcher(node)
   /**
    * Matches if <code>node</code> is equal to the tested node without testing empty text
    */   
-  def beEqualToIgnoringSpace(node: Iterable[Node]) = new EqualIgnoringSpaceMatcher(node)
+  def beEqualToIgnoringSpace(node: Seq[Node]) = new EqualIgnoringSpaceMatcher(node)
 
   /**
    * Alias for equalIgnoreSpace
    */   
-  def ==/(node: Iterable[Node]): EqualIgnoringSpaceMatcher = equalIgnoreSpace(node)
+  def ==/(node: Seq[Node]): EqualIgnoringSpaceMatcher = equalIgnoreSpace(node)
 
-  def equalToIgnoringSpace(node: Iterable[Node]) = beEqualToIgnoringSpace(node)
+  def equalToIgnoringSpace(node: Seq[Node]) = beEqualToIgnoringSpace(node)
   def equalToIgnoringSpace(node: Elem) = beEqualToIgnoringSpace(node)
 }
 trait XmlBeHaveMatchers { this: XmlBaseMatchers =>
   /** 
    * matcher aliases and implicits to use with BeVerb and HaveVerb
    */
-  implicit def toNodeIterableResult(result: Result[Iterable[Node]]) = new NodeIterableResultMatcher(result)
-  class NodeIterableResultMatcher(result: Result[Iterable[Node]]) {
-    def equalToIgnoringSpace(node: Iterable[Node]) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
+  implicit def toNodeIterableResult(result: Result[Seq[Node]]) = new NodeIterableResultMatcher(result)
+  class NodeIterableResultMatcher(result: Result[Seq[Node]]) {
+    def equalToIgnoringSpace(node: Seq[Node]) = result.matchWithMatcher(beEqualToIgnoringSpace(node))
   }
   implicit def toElemResult(result: Result[Elem]) = new ElemResultMatcher(result)
   class ElemResultMatcher(result: Result[Elem]) {
@@ -158,16 +158,16 @@ trait XmlBeHaveMatchers { this: XmlBaseMatchers =>
 /**
  * Matcher for equalIgnoreSpace comparison, ignoring the nodes order
  */   
-class EqualIgnoringSpaceMatcher(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
-  def apply(n: =>Iterable[Node]) = {
+class EqualIgnoringSpaceMatcher(node: Seq[Node]) extends Matcher[Seq[Node]]  { 
+  def apply(n: =>Seq[Node]) = {
    (isEqualIgnoringSpace(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
   def ordered = new EqualIgnoringSpaceMatcherOrdered(node)
 }
 /**
  * Matcher for equalIgnoreSpace comparison, considering the node order
  */   
-class EqualIgnoringSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Iterable[Node]]  { 
-  def apply(n: =>Iterable[Node]) = {
+class EqualIgnoringSpaceMatcherOrdered(node: Seq[Node]) extends Matcher[Seq[Node]]  { 
+  def apply(n: =>Seq[Node]) = {
    (isEqualIgnoringSpaceOrdered(node.toList, n.toList), dUnquoted(n) + " is equal to " + node, dUnquoted(n) + " is not equal to " + node) }
 }
 
@@ -181,7 +181,7 @@ class EqualIgnoringSpaceMatcherOrdered(node: Iterable[Node]) extends Matcher[Ite
  * search function which tries to match the result of the preceding function. For example<pre>
  * <a><b><c><d></d></c></b></a> must \\("c").\("d")</pre> will be ok.
 */
-case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[Node]]() with MatchExactly {
+case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Seq[Node]]() with MatchExactly {
   
   override def exactly = {
     functions.map(_.exactly)
@@ -190,7 +190,7 @@ case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[No
   /**
    * checks that the <code>nodes</code> satisfy the <code>functions</code>
    */
-  def apply(n: =>Iterable[Node]) = {
+  def apply(n: =>Seq[Node]) = {
     val nodes = n
     val result = checkFunctions(functions, nodes, (true, nodes.toString, nodes.toString))
     (result.success, description.map(_ + " ").getOrElse("") + result.okMessage, description.map(_ + " ").getOrElse("") + result.koMessage) 
@@ -200,7 +200,7 @@ case class XmlMatcher(functions: List[PathFunction]) extends Matcher[Iterable[No
    * checks that the <code>nodes</code> satisfy the <code>functions</code>
    * @returns a MatcherResult (status, ok message, ko message)
    */
-  def checkFunctions(pathFunctions: List[PathFunction], nodes: Iterable[Node], result: MatcherResult): MatcherResult = {
+  def checkFunctions(pathFunctions: List[PathFunction], nodes: Seq[Node], result: MatcherResult): MatcherResult = {
     // return the result if we have a failure or if there are no (or no more) functions to check
     if (!result.success || pathFunctions.isEmpty) 
       return result
@@ -280,7 +280,7 @@ trait XPathFunctions {
  * The PathFunction object encapsulate a search for a node and/or attributes or attributeValues with an XPath function
  * If <code>node</code> has some children, then they are searched using equality
  */
-class PathFunction(val node: Node, val attributes: List[String], val attributeValues: Map[String, String], val function: XPathFunction) extends Function1[Iterable[Node], Iterable[Node]] with XPathFunctions with MatchExactly {
+class PathFunction(val node: Node, val attributes: List[String], val attributeValues: Map[String, String], val function: XPathFunction) extends Function1[Seq[Node], Seq[Node]] with XPathFunctions with MatchExactly {
 
   /**
    * @returns a PathFunction looking for a Node
@@ -300,7 +300,7 @@ class PathFunction(val node: Node, val attributes: List[String], val attributeVa
   /**
    * @returns the node if it is found and matching the searched attributes and/or attribute values when specified
    */
-  def apply(nodes: Iterable[Node]): Iterable[Node] = for(n <- nodes;
+  def apply(nodes: Seq[Node]): Seq[Node] = for(n <- nodes;
                                                          found <- function(n, node.label) if (matchNode(found))) 
                                                        yield found 
 
