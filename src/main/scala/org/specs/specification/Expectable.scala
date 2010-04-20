@@ -339,7 +339,7 @@ trait OrResults {
  * This Exception is necessary to handle the "OR" case "value must be equalTo(bad) or be equalTo(good)"
  * where the first match is not ok.
  */
-class FailureExceptionWithResult[T](m: String, val result: Result[T]) extends FailureException(m) with HasResult[T]
+class FailureExceptionWithResult[T](m: String, @transient val result: Result[T]) extends FailureException(m) with HasResult[T]
 /** value returned by an expectable whose string representation can vary. */
 trait SuccessValue
 

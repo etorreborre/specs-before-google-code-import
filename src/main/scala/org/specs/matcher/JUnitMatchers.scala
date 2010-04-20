@@ -31,4 +31,4 @@ trait JUnitMatchers extends SpecsMatchers {
 /**
  * Specialized AssertionFailedError holding a result in order to cope with the case where matchers are being or-ed together
  */
-case class JUnitFailureExceptionWithResult[T](message: String, result: Result[T]) extends AssertionFailedError(message) with HasResult[T]
+case class JUnitFailureExceptionWithResult[T](message: String, @transient result: Result[T]) extends AssertionFailedError(message) with HasResult[T]
