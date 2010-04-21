@@ -28,10 +28,10 @@ import org.mockito.verification.VerificationMode
  */
 class MockitoMocker {
   def verify(mode: VerificationMode) = Mockito.verify(Mockito.mock(classOf[List[Int]]), mode)
-  def mock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure).asInstanceOf[T]
-  def mock[T](name: String)(implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure, name).asInstanceOf[T]
-  def mock[T, A](implicit m: scala.reflect.Manifest[T], a: org.mockito.stubbing.Answer[A]): T = Mockito.mock(m.erasure, a).asInstanceOf[T]
-  def smartMock[T](implicit m: scala.reflect.Manifest[T]): T = Mockito.mock(m.erasure, Mockito.RETURNS_SMART_NULLS).asInstanceOf[T]
+  def mock[T](implicit m: scala.reflect.ClassManifest[T]): T = Mockito.mock(m.erasure).asInstanceOf[T]
+  def mock[T](name: String)(implicit m: scala.reflect.ClassManifest[T]): T = Mockito.mock(m.erasure, name).asInstanceOf[T]
+  def mock[T, A](implicit m: scala.reflect.ClassManifest[T], a: org.mockito.stubbing.Answer[A]): T = Mockito.mock(m.erasure, a).asInstanceOf[T]
+  def smartMock[T](implicit m: scala.reflect.ClassManifest[T]): T = Mockito.mock(m.erasure, Mockito.RETURNS_SMART_NULLS).asInstanceOf[T]
   def spy[T](m: T): T = Mockito.spy(m)
   def when[V](v: V) = Mockito.when(v)
   def times(i: Int): org.mockito.internal.verification.Times = Mockito.times(i).asInstanceOf[org.mockito.internal.verification.Times]

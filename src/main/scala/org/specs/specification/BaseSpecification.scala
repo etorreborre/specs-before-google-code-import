@@ -19,7 +19,7 @@
 package org.specs.specification
 import org.specs.matcher.MatcherUtils._
 import org.specs.SpecUtils._
-import scala.reflect.Manifest
+import scala.reflect.ClassManifest
 import org.specs.execute._
 import org.specs.util._
 import org.specs.util.Control._
@@ -142,8 +142,8 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   }
   class ExampleSpecification(val example: Example) {
     def specifies[T](expectations: =>T) = example.specifies(expectations)
-    def in[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = example.in(expectations)(m)
-    def >>[T](expectations: =>T)(implicit m: scala.reflect.Manifest[T]) = example.>>(expectations)(m)
+    def in[T](expectations: =>T)(implicit m: scala.reflect.ClassManifest[T]) = example.in(expectations)(m)
+    def >>[T](expectations: =>T)(implicit m: scala.reflect.ClassManifest[T]) = example.>>(expectations)(m)
   }
   def forExample(desc: String): Example = {
     specifyExample(desc).example

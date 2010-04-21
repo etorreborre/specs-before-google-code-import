@@ -19,7 +19,7 @@
 package org.specs.util
 import org.specs.io.Output
 import org.specs.io.ConsoleOutput
-import scala.reflect.Manifest
+import scala.reflect.ClassManifest
 /**
  * This object provides simple functions to instantiate classes.
  */
@@ -32,7 +32,7 @@ trait Classes extends ConsoleOutput {
   /**
    * Create an instance of a given class, returning either the instance, or an exception
    */
-  def create[T <: AnyRef](className: String)(implicit m: Manifest[T]): Either[Throwable, T] = {
+  def create[T <: AnyRef](className: String)(implicit m: ClassManifest[T]): Either[Throwable, T] = {
     try {
       return Right(createInstanceFor(loadClassOf[T](className)))
     } catch {
@@ -42,16 +42,16 @@ trait Classes extends ConsoleOutput {
   /**
    * Create an instance of a given class.
    */
-  def createObject[T <: AnyRef](className: String)(implicit m: Manifest[T]): Option[T] = createObject[T](className, false)(m)
+  def createObject[T <: AnyRef](className: String)(implicit m: ClassManifest[T]): Option[T] = createObject[T](className, false)(m)
   
   /**
    * Create an instance of a given class and optionally print message if the class can't be loaded.
    */
-  def createObject[T <: AnyRef](className: String, printMessage: Boolean)(implicit m: Manifest[T]): Option[T] = createObject(className, printMessage, false)(m)
+  def createObject[T <: AnyRef](className: String, printMessage: Boolean)(implicit m: ClassManifest[T]): Option[T] = createObject(className, printMessage, false)(m)
   /**
    * Create an instance of a given class and optionally print message and/or the stacktrace if the class can't be loaded.
    */
-  def createObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
+  def createObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: ClassManifest[T]): Option[T] = {
     try {
       return createInstanceOf[T](loadClass[T](className))
     } catch {
@@ -65,13 +65,13 @@ trait Classes extends ConsoleOutput {
   /**
    * create an instance of a given class, checking that the created instance typechecks as expected
    */
-  private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: Manifest[T]) = {
+  private[util] def createInstanceOf[T <: AnyRef](c: Option[Class[T]])(implicit m: ClassManifest[T]) = {
     c map { klass => createInstanceFor(klass) }
   }
   /**
    * create an instance of a given class, checking that the created instance typechecks as expected
    */
-  private[util] def createInstanceFor[T <: AnyRef](klass: Class[T])(implicit m: Manifest[T]) = {
+  private[util] def createInstanceFor[T <: AnyRef](klass: Class[T])(implicit m: ClassManifest[T]) = {
     val constructor = klass.getDeclaredConstructors()(0)
 	constructor.setAccessible(true)
     val instance: AnyRef = constructor.newInstance().asInstanceOf[AnyRef]
@@ -106,7 +106,7 @@ trait Classes extends ConsoleOutput {
    * 
    * This is useful to instantiate nested classes which are referencing their outer class in their constructor
    */
-  def tryToCreateObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: Manifest[T]): Option[T] = {
+  def tryToCreateObject[T <: AnyRef](className: String, printMessage: Boolean, printStackTrace: Boolean)(implicit m: ClassManifest[T]): Option[T] = {
     loadClass(className) match {
       case None => None
       case Some(c: Class[_]) => {
@@ -133,7 +133,7 @@ trait Classes extends ConsoleOutput {
     }
   }
   /** try to create object but print no messages */
-  def tryToCreateObject[T <: AnyRef](className: String)(implicit m: Manifest[T]): Option[T] = tryToCreateObject(className, false, false)(m)
+  def tryToCreateObject[T <: AnyRef](className: String)(implicit m: ClassManifest[T]): Option[T] = tryToCreateObject(className, false, false)(m)
   /**
    * @return the outer class name for a given class
    */

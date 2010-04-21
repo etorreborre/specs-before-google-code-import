@@ -48,6 +48,11 @@ class anyMatchersUnit extends MatchersSpecification {
     "display a precise failure message if there is an alias" in {
       expectation(1 aka "the number" must be(2)) must failWith("the number '1' is not the same as '2'")
     }
+    "be ok when matching a Class object" in {
+      class Baz
+	  def calcBar: Class[_] = classOf[Baz]
+	  calcBar mustEqual classOf[Baz]
+	}
   }
   "An '==' matcher" should {
     "be ok if comparing 2 objects which are equals with ==" in {

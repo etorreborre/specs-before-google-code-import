@@ -36,7 +36,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a mock with a name
    * @return the mock object
    */
-  def mockAs[T <: Object](name: String)(implicit m: scala.reflect.Manifest[T]): T = {
+  def mockAs[T <: Object](name: String)(implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createNiceMock(name, m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
@@ -45,7 +45,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a nice mock with a name
 \   * @return the mock object
    */
-  def niceMockAs[T <: Object](name: String)(implicit m: scala.reflect.Manifest[T]): T = {
+  def niceMockAs[T <: Object](name: String)(implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createNiceMock(name, m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
@@ -54,7 +54,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a strict mock with a name
    * @return the mock object
    */
-  def strictMockAs[T <: Object](name: String)(implicit m: scala.reflect.Manifest[T]): T = {
+  def strictMockAs[T <: Object](name: String)(implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createStrictMock(name, m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
@@ -63,7 +63,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a mock
    * @return the mock object
    */
-  def mock[T <: Object](implicit m: scala.reflect.Manifest[T]): T = {
+  def mock[T <: Object](implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createMock(m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
@@ -72,7 +72,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a nice mock
    * @return the mock object
    */
-  def niceMock[T <: Object](implicit m: scala.reflect.Manifest[T]): T = {
+  def niceMock[T <: Object](implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createNiceMock(m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
@@ -81,7 +81,7 @@ trait EasyMock extends ExpectationsListener with EasyMockLifeCycle {
    * create a strict mock
    * @return the mock object
    */
-  def strictMock[T <: Object](implicit m: scala.reflect.Manifest[T]): T = {
+  def strictMock[T <: Object](implicit m: scala.reflect.ClassManifest[T]): T = {
     val m1 = EasyClassMocker.createStrictMock(m.erasure).asInstanceOf[T]
     mocks.append(m1)
     m1
