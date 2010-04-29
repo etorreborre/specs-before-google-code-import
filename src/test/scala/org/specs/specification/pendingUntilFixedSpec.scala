@@ -1,7 +1,7 @@
 package org.specs.specification
 import org.specs._
 
-class PendingUntilFixedSpec extends SpecificationWithJUnit {
+class pendingUntilFixedSpec extends SpecificationWithJUnit {
    "A specification extending PendingUntilFixed" should {
      "mark failing examples as skipped" in {
        object s extends Specification with PendingUntilFixed { 
