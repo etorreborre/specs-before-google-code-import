@@ -22,4 +22,23 @@ class pendingUntilFixedSpec extends SpecificationWithJUnit {
        s.failures(0).getMessage must_== "Fixed now. You should remove the 'pending until fixed' declaration"
      }
    }
+   "A specification extending PendingUntilFixed" can {
+     "use the pendingUntilFixed method on Examples to set the example body as PENDING" in {
+       object s extends Specification with PendingUntilFixed { 
+         "ex" in { 
+           1 must_== 2 
+         } pendingUntilFixed
+       } 
+       s.skipped must have size(1)
+     }
+     "use the pendingUntilFixed method on a sus to set the examples PENDING" in {
+       object s extends Specification with PendingUntilFixed {
+         "sus" should {
+           "ex" in { 1 must_== 2 } 
+           "ex2" in { 1 must_== 2 }
+         } pendingUntilFixed
+       } 
+       s.skipped must have size(2)
+     }
+   }
 }

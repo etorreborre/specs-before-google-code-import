@@ -50,7 +50,7 @@ class anyMatchersUnit extends MatchersSpecification {
     }
     "be ok when matching a Class object" in {
       class Baz
-	  def calcBar: Class[_] = classOf[Baz]
+	  def calcBar = classOf[Baz]
 	  calcBar mustEqual classOf[Baz]
 	}
   }
