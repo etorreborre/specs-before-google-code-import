@@ -86,9 +86,14 @@ trait AnyBaseMatchers {
       val (x, y) = (a, v)
       var dy = d(y)
       var qx = q(x)
+	  var differentTypesWarning = ""
       if (dy == qx) {
-        dy = dy + ": " + getClassName(y)
-        qx = qx + ": " + getClassName(x)
+  	    val xClass = getClassName(x)
+	    val yClass = getClassName(y)
+	    if (xClass != yClass) {
+          dy = dy + ": " + yClass
+          qx = qx + ": " + xClass
+		} else differentTypesWarning = ". Values have the same string representation but possibly different types like List[Int] and List[String]"
       }
       import org.specs.util.Products._
       def isNull[T](a: T) = a match { case x: AnyVal => false; case y => y.asInstanceOf[AnyRef] eq null }
@@ -96,7 +101,7 @@ trait AnyBaseMatchers {
         case full: fullDetails if (!isNull(x) && full.startDiffSize <= x.toString.size) => {
           EditMatrix(dy, qx).showDistance(full.separators, full.shortenSize).toList.mkString(" is not equal to ")
         }
-        case _ => dy + " is not equal to " + qx
+        case _ => dy + " is not equal to " + qx + differentTypesWarning
       }
       ((x == y), dy + " is equal to " + qx, failureMessage)
     }
@@ -627,11 +632,16 @@ class BeEqualTo[T](a: =>T) extends Matcher[T] {
     val (x, y) = (a, v)
     var dy = d(y)
     var qx = q(x)
+	var differentTypesWarning = ""
     if (dy == qx) {
-      dy = dy + ": " + getClassName(y)
-      qx = qx + ": " + getClassName(x)
+	  val xClass = getClassName(x)
+	  val yClass = getClassName(y)
+	  if (xClass != yClass) {
+        dy = dy + ": " + yClass
+        qx = qx + ": " + xClass
+	  } else differentTypesWarning = ". Values have the same string representation but possibly a different type like List[Int] and List[String]"
     }
-    (x == y, dy + " is equal to " + qx, dy + " is not equal to " + qx)
+    (x == y, dy + " is equal to " + qx, dy + " is not equal to " + qx + differentTypesWarning)
   }
 }
 class BeNull[T] extends Matcher[T] {

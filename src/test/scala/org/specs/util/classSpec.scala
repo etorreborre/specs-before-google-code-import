@@ -21,8 +21,8 @@ import org.specs.util.Classes._
 import org.specs.specification.BaseSpecification
 
 class classSpec extends spex.Specification {
-  "the class name of a full name with package should only return the last name" in {
-    className("org.specs.MyName") must_== "MyName"
+  "the class name of normal class must be returned as is" in {
+    className("MyName") must_== "MyName"
   }
   "the class name of an internal class should only return the last name" in {
     class ThisClassName

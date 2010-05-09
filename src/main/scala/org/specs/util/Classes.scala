@@ -20,6 +20,7 @@ package org.specs.util
 import org.specs.io.Output
 import org.specs.io.ConsoleOutput
 import scala.reflect.Manifest
+
 /**
  * This object provides simple functions to instantiate classes.
  */
@@ -142,7 +143,7 @@ trait Classes extends ConsoleOutput {
    * @return the class name without the package name
    */
   def className(fullName: String): String = {
-    val remainingDollarNames = fullName.split("\\.").last.split("\\$")
+    val remainingDollarNames = fullName.split("\\$")
     if (remainingDollarNames.size > 1) {
       if (remainingDollarNames(remainingDollarNames.size - 1).matches("\\d"))
         remainingDollarNames(remainingDollarNames.size - 2)
@@ -155,7 +156,7 @@ trait Classes extends ConsoleOutput {
    * @return the class name without the package name
    */
   def className(klass: Class[_]): String = {
-    val result = className(klass.getName)
+    val result = className(klass.getSimpleName)
     if (result.contains("anon") && klass.getSuperclass != null)
       className(klass.getSuperclass)
     else
@@ -167,3 +168,4 @@ trait Classes extends ConsoleOutput {
   def getClassName[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
 
 }
+
