@@ -20,6 +20,7 @@ package org.specs.util
 import org.specs.io.Output
 import org.specs.io.ConsoleOutput
 import scala.reflect.ClassManifest
+import scala.reflect.NameTransformer
 /**
  * This object provides simple functions to instantiate classes.
  */
@@ -141,23 +142,24 @@ trait Classes extends ConsoleOutput {
     c.getDeclaredConstructors.toList(0).getParameterTypes.toList(0).getName
   }
   /**
-   * @return the class name without the package name
+   * @return the decoded class name
    */
-  def className(fullName: String): String = {
-    val remainingDollarNames = fullName.split("\\.").last.split("\\$")
-    if (remainingDollarNames.size > 1) {
+  def className(name: String): String = {
+    val decoded = NameTransformer.decode(name)
+    val remainingDollarNames = decoded.split("\\$")
+    val result = if (remainingDollarNames.size > 1) {
       if (remainingDollarNames(remainingDollarNames.size - 1).matches("\\d"))
         remainingDollarNames(remainingDollarNames.size - 2)
       else
         remainingDollarNames(remainingDollarNames.size - 1)
-    }
-    else remainingDollarNames(0)
+    } else remainingDollarNames(0)
+    result
   }
   /**
    * @return the class name without the package name
    */
   def className(klass: Class[_]): String = {
-    val result = className(klass.getName)
+    val result = className(klass.getSimpleName)
     if (result.contains("anon") && klass.getSuperclass != null)
       className(klass.getSuperclass)
     else

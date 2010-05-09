@@ -21,12 +21,12 @@ import org.specs.util.Classes._
 import org.specs.specification.BaseSpecification
 
 class classSpec extends org.spex.Specification {
-  "the class name of a full name with package should only return the last name" in {
-    className("org.specs.MyName") must_== "MyName"
+  "the class name of name should decode the name" in {
+    className("$plus$plus") must_== "++"
   }
   "the class name of an internal class should only return the last name" in {
     class ThisClassName
-    className(classOf[ThisClassName].getName) must_== "ThisClassName"
+    className(classOf[ThisClassName].getSimpleName) must_== "ThisClassName"
   }
   "the class name of an Int should be Integer" in {
     getClassName(1) must_== "Integer"
