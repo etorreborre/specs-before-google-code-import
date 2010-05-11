@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2007-2009 Eric Torreborre <etorreborre@yahoo.com>
+ * Copyright (c) 2007-2010 Eric Torreborre <etorreborre@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -100,7 +100,7 @@ trait JUnitSuite extends Test {
 /**
  * Extension of a JUnitSuite initializing the suite with one or more specifications
  */
-trait JUnit extends JUnitSuite with Reporter {
+trait JUnit extends JUnitSuite with Reporter with ExtendedJUnitSuite {
   def initialize = {
     if (filteredSpecs.size > 1)
       setName(this.getClass.getName.replaceAll("\\$", ""))
@@ -110,7 +110,10 @@ trait JUnit extends JUnitSuite with Reporter {
       specification.subSpecifications.foreach(s => addTest(new JUnit3(s)))
       specification.systems foreach { sus => 
         val examples = if (!planOnly() && sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
-        addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.headOption))
+		if (sus.isAnonymous)
+		  examples foreach { e => this.addExample(e, "") }
+		else
+		  addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.headOption))
       }
     }
   }
@@ -140,26 +143,14 @@ class JUnit4(val specifications: Specification*) extends JUnit {
  * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
  * run the example during the initialization time.
  */
-class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with Stacktraces {
-
-  /**return true if the current test is executed with Maven */
-  lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
+class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with ExtendedJUnitSuite {
 
   /**
    * create one TestCase per example
    */
   def initialize = {
     setName(description)
-    examples foreach {  example =>
-      // if the test is run with Maven the sus description is added to the example description for a better
-      // description in the console
-      val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
-      if (JUnitOptions.planOnly() || !example.hasSubExamples)
-        addTest(new ExampleTestCase(example, exampleDescription))
-      else {
-        addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
-      }
-    }
+    examples foreach {  example => this.addExample(example, description) }
   }
 
   /**
@@ -174,6 +165,26 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
   }
 }
 
+trait ExtendedJUnitSuite extends Stacktraces {
+  
+  /**return true if the current test is executed with Maven */
+  lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
+
+  implicit def toExtendedSuite(s: JUnitSuite) = new ExtendedSuite(s)
+  
+  class ExtendedSuite(s: JUnitSuite) {
+    def addExample(example: Examples, description: String) = {
+	      // if the test is run with Maven the sus description is added to the example description for a better
+      // description in the console
+      val exampleDescription = (if (isExecutedFromMaven) (description + " ") else "") + example.description
+      if (JUnitOptions.planOnly() || !example.hasSubExamples)
+        s.addTest(new ExampleTestCase(example, exampleDescription))
+      else {
+        s.addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
+      }
+    }
+  }
+}
 /**
  * A <code>ExampleTestCase</code> reports the result of an example<p>
  * It overrides the run method from <code>junit.framework.TestCase</code>

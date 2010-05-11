@@ -39,6 +39,18 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
         r.suites must have size(2)
       }
     }
+  }
+  "A junit test suite" should {
+    "create high-level examples for an anonymous sus" in {
+      object S1 extends Specification {
+        "ex1" in { 1 must_== 1 }
+        "ex2" in { 1 must_== 1 }
+      }
+      makeRunners(S1) foreach { r =>
+        r.suites must be empty;
+	    r.tests must have size(2)
+      }
+    }
     "create one test suite per sus" in {
       val S1 = new Specification {
         "sus1" should { "ex" in { 1 must_== 1 } }

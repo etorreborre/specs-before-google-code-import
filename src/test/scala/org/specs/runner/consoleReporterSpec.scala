@@ -126,6 +126,9 @@ class reporterSpecification extends TestSpecs {
       new SpecWithAnEmptySus().run.toList must not containMatch("An empty system")
       new SpecWithAnEmptySus().run.toList must not containMatch("Total for SUS")
     }
+    "print only the high-level examples of an anonymous sus" in {
+	  new SpecWithAnAnonymousSystem(that.isOk).run.toList must not containMatch("specifies")
+	}
   }
 }
 class consoleTraitSpecification extends TestSpecs {
