@@ -24,7 +24,9 @@ package org.specs.form
 trait ValueFormatter[T] extends GenericFormatter {
   /** value formatter. By default formats Doubles with all decimals */
   private[form] var formatter = (t:Option[T]) => t match {
-    case Some(d: Double) => genericFormatter(new java.text.DecimalFormat("#.###############").format(d))
+    case Some(d: Double) => 
+      val df = new java.text.DecimalFormat("#.###############", java.text.DecimalFormatSymbols.getInstance(java.util.Locale.US))
+      genericFormatter(df.format(d))
     case Some(x: Any) => genericFormatter(x.toString)
     case None => ""
   }
