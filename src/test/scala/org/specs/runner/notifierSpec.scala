@@ -55,6 +55,12 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       there was one(notifier).systemCompleted("system1 should")
     }
   }
+  "A notifier for a specification with an anonymous spec" should { 
+    new NotifierRunner(specWithAnAnonymousSpec, notifier).reportSpecs
+    "not be notified of the anonymous sus" in {
+      there was no(notifier).systemStarting(specWithAnAnonymousSpec.systems(0).header)
+    }
+  }
   "A notifier for a planOnly specification" should beNotifiedOf { 
     "only the systems and examples when a specification" in {
       s.planOnly(true)
@@ -72,6 +78,10 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       new NotifierRunner(s, notifier).reportSpecs
       there was no(notifier).exampleSucceeded("ex1")
     }
+  }
+  val specWithAnAnonymousSpec = new Specification {
+    "ex1" in { 1 must_== 1 }
+    "ex2" in { 1 must_== 1 }
   }
   val s = new Specification {
     "system1"  should {

@@ -60,8 +60,12 @@ class NotifierRunner(val specs: Array[Specification], val notifiers: Array[Notif
     for (subSpec <- spec.subSpecifications) {
       reportASpecification(subSpec, planOnly)
     }
-    for (system <- spec.systems)
-      reportSystem(system, planOnly)
+    for (system <- spec.systems) {
+      if (system.isAnonymous)
+	    for (example <- system.examples) reportExample(example, planOnly)
+	  else
+		reportSystem(system, planOnly)
+	}
     notifiers.foreach { _.systemCompleted(spec.description) }
     this
   }
