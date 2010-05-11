@@ -38,7 +38,7 @@ class fieldSpec extends spex.Specification {
     "have a toString method displaying the label and value" in {
       Field("label", "value").toString must_== "label: value"
     }
-    "have a toString method formatting Doubles properly" in {
+    "have a toString method formatting Doubles using the US format by default" in {
       Field("label", 1.2345).toString must_== "label: 1.2345"
     }
     "have a toXhtml method returning the formatted value in a <td> cell" in {
