@@ -35,7 +35,7 @@ import org.specs.specification._
  * assess properties multiple times with generated data.
  * @see the <a href="http://code.google.com/p/scalacheck/">ScalaCheck project</a>
  */
-trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with ScalaCheckParameters with SuccessValues with ExpectationsListener {
+trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with ScalaCheckParameters with SuccessValues with ExpectationsListener { outer =>
 
   /**
    * This implicit value is useful to transform the SuccessValue returned by matchers to properties.
@@ -79,6 +79,21 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * Usage: <code>generated_values must pass(function)</code>
     */
    def pass[T](f: T => SuccessValue)(implicit params: Parameters) = new GenMatcher[T](f)(params)
+   /**
+    * Matches ok if the partial function<code> { case t => exp }</code> returns <code>true</code> for any generated value<br>
+    * exp is an expression returning a SuccessValue, so that any specs expectation can be used here, like a must_== b
+    * Usage: <code>generated_values must validate(partial function)</code>
+    */
+   def validate[T](f: PartialFunction[T, SuccessValue])(implicit params: Parameters) = new GenMatcher[T](t => f(t))(params)
+
+   /** transforms a boolean to a SuccessValue so that Partial functions returning booleans can be accepted by the validate matcher */
+   implicit def booleanToSuccessValue(b: => Boolean) = new SuccessValue { if (!b) throw new FailureException("false") }
+
+   /** adds a validates method to a generator so that gen validates partialFunction can be written */
+   implicit def aGen[T](g: Gen[T]) = new AGen(g)
+   class AGen[T](g: Gen[T]) {
+     def validates(f: PartialFunction[T, SuccessValue])(implicit params: Parameters) = outer.validate(f)(params).apply(g)
+   }
    /** 
     * workaround class used to avoid an ambiguous definition of the pass method with
     * f: T => Boolean and f: T => SuccessValue 
