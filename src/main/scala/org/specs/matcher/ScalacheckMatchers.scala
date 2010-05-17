@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.matcher
-import org.scalacheck.{Gen, Prop, Arg, Test}
+import org.scalacheck.{Gen, Prop, Arg, Test, Arbitrary, Shrink}
 import org.scalacheck.util.StdRand
 import org.scalacheck.Prop._
 import org.scalacheck.Test.{Status, Params, Proved, Passed, Failed, Exhausted, GenException, PropException, Result}
@@ -67,6 +67,15 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    implicit def booleanFunctionToPropFunction[T](f: T => Boolean): T => Prop = (t: T) => {
      if (f(t)) proved else falsified
    }
+   /** 
+    * This implicit definition and associated ForAll class allows to write
+    * { function }.forAll must pass
+    */
+   implicit def toProp[T](f: T => Boolean): ForAll[T] = new ForAll(f)
+   class ForAll[T](f: T => Boolean) {
+     def forAll(implicit a: Arbitrary[T], s: Shrink[T]) = Prop.forAll(f)
+   }
+
    /**
     * Matches ok if the <code>function T => Prop</code> returns a<code>true</code> Property for any generated value<br>
     * Usage: <code>generated_values must pass(function)</code>
@@ -117,7 +126,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
       def apply(p: => Prop) = checkProperty(p)(params)
     }
 
-   private [matcher] def checkFunction[T](g: Gen[T])(f: T => Boolean)(p: Parameters) = {
+    private [matcher] def checkFunction[T](g: Gen[T])(f: T => Boolean)(p: Parameters) = {
       // create a scalacheck property which states that the function must return true
       // for each generated value
       val prop = forAllProp(g)(a => if (f(a)) proved else falsified)

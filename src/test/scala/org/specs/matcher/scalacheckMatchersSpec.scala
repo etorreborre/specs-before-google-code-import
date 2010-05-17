@@ -35,6 +35,9 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     "be ok with a true property" in {
       alwaysTrueProp must pass
     }
+    "be ok with a true function" in {
+      { a: Boolean => true }.forAll must pass
+    }
     "be ko with a false property" in {
       expectation(identityProp must pass) must failWithMatch("A counter-example is 'false' \\(after \\d+ tr(y|ies)\\)")
     }
@@ -112,6 +115,7 @@ object specWithFailure extends Specification with ScalaCheck {
 trait ScalaCheckExamples extends ScalaCheck {  this: Specification =>
   val identityProp = forAll((a:Boolean) => a)
   val alwaysTrueProp = proved
+  val alwaysTrueFunction: Boolean => Boolean = { a: Boolean => true }
   val alwaysTrue = Gen.value(true)
   val alwaysFalse = Gen.value(false)
   val random = Gen.oneOf(true, false)
