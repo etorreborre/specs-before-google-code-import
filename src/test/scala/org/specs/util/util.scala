@@ -25,6 +25,7 @@ object utilSpecifications extends Specification {
         new configurationSpec,
         new controlSpec,
         new editDistanceSpec,
+		new extendedFunctionSpec,
 		new extendedStringSpec,
         new includeExcludeSpec,
         new lazyParamSpec,

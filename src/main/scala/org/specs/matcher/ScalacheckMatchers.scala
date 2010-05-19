@@ -27,6 +27,7 @@ import org.scalacheck.ConsoleReporter._
 import scala.collection.Map
 import org.specs.io.ConsoleOutput
 import org.specs.matcher._
+import org.specs.util.ExtendedFunctions._
 import org.specs.matcher.MatcherUtils.q
 import org.specs.execute._
 import org.specs.specification._
@@ -93,7 +94,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * exp is an expression returning a SuccessValue, so that any specs expectation can be used here, like a must_== b
     * Usage: <code>generated_values must validate(partial function)</code>
     */
-   def validate[T](f: PartialFunction[T, SuccessValue])(implicit params: Parameters) = new GenMatcher[T](t => f(t))(params)
+   def validate[T](f: Function[T, SuccessValue])(implicit params: Parameters) = new GenMatcher[T](t => f.applySafely(t).getOrElse(false))(params)
 
    /** transforms a boolean to a SuccessValue so that Partial functions returning booleans can be accepted by the validate matcher */
    implicit def booleanToSuccessValue(b: => Boolean) = new SuccessValue { if (!b) throw new FailureException("false") }
@@ -101,7 +102,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    /** adds a validates method to a generator so that gen validates partialFunction can be written */
    implicit def aGen[T](g: Gen[T]) = new AGen(g)
    class AGen[T](g: Gen[T]) {
-     def validates(f: PartialFunction[T, SuccessValue])(implicit params: Parameters) = outer.validate(f)(params).apply(g)
+     def validates(f: Function[T, SuccessValue])(implicit params: Parameters) = outer.validate(f)(params).apply(g)
    }
    /** 
     * workaround class used to avoid an ambiguous definition of the pass method with
