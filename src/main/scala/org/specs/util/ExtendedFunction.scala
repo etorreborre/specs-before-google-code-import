@@ -28,12 +28,7 @@ class ExtendedFunction[A, B](f: Function[A, B]) {
 	try {
 	  Some(f(a))
 	} catch {
-	  case e: MatchError => {
-	 	if (e.getCause() == null) 
-	 	  None
-	 	else
-	 	  throw e
-	  }
+	  case e: MatchError => None
 	}
   }
 }
