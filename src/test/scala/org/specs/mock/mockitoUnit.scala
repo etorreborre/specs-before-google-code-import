@@ -20,8 +20,9 @@ package org.specs.mock
 import org.specs._
 import org.specs.execute._
 import org.specs.runner._
+import org.specs.matcher.ExpectationMatchers
 
-class mockitoUnit extends SpecificationWithJUnit with Mockito {
+class mockitoUnit extends SpecificationWithJUnit with Mockito with ExpectationMatchers {
   import java.util.List
   val m1 = mock[List[String]]
   val m2 = mock[List[String]]
@@ -180,5 +181,17 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito {
   "A mock can be created with a name" in {
     mockAs[scala.List[String]]("my list").isExpectation
     mock[scala.List[String]].as("my list").isExpectation
+  }
+  "A specs matcher can be used in place of a Mockito one" in {
+    case class Thing(good: Boolean)
+    def ==(expected: Thing) = new org.specs.matcher.Matcher[Thing] {
+      def apply(thing: => Thing) = (thing.good == expected.good, "good thing", "bad thing")
+    }
+    class ToMock {
+      def accept(t: Thing) = t
+    }
+    val m = mock[ToMock]
+    m.accept(Thing(true))
+    expectation { there was one(m).accept(==(Thing(false))) } must failWithMatch("good thing")
   }
 }

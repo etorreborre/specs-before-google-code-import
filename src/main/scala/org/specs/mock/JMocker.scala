@@ -505,17 +505,13 @@ trait JMocker extends JMockerExampleLifeCycle with HamcrestMatchers with JMockAc
 }
 /** Adapter class to use specs matchers as Hamcrest matchers */
 case class HamcrestMatcherAdapter[T](m: org.specs.matcher.Matcher[T]) extends org.hamcrest.TypeSafeMatcher[T] {
-   var resultMessage: String = ""
+   var result = (true, "", "")
    def matchesSafely(item: T) = {
-     val result = m.apply(item)
-     if (result._1)
-       resultMessage = result._2
-     else
-       resultMessage = result._3
+     result = m.apply(item)
      result._1
    }
-   def describeTo(description: Description ) = {
-     new org.hamcrest.StringDescription(new StringBuffer(resultMessage))
+   def describeTo(description: Description) = {
+     description.appendText(result._2)
    }
 }
 
