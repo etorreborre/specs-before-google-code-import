@@ -61,7 +61,12 @@ class anyMatcherSpec extends MatchersSpecification {
       // equivalent to
       ((_:String).size)("123456") must beEqualTo(((_:String).size)("string"))
     }
-    "transformed to a matcher matching a sequence of objects using the toSeq method" in {
+    "transformed to a matcher matching an iterable of objects using the toIterable method" in {
+      List(1, 2, 3) must beLessThan(5).toIterable
+      expectation(List(1, 2, 6) must beLessThan(5).toIterable) must failWith(
+        "1 is less than 5 and 2 is less than 5 but 6 is not less than 5")
+    }
+    "transformed to a matcher matching a sequence of objects using the toSeq method to match 2 seqs together" in {
       List("a", "b", "c") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))
       expectation(List("a", "c", "b") must (beEqualTo(_:String)).toSeq(List("a", "b", "c"))) must
         failWith("'c' is not equal to 'b'; 'b' is not equal to 'c'")

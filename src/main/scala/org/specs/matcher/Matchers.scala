@@ -261,7 +261,23 @@ abstract class Matcher[-T] extends AbstractMatcher[T] with MatcherResult { outer
   /**
    * @return a matcher that needs to eventually match, after a given number of retries and a sleep time
    */
-  def eventually(retries: Int, sleep: Duration): Matcher[T] = EventuallyMatchers.eventually(retries, sleep)(this) 
+  def eventually(retries: Int, sleep: Duration): Matcher[T] = EventuallyMatchers.eventually(retries, sleep)(this)
+  /** 
+   * @return a matcher that matches all elements of an iterable
+   */
+  def toIterable = new Matcher[Iterable[T]]() {
+    type Result = (Boolean, String, String)
+    
+    def apply(v: =>Iterable[T]) = ((true, "", "") /: v) { (res: Result, cur: T) =>
+      val currentRes = outer(cur)
+      if (currentRes._1) 
+        (res._1 && currentRes._1, append(res._2, " and ", currentRes._2),  append(res._3, " and ", currentRes._2))
+      else
+        (res._1 && currentRes._1, append(res._2, " and ", currentRes._2),  append(res._2, " but ", currentRes._3))
+    }
+  }
+  private def append(first: String, separator: String, second: String) = 
+      first + (if (first.isEmpty) "" else separator) + second
 }
 /**
  * Result of <code>Matcher.apply</code>. Provides a method named 'success' to get the result
