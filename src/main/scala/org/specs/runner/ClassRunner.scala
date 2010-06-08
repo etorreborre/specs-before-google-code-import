@@ -28,10 +28,8 @@ class ClassRunner extends Classes with OutputReporter {
   override def main(arguments: Array[String]) = {
     if (arguments.length == 0)
       println("The first argument should be at least the specification class name")
-    else {
-      args = arguments
-      specs.foreach(_.main(args))
-    }
+    else 
+	  super.main(arguments)
   }
   override protected def displayUsage = {
     println("usage java <classpath> run [className|-k classNames]")
