@@ -65,7 +65,6 @@ class specificationContextSpec extends SpecificationWithJUnit {
       specificationMustDo(spec, 
                           "beforeSus", 
                           "beforeExample", "around", "afterExample", 
-                          "beforeExample", "around", "afterExample", 
                           "afterSus")
      }    
   }
@@ -93,10 +92,10 @@ class TestedSpecification(val params: ContextParams) extends Specification with 
   new SpecContext { 
     if (params.contain("beforeSpec")) beforeSpec(out.append("beforeSpec_ok")) 
     if (params.contain("beforeSus")) beforeSus(out.append("beforeSus_ok")) 
-    if (params.contain("beforeExample")) beforeExample(out.append("beforeExample_ok")) 
+    if (params.contain("beforeExample")) before(out.append("beforeExample_ok")) 
     def output(a: =>Any) = { out.append("around_ok"); a }  
     if (params.contain("around")) aroundExpectations(output(_)) 
-    if (params.contain("afterExample")) afterExample(out.append("afterExample_ok"))
+    if (params.contain("afterExample")) after(out.append("afterExample_ok"))
     if (params.contain("afterSus")) afterSus(out.append("afterSus_ok")) 
     if (params.contain("afterSpec")) afterSpec(out.append("afterSpec_ok")) 
 
