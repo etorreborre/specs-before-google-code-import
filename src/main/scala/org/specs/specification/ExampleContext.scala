@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2007-2009 Eric Torreborre <etorreborre@yahoo.com>
+ * Copyright (c) 2007-2010 Eric Torreborre <etorreborre@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -57,8 +57,8 @@ trait ExampleContext extends ExampleLifeCycle {
             beforeSystemFailure.map(throw _)
           }
         }
-      }      
-      before.map(_.apply())
+      }
+      if (!ex.hasSubExamples) before.map(_.apply())
     }
   }
   /** 
@@ -69,7 +69,8 @@ trait ExampleContext extends ExampleLifeCycle {
   override def executeExpectations(ex: Examples, t: =>Any): Any = {
     ex match {
       case sus: Sus => parent.map(_.executeExpectations(ex, t))
-      case e: Example => aroundExpectations.map { (f: (=>Any) =>Any) => 
+      case e: Example if (ex.hasSubExamples) => parent.map(_.executeExpectations(ex, t))
+      case e: Example if (!ex.hasSubExamples) => aroundExpectations.map { (f: (=>Any) =>Any) => 
           f(parent.map(_.executeExpectations(ex, t)))
         }.orElse(parent.map(_.executeExpectations(ex, t)))
     }
@@ -78,7 +79,7 @@ trait ExampleContext extends ExampleLifeCycle {
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Examples): Unit = { 
     if (!(ex eq this)) {
-      after.map {_.apply()}
+      if (!ex.hasSubExamples) after.map {_.apply()}
       this match {
         case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last) {
           lastActions.map { actions =>

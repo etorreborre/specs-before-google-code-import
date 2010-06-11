@@ -154,6 +154,26 @@ class beforeAfterSpec extends SpecificationWithJUnit {
       after must beTrue
     }
   }
+  "A specification with nested examples" should {
+    "execute the before / after methods only around the leaves examples" in {
+      specWithBeforeAfterAndNestedExamples.execute
+      specWithBeforeAfterAndNestedExamples.messages.filter(_.startsWith("msg")).mkString("\n", "\n", "\n") must_== List(
+      "msg example 1",
+        "msg before",
+        "msg 1.1",
+        "msg after",
+        "msg before",
+        "msg 1.2",
+        "msg after",
+      "msg example 2",
+        "msg before",
+        "msg 2.1",
+        "msg after",
+        "msg before",
+        "msg 2.2",
+        "msg after").mkString("\n", "\n", "\n")
+    }
+  }
 }
 
 abstract class beforeAfterSpecification extends Specification with Contexts with Console with MockOutput { 
@@ -308,6 +328,25 @@ object specWithAll extends beforeAfterSpecification {
       println("msg doAfterAllSus2").doLast
     }
     println("msg doAfterAllSpec").afterSpec
+    reportSpecs
+  }
+}
+object specWithBeforeAfterAndNestedExamples extends beforeAfterSpecification {
+  override def executeSpec = {
+    "A specification" should {
+      doBefore { println("msg before") }
+      doAfter  { println("msg after") }
+      "example 1" in { 
+        println("msg example 1")
+        "1.1" in { println("msg 1.1") }
+        "1.2" in { println("msg 1.2") }
+      }
+      "example 2" in { 
+        println("msg example 2")
+        "2.1" in { println("msg 2.1") }
+        "2.2" in { println("msg 2.2") }
+      }
+    }
     reportSpecs
   }
 }
