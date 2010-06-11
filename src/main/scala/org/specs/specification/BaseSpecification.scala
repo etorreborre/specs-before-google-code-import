@@ -274,14 +274,24 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    object behave {
     def like(other: Sus): Example = {
       val behaveLike: Example = forExample("behave like " + other.description.uncapitalize)
-      behaveLike.in {
-        other.examples.foreach { o => 
-          val e = behaveLike.createExample(o.description.toString)
-          e.execution = o.execution
-          e.execution.map(_.example = e)
-          e.parent = Some(behaveLike)
-        }
+      def copyExample(o: Example) = {
+        val e = behaveLike.createExample(o.description.toString)
+        e.execution = o.execution
+        e.execution.map(_.example = e)
+        e.parent = Some(behaveLike)
       }
+      def addExamples(other: Examples): Examples = {
+        other.examples.foreach { o => 
+          copyExample(o)
+          if (o.hasSubExamples) o.examples.foreach(e => addExamples(e))
+        }
+        other
+      }
+     other.parent match {
+       case Some(s: ExampleExpectationsListener) => s.expectationsListener = outer
+       case None => ()
+     }
+      behaveLike.in { addExamples(other) }
       behaveLike
     }
     def like(susName: String): Example = outer.systems.find(_.description == susName) match {
