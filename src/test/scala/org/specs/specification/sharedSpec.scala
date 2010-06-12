@@ -5,7 +5,8 @@ import org.specs.io.mock._
 class sharedSpec extends SpecificationWithJUnit {
   "The specification with shared subexamples" should {
     "be ok" in {
-      MockJavaSpec.reportSpecs.messages.toList must not containMatch("PENDING")
+      MockJavaSpecification.reportSpecs.messages.toList must not containMatch("PENDING")
+      MockJavaSpecification.reportSpecs.messages.toList must containMatch("x must be ko")
     }
   }
 }
@@ -21,12 +22,7 @@ object SharedExamples extends Specification {
     }
   }
 }
-object JavaSpec extends Specification {
-  "The Java language" should {
-    behave like SharedExamples.shared
-  }
-}
-object MockJavaSpec extends Specification with MockOutput {
+object MockJavaSpecification extends Specification with MockOutput {
   "The Java language" should {
     behave like SharedExamples.shared
   }

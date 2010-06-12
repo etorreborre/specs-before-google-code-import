@@ -124,7 +124,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def stats(example: Example): (Int, Int, Int, Int, Int) = {
     if (!planOnly()) {
-     (if (example.examples.isEmpty) 1 else 0, example.expectationsNb, example.failures.size, example.errors.size, example.skipped.size) +
+     (if (example.examples.isEmpty) 1 else 0, example.ownExpectationsNb, example.ownFailures.size, example.ownErrors.size, example.ownSkipped.size) +
      example.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
     } else
      (1, 0, 0, 0, 0)

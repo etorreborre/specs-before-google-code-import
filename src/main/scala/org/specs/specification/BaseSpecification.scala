@@ -272,29 +272,18 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * Otherwise, an Exception would be thrown, causing the specification failure at construction time.
    */
    object behave {
-    def like(other: Sus): Example = {
+    def like(o: =>Sus): Examples = {
+      val other = o
       val behaveLike: Example = forExample("behave like " + other.description.uncapitalize)
-      def copyExample(o: Example) = {
-        val e = behaveLike.createExample(o.description.toString)
-        e.execution = o.execution
-        e.execution.map(_.example = e)
-        e.parent = Some(behaveLike)
+      behaveLike.in { 
+        other.prepareExecutionContextFrom(behaveLike)
+        other.execution.map(_.execute)
+        behaveLike.copyExecutionResults(other)
+        behaveLike
       }
-      def addExamples(other: Examples): Examples = {
-        other.examples.foreach { o => 
-          copyExample(o)
-          if (o.hasSubExamples) o.examples.foreach(e => addExamples(e))
-        }
-        other
-      }
-     other.parent match {
-       case Some(s: ExampleExpectationsListener) => s.expectationsListener = outer
-       case None => ()
-     }
-      behaveLike.in { addExamples(other) }
       behaveLike
     }
-    def like(susName: String): Example = outer.systems.find(_.description == susName) match {
+    def like(susName: String): Examples = outer.systems.find(_.description == susName) match {
       case Some(sus) => this.like(sus)
       case None => throw new Exception(q(susName) + " is not specified in " + outer.name + 
                                          outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
