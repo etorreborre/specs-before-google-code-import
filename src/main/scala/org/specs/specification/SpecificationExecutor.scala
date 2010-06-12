@@ -52,6 +52,7 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
               case None => throw PathException(path + "not found for " + example)
               case Some(c) => {
                 c.prepareExecutionContextFrom(example)
+                c.execution.map(_.example = c)
                 c.execution.map(_.execute)
                 example.copyExecutionResults(c)
               }
