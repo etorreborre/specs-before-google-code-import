@@ -29,6 +29,7 @@ object specificationSpecifications extends Specification {
         new executionPathSpec,
         new executionSpec,
         new pendingUntilFixedSpec,
+        new sharedSpec,
         new snippetSpec,
         new specificationSpec,
         new specificationContextSpec,
