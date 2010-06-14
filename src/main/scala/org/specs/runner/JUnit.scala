@@ -179,7 +179,11 @@ trait ExtendedJUnitSuite extends Stacktraces {
       if (JUnitOptions.planOnly() || !example.hasSubExamples)
         s.addTest(new ExampleTestCase(example, exampleDescription))
       else {
-        s.addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
+        val nestedExamples = if (example.examples.isEmpty) example :: example.examples else example.examples
+        if (!nestedExamples.isEmpty)
+          s.addTest(new ExamplesTestSuite(exampleDescription, nestedExamples, None))
+        else
+          s.addTest(new ExampleTestCase(example, exampleDescription))
       }
     }
   }
