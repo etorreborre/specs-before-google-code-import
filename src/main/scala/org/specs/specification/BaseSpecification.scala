@@ -125,7 +125,8 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /** @return the example corresponding to a given Tree path, searching in the incl */
   def getExample(path: TreePath): Option[Examples] = {
     path match {
-      case TreePath(0 :: i :: rest) if systems.size > i => systems(i).getExample(TreePath(rest))
+      case TreePath(0 :: i :: rest) if systems.size > i => 
+        systems(i).getExample(TreePath(rest))
       case _ => None
     }
   }
@@ -269,6 +270,10 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
       behaveLike.in { 
         other.prepareExecutionContextFrom(behaveLike)
         other.execution.map(_.execute)
+        other.parent match {
+          case Some(p: ExampleExpectationsListener) => p.expectationsListener = outer
+          case _ => ()
+        }
         behaveLike.copyExecutionResults(other)
         behaveLike
       }
