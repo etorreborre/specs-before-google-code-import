@@ -106,7 +106,6 @@ trait ExampleStructure extends TreeNode with Tagged with DefaultResults {
       ex.execution.map(_.example = ex)
       ex.tagWith(e)
       ex.hasSomeSubExamples = e.hasSomeSubExamples
-      ex.execution.map(_.resetForExecution)
     }
     thisExpectationsNumber = other.thisExpectationsNumber
   }
