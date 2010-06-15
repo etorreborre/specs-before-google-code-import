@@ -83,7 +83,7 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
     "specify a doFirst executing only once " in {
       specWithDoFirstAndNestedExamples.execute
-      specWithDoFirstAndNestedExamples.messages.filter(_.contains("msg doFirst")) must have size(1)
+      specWithDoFirstAndNestedExamples.messages.filter(_.contains("msg doFirst")) must haveSize(1)
     }
     "specify a doLast method to setup the context after examples are executed" in {
       specWithDoLast.execute
