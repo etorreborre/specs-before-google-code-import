@@ -38,6 +38,10 @@ trait ExampleContext extends ExampleLifeCycle {
   var after: Option[() => Any] = None
   /** the lastActions function will be invoked after all examples */
   var lastActions: Option[() => Any] = None
+  private lazy val executeOneExampleOnly = parent match {
+    case Some(s: BaseSpecification) => s.executeOneExampleOnly
+    case _ => false
+  }
   /** calls the before method of the "parent" cycle, then the sus before method before an example if that method is defined. */
   override def beforeExample(ex: Examples): Unit = {
     beforeSystemFailure.map(throw _)
@@ -79,7 +83,7 @@ trait ExampleContext extends ExampleLifeCycle {
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Examples): Unit = { 
     if (!(ex eq this)) {
-      if (!ex.hasSubExamples) after.map {_.apply()}
+      if (!executeOneExampleOnly && !ex.hasSubExamples) after.map {_.apply()}
       this match {
         case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last) {
           lastActions.map { actions =>
