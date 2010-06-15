@@ -138,9 +138,11 @@ trait Reporter extends SpecsFilter with ConsoleLog {
       displayHelp    
     } else {
       reportSpecs
-      if (filteredSpecs.exists(_.isFailing)) System.exit(1) else System.exit(0)
+      if (filteredSpecs.exists(_.isFailing)) exit(1) else exit(0)
     }
   }
+  /** override this method for a different handling of exiting. */
+  protected def exit(code: Int) = System.exit(code)
   /** display all help options. */
   protected def displayHelp = {
     displayUsage
