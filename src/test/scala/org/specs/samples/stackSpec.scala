@@ -23,6 +23,7 @@ import org.specs.util._
 import org.specs._
 
 class stackSpec extends StackSpecification {
+  shareVariables()
   var stack = emptyStack 
   val nonEmptyStack = beforeContext(stack = nonEmpty)
   val belowCapacityStack = beforeContext(stack = belowCapacity)
