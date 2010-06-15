@@ -25,6 +25,7 @@ import org.specs.util._
  * Note that this example show the use of different methods to pass the context, like definedAs, when or ->-
  */
 class stackSpec extends StackSpecification {
+  shareVariables()
   var stack = emptyStack 
   val nonEmptyStack = beforeContext(stack = nonEmpty)
   val belowCapacityStack = beforeContext(stack = belowCapacity)

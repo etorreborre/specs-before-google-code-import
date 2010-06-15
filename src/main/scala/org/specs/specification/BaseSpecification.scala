@@ -281,7 +281,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
         case _ => None
       }
 
-      behaveLike.in { 
+      behaveLike.in {
         originalExpectationsListener.map(_.expectationsListener = outer)
         other.prepareExecutionContextFrom(behaveLike)
         other.execution.map(_.execute)
@@ -297,6 +297,14 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
       case None => throw new Exception(q(susName) + " is not specified in " + outer.name + 
                                          outer.systems.map(_.description).mkString(" (available sus are: ", ", ", ")"))
     }
+  }
+  /** set an example as the current example for this lifecycle and its parent */
+  override private[specs] def setCurrent(ex: Option[Examples]): Unit = {
+    expectationsListener match {
+      case l: LifeCycle if (l != this) => l.setCurrent(ex)
+      case _ => ()
+    }
+    super.setCurrent(ex)
   }
 
   /** @return the first level examples number (i.e. without subexamples) */
