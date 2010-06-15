@@ -262,7 +262,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * in order to execute it in isolation 
    */
   private[specification] var executeOneExampleOnly = false
-    /**
+  /**
    * Syntactic sugar for examples sharing between systems under test.<p>
    * Usage: <code>
    *   "A stack below full capacity" should {
@@ -282,10 +282,12 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
       }
 
       behaveLike.in { 
-        other.prepareExecutionContextFrom(behaveLike)
         originalExpectationsListener.map(_.expectationsListener = outer)
+        other.prepareExecutionContextFrom(behaveLike)
         other.execution.map(_.execute)
         behaveLike.copyExecutionResults(other)
+        other.resetForExecution
+        other.exampleList = Nil
         behaveLike
       }
       behaveLike

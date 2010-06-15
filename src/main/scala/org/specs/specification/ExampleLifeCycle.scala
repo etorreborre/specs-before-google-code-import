@@ -125,7 +125,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
    * copy the execution results from another example.
    * This method is used when an example has been executed in isolation in another spec.
    */
-  def copyExecutionResults(other: Examples) = {
+  def copyExecutionResults(other: Examples) {
     copyFrom(other)
     execution.map(_.executed = true)
   }

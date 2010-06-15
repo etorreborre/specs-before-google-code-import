@@ -52,8 +52,11 @@ object SharedExamples2 extends Specification {
       } 
     }
     "another nested example" >> {
-      "must also be ko" >> { 
-        true must beFalse 
+      "must also be ok" >> {
+        true must beTrue 
+      } 
+      "must also be ko" >> {
+        false must beTrue 
       } 
     }
   }
