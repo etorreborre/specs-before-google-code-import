@@ -73,44 +73,48 @@ class beforeAfterSpec extends SpecificationWithJUnit {
     }
   }
   "A system under specification" can {
-    "specify a doBeforeAll method to setup the context before any example is executed" in {
-      specWithDoBeforeAll.execute
-      specWithDoBeforeAll.messages.filter(_.startsWith("msg")) must containMatch("doBeforeAll")
-      specWithDoBeforeAll.messages.filter(_.startsWith("msg")).drop(1) must (
+    "specify a doFirst method to setup the context before any example is executed" in {
+      specWithDoFirst.execute
+      specWithDoFirst.messages.filter(_.startsWith("msg")) must containMatch("doFirst")
+      specWithDoFirst.messages.filter(_.startsWith("msg")).drop(1) must (
         containMatch("example 1") and
         containMatch("example 2") and
-        notContainMatch("doBeforeAll"))
+        notContainMatch("doFirst"))
     }
-    "specify a doAfterAll method to setup the context after examples are executed" in {
-      specWithDoAfterAll.execute
-      specWithDoAfterAll.messages.filter(_.startsWith("msg")) must containMatch("doAfterAll")
-      specWithDoAfterAll.messages.filter(_.startsWith("msg")).drop(2) must (
+    "specify a doFirst executing only once " in {
+      specWithDoFirstAndNestedExamples.execute
+      specWithDoFirstAndNestedExamples.messages.filter(_.contains("msg doFirst")) must have size(1)
+    }
+    "specify a doLast method to setup the context after examples are executed" in {
+      specWithDoLast.execute
+      specWithDoLast.messages.filter(_.startsWith("msg")) must containMatch("doLast")
+      specWithDoLast.messages.filter(_.startsWith("msg")).drop(2) must (
         notContainMatch("example 1") and
         notContainMatch("example 2") and
-        containMatch("doAfterAll"))
+        containMatch("doLast"))
     }
     "specify a before/after clauses before and after: specification, systems, examples" in {
       specWithAll.execute
       specWithAll.messages.filter(_.startsWith("msg")).toList must_== List(
-      "msg doBeforeAllSpec",
-        "msg doBeforeAllSus1",
+      "msg doFirstSpec",
+        "msg doFirstSus1",
           "msg doBeforeSus1",
             "msg example 1.1",
           "msg doAfterSus1",
           "msg doBeforeSus1",
             "msg example 1.2",
           "msg doAfterSus1",
-        "msg doAfterAllSus1",
+        "msg doLastSus1",
 
-        "msg doBeforeAllSus2",
+        "msg doFirstSus2",
           "msg doBeforeSus2",
             "msg example 2.1",
           "msg doAfterSus2",
           "msg doBeforeSus2",
             "msg example 2.2",
           "msg doAfterSus2",
-        "msg doAfterAllSus2",
-      "msg doAfterAllSpec")
+        "msg doLastSus2",
+      "msg doLastSpec")
     }
   }
   "A specification" can {
@@ -288,20 +292,36 @@ object specWithUntil extends beforeAfterSpecification {
     reportSpecs
   }
 }
-object specWithDoBeforeAll extends beforeAfterSpecification {
+object specWithDoFirst extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
-      doFirst { println("msg doBeforeAll") }
+      doFirst { println("msg doFirst") }
       "have example 1 ok" in { println("msg example 1") }
       "have example 2 ok" in { println("msg example 2") }
     }
     reportSpecs
   }
 }
-object specWithDoAfterAll extends beforeAfterSpecification {
+object specWithDoFirstAndNestedExamples extends beforeAfterSpecification {
   override def executeSpec = {
     "A specification" should {
-      doLast { println("msg doAfterAll") }
+      doFirst { println("msg doFirst") }
+      "have example 1 ok" in { 
+        "have example 1.1 ok" in { println("msg example 1.1") } 
+        "have example 1.2 ok" in { println("msg example 1.2") } 
+      }
+      "have example 2 ok" in { 
+        "have example 2.1 ok" in { println("msg example 2.1") } 
+        "have example 2.2 ok" in { println("msg example 2.2") } 
+      }
+    }
+    reportSpecs
+  }
+}
+object specWithDoLast extends beforeAfterSpecification {
+  override def executeSpec = {
+    "A specification" should {
+      doLast { println("msg doLast") }
       "have example 1 ok" in { println("msg example 1") }
       "have example 2 ok" in { println("msg example 2") }
     }
@@ -310,24 +330,24 @@ object specWithDoAfterAll extends beforeAfterSpecification {
 }
 object specWithAll extends beforeAfterSpecification {
   override def executeSpec = {
-    doBeforeSpec { println("msg doBeforeAllSpec") }
+    doBeforeSpec { println("msg doFirstSpec") }
     "A specification" should {
-      doFirst 	{ println("msg doBeforeAllSus1") }
+      doFirst 	{ println("msg doFirstSus1") }
       doBefore 		{ println("msg doBeforeSus1") }
-      doLast 	{ println("msg doAfterAllSus1") }
+      doLast 	{ println("msg doLastSus1") }
       doAfter 		{ println("msg doAfterSus1") }
       "have example 1.1 ok" in { println("msg example 1.1") }
       "have example 1.2 ok" in { println("msg example 1.2") }
     }
     "A specification" should {
-      println("msg doBeforeAllSus2").doFirst
+      println("msg doFirstSus2").doFirst
       println("msg doBeforeSus2").before
       "have example 2.1 ok" in { println("msg example 2.1") }
       "have example 2.2 ok" in { println("msg example 2.2") }
       println("msg doAfterSus2").after
-      println("msg doAfterAllSus2").doLast
+      println("msg doLastSus2").doLast
     }
-    println("msg doAfterAllSpec").afterSpec
+    println("msg doLastSpec").afterSpec
     reportSpecs
   }
 }
