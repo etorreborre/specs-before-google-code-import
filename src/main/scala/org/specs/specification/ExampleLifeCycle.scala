@@ -110,15 +110,10 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure {
     skipIfNoExpectations()
   }
   /** 
-   * execute one sub example either right away if this is the first example
-   * of this list of example, otherwise the execution is delegated to the parent lifecycle
-   * for isolated execution
+   * forward the execution strategy to the parent
    */
   override def executeExample(ex: Examples): this.type = { 
-    if (!exampleList.isEmpty  && exampleList.head == ex)
-      ex.executeThis
-    else
-      parent.map(_.executeExample(ex)) // forward the execution strategy to the parent 
+    parent.map(_.executeExample(ex)) 
     this
   }
   /**
