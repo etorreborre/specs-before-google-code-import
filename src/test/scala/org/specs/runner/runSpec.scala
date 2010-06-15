@@ -19,10 +19,12 @@
 package org.specs.runner
 import org.specs.io.mock._
 
-class runSpec extends spex.Specification {
+class runSpec extends org.spex.Specification {
   "Running a non-existing class" should {
     "show an error message" in {
-      val runner = new ClassRunner with MockOutput
+      val runner = new ClassRunner with MockOutput {
+        override def exit(code: Int) = ()
+      }
       System.setProperty("debugLoadClass", "true")
       runner.main(Array("ThisClassDoesntExist"))
       runner.messages must contain("Could not load class ThisClassDoesntExist")

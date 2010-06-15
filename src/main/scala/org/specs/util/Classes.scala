@@ -58,7 +58,7 @@ trait Classes extends ConsoleOutput {
     } catch {
       case e => {
         if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className + ": " + e.getMessage)
-        if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
+        if (printStackTrace || System.getProperty("debugCreateObject") != null) e.getStackTrace() foreach (println(_))
       }
     }
     return None
@@ -87,7 +87,7 @@ trait Classes extends ConsoleOutput {
       case e => {
         if (System.getProperty("debugLoadClass") != null) {
           println("Could not load class " + className)
-          e.printStackTrace()
+          e.getStackTrace() foreach (println(_))
         }
       }
     }
@@ -124,7 +124,7 @@ trait Classes extends ConsoleOutput {
         } catch {
           case e => {
             if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className + ": " + e.getMessage)
-            if (printStackTrace || System.getProperty("debugCreateObject") != null) e.printStackTrace()
+            if (printStackTrace || System.getProperty("debugCreateObject") != null) e.getStackTrace() foreach (println(_))
             return None
           }
         }
