@@ -177,6 +177,24 @@ class beforeAfterSpec extends SpecificationWithJUnit {
         "msg 2.2",
         "msg after").mkString("\n", "\n", "\n")
     }
+    "execute the beforeSpec / afterSpec around the examples" in {
+      specWithDoBeforeSpecAfterSpecAndNestedExamples.execute
+      specWithDoBeforeSpecAfterSpecAndNestedExamples.messages.filter(_.startsWith("msg")).mkString("\n", "\n", "\n") must_== List(
+      "msg beforeSpec",
+        "msg example 1",
+          "msg 1.1",
+          "msg 1.2",
+        "msg example 2",
+          "msg 2.1",
+          "msg 2.2",
+      "msg afterSpec").mkString("\n", "\n", "\n")
+    }
+    "execute the afterSpec even if a composed example fails" in {
+      specWithAfterSpecFailingAComposingExample.execute
+      specWithAfterSpecFailingAComposingExample.messages.filter(_.startsWith("msg")).mkString("\n", "\n", "\n") must_== List(
+      "msg example 1",
+      "msg afterSpec").mkString("\n", "\n", "\n")
+    }
   }
 }
 
@@ -365,6 +383,38 @@ object specWithBeforeAfterAndNestedExamples extends beforeAfterSpecification {
         println("msg example 2")
         "2.1" in { println("msg 2.1") }
         "2.2" in { println("msg 2.2") }
+      }
+    }
+    reportSpecs
+  }
+}
+object specWithDoBeforeSpecAfterSpecAndNestedExamples extends beforeAfterSpecification {
+  override def executeSpec = {
+    doBeforeSpec { println("msg beforeSpec") }
+    doAfterSpec { println("msg afterSpec") }
+    "A specification" should {
+      "example 1 ok" in { 
+        println("msg example 1")
+        "have example 1.1 ok" in { println("msg 1.1") } 
+        "have example 1.2 ok" in { println("msg 1.2") } 
+      }
+      "msg example 2 ok" in { 
+        println("msg example 2")
+        "have example 2.1 ok" in { println("msg 2.1") } 
+        "have example 2.2 ok" in { println("msg 2.2") } 
+      }
+    }
+    reportSpecs
+  }
+}
+object specWithAfterSpecFailingAComposingExample extends beforeAfterSpecification {
+  override def executeSpec = {
+    doAfterSpec { println("msg afterSpec") }
+    "A specification" should {
+      "example 1 ok" in { 
+        println("msg example 1")
+        1 must_== 2
+        "have example 1.1 ok" in { println("msg 1.1") } 
       }
     }
     reportSpecs
