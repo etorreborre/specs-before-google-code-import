@@ -142,7 +142,7 @@ trait Reporter extends SpecsFilter with ConsoleLog {
     }
   }
   /** override this method for a different handling of exiting. */
-  protected[specs] def exit(code: Int) = System.exit(code)
+  private[specs] def exit(code: Int) = System.exit(code)
   /** display all help options. */
   protected def displayHelp = {
     displayUsage
