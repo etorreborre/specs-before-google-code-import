@@ -47,7 +47,8 @@ trait ExampleContext extends ExampleLifeCycle {
     beforeSystemFailure.map(throw _)
     parent.map(_.beforeExample(ex))
     if (!(ex eq this)) {
-      if (!executeOneExampleOnly && !exampleList.isEmpty && ex == exampleList.first) {
+      if (!exampleList.isEmpty && ex == exampleList.first && !(executeOneExampleOnly && ex.hasSubExamples)) {
+        
         val susListener = new Sus("", new org.specs.Specification {})
         firstActions.map { a =>
           withCurrent(susListener)(a.apply) 
@@ -83,9 +84,10 @@ trait ExampleContext extends ExampleLifeCycle {
   /** calls the after method of the "parent" cycle, then the sus after method after an example if that method is defined. */
   override def afterExample(ex: Examples): Unit = { 
     if (!(ex eq this)) {
-      if (!executeOneExampleOnly && !ex.hasSubExamples) after.map {_.apply()}
+      if (!ex.hasSubExamples)
+        after.map {_.apply()}
       this match {
-        case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last) {
+        case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last && !(executeOneExampleOnly && ex.hasSubExamples)) {
           lastActions.map { actions =>
             // force the execution of nested examples if there are last actions
             ex.exampleList.foreach(_.failures)

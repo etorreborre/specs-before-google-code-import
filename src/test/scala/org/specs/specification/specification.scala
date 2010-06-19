@@ -24,7 +24,8 @@ object specificationSpecifications extends Specification {
     "The Specification specifications" areSpecifiedBy (
         new baseSpecificationSpec,
         new beforeAfterSpec,
-		new calculatorSpec,
+        new beforeAfterDontShareSpec,
+        new calculatorSpec,
         new exampleSpec,
         new executionPathSpec,
         new executionSpec,
