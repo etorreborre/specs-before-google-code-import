@@ -266,12 +266,21 @@ trait FileSystem extends FileReader with FileWriter {
     Set(dirUrls.toList:_*) foreach { dirUrl => 
       if (dirUrl.toString.startsWith("jar")) {
         if (dirUrl.toString.toLowerCase.contains("specs")) 
-          unjar(dirUrl.toString.replace("jar:file:/", "").takeWhile(_ != '!').mkString, outputDir, ".*" + src + "/.*")
+          unjar(getPath(dirUrl).takeWhile(_ != '!').mkString, outputDir, ".*" + src + "/.*")
       } else {
          copyDir(dirUrl, outputDir + src, new Tagged() {}.accept(Tag(".*")).reject(Tag(".*\\.svn.*"), Tag(".*CVS.*")))
       }
       
     } 
+  }
+  /**
+   * @return a path that should be valid on all plateforms (@see issue 148)
+   */
+  private def getPath(url: URL) = {
+    if (System.getProperty("file.separator") == "\\") 
+		url.getPath.replace("\\", "/").replace("file:/", "")
+	else
+		url.getPath.replace("file:", "")
   }
   /** 
    * Return urls of the resources containing the name "name" from this ClassLoader and the System classLoader.
