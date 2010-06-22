@@ -108,12 +108,15 @@ trait JUnit extends JUnitSuite with Reporter with ExtendedJUnitSuite {
       setName(filteredSpecs.headOption.map(_.description).getOrElse("no specs"))
     filteredSpecs foreach { specification =>
       specification.subSpecifications.foreach(s => addTest(new JUnit3(s)))
-      specification.systems foreach { sus => 
-        val examples = if (!planOnly() && sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
-		if (sus.isAnonymous)
-		  examples foreach { e => this.addExample(e, "") }
-		else
-		  addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.headOption))
+      specification.systems foreach { sus =>
+        if (planOnly() || sus.examples.isEmpty)
+          addTest(new ExampleTestCase(sus, sus.description + " " + sus.verb))
+        else if (sus.isAnonymous)
+		  sus.examples foreach { e => asSuite(this).addExample(e, "") }
+        else {
+          val examples = if (sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
+          addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.firstOption))
+        }
       }
     }
   }
@@ -150,7 +153,7 @@ class ExamplesTestSuite(description: String, examples: Iterable[Examples], skipp
    */
   def initialize = {
     setName(description)
-    examples foreach {  example => this.addExample(example, description) }
+    examples foreach {  example => asSuite(this).addExample(example, description) }
   }
 
   /**
@@ -170,7 +173,7 @@ trait ExtendedJUnitSuite extends Stacktraces {
   /**return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
 
-  implicit def toExtendedSuite(s: JUnitSuite) = new ExtendedSuite(s)
+  implicit def asSuite(s: JUnitSuite) = new ExtendedSuite(s)
   
   class ExtendedSuite(s: JUnitSuite) {
     def addExample(example: Examples, description: String) = {
@@ -180,7 +183,12 @@ trait ExtendedJUnitSuite extends Stacktraces {
       if (JUnitOptions.planOnly() || !example.hasSubExamples)
         s.addTest(new ExampleTestCase(example, exampleDescription))
       else {
-        s.addTest(new ExamplesTestSuite(exampleDescription, example.examples, None))
+        if (!example.examples.isEmpty) {
+          val examples = if (example.hasOwnFailureOrErrors) example :: example.examples else example.examples          
+          s.addTest(new ExamplesTestSuite(exampleDescription, examples, None))
+        }
+        else
+          s.addTest(new ExampleTestCase(example, exampleDescription))
       }
     }
   }
