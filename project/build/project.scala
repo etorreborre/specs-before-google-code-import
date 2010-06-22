@@ -33,7 +33,6 @@ class Project(info: ProjectInfo) extends DefaultProject(info) with HtmlTestsProj
   val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/snapshots/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
-  val snapshotsRepo = Resolver.url("snapshots-repo", new java.net.URL("http://nexus-direct.scala-tools.org/content/repositories/snapshots"))
-  val specsRepo = Resolver.url("specs-repo", new java.net.URL("http://specs.googlecode.com/svn/maven2"))
-
+  val snapshotsRepo = "snapshots-repo" at "http://nexus.scala-tools.org/content/repositories/snapshots"
+  val specsRepo = "specs-repo" at "http://specs.googlecode.com/svn/maven2"
 }
