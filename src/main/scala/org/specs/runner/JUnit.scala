@@ -211,7 +211,7 @@ class ExampleTestCase(val example: Examples, description: String) extends TestCa
       }
       ex.ownSkipped foreach {
         skipped: SkippedException =>
-                result.addFailure(this, new SkippedAssertionError(UserError(skipped, context)))
+          result.addFailure(this, new SkippedAssertionError(UserError(skipped, context)))
       }
       ex.ownErrors foreach {
         error: Throwable =>

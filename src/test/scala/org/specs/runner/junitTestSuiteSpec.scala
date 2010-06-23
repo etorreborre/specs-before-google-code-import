@@ -143,13 +143,16 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
     }
   }
   "A test description" should {
+    val description = new TestDescription() {
+      override lazy val isExecutedFromMaven = false
+    }
+    import _root_.junit.framework._
+    class ATest() extends TestCase("name")
     "append the hashcode of the test to its description if not run from Maven or Intellij" in {
-      val description = new TestDescription() {
-        override lazy val isExecutedFromMaven = false
-      }
-      import _root_.junit.framework._
-      class ATest() extends TestCase("name")
       description.asDescription(new ATest()).toString must beMatching(".*\\(.*\\)")
+    }
+    "not have null annotations" in {
+      description.asDescription(new ATest()).getAnnotations() must not be(null)
     }
   }
   "A sus" should {
