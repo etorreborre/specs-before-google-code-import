@@ -77,7 +77,7 @@ trait TestDescription extends Stacktraces {
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /** return true if the current test is executed with Intellij */
-  lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt.junit4")
+  lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt")
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
@@ -105,14 +105,20 @@ trait TestDescription extends Stacktraces {
        "("+test.hashCode+")"
 
     }
-    createSuiteDescription(getName(test) + testcode(test), null)
+    createSuiteDescription(getName(test) + testcode(test), new UnusedAnnotation)
   }
-
+  /**
+   * This annotation is only used to avoid NPEs happening in the reporting
+   * which can cause some issue with some IDEs (@see issue 146)
+   */
+  class UnusedAnnotation extends java.lang.annotation.Annotation {
+    def annotationType = classOf[UnusedAnnotation]
+  }
   /**
    * @return the description of the suite based on its name
    */
   def asDescription(ts: JUnitSuite) = {
-    createSuiteDescription(if (ts.getName == null) "" else ts.getName, null)
+    createSuiteDescription(if (ts.getName == null) "" else ts.getName, new UnusedAnnotation)
   }
 
   /**
@@ -164,7 +170,9 @@ class OldTestClassAdaptingListener(notifier: RunNotifier)  extends TestListener 
       // unfortunately the skip message can not be included for display in a description object
       // otherwise the description created when running the test and the description creating when
       // parsing the whole suite for the first time will not match
-      case skipped: SkippedAssertionError => notifier.fireTestIgnored(makeDescription(test))
+      case skipped: SkippedAssertionError => {
+        notifier.fireTestIgnored(makeDescription(test))
+      }
       case _ => addNewFailure(test, t)
     }
   }
