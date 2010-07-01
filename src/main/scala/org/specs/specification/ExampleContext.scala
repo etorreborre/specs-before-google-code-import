@@ -48,22 +48,24 @@ trait ExampleContext extends ExampleLifeCycle {
     parent.map(_.beforeExample(ex))
     if (!(ex eq this)) {
       if (!exampleList.isEmpty && ex == exampleList.first && !(executeOneExampleOnly && ex.hasSubExamples)) {
-        
-        val susListener = new Sus("", new org.specs.Specification {})
-        firstActions.map { a =>
-          withCurrent(susListener)(a.apply) 
-        }
-        firstActions.map { b => 
-          val initErrors = susListener.failureAndErrors
-          if (!initErrors.isEmpty) {
-            val failure = new FailureException("Before system:\n" + 
-                                             initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
-            beforeSystemFailure = Some(failure)
-            beforeSystemFailure.map(throw _)
-          }
-        }
+        executeActions(firstActions, "Before system:\n")
       }
-      if (!ex.hasSubExamples) before.map(_.apply())
+      if (!ex.hasSubExamples) executeActions(before, "Before example:\n" )
+    }
+  }
+  private def executeActions(actions: Option[() => Any], msg: String) = {
+    val susListener = new Sus("", new org.specs.Specification {})
+    actions.map { a =>
+      withCurrent(susListener)(a.apply) 
+    }
+    actions.map { b => 
+      val initErrors = susListener.failureAndErrors
+      if (!initErrors.isEmpty) {
+        val failure = new FailureException(msg+ 
+                                         initErrors.map(_.getMessage).mkString("\n")).setAs(initErrors(0))
+        beforeSystemFailure = Some(failure)
+        beforeSystemFailure.map(throw _)
+      }
     }
   }
   /** 
@@ -85,14 +87,14 @@ trait ExampleContext extends ExampleLifeCycle {
   override def afterExample(ex: Examples): Unit = { 
     if (!(ex eq this)) {
       if (!ex.hasSubExamples)
-        after.map {_.apply()}
+        executeActions(after, "After example:\n")
       this match {
         case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last && !(executeOneExampleOnly && ex.hasSubExamples)) {
-          lastActions.map { actions =>
+          executeActions(Some(() => {
             // force the execution of nested examples if there are last actions
             ex.exampleList.foreach(_.failures)
-            actions.apply
-          }
+            lastActions.map(_.apply)
+          }), "After system:\n")
         }
         case other => ()
       }
