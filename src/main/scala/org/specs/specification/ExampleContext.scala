@@ -89,10 +89,10 @@ trait ExampleContext extends ExampleLifeCycle {
       if (!ex.hasSubExamples)
         executeActions(after, "After example:\n")
       this match {
-        case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last && !(executeOneExampleOnly && ex.hasSubExamples)) {
-          executeActions(Some(() => {
-            // force the execution of nested examples if there are last actions
-            ex.exampleList.foreach(_.failures)
+      case sus: Sus => if (!exampleList.isEmpty && ex == exampleList.last && !(executeOneExampleOnly && ex.hasSubExamples)) {
+        // force the execution of nested examples if there are last actions
+        ex.exampleList.foreach(_.failures)
+        executeActions(Some(() => {
             lastActions.map(_.apply)
           }), "After system:\n")
         }

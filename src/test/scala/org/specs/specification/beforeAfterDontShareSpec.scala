@@ -30,9 +30,14 @@ class beforeAfterDontShareSpec extends specWithBeforeAfterExamples {
         "msg before", 
         "msg before")
     }
-    "not execute its test if the doBefore method fails" in {
-      doBeforeExampleFailing.reportSpecs
+    "not execute its test if the doBefore method has an error" in {
+      doBeforeExampleWithError.reportSpecs
       msgs() must containMatch("error")
+      msgs() must not containMatch("executed")
+    }
+    "report failed expectations in the doBefore clause" in {
+      doBeforeExampleFailing.reportSpecs
+      doBeforeExampleFailing.failures.map(_.toString) must containMatch("'1' is not equal to '2'")
       msgs() must not containMatch("executed")
     }
     "be executed even if the doBefore clause is not declared inside a sus" in {
@@ -173,7 +178,6 @@ class beforeAfterDontShareSpec extends specWithBeforeAfterExamples {
   }
 }
 trait specWithBeforeAfter extends Specification with MockOutput {
-  //shareVariables
   dontShareVariables
 }
 object msgs {
@@ -191,9 +195,15 @@ class specWithBeforeAfterExamples extends SpecificationWithJUnit {
       "have example 2 ok" in { true must_== true }
     }
   }
-  object doBeforeExampleFailing extends specWithBeforeAfter {
+  object doBeforeExampleWithError extends specWithBeforeAfter {
     "A specification" should { 
       doBefore { error { msgs.add("error"); "before error"} }
+      "have example 1 ok" in { msgs.add("executed") }
+    }
+  }
+  object doBeforeExampleFailing extends specWithBeforeAfter {
+    "A specification" should { 
+      doBefore { 1 must_== 2 }
       "have example 1 ok" in { msgs.add("executed") }
     }
   }

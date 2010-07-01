@@ -196,9 +196,6 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   
   private def isTheLastExample(parents: List[Examples], ex: Examples): Boolean = {
     !parents.isEmpty && 
-     // if the spec is sequential the last system will not be executed when its last example is executed
-     // however this is the right moment to execute the After block
-     (isSequential || parents.last.executed) && 
     !parents.last.exampleList.isEmpty && 
      (parents.last.exampleList.last == ex || isTheLastExample(parents.last.exampleList, ex))
   }
