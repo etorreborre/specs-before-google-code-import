@@ -115,7 +115,7 @@ trait JUnit extends JUnitSuite with Reporter with ExtendedJUnitSuite {
 		  sus.examples foreach { e => asSuite(this).addExample(e, "") }
         else {
           val examples = if (sus.hasOwnFailureOrErrors) sus :: sus.examples else sus.examples
-          addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.firstOption))
+          addTest(new ExamplesTestSuite(sus.description + " " + sus.verb, examples, sus.ownSkipped.headOption))
         }
       }
     }
