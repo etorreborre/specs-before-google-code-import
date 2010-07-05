@@ -22,12 +22,13 @@ import org.specs.collection.ExtendedIterable._
 import org.specs.matcher.AnyMatchers._
 import org.specs.specification._
 import org.specs.util.EditDistance._
+import org.specs.collection._
 
 /**
  * The <code>IterableMatchers</code> trait provides matchers which are applicable to Iterable objects
  */
 trait IterableMatchers extends IterableBaseMatchers with IterableBeHaveMatchers
-trait IterableBaseMatchers { outer =>
+trait IterableBaseMatchers extends LazyCollections { outer =>
 
   /**
    * Matches if iterable.exists(_ == a)
@@ -151,7 +152,14 @@ trait IterableBaseMatchers { outer =>
    * Matches if a sequence contains the same elements as s, using the equality (in the same order)
    */
   def beTheSameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSeq)(s)
-
+  /**
+   * Matches if an array contains the same elements as another array
+   */
+  def beTheSameSeqAs[T](s: LazyArray[T])(implicit d: Detailed): Matcher[Array[T]] = outer.beTheSameSeqAs(s.apply.toSeq)(d) ^^ ((a: Array[T]) => a.toSeq)
+  /**
+   * Matches if an array contains the same elements as another sequence
+   */
+  def beTheSameSeqAs[T](s: LazySeq[T])(implicit d: Detailed): Matcher[Array[T]] = outer.beTheSameSeqAs(s.apply)(d) ^^ ((a: Array[T]) => a.toSeq)
   /**
    * @deprecated: use beTheSameSetAs instead
    */

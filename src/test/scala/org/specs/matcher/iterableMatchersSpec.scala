@@ -147,6 +147,12 @@ class iterableMatchersSpec extends MatchersSpecification {
         expectation(List(1) must beTheSameSeqAs(List(1, 2))) must failWith("List(1) doesn't have the same size as List(1, 2)")
         expectation(List(1, 2) must beTheSameSeqAs(List())) must failWith("List(1, 2) doesn't have the same size as List()")
       }
+      "on arrays" >> {
+        Array(1) must beTheSameSeqAs(List(1))
+        Array(1) must be the sameSeqAs(List(1))
+        Array(1) must beTheSameSeqAs(Array(1))
+        List(1)  must beTheSameSeqAs(Array(1))
+      }
     }
   }
 }
