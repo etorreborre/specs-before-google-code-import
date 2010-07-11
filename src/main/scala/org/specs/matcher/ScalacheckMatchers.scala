@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2007-2009 Eric Torreborre <etorreborre@yahoo.com>
+ * Copyright (c) 2007-2010 Eric Torreborre <etorreborre@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -172,12 +172,12 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
        case Result(Passed, succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded))
        case r@Result(GenException(e), n, _, _) => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
        case r@Result(Exhausted, n, _, _)     => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
-       case Result(Failed(args, _), n, _, _) =>
-         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+" (" + afterNTries(n) + afterNShrinks(args) + ")")
-       case Result(PropException(args, FailureException(ex), _), n, _, _) =>
-         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+": " + ex + " ("+afterNTries(n)+")")
-       case r@Result(PropException(m, ex, _), n, _, _) =>
-         (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
+       case Result(Failed(args, labels), n, _, _) =>
+         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+" (" + afterNTries(n) + afterNShrinks(args) + ")" + failedLabels(labels))
+       case Result(PropException(args, FailureException(ex), labels), n, _, _) =>
+         (false, noCounterExample(n), "A counter-example is "+counterExample(args)+": " + ex + " ("+afterNTries(n)+")"+ failedLabels(labels))
+       case r@Result(PropException(m, ex, labels), n, _, _) =>
+         (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams)+ failedLabels(labels))
      }
    }
    // depending on the result, return the appropriate success status and messages
@@ -203,6 +203,12 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
        args.map(_.arg).mkString("['", "', '", "']")
      else
        args.map(_.arg).mkString("[", ", ", "]")
+   }
+   private [matcher] def failedLabels(labels: Set[String]) = {
+     if (labels.isEmpty)
+       ""
+     else
+       labels.mkString("\nlabels of failing property: ", ", ", "\n")
    }
 
 }

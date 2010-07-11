@@ -59,6 +59,23 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     "accept properties based on scalacheck commands" in  {
       expectation(CounterSpecification must pass) must failWithMatch("A counter-example is .*")
     }
+    "display one label in case of a failure" in  {
+      expectation((forAll((n: Int) => n == n+1) :| "label") must pass ) must failWithMatch("labels of failing property: label")
+    }
+    "display several labels in case of a failure" in  {
+      import org.scalacheck.Prop._
+      val multiply = forAll { (n: Int, m: Int) =>
+        val res = n*m
+        ("evidence = " + res) |: all(
+          "div1" |: m != 0 ==> (res / m == n),
+          "div2" |: n != 0 ==> (res / n == m),
+          "lt1"  |: res > m,
+          "lt2"  |: res > n
+        )
+      }
+      expectation(multiply must pass) must failWithMatch("evidence")
+      expectation(multiply must pass) must failWithMatch("lt1")
+    }
   }
   val constantPair: Gen[(Double, Double)] = Gen.value((0.0, 0.0))
   "a validate matcher" should {
