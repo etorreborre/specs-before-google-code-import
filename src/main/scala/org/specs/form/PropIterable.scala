@@ -41,7 +41,7 @@ class MatcherPropIterable[T](override val label: String,
    */
   override def formatWith(function: Option[Iterable[T]] => String): this.type = { 
     valuesFormatter.formatIterableWith(function)
-    formatWith(function)
+    super.formatWith(function)
   }
   /**
    * change the value formatter to display the value differently. This formatter displays "" for a missing value
