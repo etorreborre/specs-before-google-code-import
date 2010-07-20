@@ -231,11 +231,11 @@ trait AnyBaseMatchers {
    */
   def notOneOf[T](t: T*): Matcher[T] = notBeOneOf(t:_*)
 
-  type T1 = Any { def isEmpty: Boolean }
+  type HasIsEmptyMethod = Any { def isEmpty: Boolean }
   /**
    * Matches if any object with an <code>isEmpty</code> method returns true: (Any {def isEmpty: Boolean}).isEmpty
    */
-  def beEmpty[S <: T1] = new Matcher[S](){
+  def beEmpty[S <: HasIsEmptyMethod] = new Matcher[S](){
     def apply(v: => S) = {
       val iterable = v
       (iterable.isEmpty, dUnquoted(iterable) + " is empty", dUnquoted(iterable) + " is not empty")
@@ -244,19 +244,19 @@ trait AnyBaseMatchers {
   /**
    * Matches if not(beEmpty(a))
    */
-  def notBeEmpty[S <: T1] = beEmpty[S].not
+  def notBeEmpty[S <: HasIsEmptyMethod] = beEmpty[S].not
   /**
    * Alias of notBeEmpty
    */
-  def isNotEmpty[S <: T1] = notBeEmpty[S]
+  def isNotEmpty[S <: HasIsEmptyMethod] = notBeEmpty[S]
   /**
    * Alias of notBeEmpty
    */
-  def notEmpty[S <: T1] = notBeEmpty[S]
+  def notEmpty[S <: HasIsEmptyMethod] = notBeEmpty[S]
   /**
    * Alias of beEmpty
    */
-  def isEmpty[S <: T1] = beEmpty[S]
+  def isEmpty[S <: HasIsEmptyMethod] = beEmpty[S]
   /**
    * Matches if the function f returns true
    */
@@ -604,9 +604,9 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
     def throwAn[E <: Throwable](e: E) = result.matchWith(throwException(e))
   }
   /** implicit definition to add 'empty' matchers */
-  implicit def toAnyEmptyResultMatcher[S <: T1](result: Result[S]) = new AnyEmptyResultMatcher(result)
+  implicit def toAnyEmptyResultMatcher[S <: HasIsEmptyMethod](result: Result[S]) = new AnyEmptyResultMatcher(result)
   /** functions which can be used with 'empty' matchers */
-  class AnyEmptyResultMatcher[S <: T1](result: Result[S]) {
+  class AnyEmptyResultMatcher[S <: HasIsEmptyMethod](result: Result[S]) {
     def empty = result.matchWith(beEmpty[S])
   }
   /**
@@ -628,7 +628,7 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
   /**
    * Alias of beEmpty
    */
-  def empty[S <: T1] = beEmpty[S]
+  def empty[S <: HasIsEmptyMethod] = beEmpty[S]
 }
 
 /**
