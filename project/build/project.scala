@@ -31,7 +31,13 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val jsengine  	= "javax.script" % "js-engine" % "1.0"
 
   override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Scala Tools Nexus" at "http://nexus-direct.scala-tools.org/content/repositories/releases/"
+  override def defaultPublishRepository = {
+    val nexusDirect = "http://nexus-direct.scala-tools.org/content/repositories/"
+    if (version.toString.endsWith("SNAPSHOT")) 
+	  Some("scala-tools snapshots" at nexusDirect + "snapshots/")
+	else
+	  Some("scala-tools releases" at nexusDirect + "releases/")
+  }
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   val snapshotsRepo = "snapshots-repo" at "http://nexus.scala-tools.org/content/repositories/snapshots"
