@@ -320,9 +320,9 @@ trait Contexts extends BaseSpecification with BeforeAfter { outer =>
    * When a sus is specified, transfer the context actions to it
    */
   override implicit def specifySus(desc: String): SpecifiedSus = {
-    val sus = new Sus(desc, this)
+    val sus = createSus(desc)
     specContext map { c => transferActionsToSus(sus, c) }
-    new SpecifiedSus(addSus(sus))
+    new SpecifiedSus(sus)
   }
 
 }

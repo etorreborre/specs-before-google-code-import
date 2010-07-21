@@ -33,8 +33,13 @@ trait SpecificationSystems { this: BaseSpecification =>
    * Alternatively, it could be created with:
    * <code>specify("my system under test").should {}</code>
    */
-  implicit def specifySus(desc: String): SpecifiedSus = {
-    new SpecifiedSus(addSus(new Sus(desc, this)))
+  implicit def specifySus(desc: String): SpecifiedSus = new SpecifiedSus(createSus(desc))
+  /**
+   * Create a new Sus, first checking if it is really top-level in the Specification
+   */
+  protected[specs] def createSus(desc: String) = {
+	current.foreach(c => throw new SpecificationBuildException("The system under specification '"+desc+"' can not be nested"))
+	addSus(new Sus(desc, this))
   }
   def specify(desc: String): Sus = specifySus(desc).sus
   /** 
@@ -82,3 +87,7 @@ private [specification] case class PrefixedExamples(prefix: String, example: Opt
   def apply(e: =>Examples) = PrefixedExamples(prefix, Some(() => e))
   def prepend(verb: String) = verb + " " + prefix 
 }
+/**
+ * Those exceptions are thrown when there is an issue during the construction of a Specification
+ */
+ class SpecificationBuildException(message: String) extends Exception(message)
