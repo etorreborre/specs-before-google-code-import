@@ -96,21 +96,15 @@ class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], c
   }
   def exampleError(testName: String, e: Throwable) = {
     logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
-    if (configuration.stacktrace) {
-      e.getStackTrace().foreach { trace =>
-        logStatus(trace.toString, AnsiColors.red, " ")
-      }
-    }
+    logErrorDetails(e, configuration)
     handler.handle(error(testName, e))
   }
   def exampleSkipped(testName: String) = {
     logStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
   }
-  def systemStarting(systemName: String) = {
-    logInfo(systemName, AnsiColors.blue)
-  }
+  def systemStarting(systemName: String) = {}
+
   def systemSucceeded(testName: String) = {
     logStatus(testName, AnsiColors.green, "+")
     handler.handle(succeeded(testName))
@@ -127,7 +121,7 @@ class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], c
     logStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
   }
-  def systemCompleted(systemName: String) = decrementPadding
+  def systemCompleted(systemName: String) = {}
 }
 class DefaultEventHandler extends EventHandler {
   import scala.collection.mutable._
@@ -172,8 +166,16 @@ trait TestLoggers {
   def logStatus(name: String, color: String, status: String) = {
     logInfo(padding + status + " " + name, color)
   }
- 
-  var padding = ""
+  def logErrorDetails(e: Throwable, configuration: Configuration) = {
+    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
+    if (configuration.stacktrace) {
+      e.getStackTrace().foreach { trace =>
+        logStatus(trace.toString, AnsiColors.red, " ")
+      }
+    }
+  }
+
+var padding = ""
   def incrementPadding = padding += "  " 
   def decrementPadding = if (padding.size >= 2) padding = padding.take(padding.size - 2)
 } 

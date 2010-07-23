@@ -296,6 +296,13 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
     }
     super.setCurrent(ex)
   }
+  /** @return the current example */
+  override private[specs] def current: Option[Examples] = {
+    expectationsListener match {
+      case l: LifeCycle if (l != this) => l.current
+      case _ => super.current
+    }
+  }
 
   /** @return the first level examples number (i.e. without subexamples) */
   def firstLevelExamplesNb: Int = subSpecifications.foldLeft(0)(_+_.firstLevelExamplesNb) + systems.foldLeft(0)(_+_.examples.size)

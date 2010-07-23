@@ -33,8 +33,14 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     "the start of a system" in {
       there was one(notifier).systemStarting("system1 should")
     }
-    "the failure of a system" in {
-      there was one(notifier).systemFailed("system1", new FailureException("sus failed")) 
+    "the failure of a system as a system failure with no details" in {
+      there was one(notifier).systemFailed(be_==("system1"), be_==("") ^^ ((_:Exception).getMessage))
+    }
+    "the failure of a system as an example failure with details" in {
+      there was one(notifier).exampleFailed("system failure", new FailureException("sus failed")) 
+    }
+    "the error of a system as an example error with details" in {
+      there was one(notifier).exampleError(be_==("system error"), be_==("sus error") ^^ ((_:Exception).getMessage)) 
     }
     "the start of an example" in {
       there was one(notifier).exampleStarting("ex1-1") 
@@ -93,6 +99,9 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       "ex2-1" in { 1 must_== 1 }
       "ex2-2" in { throw new Exception("bad") }
       "ex2-3" in { skip("skip this one") }
+    }
+    "system3"  should {
+      error("sus error"); ()
     }
   }
   def beNotifiedOf = addToSusVerb(" be notified of ")

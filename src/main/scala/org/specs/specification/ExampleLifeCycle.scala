@@ -48,7 +48,7 @@ trait LifeCycle extends SequentialExecution {
    * current list of examples defining the context of this execution. Every example created during by the executeExpectations method
    * will be attached to this list
    */
-  private[specs] var current: Option[Examples] = None
+  private[specs] var currentExample: Option[Examples] = None
   /** a predicate which will decide if an example must be re-executed */
   private[specs] var untilPredicate: Option[() => Boolean] = None
   /** if this variable is true then the doFirst block is not executed and the example execution must fail */
@@ -63,9 +63,11 @@ trait LifeCycle extends SequentialExecution {
   }
   /** set an example as the current example for this lifecycle and its parent */
   private[specs] def setCurrent(ex: Option[Examples]): Unit = {
-    current = ex
+    currentExample = ex
     parent.map(_.setCurrent(ex))
   }
+  /** @return the current example */
+  private[specs] def current: Option[Examples] = currentExample
   /** @return true if there is an until predicate, and if it is true */
   def until: Boolean = parent.map(_.until).getOrElse(true) && untilPredicate.getOrElse(() => true)()
   /** define the actions to be done before an example is executed */

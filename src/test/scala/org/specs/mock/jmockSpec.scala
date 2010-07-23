@@ -331,7 +331,7 @@ class BadMocked extends Mocked {
   var checkAfterExpectations = true
   override def executeExpectations(ex: Examples, t: => Any) = {
     try {
-      current = Some(ex)
+      setCurrent(Some(ex))
       t
     } catch {
       case e: org.jmock.api.ExpectationError => {checkAfterExpectations = false}

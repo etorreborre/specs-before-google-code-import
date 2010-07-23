@@ -74,7 +74,7 @@ class specificationsUnit extends SpecificationWithJUnit with ScalaCheck {
   "A specification with 2 nested sus" should {
 	object s extends Specification with io.mock.MockOutput { "it" should { specify("have a nested sus that") should { "work" in {} }} }
 	"be executed as nested examples" in {
-	  s.reportSpecs.errors(0) must haveClass[SpecificationBuildException]
+	  s.reportSpecs.systems(0).errors(0) must haveClass[SpecificationBuildException]
 	}
   }
   "the location of a failure" should {
