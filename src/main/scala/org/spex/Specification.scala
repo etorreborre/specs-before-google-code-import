@@ -22,7 +22,7 @@ import org.specs.{ Sugar, ScalaCheck }
 import org.specs.runner._
 import org.specs.util.DataTables
 
-class Specification extends org.specs.SpecificationWithJUnit with Mockito with Sugar with DataTables with ScalaCheck with ScalaTest {
+class Specification extends org.specs.SpecificationWithJUnit with Mockito with Sugar with DataTables with ScalaCheck {
   /**
    * Alternate constructor with the name of the specification
    */
