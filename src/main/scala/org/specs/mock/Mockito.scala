@@ -329,7 +329,7 @@ trait MockitoStubs extends MocksCreation {
   /** allows to use a hamcrest matchers to match parameters. */
   def argThat[T](m: org.hamcrest.Matcher[T]): T = org.mockito.Matchers.argThat(m)
 
-    /** 
+  /** 
    * This class is an implementation of the Answer interface allowing to pass functions as an answer.
    * 
    * It does a bit of work for the client:

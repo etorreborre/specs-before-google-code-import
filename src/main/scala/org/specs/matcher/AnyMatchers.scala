@@ -42,7 +42,9 @@ trait AnyMatchers extends AnyBaseMatchers with AnyBeHaveMatchers
 /**
  * The <code>AnyBaseMatchers</code> trait provides matchers which are applicable to any scala reference or value
  */
-trait AnyBaseMatchers {
+trait AnyBaseMatchers extends StructuralMatchers {
+  /** adapt a matcher to another one having the expected type */
+  implicit def adapt[T, S](m: Matcher[T])(implicit c: S => T): Matcher[S] = m ^^ c
 
   /**
    * Matches if (a eq b)
@@ -230,33 +232,6 @@ trait AnyBaseMatchers {
    * Matches notBeOneOf
    */
   def notOneOf[T](t: T*): Matcher[T] = notBeOneOf(t:_*)
-
-  type HasIsEmptyMethod = Any { def isEmpty: Boolean }
-  /**
-   * Matches if any object with an <code>isEmpty</code> method returns true: (Any {def isEmpty: Boolean}).isEmpty
-   */
-  def beEmpty[S <: HasIsEmptyMethod] = new Matcher[S](){
-    def apply(v: => S) = {
-      val iterable = v
-      (iterable.isEmpty, dUnquoted(iterable) + " is empty", dUnquoted(iterable) + " is not empty")
-    }
-  }
-  /**
-   * Matches if not(beEmpty(a))
-   */
-  def notBeEmpty[S <: HasIsEmptyMethod] = beEmpty[S].not
-  /**
-   * Alias of notBeEmpty
-   */
-  def isNotEmpty[S <: HasIsEmptyMethod] = notBeEmpty[S]
-  /**
-   * Alias of notBeEmpty
-   */
-  def notEmpty[S <: HasIsEmptyMethod] = notBeEmpty[S]
-  /**
-   * Alias of beEmpty
-   */
-  def isEmpty[S <: HasIsEmptyMethod] = beEmpty[S]
   /**
    * Matches if the function f returns true
    */
@@ -264,7 +239,6 @@ trait AnyBaseMatchers {
      def apply(v: => T) = {val x = v; (f(x), description.getOrElse(x) + " verifies the property",
                                              description.getOrElse(x) + " doesn't verify the expected property")}
   }
-
   /**
    * Matches if value if an exception is thrown with the expected type
    * <br>Otherwise rethrow any other exception
@@ -314,13 +288,13 @@ trait AnyBaseMatchers {
        (isThrown(value, exception, (e => exception.isAssignableFrom(e.getClass)), description).isDefined,
         okMessage(exception, description), koMessage(exception, description))
      }
-    def like(f: =>PartialFunction[Throwable, Boolean]) = new Matcher[Any](){
+    def like(f: =>PartialFunction[E, Boolean]) = new Matcher[Any](){
       def apply(v: => Any) = {
         val thrown = isThrown(v, exception, (e => exception.isAssignableFrom(e.getClass)), description)
         if (!thrown.isDefined)
           (false, okMessage(exception, description), koMessage(exception, description))
         else
-          beLike(f)(thrown.get)
+          beLike(f).apply(thrown.get.asInstanceOf[E])
       }
     }
   }
@@ -339,7 +313,7 @@ trait AnyBaseMatchers {
          if (!thrown.isDefined)
            (false, okMessage(exception, description), koMessage(exception, description))
          else
-           beLike(f)(thrown.get.asInstanceOf[E])
+           beLike(f).apply(thrown.get.asInstanceOf[E])
        }
      }
   }
@@ -578,6 +552,47 @@ trait AnyBaseMatchers {
    */
   def !=(a: =>Any)(implicit d: Detailed) = is_!=(a)(d)
 }
+trait StructuralMatchers {
+  /** anything that can be empty */
+  type HasIsEmptyMethod = Any { def isEmpty: Boolean }
+  /** anything that can have a size */
+  type HasSizeMethod = Any { def size: Int }
+  class SizeMatcher(n: Int) extends Matcher[HasSizeMethod] {
+	def apply(v: => HasSizeMethod) = {
+	  val collection = v
+	  (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n + ". It has size " + collection.size)
+	}
+  }
+  /**
+   * Matches if any object with an <code>isEmpty</code> method returns true: (Any {def isEmpty: Boolean}).isEmpty
+   */
+  def beEmpty = new Matcher[HasIsEmptyMethod](){
+    def apply(v: => HasIsEmptyMethod) = {
+      val iterable = v
+      (iterable.isEmpty, dUnquoted(iterable) + " is empty", dUnquoted(iterable) + " is not empty")
+    }
+  }
+  /**
+   * Matches if not(beEmpty(a))
+   */
+  def notBeEmpty = beEmpty.not
+  /**
+   * Alias of notBeEmpty
+   */
+  def isNotEmpty = notBeEmpty
+  /**
+   * Alias of notBeEmpty
+   */
+  def notEmpty = notBeEmpty
+  /**
+   * Alias of beEmpty
+   */
+  def isEmpty = beEmpty
+  /**
+   * Matches if the size is n
+   */
+  def haveSize(n: Int) = new SizeMatcher(n)
+}
 trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
   /** dummy matcher to allow be + matcher syntax */
   def be[T] = new BeVerbMatcher[T]
@@ -604,10 +619,16 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
     def throwAn[E <: Throwable](e: E) = result.matchWith(throwException(e))
   }
   /** implicit definition to add 'empty' matchers */
-  implicit def toAnyEmptyResultMatcher[S <: HasIsEmptyMethod](result: Result[S]) = new AnyEmptyResultMatcher(result)
+  implicit def toAnyEmptyResultMatcher[S](result: Result[S])(implicit c: S => HasIsEmptyMethod): AnyEmptyResultMatcher[S] = new AnyEmptyResultMatcher(result)(c)
   /** functions which can be used with 'empty' matchers */
-  class AnyEmptyResultMatcher[S <: HasIsEmptyMethod](result: Result[S]) {
-    def empty = result.matchWith(beEmpty[S])
+  class AnyEmptyResultMatcher[S](result: Result[S])(implicit c: S => HasIsEmptyMethod) {
+    def empty = result.matchWith(beEmpty ^^ c)
+  }
+  /** implicit definition to add 'size' matchers */
+  implicit def toAnySizeResultMatcher[S](result: Result[S])(implicit c: S => HasSizeMethod): AnySizeResultMatcher[S] = new AnySizeResultMatcher(result)(c)
+  /** functions which can be used with 'size' matchers */
+  class AnySizeResultMatcher[S](result: Result[S])(implicit c: S => HasSizeMethod) {
+    def size(n: Int) = result.matchWith(haveSize(n) ^^ c)
   }
   /**
    * Alias of is_==
@@ -628,9 +649,8 @@ trait AnyBeHaveMatchers { this: AnyBaseMatchers =>
   /**
    * Alias of beEmpty
    */
-  def empty[S <: HasIsEmptyMethod] = beEmpty[S]
+  def empty = beEmpty
 }
-
 /**
  * Reusable equalTo matcher
  */

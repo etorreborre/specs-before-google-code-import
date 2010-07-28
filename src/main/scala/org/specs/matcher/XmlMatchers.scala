@@ -33,7 +33,7 @@ import StringToElem._
  */
 trait XmlMatchers extends XmlBaseMatchers with XmlBeHaveMatchers
 object XmlBaseMatchers extends XmlBaseMatchers
-trait XmlBaseMatchers {
+trait XmlBaseMatchers extends StructuralMatchers {
   
   /**
    * Matches if <code>node</code> is contained anywhere inside the tested node

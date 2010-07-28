@@ -43,17 +43,17 @@ class haveMatcherSpec extends SpecificationWithJUnit { outer =>
     def apply(v: =>T) = (true, "", "")
     def ? (m: Matcher[T]) = m
   }
-  implicit def toPossiblyMatcherDecorator[T](m: Matcher[T]) = new PossiblyMatcherDecorator(m)
+  implicit def toPossiblyMatcherDecorator[T](m: Matcher[T]): PossiblyMatcherDecorator[T] = new PossiblyMatcherDecorator(m)
   class PossiblyMatcherDecorator[T](m: Matcher[T]) extends Matcher[T] { 
     def apply(v: =>T) = m(possibleMatch(v))
     def possibleMatch(v: =>T) = v
     def possibly = this
   }
-  implicit def toPossiblyMatchable[T](m: Matcher[T]) = new PossiblyMatchable(m)
+  implicit def toPossiblyMatchable[T](m: Matcher[T]): PossiblyMatchable[T] = new PossiblyMatchable(m)
   class PossiblyMatchable[T](m: Matcher[T]) { 
     def :: (e: PossiblyMatcher[Nothing]) = m // add the possibly logic here
   }
-  implicit def toPossiblyMatcherResult[T](result: Result[T]) = new PossiblyMatcherResult(result)
+  implicit def toPossiblyMatcherResult[T](result: Result[T]): PossiblyMatcherResult[T] = new PossiblyMatcherResult(result)
   class PossiblyMatcherResult[T](result: Result[T]) {
     def be_==(a: T) = result.matchWith(possibly(outer.be_==(a)))
     def be(a: T) = result.matchWith(possibly(outer.be(a)))

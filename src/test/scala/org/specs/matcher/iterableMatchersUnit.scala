@@ -55,7 +55,7 @@ class iterableMatchersUnit extends MatchersSpecification {
       containMatch("") must evalOnce(exp(nil))
     }
     "not evaluate the expressions twice: beEmpty" in {
-      beEmpty[Iterable[String]] must evalOnce(exp(nil))
+      beEmpty must evalOnce(exp(nil))
     }
     "not evaluate the expressions twice: beIn" in {
       beIn(List("")) must evalOnce(exp(""))
@@ -103,6 +103,17 @@ class iterableMatchersUnit extends MatchersSpecification {
       import org.specs.Sugar._
       Group(<test></test><secondtest></secondtest>) must have size(2)
     }
-
+  }
+  "Iterable matchers should work with arrays" >> {
+	"Arrays can have a haveSize matcher" in {
+      Array(1, 2) must haveSize(2)
+      Array(1, 2) must haveSize(2).when(true)
+      Array(1, 2) must have size(2)
+    }
+	"Arrays can have a isEmpty matcher" in {
+      Array[String]() must beEmpty
+      Array[String]() must beEmpty.when(true)
+      Array[String]() must be empty
+    }
   }
 }

@@ -161,16 +161,6 @@ trait IterableBaseMatchers { outer =>
    */
   def beTheSameSetAs[T](s: =>Set[T])(implicit d: Detailed) = (toMatcher(AnyMatchers.be_==(_:T)(d)).toSet)(s)
 
-  /**
-   * Matches if the size is n
-   */
-  def haveSize[T <% {def size: Int}](n: Int) = new SizeMatcher[T](n)
-}
-class SizeMatcher[T <% {def size: Int}](n: Int) extends Matcher[T] {
-  def apply(v: => T) = {
-    val collection = v
-    (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n + ". It has size " + collection.size)
-  }
 }
 trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
   /** 
@@ -178,45 +168,35 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
    * unfortunately it cannot be made more generic w.r.t the container because this crashes the compiler
    * see Scala Trace #1864
    */
-  /*
-  implicit def toContainerResultMatcher[T, C[U] <: Iterable[U]](result: Result[C[T]]) = new ContainerResultMatcher[T, C](result)
-  class ContainerResultMatcher[T, C[U] <: Iterable[U]](result: Result[C[T]]) {
-    def size(i: Int) = result.matchWith(outer.size(i))
-    def contain(a: T) = result.matchWith(outer.contain(a))
-    def have(f: T =>Boolean) = result.matchWith(outer.have(f))
+  implicit def toContainerResultMatcher[T, C[T]](result: Result[C[T]])(implicit c: C[T] => Iterable[T]) = new ContainerResultMatcher[T, C](result)(c)
+
+  class ContainerResultMatcher[T, C[T]](result: Result[C[T]])(implicit c: C[T] => Iterable[T]) {
+//    def size(i: Int) = result.matchWith(outer.size(i) ^^ c)
+    def contain(a: T) = result.matchWith(outer.contain(a) ^^ c)
   }
-  */
+  
+
   implicit def toArrayResultMatcher[T](result: Result[Array[T]]) = new ArrayResultMatcher(result)
   class ArrayResultMatcher[T](result: Result[Array[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
-    def contain(a: T) = result.matchWith(outer.contain(a) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Array[T]) => t.toList.asInstanceOf[Iterable[T]]))
   }
   implicit def toListResultMatcher[T](result: Result[List[T]]) = new ListResultMatcher(result)
   class ListResultMatcher[T](result: Result[List[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i))
-    def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:List[T]) => t.asInstanceOf[Iterable[T]]))
     def sameElementsAs(l: Iterable[T]) = result.matchWith(new HaveTheSameElementsAs(l))
   }
   implicit def toSeqResultMatcher[T](result: Result[Seq[T]]) = new SeqResultMatcher(result)
   class SeqResultMatcher[T](result: Result[Seq[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i))
-    def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Seq[T]) => t.asInstanceOf[Iterable[T]]))
     def sameSeqAs(s: =>Seq[T])(implicit d: Detailed) = result.matchWith(beTheSameSeqAs(s)) 
   }
   implicit def toSetResultMatcher[T](result: Result[Set[T]]) = new SetResultMatcher(result)
   class SetResultMatcher[T](result: Result[Set[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i))
-    def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f) ^^ ((t:Set[T]) => t.asInstanceOf[Iterable[T]]))
     def sameSetAs(s: =>Set[T])(implicit d: Detailed) = result.matchWithMatcher(outer.sameSetAs[T](s).asInstanceOf[Matcher[Set[T]]])
   }
   implicit def toIterableResultMatcher[T](result: Result[Iterable[T]]) = new IterableResultMatcher(result)
   class IterableResultMatcher[T](result: Result[Iterable[T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i))
-    def contain(a: T) = result.matchWith(outer.contain(a))
     def have(f: T =>Boolean) = result.matchWith(outer.have(f))
   }
   import scala.collection.JavaConversions._
@@ -227,6 +207,7 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     for (a <- asList(javalist)) list.append(a)
     list.toList
   }
+/*
   implicit def toJavaCollectionResultMatcher[S](result: Result[java.util.Collection[S]]) = new JavaCollectionResultMatcher(result)
   class JavaCollectionResultMatcher[S](result: Result[java.util.Collection[S]]) {
     def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ (convertCollection(_)))
@@ -249,18 +230,16 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     def size(i: Int) = result.matchWithMatcher(outer.size(i) ^^ ((m: java.util.Map[S, U]) => convertCollection(m.entrySet)))
     def contain(a: (S, U)) = result.matchWith(outer.contain(a) ^^ ((m: java.util.Map[S, U]) => convertCollection(m.entrySet)))
   }
+  */
   implicit def toAMapResultMatcher[S, T](result: Result[Map[S, T]]) = new MapResultMatcher(result)
   class MapResultMatcher[S, T](result: Result[Map[S, T]]) {
-    def size(i: Int) = result.matchWithMatcher(outer.size(i))
     def contain(a: (S,T)) = result.matchWith(outer.contain(a))
   }
   implicit def toStringListResultMatcher(result: Result[List[String]]) = new StringListResultMatcher(result)
   class StringListResultMatcher(result: Result[List[String]]) {
     def containMatch(s: String) = result.matchWith(outer.containMatch(s))
   }
-  def size[T](n: Int) = new Matcher[Iterable[T]](){
-    def apply(v: => Iterable[T]) = {val collection = v.toList; (collection.size == n, d(collection) + " has size " + n, d(collection) + " doesn't have size " + n  + ". It has size " + collection.size)}
-  }
+  def size(n: Int) = new SizeMatcher(n)
   def sameElementsAs[T](l: Iterable[T]) = new HaveTheSameElementsAs(l)
   def sameSeqAs[T](s: =>Seq[T])(implicit d: Detailed) = beTheSameSeqAs(s)(d).asInstanceOf[Matcher[Seq[T]]]
   def sameSetAs[T](s: =>Set[T])(implicit d: Detailed) = beTheSameSetAs(s)(d).asInstanceOf[Matcher[Set[T]]]
