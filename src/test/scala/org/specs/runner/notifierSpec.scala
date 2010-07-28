@@ -34,7 +34,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
       there was one(notifier).systemStarting("system1 should")
     }
     "the failure of a system as a system failure with no details" in {
-      there was one(notifier).systemFailed(be_==("system1"), be_==("") ^^ ((_:Exception).getMessage))
+      there was one(notifier).systemFailed(be_==("system1 should"), be_==("") ^^ ((_:Exception).getMessage))
     }
     "the failure of a system as an example failure with details" in {
       there was one(notifier).exampleFailed("system failure", new FailureException("sus failed")) 

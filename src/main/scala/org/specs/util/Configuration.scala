@@ -60,7 +60,7 @@ trait ConfigurationFactory extends FileSystem {
   } 
   /** @return the configuration object from a class file */
   def getConfigurationFromClass(className: String): Option[Configuration] = {
-    createObject[Configuration](className)
+    createObject[Configuration](className, false, false)
   } 
   /** @return the user configuration object from a properties file */
   def getConfigurationFromPropertiesFile(filePath: String): Option[Configuration] = {

@@ -137,19 +137,23 @@ trait MockFileSystem extends FileSystem {
 trait MockOutput extends Output {
 
   /** list of messages representing the output */
-  val messages : Queue[String] = new Queue[String]
-
+  private val someMessages : Queue[String] = new Queue[String]
+  def messages: List[String] = someMessages.toList
+  
+  /** clear the list of current messages */
+  def clearMessages = someMessages.clear
+  
   /** adds <code>m.toString</code> to a list of messages */
-  override def println(m : Any) : Unit = messages += m.toString
+  override def println(m : Any) : Unit = someMessages += m.toString
 
   /** prints several objects according to a format string (see <code>Console.printf</code>) */
-  override def printf(format: String, args: Any*) = messages += (format + ":" + args)
+  override def printf(format: String, args: Any*) = someMessages += (format + ":" + args)
 
   /** doesn't flush */
   override def flush = ()
   
   /** doesn't print anything */
-  override def printStackTrace(t: Throwable) = t.getStackTrace.foreach { messages += _.toString }
+  override def printStackTrace(t: Throwable) = t.getStackTrace.foreach { someMessages += _.toString }
 }
 
 /**
@@ -158,11 +162,12 @@ trait MockOutput extends Output {
 trait MockWriter extends java.io.Writer {
 
   /** list of messages representing the output */
-  val messages : Queue[String] = new Queue[String]
-
+  private val someMessages : Queue[String] = new Queue[String]
+  def messages: List[String] = someMessages.toList
+  
   /** is the Writer closed? */
   var closed = false
-  override def write(m: String) : Unit = messages += m
+  override def write(m: String) : Unit = someMessages += m
 
   /** closes the Writer */
   override def close = closed = true

@@ -22,24 +22,24 @@ import org.specs.io.mock._
 
 class sharedSpec extends SpecificationWithJUnit {
   "The specification with shared subexamples" should {
-    "have no pending results" in {
-      MockJavaSpecification.reportSpecs.messages.toList must not containMatch("PENDING")
+    "have not any pending results" in {
+      (new MockJavaSpecification).reportSpecs.messages must not containMatch("PENDING")
     }
     "have one ko nested example" in {
-      MockJavaSpecification.reportSpecs.messages.toList must containMatch("x must be ko")
+      (new MockJavaSpecification).reportSpecs.messages must containMatch("x must be ko")
     }
     "have another ko example at a second level" in {
-      MockJavaSpecification.reportSpecs.messages.toList must containMatch("x must also be ko")
+      (new MockJavaSpecification).reportSpecs.messages must containMatch("x must also be ko")
     }
     "have examples appear once only with a val definition" in {
-      MockJavaSpecification2.reportSpecs.messages.toList.filter(_ contains "must be ok") must have size(1)
+      (new MockJavaSpecification2).reportSpecs.messages.filter(_ contains "must be ok") must have size(1)
     }
     "have no pending results when there are no nested examples" in {
-      MockJavaSpecification3.reportSpecs.messages.toList must not containMatch("PENDING")
+      (new MockJavaSpecification3).reportSpecs.messages must not containMatch("PENDING")
     }
   }
 }
-object SharedExamples extends Specification {
+class SharedExamples extends Specification {
   def shared = "The Scala language" should {
     "a nested example" >> { 
       "must be ok" >> {
@@ -62,10 +62,10 @@ object SharedExamples extends Specification {
 }
 class JavaSpecification extends Specification {
   "The Java language" should {
-    behave like SharedExamples.shared
+    behave like (new SharedExamples).shared
   }
 }
-object SharedExamples2 extends Specification {
+class SharedExamples2 extends Specification {
   val shared = "The Scala language" should {
     "a nested example" >> { 
       "must be ok" >> {
@@ -82,22 +82,22 @@ object SharedExamples2 extends Specification {
     }
   }
 }
-object MockJavaSpecification extends Specification with MockOutput {
+class MockJavaSpecification extends Specification with MockOutput {
   "The Java language" should {
-    behave like SharedExamples.shared
+    behave like (new SharedExamples).shared
   }
 }
-object MockJavaSpecification2 extends Specification with MockOutput {
+class MockJavaSpecification2 extends Specification with MockOutput {
   "The Java language" should {
-    behave like SharedExamples2.shared
+    behave like (new SharedExamples2).shared
   }
 }
 class JavaSpecification2 extends Specification {
   "The Java language" should {
-    behave like SharedExamples2.shared
+    behave like (new SharedExamples2).shared
   }
 }
-object SharedExamples3 extends Specification {
+class SharedExamples3 extends Specification {
   val shared = "The Scala language" should {
     "an example" >> { 
       true must beTrue 
@@ -107,14 +107,14 @@ object SharedExamples3 extends Specification {
     }
   }
 }
-object MockJavaSpecification3 extends Specification with MockOutput {
+class MockJavaSpecification3 extends Specification with MockOutput {
   "The Java language" should {
-    behave like SharedExamples3.shared
+    behave like (new SharedExamples3).shared
   }
 }
 class JavaSpecification3 extends Specification {
   "The Java language" should {
-    behave like SharedExamples3.shared
+    behave like (new SharedExamples3).shared
   }
 }
 class JavaSpecification4 extends Specification {

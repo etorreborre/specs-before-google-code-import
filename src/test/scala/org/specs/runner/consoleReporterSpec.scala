@@ -198,7 +198,7 @@ class consoleTraitSpecification extends TestSpecs {
   }
   def runWith(args: String*): List[String] = {
     specRunner.args = args.toArray
-    specRunner.messages.clear
+    specRunner.clearMessages
     specRunner.reportSpecs
     specRunner.messages.toList
   }
@@ -208,7 +208,7 @@ class consoleTraitSpecification extends TestSpecs {
     specTwoSystemsRunner.messages.toList
   }
   def mainWith(args: String*): List[String] = {
-    specRunner.messages.clear
+    specRunner.clearMessages
     specRunner.main(args.toArray)
     specRunner.messages.toList
   }

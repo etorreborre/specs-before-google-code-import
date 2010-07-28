@@ -26,7 +26,7 @@ import org.specs.runner._
 import org.specs.specification._
 
 class specsRunnerSpec extends SpecificationWithJUnit with TestRunner {
-  "A specs file runner" should { runner.messages.clear.before
+  "A specs file runner" should { runner.clearMessages.before
     "execute a specification contained in a file" in {
       runTheFileWithClassName("org.specs.samples.sampleSpecification1$")
       messages mustHaveMatch "example"
