@@ -37,6 +37,7 @@ trait ScalaInterpreter {
       }
     }
     settings.classpath.value = (List(settings.classpath.value) ::: paths.toList).mkString(File.pathSeparator)
+    settings.usejavacp.value = true
     new Interpreter(settings, new PrintWriter(writer))
   }
   private def clear(writer: StringWriter) = {

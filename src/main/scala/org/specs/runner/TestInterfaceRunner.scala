@@ -45,8 +45,10 @@ class SpecsFramework extends Framework {
  * 
  * Then it uses a NotifierRunner to notify the EventHandler of the test events.
  */
-class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner with Classes 
+class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner
   with HandlerEvents with TestLoggers {
+  import Classes._
+  
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
     val specification: Either[Throwable, Specification] = create[Specification](classname + "$") match {
       case Right(s) => Right(s)
@@ -57,6 +59,8 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
       logError("Could not create an instance of "+classname+"\n")
       logError("  "+e.getMessage+"\n")
       e.getStackTrace foreach { s => logError("  "+s.toString) }
+      if (e.getCause != null)
+		e.getCause.getStackTrace foreach { s => logError("  "+s.toString) }
     }
     val specificationOption = specification.right.toOption
     specificationOption.map(_.args = args)

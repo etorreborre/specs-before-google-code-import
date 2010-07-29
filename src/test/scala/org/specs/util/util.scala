@@ -21,7 +21,7 @@ import org.specs._
 
 object utilSpecifications extends Specification {
     "The util specifications" areSpecifiedBy (
-        new classSpec,
+        new classesSpec,
         new configurationSpec,
         new controlSpec,
         new editDistanceSpec,
