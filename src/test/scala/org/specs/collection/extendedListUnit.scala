@@ -79,11 +79,6 @@ class extendedListUnit extends SpecificationWithJUnit with TestData {
       }(set(maxSize->5))
     }
   }
-  "A 'toMap' function" should {
-    "create a Map from a list where the list elements are the keys and the values are set to a default value" in {
-      Map(1 -> "for you", 2 -> "for you") must havePairs(1 -> "for you", 2 -> "for you")
-    }
-  }
   "A maxElement function" should {
     "return the maximum element of a list, according to a valuation function" in {
       List("a", "bb", "ccc").maxElement(_.size) must_== Some("ccc")

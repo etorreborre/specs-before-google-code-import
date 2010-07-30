@@ -17,8 +17,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.collection
-import org.specs.collection.ExtendedList._
 import scala.collection.mutable.ListBuffer
+import org.specs.collection.ExtendedList._
 
 /**
  * The ExtendedIterable object offers utility methods applicable to iterables like:<ul>
