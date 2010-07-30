@@ -92,32 +92,6 @@ private[specs] object ExtendedList { outer =>
      */
     def scramble = l.sortWith((a, b) => (new java.util.Random).nextInt(1) > 0)
     
-    //~ /**
-     //~ * @return the max element according the function f
-     //~ */
-    //~ def maxElement(f: T => Int): Option[T] = outer.maxElement(l, f)
-    //~ /**
-     //~ * @return the maximum value according the function f
-     //~ */
-    //~ def maximum(f: T => Int): Int = outer.maximum(l, f)
-    //~ /**
-     //~ * @return the max according the function f
-     //~ */
-    //~ def max(f: T => Int) = outer.max(l, f)
-    //~ /**
-     //~ * @return the min element according the function f
-     //~ */
-    //~ def minElement(f: T => Int): Option[T] = outer.minElement(l, f)
-    //~ /**
-     //~ * @return the minimum value according the function f
-     //~ */
-    //~ def minimum(f: T => Int): Int = outer.minimum(l, f)
-    //~ /**
-     //~ * @return the min according the function f
-     //~ */
-    //~ def min(f: T => Int) = outer.min(l, f)
-	
-	
     /** 
      * @return the difference of 2 lists but only removing elements once 
      */
@@ -140,40 +114,4 @@ private[specs] object ExtendedList { outer =>
       } 
     }
   }
-
-  //~ /** @return the maximum element of a list according to a function f returning an Int value for each element of the list */
-  //~ def maxElement[T](list: List[T], f: T => Int): Option[T] = max(list, f)._1
-  //~ /** @return the maximum value of a list according to a function f returning an Int value for each element of the list */
-  //~ def maximum[T](list: List[T], f: T => Int): Int = max(list, f)._2
-  //~ /** @return the maximum element and maximum value of a list according to a function f returning an Int value for each element of the list */
-  //~ def max[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, (_>_), 0, None)
-  //~ /** @return the minimum element of a list according to a function f returning an Int value for each element of the list */
-  //~ def minElement[T](list: List[T], f: T => Int): Option[T] = min(list, f)._1
-  //~ /** @return the minimum value of a list according to a function f returning an Int value for each element of the list */
-  //~ def minimum[T](list: List[T], f: T => Int): Int = min(list, f)._2
-  //~ /** @return the minimum element and maximum value of a list according to a function f returning an Int value for each element of the list */
-  //~ def min[T](list: List[T], f: T => Int): (Option[T], Int) = optimum(list, f, (_<_), scala.Int.MaxValue, None)
-  //~ /**
-   //~ * Find the optimum element of a list according to a valuation function and a comparison function to determine if we require
-   //~ * the least or best values.
-   //~ * @param list list of elements
-   //~ * @param f optimization function returning a value for each element of the list
-   //~ * @param compare comparison function indicating how values should be compared to get the optimum. 
-   //~ *  For example (_>_) will get the maximum
-   //~ * @param currentOptimum current optimum value. This can be 0 when getting the maximum
-   //~ * @param optimumElement current optimum element if found. This is None when starting the computation
-   //~ * @return the optimum element and value
-   //~ */
-  //~ def optimum[T](list: List[T], f: T => Int, compare: (Int, Int) => Boolean, currentOptimum: Int, optimumElement: Option[T]): (Option[T], Int) ={
-    //~ list match {
-      //~ case Nil => (optimumElement, currentOptimum)
-      //~ case a :: rest => {
-        //~ val currentValue = f(a)
-        //~ if (compare(currentValue, currentOptimum)) 
-          //~ optimum(rest, f, compare, currentValue, Some(a)) 
-        //~ else 
-          //~ optimum(rest, f, compare, currentOptimum, optimumElement)
-      //~ }
-    //~ }
-  //~ }
 }

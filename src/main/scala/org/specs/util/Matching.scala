@@ -17,12 +17,16 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.util
-import scala.Math._
 import org.specs.collection.ExtendedList._
 import org.specs.collection.ExtendedIterable._
 
-object Matching extends Matching
-trait Matching {
+/**
+ * This trait provides a bestMatch function to try to pair elements from 2 different sets
+ * according to 2 functions:
+ * * edgeFunction: takes 2 elements and creates an edge
+ * * edgeWeight: evaluation of an edge
+ */
+private[specs] trait Matching {
   /**
    * @return a list containing the matched vertices and corresponding edges
    */
@@ -44,12 +48,30 @@ trait Matching {
       case _ => Nil
     }
   }
-  def bestMatch[A, B, E](a: A, 
-                         secondSet: Seq[B], 
-                         edgeFunction: Function1[(A, B), E], 
-                         edgeWeight: E => Int): Option[(B, E, Seq[B])] = {
-    var existingEdges = Map[(A, B), E]()
-    def edge(a: A, b: B) = {
+  /**
+   * Find an element b in a set so that the edge (a, b) is the best match according to a weighting function
+   *  
+   * @return the best element, the edge, the list of remaining elements in the set
+   */
+  private def bestMatch[A, B, E](a: A, 
+                                 secondSet: Seq[B], 
+                                 edgeFunction: Function1[(A, B), E], 
+                                 edgeWeight: E => Int): Option[(B, E, Seq[B])] = {
+	
+    val edge = Edge(edgeFunction)						 
+    val max = secondSet max Ordering.by((b: B) => edgeWeight(edge(a, b)))
+    Some((max, edge(a, max), secondSet.toList.removeFirst(_ == max)))
+  }
+
+  /**
+   * This class acts as a factory to create an edge E of 2 elements
+   * a and b, according to a function creating the edge.
+   * If an edge has already been built, it is kept in a map to avoid recreating it
+   */
+  private case class Edge[A, B, E](edgeFunction: Function1[(A, B), E]) {
+    private var existingEdges = Map[(A, B), E]()
+  
+    def apply(a: A, b: B) = {
       if (existingEdges.isDefinedAt((a, b)))
         existingEdges((a, b))
       else {
@@ -58,10 +80,7 @@ trait Matching {
         newEdge
       }
     }
-    secondSet.toList.maxElement((b: B) => edgeWeight(edge(a, b))) match {
-      case None => None
-      case Some(max) => Some((max, edge(a, max), secondSet.toList.removeFirst(_ == max)))
-    }
   }
 }
 
+private[specs] object Matching extends Matching

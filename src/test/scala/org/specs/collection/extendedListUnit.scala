@@ -79,11 +79,6 @@ class extendedListUnit extends SpecificationWithJUnit with TestData {
       }(set(maxSize->5))
     }
   }
-  "A maxElement function" should {
-    "return the maximum element of a list, according to a valuation function" in {
-      List("a", "bb", "ccc").maxElement(_.size) must_== Some("ccc")
-    }
-  }
 }
 import org.specs.Sugar._
 import org.scalacheck.Gen

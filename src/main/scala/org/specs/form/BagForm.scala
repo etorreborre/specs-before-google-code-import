@@ -91,8 +91,8 @@ trait BagFormEnabled[T] extends TableFormEnabled {
   val edgeFunction = (t: (EntityLineForm[T], T)) => t
   val edgeWeight = (l: (EntityLineForm[T], T)) => (l._1.entityIs(l._2)).execute.properties.filter(_.isOk).size
   lazy val matches = bestMatch(expectedLines, bag, 
-                       edgeFunction, 
-                       edgeWeight)
+                               edgeFunction, 
+                               edgeWeight)
   def matchedLines = matches.map(_._3).map((t: (EntityLineForm[T], T)) => (t._1:EntityLineForm[T]).entityIs(t._2).execute)
   def matchedExpectedLines = matches.map(_._1)
   def matchedActual = matches.map(_._2)
