@@ -129,6 +129,9 @@ class reporterSpecification extends TestSpecs {
     "print only the high-level examples of an anonymous sus" in {
 	  new SpecWithAnAnonymousSystem(that.isOk).run.toList must not containMatch("specifies")
 	}
+    "execute the actions after a specification even if the specification is sequential" in {
+	  new SequentialSpecWithAfterSpec().run.toList must containInOrder("  + ex2", "afterSpec")
+	}
   }
 }
 class consoleTraitSpecification extends TestSpecs {
@@ -282,6 +285,19 @@ class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpec
   def run = {
     "have example 1 ok" in {
       expectations(behaviours) foreach {_.apply}
+    }
+    reportSpecs
+    messages
+  }
+}
+class SequentialSpecWithAfterSpec extends TestSpecification {
+  setSequential()
+  shareVariables()
+  doAfterSpec { println("afterSpec") }
+  def run = {
+    "it" should {
+      "ex1" in { 1 must_== 1 }
+      "ex2" in { 1 must_== 1 }
     }
     reportSpecs
     messages

@@ -192,7 +192,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /** return true if no examples have been executed in this spec */
   private[specification] def isBeforeAllExamples = !beforeSpecHasBeenExecuted
   /** return true if this example is the last one of the spec */
-  private[specification] def isTheLastExample(ex: Examples): Boolean = (!ex.hasSubExamples || ex.exampleList.isEmpty)&& isTheLastExample(systems, ex)
+  private[specs] def isTheLastExample(ex: Examples): Boolean = (!ex.hasSubExamples || ex.exampleList.isEmpty)&& isTheLastExample(systems, ex)
   
   private def isTheLastExample(parents: List[Examples], ex: Examples): Boolean = {
     !parents.isEmpty && 
@@ -217,10 +217,18 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   override def afterExample(ex: Examples) = {
     afterSpecFailure.foreach(throw _)
     super.afterExample(ex)
-    if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted && isTheLastExample(ex)) {
-      afterSpecHasBeenExecuted = true
-      executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+    if (!isSequential && isTheLastExample(ex)) {
+      executeAfterSpec
     }
+  }
+  /**
+   * execute the afterSpec actions
+   */
+  private[specs] def executeAfterSpec {
+	if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted) {
+	  afterSpecHasBeenExecuted = true
+      executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+	}
   }
   /**
    * execute the before or after specification action.

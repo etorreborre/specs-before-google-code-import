@@ -69,6 +69,7 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
 	  else
 		reportSystem(system, planOnly)
 	}
+    spec.executeAfterSpec
     notifiers.foreach { _.systemCompleted(spec.description) }
     this
   }

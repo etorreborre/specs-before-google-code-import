@@ -29,6 +29,22 @@ import org.specs.specification._
 import org.specs._
 
 class junitTestSuiteSpec extends SpecificationWithJUnit {
+  "A junit test suite execution" should {
+	"trigger the afterSpec actions after all the examples if the specification is sequential" in {
+      val sequential = new SpecificationWithJUnit with MockOutput {
+    	setSequential()
+    	doAfterSpec(println("afterSpec"))
+        "sus1" should {
+    	  println("sus1");
+          "ex1" in { println("ex1"); 1 must_== 1 }
+          "ex2" in { println("ex2"); 1 must_== 1 }
+        }
+      }
+      val result = new TestResult
+      sequential.run(result)
+      sequential.messages must containInOrder("ex2", "afterSpec")
+    }
+  }
   "A junit test suite for a composite specification" should {
     "create one test suite per specification" in {
       val S1 = new Specification { 1 must_== 1 }
@@ -136,7 +152,7 @@ class junitTestSuiteSpec extends SpecificationWithJUnit {
       val s = new Specification {
         val e = "be ok" in { 1 must_== 1 }
       }
-      val suite = new ExamplesTestSuite("it should", List(s.e), None) {
+      val suite = new ExamplesTestSuite(s, "it should", List(s.e), None) {
         override lazy val isExecutedFromMaven = true
       }
       suite.tests.head.toString aka "the example description" must include("it should be ok")

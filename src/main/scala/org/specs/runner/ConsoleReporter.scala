@@ -85,6 +85,7 @@ trait OutputReporter extends Reporter with Output {
     println(padding + "Specification \"" + spec.name + "\"")
     report(spec.subSpecifications, padding + "  ")
     reportSystems(spec.systems, padding + "  ")
+    spec.executeAfterSpec
     timer.stop
 
     // if we want final statistics only, we check the padding to know if we're

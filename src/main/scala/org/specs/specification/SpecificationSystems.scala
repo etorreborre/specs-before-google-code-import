@@ -25,7 +25,9 @@ trait SpecificationSystems { this: BaseSpecification =>
   /** list of systems under test */
   private[specs] var systemsList : List[Sus] = Nil
   /** @return the list of systems under test */
-  def systems = systemsList
+  def systems = {
+	systemsList
+  }
 
   /**
    * implicit definition allowing to declare a new system under test described by a string <code>desc</code><br>

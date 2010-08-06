@@ -82,6 +82,7 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
       super.report(spec.subSpecifications, padding)
       super.reportSystems(spec.systems, padding)
     }
+    spec.executeAfterSpec
     testSuiteFinished(spec.name)
     this
   }
