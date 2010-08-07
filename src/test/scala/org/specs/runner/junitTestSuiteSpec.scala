@@ -31,15 +31,7 @@ import org.specs._
 class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A junit test suite execution" should {
 	"trigger the afterSpec actions after all the examples if the specification is sequential" in {
-      val sequential = new SpecificationWithJUnit with MockOutput {
-    	setSequential()
-    	doAfterSpec(println("afterSpec"))
-        "sus1" should {
-    	  println("sus1");
-          "ex1" in { println("ex1"); 1 must_== 1 }
-          "ex2" in { println("ex2"); 1 must_== 1 }
-        }
-      }
+	  val sequential = new SequentialSpecification
       val result = new TestResult
       sequential.run(result)
       sequential.messages must containInOrder("ex2", "afterSpec")
@@ -185,5 +177,15 @@ class SimpleSpecification(behaviours: List[(that.Value)]) extends TestSpecificat
     "have example 1 ok" in {
       expectations(behaviours) foreach {_.apply}
     }
+  }
+}
+class SequentialSpecification extends SpecificationWithJUnit with MockOutput {
+  setSequential()
+  shareVariables()
+  doAfterSpec(println("afterSpec"))
+  "sus1" should {
+	println("sus1");
+	"ex1" in { println("ex1"); 1 must_== 1 }
+	"ex2" in { println("ex2"); 1 must_== 1 }
   }
 }
