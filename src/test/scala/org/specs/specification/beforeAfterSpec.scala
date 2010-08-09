@@ -157,6 +157,18 @@ class beforeAfterSpec extends SpecificationWithJUnit {
       s.reportSpecs
       after must beTrue
     }
+    "execute the afterSpec method only once after all examples" in {
+      var trace = List[String]()
+      object s extends Specification with MockOutput {
+        doAfterSpec(trace = "afterSpec" :: trace)
+        "a system" should {
+          "ex1" in { (trace = "ex1" :: trace).isExpectation }
+          "ex2" in { (trace = "ex2" :: trace).isExpectation }
+        }
+      }
+      s.reportSpecs
+      trace.reverse must_== List("ex1", "ex2", "afterSpec")
+    }
   }
   "A specification with nested examples" should {
     "execute the before / after methods only around the leaves examples" in {

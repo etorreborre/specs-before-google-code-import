@@ -217,7 +217,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   override def afterExample(ex: Examples) = {
     afterSpecFailure.foreach(throw _)
     super.afterExample(ex)
-    if (!isSequential && isTheLastExample(ex)) {
+    if (!isSequential && !executeOneExampleOnly && isTheLastExample(ex)) {
       executeAfterSpec
     }
   }
@@ -225,10 +225,10 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * execute the afterSpec actions
    */
   private[specs] def executeAfterSpec {
-	if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted) {
-	  afterSpecHasBeenExecuted = true
-      executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
-	}
+    if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted) {
+	    afterSpecHasBeenExecuted = true
+        executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+	  }
   }
   /**
    * execute the before or after specification action.
