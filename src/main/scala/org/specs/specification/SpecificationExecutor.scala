@@ -57,6 +57,8 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
                 example.copyExecutionResults(c)
               }
             }
+            this.afterSpecHasBeenExecuted = s.afterSpecHasBeenExecuted
+            this.afterSpecFailure = s.afterSpecFailure
             executed = true
             // Very special case,... (see  issue 106)
             // If the spec is sequential, the second example of the first system
