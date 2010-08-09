@@ -21,7 +21,7 @@ import org.specs.util.Classes._
 import org.specs.specification.BaseSpecification
 import org.specs._
 
-class classesSpec extends Specification {
+class classesSpec extends SpecificationWithJUnit {
   "getting the class name of" >> {
     "a name should decode it" >> {
       className("$plus$plus") must_== "++"

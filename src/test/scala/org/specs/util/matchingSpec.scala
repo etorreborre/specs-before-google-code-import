@@ -23,7 +23,7 @@ import scala.math._
 import org.scalacheck.{ Prop, Gen }
 import org.specs._
 
-class matchingSpec extends Specification with ScalaCheck {
+class matchingSpec extends SpecificationWithJUnit with ScalaCheck {
   var edgeFunction = (t:(String, String)) => t
   var edgeWeight = (t:(String, String)) => t._1.size + t._2.size 
   val sets = for {

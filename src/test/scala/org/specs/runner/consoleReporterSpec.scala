@@ -130,7 +130,7 @@ class reporterSpecification extends TestSpecs {
 	  new SpecWithAnAnonymousSystem(that.isOk).run.toList must not containMatch("specifies")
 	}
     "execute the actions after a specification even if the specification is sequential" in {
-	  new SequentialSpecWithAfterSpec().run.toList must containInOrder("  + ex2", "afterSpec")
+	  new SequentialSpecWithAfterSpecification().run.toList must containInOrder("  + ex2", "afterSpec")
 	}
   }
 }
@@ -290,7 +290,7 @@ class SpecWithAnAnonymousSystem(behaviours: List[(that.Value)]) extends TestSpec
     messages
   }
 }
-class SequentialSpecWithAfterSpec extends TestSpecification {
+class SequentialSpecWithAfterSpecification extends TestSpecification {
   setSequential()
   shareVariables()
   doAfterSpec { println("afterSpec") }
