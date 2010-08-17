@@ -79,6 +79,17 @@ class beforeAfterUnit extends SpecificationWithJUnit {
       }
     }
     s.reportSpecs
-    s.messages must containInOrder("beforeSpec", "sys1", "ex1", "ex2", "afterSpec") 
+    s.messages must containInOrder("beforeSpec", "  sys1 should", "  + ex1", "  + ex2", "afterSpec") 
+  }
+  "A specification with setSequential inside a sus must not execute examples twice" in {
+    object s extends Specification with MockOutput {
+      "sys1" should {
+        setSequential()
+        "ex1" in { 1 must_== 1 }
+        "ex2" in { 1 must_== 1 }
+      }
+    }
+    s.reportSpecs
+    s.messages must containInOrder("ex1", "ex1").not 
   }
 }
