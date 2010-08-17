@@ -130,6 +130,8 @@ class Property[T](var value: () => Option[T]) {
   def toLeft[R](right: R) = optionalValue.toLeft(right)
   /** option-like toRight */
   def toRight[L](left: L) = optionalValue.toRight(left)
+  /** to a list */
+  def toList = optionalValue.toList
   
   
   override def equals(other: Any) = {

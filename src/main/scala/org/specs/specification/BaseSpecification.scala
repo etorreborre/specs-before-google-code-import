@@ -192,7 +192,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /** return true if no examples have been executed in this spec */
   private[specification] def isBeforeAllExamples = !beforeSpecHasBeenExecuted
   /** return true if this example is the last one of the spec */
-  private[specs] def isTheLastExample(ex: Examples): Boolean = (!ex.hasSubExamples || ex.exampleList.isEmpty)&& isTheLastExample(systems, ex)
+  private[specs] def isTheLastExample(ex: Examples): Boolean = (!ex.hasSubExamples || ex.exampleList.isEmpty) && isTheLastExample(systems, ex)
   
   private def isTheLastExample(parents: List[Examples], ex: Examples): Boolean = {
     !parents.isEmpty && 
@@ -217,17 +217,18 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   override def afterExample(ex: Examples) = {
     afterSpecFailure.foreach(throw _)
     super.afterExample(ex)
-    if (!isSequential && isTheLastExample(ex)) {
-      executeAfterSpec
-    }
   }
   /**
    * execute the afterSpec actions
    */
   private[specs] def executeAfterSpec {
     if (beforeSpecHasBeenExecuted && !afterSpecHasBeenExecuted) {
-	    afterSpecHasBeenExecuted = true
-      executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+	    afterSpecHasBeenExecuted = true 
+	    try {
+        executeSpecAction(afterSpec, afterSpecFailure, new AfterSpecFailureException(_:FailureException))
+      } catch {
+        case _ => // ignore
+      }
 	  }
   }
   /**
@@ -315,7 +316,7 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   /** @return the first level examples number (i.e. without subexamples) */
   def firstLevelExamplesNb: Int = subSpecifications.foldLeft(0)(_+_.firstLevelExamplesNb) + systems.foldLeft(0)(_+_.examples.size)
   /** @return the failures of each sus */
-  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures)
+  def failures: List[FailureException] = subSpecifications.flatMap(_.failures) ::: systems.flatMap(_.failures) ::: afterSpecFailure.toList
   /** @return the skipped of each sus */
   def skipped: List[SkippedException] = subSpecifications.flatMap{_.skipped} ::: systems.flatMap(_.skipped)
   /** @return the errors of each sus */
