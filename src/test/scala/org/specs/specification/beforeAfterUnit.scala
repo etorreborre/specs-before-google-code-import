@@ -67,4 +67,18 @@ class beforeAfterUnit extends SpecificationWithJUnit {
     s.failures.size aka "the number of system failures" must_== 2
     s.failures(0).toString must include("Before system") and include("not equal to '2'")
   }
+  "A specification with sharedVariables must trigger doBeforeSpec and doAfterSpec as expected" in {
+    object s extends Specification with MockOutput {
+      shareVariables()
+      
+      doBeforeSpec(println("beforeSpec")) 
+      doAfterSpec(println("afterSpec")) 
+      "sys1" should {
+        "ex1" in { 1 must_== 1 }
+        "ex2" in { 1 must_== 1 }
+      }
+    }
+    s.reportSpecs
+    s.messages must containInOrder("beforeSpec", "sys1", "ex1", "ex2", "afterSpec") 
+  }
 }
