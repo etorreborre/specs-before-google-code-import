@@ -26,15 +26,16 @@ import org.specs.util.Configuration
  */
 trait SpecificationConfiguration {
   /** get the configuration state */
-  private[specification] var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
+  private[specification] var oneSpecInstancePerExample: Boolean = Configuration.config.oneSpecInstancePerExample
   /** 
    * use this method to use the same specification object to execute Examples, effectively sharing
    * variables between them. 
    */
-  def shareVariables() = oneSpecInstancePerExample = false
+  def shareVariables() = shareVariablesIs(true)
   /** 
    * use this method *not* to use the same specification object to execute Examples, effectively *not* sharing
    * variables between them. 
    */
-  def dontShareVariables() = oneSpecInstancePerExample = true
+  def dontShareVariables() = shareVariablesIs(false)
+  def shareVariablesIs(b: Boolean) = oneSpecInstancePerExample = !b
 }

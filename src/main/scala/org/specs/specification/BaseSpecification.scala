@@ -242,16 +242,15 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   private[specification] def executeSpecAction(action: Option[() => Any], 
                                                specFailure: Property[SpecFailureException],
                                                exceptionWrapper: FailureException => SpecFailureException) {
-    
-    setTemporarily(isSequential, true, (b:Boolean) => setSequentialIs(b),
+    setTemporarily(isSequential, true, (b:Boolean) => sequential = b,
                    executeOneExampleOnly, true, (b:Boolean) => executeOneExampleOnly = b,
                    expectationsListener, new DefaultExampleExpectationsListener {}, (e:ExampleExpectationsListener) => expectationsListener = e) {
       try {
-        action.map(_())
+        action.map { act => act() }
       } catch {
         case e: FailureException => specFailure(exceptionWrapper(e))
         case other => throw other 
-      } finally {
+    } finally {
         specFailure.foreach(throw _)
       }
     }
@@ -339,6 +338,16 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
   override def taggedComponents: List[Tagged] = this.systems.toList ::: this.subSpecifications 
   /** @return the name of the specification */
   override def toString = name
+  /** make sure that the execution is with shared variables when it is sequential */
+  override def setSequentialIs(b: Boolean) = {
+    super.shareVariablesIs(b)
+    super.setSequentialIs(b)
+  }
+  override def shareVariablesIs(b: Boolean) = {
+    if (!b) super.setSequentialIs(false)
+    super.shareVariablesIs(b)
+  }
+ 
 }
 trait ComposedSpecifications extends LazyParameters { this: BaseSpecification =>
 /**

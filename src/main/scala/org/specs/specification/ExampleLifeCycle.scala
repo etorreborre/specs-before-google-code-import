@@ -155,9 +155,9 @@ trait SequentialExecution {
   /** @return true if if examples should be executed as soon as defined  */
   def isSequential = sequential
   /** examples should be executed as soon as defined */
-  def setSequential() = sequential = true
+  def setSequential() = setSequentialIs(true)
   /** examples should not be executed as soon as defined */
-  def setNotSequential() = sequential = false
+  def setNotSequential() = setSequentialIs(false)
   /** setter for is sequential */
   def setSequentialIs(b: Boolean) = sequential = b
 

@@ -40,7 +40,6 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
           case None => example.executeThis
           case Some(s) => {
             s.executeOneExampleOnly = true
-            s.setNotSequential()
             s.expectationsListener = this
             s.beforeSpecFailure = this.beforeSpecFailure
             s.beforeSpecHasBeenExecuted = this.beforeSpecHasBeenExecuted
@@ -60,12 +59,6 @@ trait SpecificationExecutor extends LifeCycle { this: BaseSpecification with Exa
             this.afterSpecHasBeenExecuted = s.afterSpecHasBeenExecuted
             this.afterSpecFailure = s.afterSpecFailure
             executed = true
-            // Very special case,... (see  issue 106)
-            // If the spec is sequential, the second example of the first system
-            // will have its closure set to the cloned specification, unless
-            // the change below is done
-            if (isSequential)
-              s.setCurrent(Some(this.systems(0)))
           }
         }
       }

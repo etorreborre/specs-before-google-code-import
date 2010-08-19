@@ -18,6 +18,7 @@
  */
 package org.specs.specification
 import org.specs.util._
+import org.specs.util.Control._
 import org.specs.util.ExtendedString._
 import scala.xml._
 import org.specs.matcher._
@@ -49,9 +50,9 @@ trait BeforeAfter { outer: BaseSpecification =>
   def doBeforeSpec(actions: =>Any) = beforeSpec = stackActions(() => sequentially(actions), beforeSpec)
   /** this method is added to make sure that expectation declared in beforeSpec blocks are executed right away */
   private def sequentially(actions: =>Any) = {
-    val isSeq = isSequential
-     setSequential()
-    try { actions } finally { sequential = isSeq }
+    setTemporarily(isSequential, true, (b:Boolean) => sequential = b) {
+      actions 
+    }
   }
   /** adds a "afterSpec" function to the current specification */
   def doAfterSpec(actions: =>Any) = afterSpec = reverseStackActions(() => sequentially(actions), afterSpec)

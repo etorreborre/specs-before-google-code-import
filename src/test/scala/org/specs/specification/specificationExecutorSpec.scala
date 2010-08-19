@@ -156,20 +156,23 @@ class sequentialSpecification extends Specification {
     Watcher.addMessage("define ex1")
     "not go to busyloop" in {
       Watcher.addMessage("ex1")
+      Watcher.messages must include("0-define ex1")
+      Watcher.messages must include("1-ex1")
       x must_== 0; x = x + 1
     }
     Watcher.addMessage("define ex2")
     "not go to busyloop2" in {
       Watcher.addMessage("ex2")
-      Watcher.messages must include("0-define ex1")
-      Watcher.messages must include("1-ex1")
-      x aka "x twice" must_== 0
+      Watcher.messages must include("2-define ex2")
+      Watcher.messages must include("3-ex2")
+      x aka "x twice" must_== 1; x = x + 1
     }
     Watcher.addMessage("define ex3")
     "have 3 examples" in {
-      Watcher.messages must include("4-define ex2")
-      Watcher.messages must include("6-ex2")
-      x aka "x thrice" must_== 0
+      Watcher.addMessage("ex3")
+      Watcher.messages must include("4-define ex3")
+      Watcher.messages must include("5-ex3")
+      x aka "x thrice" must_== 2
     }
   }
 }
@@ -192,7 +195,7 @@ class notSequentialSpecification extends Specification {
   }
 }
 object specificationWithSetSequential extends Specification {
-  "If the spec is sequential, the first example must be executed when defined and there should be no shared variable" in {
+  "If the spec is sequential, the first example must be executed when defined and variables should be shared" in {
     (new sequentialSpecification).failures must be empty
   }
   "If the spec is not sequential, the 2 examples should be defined first, then executed and there should be no shared variable" in {
@@ -204,7 +207,7 @@ object specificationWithSetSequential extends Specification {
 object sequentialSpecWithNotifier extends Specification {
   testNotifier.reset
   notifiedSequentialSpecification.reportSpecs
-  "There must be no side-effects" in { testNotifier.failures must be empty }
+  "There must be side-effects" in { testNotifier.failures must be empty }
   "Examples must only be executed once" in { testNotifier.succeeded must_== 6 }
 }
 // from issue 107
