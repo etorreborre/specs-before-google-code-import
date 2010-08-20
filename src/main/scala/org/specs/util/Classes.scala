@@ -24,12 +24,12 @@ import scala.reflect.NameTransformer
 /**
  * This object provides simple functions to instantiate classes.
  */
-object Classes extends Classes
+private[specs] object Classes extends Classes
 
 /**
  * This trait provides utility functions for classes.
  */
-trait Classes extends ConsoleOutput {
+private[specs] trait Classes extends ConsoleOutput {
   /**
    * Create an instance of a given class, returning either the instance, or an exception
    */
