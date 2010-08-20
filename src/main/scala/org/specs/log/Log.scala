@@ -46,7 +46,7 @@ trait LogLevels {
   val Info = 1
   val Warning = 2
   val Error = 3
-  var level = Warning
+  def level = Warning
 
   /** prints the message if the log level is Debug */
   def debug(msg: =>String)

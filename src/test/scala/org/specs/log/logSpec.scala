@@ -5,7 +5,7 @@ import org.specs.io.mock._
 
 class logAnySpec extends Specification with LogAny with MockOutput {
   clearMessages.before
-  level = Debug
+  override def level = Debug
   "with the LogAny trait any object can be logged" in {
     "appending a log method at the end of the object logs its toString representation" in {
       List(1, 2).debug
