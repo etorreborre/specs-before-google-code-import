@@ -30,7 +30,18 @@ import org.specs.io.{ConsoleOutput, Output}
  * log.error("message")				// will not print <br> 
  * </code>
  */
-trait Log extends Output {
+trait Log extends Output with LogLevels {
+  /** prints the message if the log level is Debug */
+  def debug(msg: =>String) = if (level == 0) println("[DEBUG] " + msg)
+  /** prints the message if the log level is <= Info */
+  def info(msg: =>String) = if (level <= Info ) println("[INFO] " + msg)
+  /** prints the message if the log level is <= Warning */
+  def warning(msg: =>String) = if (level <= Warning ) println("[WARNING] " + msg)
+  /** prints the message if the log level is <= Error */
+  def error(msg: =>String) = if (level <= Error ) println("[ERROR] " + msg)
+}
+
+trait LogLevels {
   val Debug = 0
   val Info = 1
   val Warning = 2
@@ -38,18 +49,41 @@ trait Log extends Output {
   var level = Warning
 
   /** prints the message if the log level is Debug */
-  def debug(msg: =>String) = if (level == 0) println("[DEBUG] " + msg)
-  
+  def debug(msg: =>String)
   /** prints the message if the log level is <= Info */
-  def info(msg: =>String) = if (level <= Info ) println("[INFO] " + msg)
-
+  def info(msg: =>String)
   /** prints the message if the log level is <= Warning */
-  def warning(msg: =>String) = if (level <= Warning ) println("[WARNING] " + msg)
-
+  def warning(msg: =>String)
   /** prints the message if the log level is <= Error */
-  def error(msg: =>String) = if (level <= Error ) println("[ERROR] " + msg)
+  def error(msg: =>String)
 }
 
+/**
+ * This trait, and associated object, provide easy ways to log the toString representation
+ * of an object, returning the object after having logged a message:
+ *
+ *  `List(1, 2).debug.take(1)`
+ * 
+ * If more information is required, a message can also be associated:
+ * 
+ *  `List(1, 2).debug("collected elements").take(1)`
+ * 
+ * This will log: [DEBUG] List(1, 2): collected elements
+ */
+private[specs] trait LogAny { outer: Log => 
+  implicit def log(a: =>Any): Loggable = new Loggable(a)
+  class Loggable(a: =>Any) extends LogLevels {
+    lazy val value = a
+    def debug = { outer.debug(value.toString); value }
+    def info = { outer.info(value.toString); value }
+    def warning = { outer.warning(value.toString); value }
+    def error = { outer.error(value.toString); value }
+    def debug(msg: =>String) = { outer.debug(value.toString+": "+msg); value }
+    def info(msg: =>String) = { outer.info(value.toString+": "+msg); value }
+    def warning(msg: =>String) = { outer.warning(value.toString+": "+msg); value }
+    def error(msg: =>String) = { outer.error(value.toString+": "+msg); value }
+  }
+}
  /** Implementation of the <code>Log</code> trait using the <code>Console</code> */
 trait ConsoleLog extends ConsoleOutput with Log
 
