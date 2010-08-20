@@ -22,7 +22,7 @@ import org.specs._
 import org.specs.specification._
 import _root_.junit.framework._
 import _root_.org.junit.runner._
-import org.specs.collection.JavaCollectionsConversion._
+import org.specs.collection.JavaConversions._
 import org.specs.util.Stacktraces
 import org.specs.execute._
 import org.specs.util.Property

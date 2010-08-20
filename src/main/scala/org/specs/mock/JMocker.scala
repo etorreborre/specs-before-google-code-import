@@ -32,7 +32,7 @@ import org.specs.specification._
 import org.specs.util.Property
 import org.specs.util.ExtendedThrowable._
 import org.jmock.internal.matcher.MethodNameMatcher
-import org.specs.collection.JavaCollectionsConversion._
+import org.specs.collection.JavaConversions._
 import scala.reflect.ClassManifest
 import org.specs.execute._
 

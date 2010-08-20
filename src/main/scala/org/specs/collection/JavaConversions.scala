@@ -18,10 +18,13 @@
  */
 package org.specs.collection
 import java.util.ArrayList
-object JavaCollectionsConversion extends JavaConversions
+object JavaConversions extends JavaConversions
 
 /**
  * This trait provides some implicit conversions between Java collections and scala.collection.List
+ *
+ * It can be used it specification code but will be deprecated when those conversions are integrated to the
+ * standard Scala <=> Java conversions
  */
 trait JavaConversions {
   /**

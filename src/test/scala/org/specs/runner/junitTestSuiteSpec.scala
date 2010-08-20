@@ -19,7 +19,7 @@
 package org.specs.runner
 
 import org.specs.io.mock.MockOutput
-import org.specs.collection.JavaCollectionsConversion._
+import org.specs.collection.JavaConversions._
 import org.specs.runner._
 import org.specs.Sugar._
 import _root_.junit.framework._

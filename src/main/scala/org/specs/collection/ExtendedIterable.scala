@@ -41,9 +41,9 @@ private[specs] trait ExtendedIterable {
         xs.toString
       else
         xs.map { 
-		  case i: Iterable[_] => i.toDeepString
-		  case x => x.toString
-		}.mkString("[" , ", ", "]")
+          case i: Iterable[_] => i.toDeepString
+          case x => x.toString
+        }.mkString("[" , ", ", "]")
     }
     /**
      * @return true if the 2 iterables contain the same elements, in the same order, according to a function f
@@ -62,9 +62,9 @@ private[specs] trait ExtendedIterable {
      * @return a list minus the first element satisfying the predicate
      */
     def removeFirst(predicate: T => Boolean): Iterable[T] = {
-	  if (xs.isEmpty) xs
-	  else if (predicate(xs.head)) xs.drop(1)
-	  else xs.take(1) ++ xs.removeFirst(predicate)
+      if (xs.isEmpty) xs
+      else if (predicate(xs.head)) xs.drop(1)
+      else xs.take(1) ++ xs.drop(1).removeFirst(predicate)
     }
     /**
      * @return true if the second iterable elements are contained in the first, in order
@@ -95,20 +95,20 @@ private[specs] trait ExtendedIterable {
     def sameElementsAs(ys: Iterable[T], f: (T, T) => Boolean): Boolean = {
       def isItsOwnIterable(a: Iterable[_]) = !a.isEmpty && a.iterator.next == a
 	
-	  def isSame(x: T, y: T): Boolean = {
-		(x, y) match {
-		  case (a: Iterable[_], b:Iterable[_]) if (!isItsOwnIterable(a)) => a.asInstanceOf[Iterable[T]].sameElementsAs(b.asInstanceOf[Iterable[T]], f)
-		  case _ => f(x, y)
-		}
-	  }
+      def isSame(x: T, y: T): Boolean = {
+        (x, y) match {
+          case (a: Iterable[_], b:Iterable[_]) if (!isItsOwnIterable(a)) => a.asInstanceOf[Iterable[T]].sameElementsAs(b.asInstanceOf[Iterable[T]], f)
+          case _ => f(x, y)
+        }
+      }
       def sameElements(xs: Iterable[T], ys: Iterable[T]) = {
-		val (x, y, resta, restb) = (xs.head, ys.head, xs.drop(1), ys.drop(1))
+        val (x, y, resta, restb) = (xs.head, ys.head, xs.drop(1), ys.drop(1))
 		  
-		isSame(x, y) && resta.sameElementsAs(restb, f) ||
-		  resta.exists(isSame(_, y)) && 
-		  restb.exists(isSame(_, x)) &&
-		  resta.removeFirst(isSame(_, y)).sameElementsAs(restb.removeFirst(isSame(_, x)), f)
-	  }
+        isSame(x, y) && resta.sameElementsAs(restb, f) ||
+          resta.exists(isSame(_, y)) && 
+          restb.exists(isSame(_, x)) &&
+          resta.removeFirst(isSame(_, y)).sameElementsAs(restb.removeFirst(isSame(_, x)), f)
+      }
       xs.isEmpty && xs.isEmpty ||
       !xs.isEmpty && !xs.isEmpty && sameElements(xs, ys)
     }

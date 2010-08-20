@@ -18,7 +18,7 @@
  */
 package org.specs.runner
 import org.specs.log.ConsoleLog
-import org.specs.collection.JavaCollectionsConversion
+import org.specs.collection.JavaConversions._
 import _root_.org.junit.runner._
 import org.specs.specification._
 import org.specs.Specification
