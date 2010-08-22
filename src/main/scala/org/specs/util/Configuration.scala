@@ -20,11 +20,24 @@ package org.specs.util
 import Classes._
 import org.specs.io._
 
-object Configuration extends Configuration {
+private[specs] object Configuration extends Configuration {
   /** variable holding the current configuration which is the user configuration by default */
   var config = getUserConfiguration
 }
-trait Configuration extends ConfigurationFactory {
+/**
+ * This trait defines specs behavior:
+ * * stacktrace = true means that the stacktrace must be printed out when there is an error
+ * * failedAndErrorOnly = true means that no successful examples will be printed out
+ * * statistics = true means that statistics about the success and duration of an execution will be printed out
+ * * finalStatisticsOnly = true means that only the final, aggregated statistics will be printed out for a specification with several
+ *   subspecifications or systems
+ * * colorize = true means that the console output should be colorized (to use only if the console accepts it)
+ * * examplesWithoutExpectationsMustBePending = true means that if no expectations is set in an example, it must be reported as PENDING
+ * * oneSpecInstancePerExample = true if the default style of execution is declarative (opposed to narrative where variables are shared)
+ * * smartDiffs = true if string differences must be computed when "long enough"
+ */
+trait Configuration extends ReporterConfiguration with RunConfiguration with ConfigurationFactory   
+trait ReporterConfiguration {
   /** this value controls if the errors stacktrace should be printed. */
   def stacktrace = true
   /** this value controls if ok examples should be printed. */
@@ -35,6 +48,9 @@ trait Configuration extends ConfigurationFactory {
   def finalStatisticsOnly = false
   /** this value controls if the ANSI color sequences should be used to colorize output */
   def colorize = false
+}
+
+trait RunConfiguration {
   /** this value controls if examples without expectations should be marked as PENDING examples */
   def examplesWithoutExpectationsMustBePending = true
   /** this value controls if examples should be executed in a separate specification instance to avoid side effects */
@@ -50,7 +66,6 @@ trait ConfigurationFactory extends FileSystem {
     getUserConfigurationFromPropertiesFile getOrElse( 
     getUserConfigurationFromClass getOrElse(
     getDefaultConfiguration))
-    
   } 
   /** @return the configuration class named className and the default configuration otherwise. */
   def getConfiguration(name: String): Configuration = {

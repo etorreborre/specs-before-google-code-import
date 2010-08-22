@@ -23,7 +23,15 @@ import java.util.regex.Pattern.compile
 import java.util.regex.PatternSyntaxException
 import org.specs._
 
-trait SpecsFilter extends SpecsHolder {
+/**
+ * A SpecsFilter is a trait holding specifications (a SpecsHolder) and which is
+ * able to return only the specifications containing systems or
+ * examples conforming to a given regular expression.
+ *
+ * The regular expressions used for filtering are provided through system properties by default
+ * but it is possible to override the `susPattern` and `examplePattern` methods to provide other values
+ */
+private[specs] trait SpecsFilter extends SpecsHolder {
 
   /** default regexp for filtering sus. */
   def susFilterPattern = ".*"
@@ -93,22 +101,12 @@ trait SpecsFilter extends SpecsHolder {
   /**
    * @return either the system property named "sus" or the class attribute
    */
-  def susPattern: String = {
-    System.getProperty("sus") match {
-      case null => susFilterPattern
-      case something => something
-    }
-  }
+  def susPattern: String = Option(System.getProperty("sus")).getOrElse(susFilterPattern)
 
   /**
    * @return either the system property named "example" or the class attribute
    */
-  def examplePattern: String = {
-    System.getProperty("example") match {
-      case null => exampleFilterPattern
-      case something => something
-    }
-  }
+  def examplePattern: String = Option(System.getProperty("example")).getOrElse(exampleFilterPattern)
 }
 /** specific exception for pattern compilation errors */
 case class SpecsFilterPatternException(description: String, cause: Exception) extends
