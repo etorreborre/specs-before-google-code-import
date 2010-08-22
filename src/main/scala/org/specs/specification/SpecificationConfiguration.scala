@@ -24,9 +24,9 @@ import org.specs.util.Configuration
  * This trait defines some optional behaviour for a specification such as executing examples in a copy of the specification
  * to be isolated from any other example modifying local variables.
  */
-trait SpecificationConfiguration {
+ trait SpecificationConfiguration { this: WithExecutionConfiguration =>
   /** get the configuration state */
-  private[specification] var oneSpecInstancePerExample = Configuration.config.oneSpecInstancePerExample
+  private[specification] var oneSpecInstancePerExample = config.oneSpecInstancePerExample
   /** 
    * use this method to use the same specification object to execute Examples, effectively sharing
    * variables between them. 
@@ -38,3 +38,4 @@ trait SpecificationConfiguration {
    */
   def dontShareVariables() = oneSpecInstancePerExample = true
 }
+

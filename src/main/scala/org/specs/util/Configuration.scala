@@ -20,10 +20,6 @@ package org.specs.util
 import Classes._
 import org.specs.io._
 
-private[specs] object Configuration extends Configuration {
-  /** variable holding the current configuration which is the user configuration by default */
-  var config = getUserConfiguration
-}
 /**
  * This trait defines specs behavior:
  * * stacktrace = true means that the stacktrace must be printed out when there is an error
@@ -37,49 +33,29 @@ private[specs] object Configuration extends Configuration {
  * * smartDiffs = true if string differences must be computed when "long enough"
  */
 trait Configuration extends ReporterConfiguration with RunConfiguration with ConfigurationFactory   
-trait ReporterConfiguration {
-  /** this value controls if the errors stacktrace should be printed. */
-  def stacktrace = true
-  /** this value controls if ok examples should be printed. */
-  def failedAndErrorsOnly = false
-  /** this value controls if the statistics should be printed. */
-  def statistics = true
-  /** this value controls if the final statistics should be printed. */
-  def finalStatisticsOnly = false
-  /** this value controls if the ANSI color sequences should be used to colorize output */
-  def colorize = false
-}
-
-trait RunConfiguration {
-  /** this value controls if examples without expectations should be marked as PENDING examples */
-  def examplesWithoutExpectationsMustBePending = true
-  /** this value controls if examples should be executed in a separate specification instance to avoid side effects */
-  def oneSpecInstancePerExample = true
-  /** this value controls if string differences should be displayed as highlighted */
-  def smartDiffs = true
-}
-trait ConfigurationFactory extends FileSystem {
+trait Configurable
+trait ConfigurationFactory[C <: Configurable] extends FileSystem {
   /** @return the default configuration class */
-  def getDefaultConfiguration: Configuration = new DefaultConfiguration 
+  def getDefaultConfiguration: C 
   /** @return the user configuration class */
   def getUserConfiguration: Configuration = {
-    getUserConfigurationFromPropertiesFile getOrElse( 
-    getUserConfigurationFromClass getOrElse(
-    getDefaultConfiguration))
+    getUserConfigurationFromPropertiesFile orElse 
+    getUserConfigurationFromClass getOrElse
+    getDefaultConfiguration
   } 
   /** @return the configuration class named className and the default configuration otherwise. */
-  def getConfiguration(name: String): Configuration = {
-    getConfigurationFromPropertiesFile(name) getOrElse( 
-    getConfigurationFromClass(name) getOrElse(
-    getUserConfiguration))
+  def getConfiguration(name: String): C = {
+    getConfigurationFromPropertiesFile(name) orElse  
+    getConfigurationFromClass(name) getOrElse
+    getUserConfiguration
   } 
   /** @return the configuration object from a class file */
-  def getConfigurationFromClass(className: String): Option[Configuration] = {
-    createObject[Configuration](className, false, false)
+  def getConfigurationFromClass(className: String): Option[C] = {
+    createObject[C](className, false, false)
   } 
   /** @return the user configuration object from a properties file */
-  def getConfigurationFromPropertiesFile(filePath: String): Option[Configuration] = {
-    var configuration: Option[Configuration] = None
+  def getConfigurationFromPropertiesFile(filePath: String): Option[C] = {
+    var configuration: Option[C] = None
     try {
       val properties = new java.util.Properties()
       properties.load(inputStream(filePath))
@@ -114,11 +90,11 @@ trait ConfigurationFactory extends FileSystem {
     }
   } 
   /** @return the user configuration object from a class file */
-  def getUserConfigurationFromClass: Option[Configuration] = {
+  def getUserConfigurationFromClass: Option[C] = {
     getConfigurationFromClass("configuration$")
   }
   /** @return the user configuration from a properties file */
-  def getUserConfigurationFromPropertiesFile: Option[Configuration] = {
+  def getUserConfigurationFromPropertiesFile: Option[C] = {
     getConfigurationFromPropertiesFile("configuration.properties")
   }
 }

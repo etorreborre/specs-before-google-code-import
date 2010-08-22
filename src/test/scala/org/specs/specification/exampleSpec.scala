@@ -61,8 +61,9 @@ class exampleSpec extends SpecificationWithJUnit {
     }
     "not throw a SkippedException with a PENDING message if it has a body with no expectations and the configuration" +
     "has examplesWithoutExpectationsMustBePending=false" in {
-      Configuration.config = new Configuration { override val examplesWithoutExpectationsMustBePending = false }
+      
       object s extends Specification { 
+        override protected[specs] lazy val executionConfiguration = new ExecutionConfiguration { override val examplesWithoutExpectationsMustBePending = false }
         shareVariables()
         "this is a pending example" in {} 
       }

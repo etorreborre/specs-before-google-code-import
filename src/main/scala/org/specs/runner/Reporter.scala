@@ -95,8 +95,8 @@ trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with Repor
    * report specifications.
    *
    * This method should usually be overriden by subclasses to provide concrete reporting behavior.
-   * Subclasses must not forget to insert a super.report call at the beginning of their processing
-   * to allow the chaining of several reporters as traits.
+   * Subclasses can insert a super.report call at the beginning of their processing
+   * to allow the chaining of the parent reporter. For example a FileReporter can also be a ConsoleReporter if needed.
    */
   def report(specs: Seq[Specification]): this.type = {
     setTags(specs)

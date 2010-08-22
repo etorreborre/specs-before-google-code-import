@@ -27,8 +27,9 @@ import org.specs.util.Configuration
  * </ul>
  */
 trait DetailedFailures {
+  protected lazy val config: ExecutionConfiguration = new DefaultExecutionConfiguration
   /** by default no full details are reported by specifications */
-  implicit var detailedFailures: Detailed = if (Configuration.config.smartDiffs) new fullDetails("[]", 30, 20) else noDetails()
+  implicit var detailedFailures: Detailed = if (config.smartDiffs) new fullDetails("[]", 30, 20) else noDetails()
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
   def detailedDiffs(): Unit = detailedDiffs("[]", 0, 20)
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */

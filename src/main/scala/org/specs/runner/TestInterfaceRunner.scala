@@ -68,7 +68,7 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
   }
   def run(specification: Option[Specification]): Option[Specification] = run(specification, new DefaultEventHandler)
   def run(specification: Option[Specification], handler: EventHandler): Option[Specification] = {
-    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers, s.runConfiguration)) 
+    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers, s.reporterConfiguration)) 
     specification.map(testInterfaceRunner(_).reportSpecs)
     specification match {
       case Some(s: org.specs.runner.File) => s.reportSpecs
@@ -81,9 +81,9 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
 /**
  * The TestInterface notifier notifies the EventHandler of the specification execution
  */
-class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], configuration: Configuration) extends Notifier 
+class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], configuration: ReporterConfiguration) extends Notifier 
   with HandlerEvents with TestLoggers {
-  def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultConfiguration)
+  def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultReporterConfiguration)
 
   def runStarting(examplesCount: Int) = {}
   def exampleStarting(exampleName: String) = incrementPadding
