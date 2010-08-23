@@ -16,7 +16,21 @@ trait ReporterConfiguration extends Configurable {
   def colorize = false
 }
 trait WithReporterConfiguration {
-  protected[specs] lazy val reporterConfiguration = new DefaultReporterConfiguration 
+  private val factory = new ConfigurationFactory[ReporterConfiguration] {
+    def getDefaultConfiguration = new DefaultReporterConfiguration
+  }
+  
+  def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration] = {
+    Some(new DefaultReporterConfiguration {
+        override def stacktrace = boolean(properties, "stacktrace", super.stacktrace)
+        override def failedAndErrorsOnly = boolean(properties, "failedAndErrorsOnly", super.failedAndErrorsOnly)
+        override def statistics = boolean(properties, "statistics", super.statistics)
+        override def finalStatisticsOnly = boolean(properties, "finalStatisticsOnly", super.finalStatisticsOnly)
+        override def colorize = boolean(properties, "colorize", super.colorize)
+    })
+  }
+    
+  protected[specs] lazy val reporterConfiguration =  factory.getUserConfiguration
 }
 
 class DefaultReporterConfiguration extends ReporterConfiguration

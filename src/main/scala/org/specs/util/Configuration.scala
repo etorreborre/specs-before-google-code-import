@@ -53,27 +53,17 @@ trait ConfigurationFactory[C <: Configurable] extends FileSystem {
   def getConfigurationFromClass(className: String): Option[C] = {
     createObject[C](className, false, false)
   } 
+  def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration]
   /** @return the user configuration object from a properties file */
   def getConfigurationFromPropertiesFile(filePath: String): Option[C] = {
-    var configuration: Option[C] = None
     try {
       val properties = new java.util.Properties()
       properties.load(inputStream(filePath))
-      configuration = Some(new DefaultConfiguration {
-        override def stacktrace = boolean(properties, "stacktrace", super.stacktrace)
-        override def failedAndErrorsOnly = boolean(properties, "failedAndErrorsOnly", super.failedAndErrorsOnly)
-        override def statistics = boolean(properties, "statistics", super.statistics)
-        override def finalStatisticsOnly = boolean(properties, "finalStatisticsOnly", super.finalStatisticsOnly)
-        override def colorize = boolean(properties, "colorize", super.colorize)
-        override def examplesWithoutExpectationsMustBePending = boolean(properties, "examplesWithoutExpectationsMustBePending", super.examplesWithoutExpectationsMustBePending)
-        override def oneSpecInstancePerExample = boolean(properties, "oneSpecInstancePerExample", super.oneSpecInstancePerExample)
-        override def smartDiffs = boolean(properties, "smartDiffs", super.smartDiffs)
-      })
+      getConfigurationFromProperties(properties)
     }
     catch {
-      case _ => ()
+      case _ => None
     }
-    configuration
   } 
   def boolean(properties: java.util.Properties, propName: String, defaultValue: Boolean) = {
     var prop = properties.get(propName)
