@@ -12,6 +12,21 @@ trait ExecutionConfiguration extends Configurable {
   def smartDiffs = true
 }
 trait WithExecutionConfiguration {
-  protected[specs] lazy val executionConfiguration:  ExecutionConfiguration = new DefaultExecutionConfiguration 
+  protected[specs] lazy val executionConfiguration = new DefaultExecutionConfiguration 
+
+ private val factory = new ConfigurationFactory[ExecutionConfiguration] {
+    def getDefaultConfiguration = new DefaultExecutionConfiguration
+    def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration] = {
+      Some(new DefaultExecutionConfiguration {
+          override def examplesWithoutExpectationsMustBePending =
+            boolean(properties, "examplesWithoutExpectationsMustBePending", super.examplesWithoutExpectationsMustBePending)
+          override def oneSpecInstancePerExample = 
+            boolean(properties, "oneSpecInstancePerExample", super.oneSpecInstancePerExample)
+          override def smartDiffs =
+            boolean(properties, "smartDiffs", super.smartDiffs)
+      })
+    }
+  }
+    
 }
 class DefaultExecutionConfiguration extends ExecutionConfiguration
