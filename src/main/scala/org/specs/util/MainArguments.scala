@@ -11,7 +11,7 @@ import org.specs.log.Log
  *
  * Note that this trait is not thread safe as it contains a var storing the user arguments.
  */
-protected[specs] trait MainArguments { this: Log =>
+protected[specs] trait MainArguments extends Arguments { this: Log =>
   /**
    * Main method
    *
@@ -34,6 +34,8 @@ protected[specs] trait MainArguments { this: Log =>
    * define this method to provide concrete behavior for your application
    */
   def executeMain: Boolean
+}
+trait Arguments {
   /**
    * optional arguments to be used in the main method and which can be set from the code directly.
    */

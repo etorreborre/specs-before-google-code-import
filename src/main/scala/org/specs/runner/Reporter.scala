@@ -52,26 +52,23 @@ import org.specs._
  * to allow the chaining of several reporters as traits:
  * object runner extends Runner(spec) with Html with Xml for example
  */
-trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with ReporterOptions with ReporterConfiguration {
+trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with ReporterOptions with WithReporterConfiguration {
+  override lazy val configurationFilePath = argValues(args, List("-config", "--configuration")).getOrElse(super.configurationFilePath)
+  override lazy val configurationClass = argValues(args, List("-config", "--configuration")).getOrElse(super.configurationCLass)
 
   /** this variable controls if stacktraces should be printed. */
-  override private[specs] val stacktrace = argsContain("-ns", "--nostacktrace") || config.stacktrace
+  override private[specs] val stacktrace = argsContain("-ns", "--nostacktrace") || reporterConfiguration.stacktrace
   /** this variable controls if ok examples should be printed. */
-  override private[specs] val failedAndErrorsOnly = argsContain("-xonly", "--failedonly") || userConfiguration().failedAndErrorsOnly
+  override private[specs] val failedAndErrorsOnly = argsContain("-xonly", "--failedonly") || reporterConfiguration.failedAndErrorsOnly
   /** this variable controls if the statistics should be printed. */
-  override private[specs] val statistics = argsContain("-nostats", "--nostatistics") || userConfiguration().statistics
+  override private[specs] val statistics = argsContain("-nostats", "--nostatistics") || reporterConfiguration.statistics
   /** this variable controls if the final statistics should be printed. */
-  override private[specs] val finalStatisticsOnly = argsContain("-finalstats", "--finalstatistics") || userConfiguration().finalStatisticsOnly
+  override private[specs] val finalStatisticsOnly = argsContain("-finalstats", "--finalstatistics") || reporterConfiguration.finalStatisticsOnly
   /** this variable controls if the ANSI color sequences should be used to colorize output */
-  override private[specs] val colorize = argsContain("-c", "--color") || userConfiguration().colorize
+  override private[specs] val colorize = argsContain("-c", "--color") || reporterConfiguration.colorize
   /** this variable controls if the examples must not be executed and only high-level descriptions must be displayed */
-  override private[specs] val planOnly = argsContain("-plan") Property(false)
+  override private[specs] val planOnly = argsContain("-plan") || false
 
-  /** @return the user configuration object from a class file */
-  override def getUserConfigurationFromClass: Option[Configuration] = {
-    getConfigurationFromClass(argValues(args, List("-config", "--configuration")) orElse getConfigurationFromClass("configuration$")
-  }
-  
   /** regexp for filtering systems. */
   override def susFilterPattern = argValue(args, List("-sus", "--system")).getOrElse(".*")
 

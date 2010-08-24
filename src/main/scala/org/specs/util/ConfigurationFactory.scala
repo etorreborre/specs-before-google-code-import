@@ -30,43 +30,39 @@ import org.specs.io._
  * By default, the properties file is expected at the top-level as "configuration.properties",
  * the configuration object is expected at the top-level as "configuration$".
  * 
- * Otherwise a name can be passed to the getConfiguration method to indicate the name/path 
- * that should be used to retrieve the configuration
+ * Otherwise those names can be overriden by subclasses.
  */
-trait ConfigurationFactory[C <: Configuration] extends PropertiesFileReader[C] {
+trait ConfigurationFactory[C <: Configuration[C]] extends PropertiesFileReader[C] with ConfigurationLocation with Arguments {
   /** @return the user configuration class */
   def getUserConfiguration: Configuration = {
-    getUserConfigurationFromPropertiesFile orElse 
-    getUserConfigurationFromClass getOrElse
+    getConfigurationFromArgs(args) or
+    getUserConfigurationFromPropertiesFile(configurationFilePath) or 
+    getUserConfigurationFromClass(configurationClass) or
     getDefaultConfiguration
-  } 
-  /** @return the configuration class named className and the default configuration otherwise. */
-  def getConfiguration(name: String): C = {
-    getConfigurationFromPropertiesFile(name) orElse  
-    getConfigurationFromClass(name) getOrElse
-    getUserConfiguration
   } 
   /** @return the default configuration class */
   protected def getDefaultConfiguration: C 
-  /** @return the user configuration object from a class file */
-  protected def getUserConfigurationFromClass: Option[C] = {
-    getConfigurationFromClass("configuration$")
-  }
-  /** @return the user configuration from a properties file */
-  protected def getUserConfigurationFromPropertiesFile: Option[C] = {
-    getConfigurationFromPropertiesFile("configuration.properties")
-  }
   /** @return the configuration object from a class file */
   protected def getConfigurationFromClass(className: String): Option[C] = {
     createObject[C](className, false, false)
   } 
+  protected def getUserConfigurationFromArgs(args: Array[String]): Configuration 
   protected def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration]
   /** @return the user configuration object from a properties file */
   protected def getConfigurationFromPropertiesFile(filePath: String): Option[C] = readProperties(filePath, getConfigurationFromProperties)
 }
+trait ConfigurationLocation {
+  lazy val configurationClass = "configuration$"
+  lazy val configurationFilePath = "configuration.properties"
+}
 /** A configuration object is something that can be created from a properties file, or a specific class
  *  or a default configuration in the code, by using the Configuration Factory
  */
-trait Configuration
+ trait Configuration[C <: Configuration] {
+   val values: Map[Names, Boolean]
+   case class Names(trueNames: String*)(falseNames: String*)
+   def or(c: Option[C]): C = c map { this overrides _ }
+   def overrides(c: C): C
+ }
 
 
