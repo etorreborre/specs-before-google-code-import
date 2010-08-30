@@ -106,8 +106,8 @@ class BaseSpecification extends TreeNode with SpecificationSystems with Specific
    * include a list of specifications inside this one
    */
   def include(specifications: LazyParameter[Specification]*) = {
-    val toInclude = specifications.toStream.filter((s: LazyParameter[Specification]) => !(s() eq this) && !s().contains(this)).
-                    map { s => s().setParent(this); s() }
+    val toInclude = specifications.toStream.filter((s: LazyParameter[Specification]) => !(s.getValue() eq this) && !s.getValue().contains(this)).
+                    map { s => s.getValue().setParent(this); s.getValue() }
     subSpecifications = subSpecifications ++ toInclude 
   }
   /** @return recursively all the systems included in this specification */

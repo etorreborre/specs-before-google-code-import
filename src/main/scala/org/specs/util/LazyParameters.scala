@@ -37,7 +37,7 @@ trait LazyParameters {
 }
 /** class holding a value to be evaluated lazily */
 class LazyParameter[T](value: ()=>T) {
-  lazy val v = value()
-  def apply() = v
+  private lazy val v = value()
+  def getValue() = v
 }
 

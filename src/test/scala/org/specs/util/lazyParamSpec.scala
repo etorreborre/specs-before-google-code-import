@@ -22,7 +22,7 @@ import org.specs._
 class lazyParamSpec extends SpecificationWithJUnit with LazyParameters {
   def method[T](values: LazyParameter[T]*) = {
     addMessage("method")
-	values.toStream.foreach(_())
+	values.toStream.foreach(_.getValue())
   }
   "a function" can {
     "be called with lazy var arguments" in {
