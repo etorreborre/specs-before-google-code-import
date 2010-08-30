@@ -1,18 +1,34 @@
 package org.specs.util
 
-trait PropertiesValues {
-  def boolean(properties: Properties, propName: String, defaultValue: Boolean) = {
-    var prop = properties.get(propName)
+trait PropertiesValues extends PropertiesConversions {
+  def boolean(properties: java.util.Properties, propName: String, defaultValue: Boolean): Boolean = {
+    val prop = properties.get(propName)
     if (prop == null)
       defaultValue
-    else {
-      val propString = prop.toString.trim.toLowerCase
-      if (propString.startsWith("y") || propString.startsWith("true"))
-        true
-      else if (propString.startsWith("n") || propString.startsWith("false"))
-        false
-      else
-        defaultValue
-    }
+    else
+      boolean(prop.toString, defaultValue)
+  }
+  
+}
+trait PropertiesConversions {
+  val trueValue = "true"
+  val falseValue = "false"
+  def boolean(prop: String): Option[Boolean] = {
+	val propString = prop.trim.toLowerCase
+	if (propString.startsWith("y") || propString.startsWith("true"))
+	  Some(true)
+	else if (propString.startsWith("n") || propString.startsWith("false"))
+	  Some(false)
+	else None
+  }
+  def boolean(prop: String, defaultValue: Boolean): Boolean = boolean(prop).getOrElse(defaultValue)
+  def boolean(prop: String, defaultValue: String): Boolean = {
+    val propString = prop.trim.toLowerCase
+	if (propString.startsWith("y") || propString.startsWith("true"))
+	  true
+	else if (propString.startsWith("n") || propString.startsWith("false"))
+	  false
+	else
+	  boolean(defaultValue).get
   }
 }

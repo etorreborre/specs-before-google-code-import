@@ -19,6 +19,7 @@
 package org.specs.util
 import Classes._
 import org.specs.io._
+import org.specs.log.Log
 
 /**
  * This trait defines ways to create a Configuration object which is either going to be by priority
@@ -32,24 +33,27 @@ import org.specs.io._
  * 
  * Otherwise those names can be overriden by subclasses.
  */
-trait ConfigurationFactory[C <: Configuration[C]] extends PropertiesFileReader[C] with ConfigurationLocation with Arguments {
+trait ConfigurationFactory[C <: Configuration[C]] extends PropertiesFileReader[Configuration[C]] 
+  with ConfigurationLocation with Arguments { this: Log =>
+  
   /** @return the user configuration class */
-  def getUserConfiguration: Configuration = {
-    getConfigurationFromArgs(args) or
-    getUserConfigurationFromPropertiesFile(configurationFilePath) or 
-    getUserConfigurationFromClass(configurationClass) or
+  def getUserConfiguration: Configuration[C] = {
+    getConfigurationFromArgs(args) overrides
+    getConfigurationFromPropertiesFile(configurationFilePath) overrides 
+    getConfigurationFromClass(configurationClass) overrides
     getDefaultConfiguration
   } 
   /** @return the default configuration class */
-  protected def getDefaultConfiguration: C 
+  protected def getDefaultConfiguration: Configuration[C] 
   /** @return the configuration object from a class file */
-  protected def getConfigurationFromClass(className: String): Option[C] = {
-    createObject[C](className, false, false)
+  protected def getConfigurationFromClass(className: String): Option[Configuration[C]] = {
+    createObject[Configuration[C]](className, false, false)
   } 
-  protected def getUserConfigurationFromArgs(args: Array[String]): Configuration 
-  protected def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration]
+  protected def getConfigurationFromArgs(args: Array[String]): Configuration[C] 
+  protected def getConfigurationFromProperties(properties: java.util.Properties): Option[Configuration[C]]
   /** @return the user configuration object from a properties file */
-  protected def getConfigurationFromPropertiesFile(filePath: String): Option[C] = readProperties(filePath, getConfigurationFromProperties)
+  protected def getConfigurationFromPropertiesFile(filePath: String): Option[Configuration[C]] = 
+	readProperties(filePath, p => getConfigurationFromProperties(p))
 }
 trait ConfigurationLocation {
   lazy val configurationClass = "configuration$"
@@ -58,11 +62,26 @@ trait ConfigurationLocation {
 /** A configuration object is something that can be created from a properties file, or a specific class
  *  or a default configuration in the code, by using the Configuration Factory
  */
- trait Configuration[C <: Configuration] {
-   val values: Map[Names, Boolean]
-   case class Names(trueNames: String*)(falseNames: String*)
-   def or(c: Option[C]): C = c map { this overrides _ }
-   def overrides(c: C): C
- }
+class Configuration[C <: Configuration[C]] {
+  val values: ConfigurationValues = new ConfigurationValues()
+  def overrides(c: Option[Configuration[C]]): Configuration[C] = c match {
+	case None => this
+	case Some(other) => other.update(this)
+  }
+  def overrides(c: Configuration[C]): Configuration[C] = c update this
+  protected def update(c: Configuration[C]): Configuration[C]
+}
+class ConfigurationValue(val name: String)(val value: String) extends PropertiesConversions {
+  def or(values: ConfigurationValues): String = values.find(this).getOrElse(this).value
+  def booleanValue: Boolean = boolean(value).get
+}
+
+class ConfigurationValueDefinition(val name: String)(val aliases: String*)(val description: String)(defaultValue: String) extends PropertiesConversions {
+  def value = defaultValue
+  case class A(s: String)(s2: String)(s3: String)
+}
+class ConfigurationValues(values: ConfigurationValue*) {
+  def find(value: ConfigurationValue): Option[ConfigurationValue] = values find (_.name == value.name)
+}
 
 

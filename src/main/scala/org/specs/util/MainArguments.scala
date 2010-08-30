@@ -34,12 +34,12 @@ protected[specs] trait MainArguments extends Arguments { this: Log =>
    * define this method to provide concrete behavior for your application
    */
   def executeMain: Boolean
-}
-trait Arguments {
+} 
+trait Arguments { this: Log =>
   /**
    * optional arguments to be used in the main method and which can be set from the code directly.
    */
-  private var userArgs: Array[String] = Array()
+  protected[specs] var userArgs: Array[String] = Array()
   /** @return arguments defined on the command line + additional arguments defined by the application */
   def args = userArgs ++ additionalArgs
   /** override this method to pass additional arguments */
