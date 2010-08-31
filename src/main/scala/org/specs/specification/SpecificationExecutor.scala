@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
-import org.specs.util.{ Configuration }
+import org.specs.runner._
 import org.specs.util.Classes._
 /**
  * This trait executes an example by cloning the enclosing specification first.

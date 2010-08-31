@@ -21,10 +21,9 @@ package org.specs.runner
 import scala.collection.mutable.Queue
 import org.specs.log.ConsoleLog
 import org.specs.specification._
-import org.specs.util.Configuration._
-import org.specs.util.Configuration
 import org.specs.util.Property
 import org.specs._
+import org.specs.util._
 
 /**
  * An object extending the `Reporter` trait is able to report the result of the execution of several specifications.
@@ -52,40 +51,33 @@ import org.specs._
  * to allow the chaining of several reporters as traits:
  * object runner extends Runner(spec) with Html with Xml for example
  */
-trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with ReporterOptions with WithReporterConfiguration {
-  override lazy val configurationFilePath = argValues(args, List("-config", "--configuration")).getOrElse(super.configurationFilePath)
-  override lazy val configurationClass = argValues(args, List("-config", "--configuration")).getOrElse(super.configurationCLass)
+trait Reporter extends SpecsFilter with MainArguments with ConsoleLog with CommandLineOptions {
 
-  /** this variable controls if stacktraces should be printed. */
-  override private[specs] val stacktrace = argsContain("-ns", "--nostacktrace") || reporterConfiguration.stacktrace
-  /** this variable controls if ok examples should be printed. */
-  override private[specs] val failedAndErrorsOnly = argsContain("-xonly", "--failedonly") || reporterConfiguration.failedAndErrorsOnly
-  /** this variable controls if the statistics should be printed. */
-  override private[specs] val statistics = argsContain("-nostats", "--nostatistics") || reporterConfiguration.statistics
-  /** this variable controls if the final statistics should be printed. */
-  override private[specs] val finalStatisticsOnly = argsContain("-finalstats", "--finalstatistics") || reporterConfiguration.finalStatisticsOnly
-  /** this variable controls if the ANSI color sequences should be used to colorize output */
-  override private[specs] val colorize = argsContain("-c", "--color") || reporterConfiguration.colorize
-  /** this variable controls if the examples must not be executed and only high-level descriptions must be displayed */
-  override private[specs] val planOnly = argsContain("-plan") || false
+  val usage = "usage scala -cp <classpath> package.mySpecificationObject [options]\n" +
+              "      scala -cp <classpath> run package.mySpecificationClass [options]\n"   
+  val optionsSummary = """
+    [-h|--help]
+    [-config|--configuration]\n""".stripMargin + 
+    configuration.optionsSummary
+  val optionsDescription = """
+    -h, --help                      print this message and doesn't execute the specification
+    -config, --configuration        class name of an object extending the org.specs.util.Configuration trait\n""".stripMargin +
+     configuration.optionsDescription
 
-  /** regexp for filtering systems. */
-  override def susFilterPattern = argValue(args, List("-sus", "--system")).getOrElse(".*")
-
-  /** regexp for filtering examples. */
-  override def exampleFilterPattern = argValue(args, List("-ex", "--example")).getOrElse(".*")
-
+  protected[specs] implicit val configuration = new AReporterConfiguration {
+    override lazy val configurationFilePath = argValue(args, List("-config", "--configuration"))
+    override lazy val configurationClass = argValue(args, List("-config", "--configuration"))
+  }.configuration
+  
   def executeMain = {
     reportSpecs
     filteredSpecs.exists(_.isFailing)
   }
 
   /** report the list of specifications held by the object mixing this trait. */
-  def reportSpecs: this.type = {
-    try { report(filteredSpecs) }
-    catch {
-      case e: SpecsFilterPatternException => println(e.getMessage); this
-    }
+  def reportSpecs(implicit configuration: ReporterConfiguration): this.type = {
+    try { report(filteredSpecs)(configuration) }
+    catch { case e: SpecsFilterPatternException => println(e.getMessage); this }
   }
 
   /**
@@ -95,7 +87,7 @@ trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with Repor
    * Subclasses can insert a super.report call at the beginning of their processing
    * to allow the chaining of the parent reporter. For example a FileReporter can also be a ConsoleReporter if needed.
    */
-  def report(specs: Seq[Specification]): this.type = {
+  def report(specs: Seq[Specification])(implicit configuration: ReporterConfiguration): this.type = {
     setTags(specs)
     debug("Reporter - reporting " + specs.map(_.description).mkString(", "))
     this
@@ -106,14 +98,14 @@ trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with Repor
    * @param arguments user-defined arguments containing either -acc, --accept, -rej, --reject
    */
   private[specs] def setTags(specifications: Seq[Specification]) = {
-    def printWarning = warning("accept/reject tags omitted in: " + specArgs.mkString(", "))
-    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(specArgs(i + 1).split(","):_*)
-    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(specArgs(i + 1).split(","):_*)
+    def printWarning = warning("accept/reject tags omitted in: " + userArgs.mkString(", "))
+    def acceptSpecTags(s: Specification, i: Int) = s.acceptTag(userArgs(i + 1).split(","):_*)
+    def rejectSpecTags(s: Specification, i: Int) = s.rejectTag(userArgs(i + 1).split(","):_*)
     def setAcceptedTags(specifications: Seq[Specification], argumentNames: List[String], f: (Specification, Int) => Specification) = {
-      specArgs.map(_.toLowerCase).indexWhere(arg => argumentNames.contains(arg)) match {
+      userArgs.map(_.toLowerCase).indexWhere(arg => argumentNames.contains(arg)) match {
         case -1 => ()
-        case i if (i < specArgs.length - 1) => filteredSpecs.foreach(f(_, i))
-        case _ => if (!specArgs.isEmpty) printWarning
+        case i if (i < userArgs.length - 1) => filteredSpecs.foreach(f(_, i))
+        case _ => if (!userArgs.isEmpty) printWarning
       }
     }
     setAcceptedTags(specifications, List("-acc", "--accept"), acceptSpecTags(_, _))
@@ -121,7 +113,7 @@ trait Reporter extends SpecsFilter with ConsoleLog with MainArguments with Repor
   }
 
   /**
-S   * This method provides syntactic sugar to chain reporters as a List
+   * This method provides syntactic sugar to chain reporters as a List
    * `(r1 :: r2).foreach { _.report(specs) }`
    */
   def ::(r: Reporter) = List(r, this)

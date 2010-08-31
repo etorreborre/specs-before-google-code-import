@@ -49,11 +49,10 @@ class Runner(val specifications: Seq[Specification], val reporters: Seq[Reporter
   def this(specsHolder: SpecsHolder, reps: Seq[Reporter]) = this(specsHolder.specs, reps)
   def this(specsHolder: SpecsHolder*) = this(specsHolder.flatMap(_.specs), List(new ConsoleRunner))
   val specs = specifications
-  override def report(specs: Seq[Specification]) = {
+  override def report(specs: Seq[Specification])(implicit configuration: ReporterConfiguration) = {
     super.report(specs)
     reporters foreach { reporter =>
-      reporter.args = reporter.args ++ this.args
-      reporter.report(specs)
+      reporter.report(specs)(this.configuration)
     }
     this
   }

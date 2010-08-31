@@ -18,7 +18,8 @@
  */
 package org.specs.specification
 import org.specs.execute.{ FailureException, SkippedException }
-import org.specs.util.Configuration
+import org.specs.util._
+import org.specs.runner._
 import org.specs.util.ExtendedThrowable._
 
 /**
@@ -92,7 +93,7 @@ trait LifeCycle extends SequentialExecution {
  * It will also check that the executed example contains expectations,
  * otherwise will mark the example as "PENDING"
  */
-trait ExampleLifeCycle extends LifeCycle with ExampleStructure { this: WithExecutionConfiguration =>
+trait ExampleLifeCycle extends LifeCycle with ExampleStructure { this: AReporterConfiguration => 
   /** 
    * object containing the method for executing the example expectations, including when and how
    * the LifeCycle methods should be called.
@@ -134,7 +135,7 @@ trait ExampleLifeCycle extends LifeCycle with ExampleStructure { this: WithExecu
   protected def skipIfNoExpectations() = {
     if (thisExpectationsNumber == 0 && 
         exampleList.isEmpty && thisSkipped.isEmpty && thisFailures.isEmpty && thisErrors.isEmpty && 
-        executionConfiguration.examplesWithoutExpectationsMustBePending)
+        configuration.examplesWithoutExpectationsMustBePending)
       throw new SkippedException("PENDING: not yet implemented").removeTracesAsFarAsNameMatches("(specification.Example|LiterateSpecification)")
   }
   /** reset in order to be able to run the example again. This is only used for testing */

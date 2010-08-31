@@ -77,7 +77,7 @@ trait Html extends File {
       {anchorName("top")}
       {summaryTable(spec)}
       <div id="bodyColumn">
-        {specificationTable(spec, spec.planOnly())}
+        {specificationTable(spec, spec.configuration.planOnly)}
       </div>
     </body>
   </html>
@@ -152,7 +152,7 @@ trait Html extends File {
 
  /** creates a summary row for a sus. */
   def summarySus(sus: Sus, spec: Specification): NodeSeq = <tr>
-    <td>{statusIcon(sus, spec.planOnly())}</td>
+    <td>{statusIcon(sus, spec.configuration.planOnly)}</td>
     <td>{anchorRef(susName(sus, spec))}</td>
   </tr>
 

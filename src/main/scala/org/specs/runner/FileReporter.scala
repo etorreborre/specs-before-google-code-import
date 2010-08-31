@@ -53,8 +53,8 @@ trait File extends FileSystem with ConsoleLog with SpecsHolder with Console {
   /**
    * get the specification output from specOutput and write it to the target file.
    */
-  override def report(specifications: Seq[Specification]): this.type = {
-    super.report(specifications)
+  override def report(specifications: Seq[Specification])(implicit configuration: ReporterConfiguration): this.type = {
+    super.report(specifications)(configuration)
     mkdirs(outputDir)
     specifications foreach { spec => 
       write(filePath(spec)) { out: Writer =>

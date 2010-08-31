@@ -66,7 +66,7 @@ h3. Prelude
 
 </wiki> isSus
 }
-trait Examples extends SnipIt with Expectations {
+trait Examples extends SnipIt with SpecsMatchers {
   def executeAndExpect(expected: String) = {
     val result = execute(it)
     result aka it.get.code must include(expected)

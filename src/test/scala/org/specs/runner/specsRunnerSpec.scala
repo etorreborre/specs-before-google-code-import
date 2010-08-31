@@ -49,7 +49,7 @@ trait TestRunner {
   def runTheFileWithClassName(classNames: String*) = {
     runner = new SpecsRunner
     runner.classNames = classNames.toList
-    runner.reportSpecs
+    runner.reportSpecs(new ReporterConfiguration)
   }
   def messages = runner.messages
 }

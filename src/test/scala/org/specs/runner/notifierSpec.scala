@@ -68,9 +68,9 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     }
   }
   "A notifier for a planOnly specification" should beNotifiedOf { 
+	val planOnlyConfiguration = new ReporterConfiguration { override def planOnly = true }
     "only the systems and examples when a specification" in {
-      s.planOnly(true)
-      new NotifierRunner(s, notifier).reportSpecs
+      new NotifierRunner(s, notifier).reportSpecs(planOnlyConfiguration)
       there was no(notifier).exampleSucceeded("ex1-1")
     }
     "only the systems and examples even of a subspecification" in {
@@ -78,10 +78,9 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
         object included extends Specification {
           "ex1" in { 1 must_== 1 }
         }
-        setPlanOnly()
         include(included)
       }
-      new NotifierRunner(s, notifier).reportSpecs
+      new NotifierRunner(s, notifier).reportSpecs(planOnlyConfiguration)
       there was no(notifier).exampleSucceeded("ex1")
     }
   }

@@ -63,7 +63,7 @@ class exampleSpec extends SpecificationWithJUnit {
     "has examplesWithoutExpectationsMustBePending=false" in {
       
       object s extends Specification { 
-        override protected[specs] lazy val executionConfiguration = new ExecutionConfiguration { override val examplesWithoutExpectationsMustBePending = false }
+        override protected[specs] lazy val configuration = new ReporterConfiguration { override val examplesWithoutExpectationsMustBePending = false }
         shareVariables()
         "this is a pending example" in {} 
       }

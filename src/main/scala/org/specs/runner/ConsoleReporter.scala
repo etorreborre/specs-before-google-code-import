@@ -34,22 +34,22 @@ trait OutputReporter extends Reporter with Output {
 
   /** colors the text in red if colors are enabled   */
   def failureColored(text: String) =
-    if (colorize()) AnsiColors.red + text + AnsiColors.reset
+    if (configuration.colorize) AnsiColors.red + text + AnsiColors.reset
     else text
 
   /** colors the text in green if colors are enabled   */
   def successColored(text: String) =
-    if (colorize()) AnsiColors.green + text + AnsiColors.reset
+    if (configuration.colorize) AnsiColors.green + text + AnsiColors.reset
     else text
 
   /** colors the text in yellow if colors are enabled   */
   def skipColored(text: String) =
-    if (colorize()) AnsiColors.yellow + text + AnsiColors.reset
+    if (configuration.colorize) AnsiColors.yellow + text + AnsiColors.reset
     else text
 
   /** colors the text in blue if colors are enabled   */
   def infoColored(text: String) =
-    if (colorize()) AnsiColors.blue + text + AnsiColors.reset
+    if (configuration.colorize) AnsiColors.blue + text + AnsiColors.reset
     else text
 
 
@@ -60,9 +60,9 @@ trait OutputReporter extends Reporter with Output {
    * override the parent method for arguments setting and
    * call the local report method with no padding to being with.
    */
-  override def report(specs: Seq[Specification]): this.type = {
-    super.report(specs)
-    report(specs, "")
+  override def report(specs: Seq[Specification])(implicit configuration: ReporterConfiguration): this.type = {
+    super.report(specs)(configuration)
+    report(specs, "")(configuration)
   }
 
   /**
@@ -70,8 +70,8 @@ trait OutputReporter extends Reporter with Output {
    * This method may be called recursively by the <code>reportSpec</code> method if a specification
    * has subSpecifications, hence the <code>padding</code> will be incremented
    */
-  def report(specs: Seq[Specification], padding: String): this.type = {
-    specs foreach (reportSpec(_, padding))
+  def report(specs: Seq[Specification], padding: String)(implicit configuration: ReporterConfiguration): this.type = {
+    specs foreach (reportSpec(_, padding)(configuration))
     this
   }
 
@@ -80,18 +80,18 @@ trait OutputReporter extends Reporter with Output {
    * This method may be called recursively by the <code>reportSpec</code> method if a specification
    * has subSpecifications, hence the <code>padding</code> will be incremented
    */
-  def reportSpec(spec: Specification, padding: String): this.type = {
+  def reportSpec(spec: Specification, padding: String)(implicit configuration: ReporterConfiguration): this.type = {
     timer.start
     println(padding + "Specification \"" + spec.name + "\"")
-    report(spec.subSpecifications, padding + "  ")
+    report(spec.subSpecifications, padding + "  ")(configuration)
     reportSystems(spec.systems, padding + "  ")
     timer.stop
 
     // if we want final statistics only, we check the padding to know if we're
     // reporting the first specification. An empty padding means this is the first spec.
     val isFirstSpecification = padding.isEmpty
-    if (statistics() && (!finalStatisticsOnly() ||
-                         finalStatisticsOnly() && isFirstSpecification))  {
+    if (configuration.statistics && 
+    		(!configuration.finalStatisticsOnly || isFirstSpecification))  {
       println(padding + "Total for specification \"" + spec.name + "\":")
       printStats(stats(spec), padding)
     }
@@ -124,7 +124,7 @@ trait OutputReporter extends Reporter with Output {
    * by collecting those numbers on this example and on sub-examples
    */
   def stats(example: Example): (Int, Int, Int, Int, Int) = {
-    if (!planOnly()) {
+    if (!configuration.planOnly) {
      (if (example.examples.isEmpty) 1 else 0, example.ownExpectationsNb, example.ownFailures.size, example.ownErrors.size, example.ownSkipped.size) +
      example.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
     } else
@@ -153,7 +153,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportSus(sus: Sus, padding: String) = {
     printSus(sus, padding);
-    if (statistics() && !finalStatisticsOnly() && !sus.examples.isEmpty) 
+    if (configuration.statistics && !configuration.finalStatisticsOnly && !sus.examples.isEmpty) 
       printStats(sus, padding)
   }
 
@@ -168,7 +168,7 @@ trait OutputReporter extends Reporter with Output {
     else
       println(padding + susDescription)
     timer.start
-    if (!planOnly() && sus.hasOwnFailureOrErrors)
+    if (!configuration.planOnly && sus.hasOwnFailureOrErrors)
       reportExample(sus, padding)
     reportExamples(sus.examples, padding)
     timer.stop
@@ -207,7 +207,7 @@ trait OutputReporter extends Reporter with Output {
   def reportExamples(examples: Iterable[Example], padding: String): Unit = {
     for (example <- examples) {
       reportExample(example, padding)
-      if (!planOnly())
+      if (!configuration.planOnly)
         reportExamples(example.examples, padding + "  ")
     }
   }
@@ -217,7 +217,7 @@ trait OutputReporter extends Reporter with Output {
    */
   def reportExample(example: Examples, padding: String) = {
     def status(example: Examples) = {
-      if (planOnly())
+      if (configuration.planOnly)
         infoColored("-")
       else if (example.hasFailureOrErrors)
         failureColored("x")
@@ -227,14 +227,14 @@ trait OutputReporter extends Reporter with Output {
         successColored("+")
     }
 
-    if (planOnly() || canReport(example))
+    if (configuration.planOnly || canReport(example))
       println(padding + status(example) + " " + example.description)
 
     // if the failure, skip or the error message has linefeeds they must be padded too
     def parens(f: Throwable) = " (" + f.location + ")"
 
     // only print out the example messages if there are no subexamples.
-    if (!planOnly() && example.examples.isEmpty) {
+    if (!configuration.planOnly && example.examples.isEmpty) {
       def errorType(t: Throwable) = t match {
         case s: SkippedException => ""
         case f: FailureException => ""
@@ -246,13 +246,13 @@ trait OutputReporter extends Reporter with Output {
 	    else
 	      println(padding + errorType(f) + parens(f))
 	  }
-	  if (stacktrace() && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
+	  if (configuration.stacktrace && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
     }
   }
   /** @return true if the results should be printed
    */
   private def canReport(hasResults: HasResults) = {
-    !failedAndErrorsOnly() || failedAndErrorsOnly() && hasResults.hasFailureOrErrors
+    !configuration.failedAndErrorsOnly || hasResults.hasFailureOrErrors
   }
 }
 

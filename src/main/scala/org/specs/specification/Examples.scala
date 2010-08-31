@@ -50,7 +50,7 @@ import org.specs.execute._
  * A Sus can also have a literate description when defined in a LiterateSpecification.
  */
 abstract class Examples(var exampleDescription: ExampleDescription, val parentCycle: Option[LifeCycle]) extends
-  ExampleContext with DefaultResults {
+  ExampleContext with DefaultResults with AReporterConfiguration {
   parent = parentCycle
   /** this function gives a hint if this object has possibly subexamples */
   def hasSubExamples = true 

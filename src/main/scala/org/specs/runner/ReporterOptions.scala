@@ -4,6 +4,7 @@ import org.specs.util.CommandLineOptions
 /**
  * This trait describe the command-line options for the Reporter trait
  */
+/*
 private[specs] trait ReporterOptions extends CommandLineOptions {
   val usage = "usage scala -cp <classpath> package.mySpecificationObject [options]\n" +
               "      scala -cp <classpath> run package.mySpecificationClass [options]\n"   
@@ -34,3 +35,4 @@ private[specs] trait ReporterOptions extends CommandLineOptions {
     -c, --color                     report with color""".stripMargin
 }
 
+*/

@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.specification
-import org.specs.util.Configuration
+import org.specs.runner._
 /**
  * This traits adds the possibility to add declarations for detailed failures when matching strings.<br/>
  * Generally detailed failures can be configured with:<ul>
@@ -26,10 +26,9 @@ import org.specs.util.Configuration
  * <li>a shorten size: the size of text which should show up between 2 differences, the rest being elided</li>
  * </ul>
  */
-trait DetailedFailures {
-  protected lazy val config: ExecutionConfiguration = new DefaultExecutionConfiguration
+trait DetailedFailures { this: AReporterConfiguration =>
   /** by default no full details are reported by specifications */
-  implicit var detailedFailures: Detailed = if (config.smartDiffs) new fullDetails("[]", 30, 20) else noDetails()
+  implicit var detailedFailures: Detailed = if (configuration.smartDiffs) new fullDetails("[]", 30, 20) else noDetails()
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */
   def detailedDiffs(): Unit = detailedDiffs("[]", 0, 20)
   /** detailled diffs enable showing the differences when comparing the toString result of 2 objects supposed to be == */

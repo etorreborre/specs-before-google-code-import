@@ -11,7 +11,7 @@ import org.specs.log.Log
  *
  * Note that this trait is not thread safe as it contains a var storing the user arguments.
  */
-protected[specs] trait MainArguments extends Arguments { this: Log =>
+protected[specs] trait MainArguments extends Arguments { this: Log with CommandLineOptions =>
   /**
    * Main method
    *
@@ -29,7 +29,7 @@ protected[specs] trait MainArguments extends Arguments { this: Log =>
   }
   /** override this method for a different handling of exiting. */
   def exit(code: Int) = System.exit(code)
-
+ 
   /**
    * define this method to provide concrete behavior for your application
    */

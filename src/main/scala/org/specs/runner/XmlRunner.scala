@@ -120,9 +120,9 @@ trait Xml extends File {
    */
   def asXml(s: Specification): Elem = {
     <spec name={s.name} description={s.description} 
-      expectations={if (planOnly()) "0" else s.expectationsNb.toString} 
-      failures={if (planOnly()) "0" else s.failures.size.toString} 
-      errors={if (planOnly()) "0" else s.errors.size.toString}>
+      expectations={if (configuration.planOnly) "0" else s.expectationsNb.toString} 
+      failures={if (configuration.planOnly) "0" else s.failures.size.toString} 
+      errors={if (configuration.planOnly) "0" else s.errors.size.toString}>
       {s.subSpecifications map (asXml(_))}
       {s.systems map (asXml(_))}
     </spec>
@@ -132,9 +132,9 @@ trait Xml extends File {
    * @returns the sus results translated as to xml 
    */
   def asXml(sus: Sus): Elem = 
-    <sus description={sus.description} expectations={if (planOnly()) "0" else sus.expectationsNb.toString} 
-                                       failures={if (planOnly()) "0" else sus.failures.size.toString} 
-                                       errors={if (planOnly()) "0" else sus.errors.size.toString}>
+    <sus description={sus.description} expectations={if (configuration.planOnly) "0" else sus.expectationsNb.toString} 
+                                       failures={if (configuration.planOnly) "0" else sus.failures.size.toString} 
+                                       errors={if (configuration.planOnly) "0" else sus.errors.size.toString}>
       {sus.examples map (asXml(_))}
     </sus>
 
@@ -143,13 +143,13 @@ trait Xml extends File {
    */
   def asXml(e: Example): Elem = {
     <example description={e.description} 
-      expectations={if (planOnly()) "0" else e.expectationsNb.toString} 
-      failures={if (planOnly()) "0" else e.failures.size.toString} 
-      errors={if (planOnly()) "0" else e.errors.size.toString}>
-     { if (!planOnly()) e.failures map (asXml(_)) else NodeSeq.Empty } 
-     { if (!planOnly()) e.skipped map (asXml(_)) else NodeSeq.Empty }
-     { if (!planOnly()) e.errors map (asXml(_)) else NodeSeq.Empty }
-     { if (!planOnly()) e.examples map (asXml(_)) else NodeSeq.Empty }
+      expectations={if (configuration.planOnly) "0" else e.expectationsNb.toString} 
+      failures={if (configuration.planOnly) "0" else e.failures.size.toString} 
+      errors={if (configuration.planOnly) "0" else e.errors.size.toString}>
+     { if (!configuration.planOnly) e.failures map (asXml(_)) else NodeSeq.Empty } 
+     { if (!configuration.planOnly) e.skipped map (asXml(_)) else NodeSeq.Empty }
+     { if (!configuration.planOnly) e.errors map (asXml(_)) else NodeSeq.Empty }
+     { if (!configuration.planOnly) e.examples map (asXml(_)) else NodeSeq.Empty }
     </example>
     }
 

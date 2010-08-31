@@ -56,7 +56,7 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
                     }
     
     notifiers.foreach { _.runStarting(specToRun.firstLevelExamplesNb) } 
-    reportASpecification(specToRun, specToRun.planOnly())
+    reportASpecification(specToRun, specToRun.configuration.planOnly)
   }
   def reportASpecification(spec: Specification, planOnly: Boolean): this.type = {
     notifiers.foreach { _.systemStarting(spec.description) }

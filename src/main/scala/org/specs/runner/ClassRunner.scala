@@ -45,7 +45,7 @@ class ClassRunner extends Classes with OutputReporter {
   
   override def main(arguments: Array[String]) = {
     if (arguments.length == 0)
-      println("The first argument should be at least the specification class name")
+      { println("The first argument should be at least the specification class name"); false }
     else 
 	  super.main(arguments)
   }

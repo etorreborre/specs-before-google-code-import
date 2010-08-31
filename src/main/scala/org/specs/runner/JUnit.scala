@@ -109,7 +109,7 @@ trait JUnit extends JUnitSuite with Reporter with ExtendedJUnitSuite {
     filteredSpecs foreach { specification =>
       specification.subSpecifications.foreach(s => addTest(new JUnit3(s)))
       specification.systems foreach { sus =>
-        if (planOnly() || sus.examples.isEmpty)
+        if (configuration.planOnly || sus.examples.isEmpty)
           addTest(new ExampleTestCase(sus, sus.description + " " + sus.verb))
         else if (sus.isAnonymous)
 		  sus.examples foreach { e => asSuite(this).addExample(e, "") }

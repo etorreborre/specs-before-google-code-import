@@ -119,8 +119,10 @@ class reporterSpecification extends TestSpecs {
     }
     "not print stack trace if setNoStackTrace is called" in {
       val spec = new SpecWithOneExample(that.throwsAnException)
-      spec.setNoStacktrace()
-      spec.run mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
+      val config = new ReporterConfiguration {
+    	override def noStacktrace = true
+      }
+      spec.run(config) mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
     "not print out an empty sus" in {
       new SpecWithAnEmptySus().run.toList must not containMatch("An empty system")
@@ -137,7 +139,7 @@ class consoleTraitSpecification extends TestSpecs {
   "A console trait" should {
     "setNoStackTrace on the ConsoleReporter when passed the -ns or --nostacktrace argument" in {
       val testSpecRunner = new SpecWithOneExample(that.throwsAnException) with MockOutput
-      testSpecRunner.args ++= Array("-ns")
+      testSpecRunner.userArgs ++= Array("-ns")
       testSpecRunner.reportSpecs
       testSpecRunner.messages mustNot containMatch("org.specs.runner.SpecWithOneExample\\$")
     }
@@ -197,13 +199,13 @@ class consoleTraitSpecification extends TestSpecs {
     }
   }
   def runWith(args: String*): List[String] = {
-    specRunner.args = args.toArray
+    specRunner.userArgs = args.toArray
     specRunner.clearMessages
     specRunner.reportSpecs
     specRunner.messages.toList
   }
   def run2SystemsWith(args: String*): List[String] = {
-    specTwoSystemsRunner.args = args.toArray
+    specTwoSystemsRunner.userArgs = args.toArray
     specTwoSystemsRunner.reportSpecs
     specTwoSystemsRunner.messages.toList
   }
@@ -258,13 +260,13 @@ trait Expectations  { this: org.specs.Specification =>
 }
 
 class SpecWithOneExample(behaviours: List[(that.Value)]) extends TestSpecification {
-  def run = {
+  def run(implicit configuration: ReporterConfiguration) = {
     "A specification" should {
        "have example 1 ok" in {
         expectations(behaviours) foreach {_.apply}
       }
     }
-    reportSpecs
+    reportSpecs(configuration)
     messages
   }
 }

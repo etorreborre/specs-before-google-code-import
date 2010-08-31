@@ -19,11 +19,12 @@
 package org.specs.specification
 import org.specs.execute.FailureException
 import org.specs.util.ExtendedThrowable._
+import org.specs.runner._
 /**
  * This trait extends the ExampleLifeCycle with the capability to store actions 
  * to be executed before and after examples.
  */
-trait ExampleContext extends ExampleLifeCycle {
+trait ExampleContext extends ExampleLifeCycle { this: AReporterConfiguration =>
   
   /** the before function will be invoked before each example */
   var before: Option[() => Any] = None

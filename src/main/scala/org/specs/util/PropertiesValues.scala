@@ -13,6 +13,7 @@ trait PropertiesValues extends PropertiesConversions {
 trait PropertiesConversions {
   val trueValue = "true"
   val falseValue = "false"
+  def strings(prop: String): Option[List[String]] = Some(prop.trim.split(",").toList.map(_.trim))
   def boolean(prop: String): Option[Boolean] = {
 	val propString = prop.trim.toLowerCase
 	if (propString.startsWith("y") || propString.startsWith("true"))

@@ -69,8 +69,9 @@ class reporterPlanSpec extends Specification with Sugar {
   }
   object consoleReporter {
     def plan: String = {
-      s.args = Array("-plan")
-      s.reportSpecs
+      s.reportSpecs(new ReporterConfiguration {
+    	override def planOnly = true
+      })
       s.messages.toList.mkString("\n")
     }
     def expectations: String = "[1-9] expectation"
@@ -78,8 +79,9 @@ class reporterPlanSpec extends Specification with Sugar {
   val xml = new XmlRunner(s, "target") with MockFileSystem with MockOutput
   object xmlReporter {
     def plan: String = { 
-      xml.args = Array("-plan")
-      xml.reportSpecs
+      xml.reportSpecs(new ReporterConfiguration {
+    	override def planOnly = true
+      })
       xml.files.valuesIterator.next
     }
     def expectations = "expectations=\"[1-9]\""

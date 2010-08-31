@@ -63,15 +63,15 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
 		e.getCause.getStackTrace foreach { s => logError("  "+s.toString) }
     }
     val specificationOption = specification.right.toOption
-    specificationOption.map(_.args = args)
+    specificationOption.map(_.userArgs = args)
     run(specificationOption, handler)
   }
   def run(specification: Option[Specification]): Option[Specification] = run(specification, new DefaultEventHandler)
   def run(specification: Option[Specification], handler: EventHandler): Option[Specification] = {
-    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers, s.reporterConfiguration)) 
-    specification.map(testInterfaceRunner(_).reportSpecs)
+    def testInterfaceRunner(s: Specification) = new NotifierRunner(s, new TestInterfaceNotifier(handler, loggers, s.configuration)) 
+    specification.map(s => testInterfaceRunner(s).reportSpecs(s.configuration))
     specification match {
-      case Some(s: org.specs.runner.File) => s.reportSpecs
+      case Some(s: org.specs.runner.File) => s.reportSpecs(s.configuration)
       case _ => ()
     }
     specification
@@ -83,7 +83,7 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
  */
 class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], configuration: ReporterConfiguration) extends Notifier 
   with HandlerEvents with TestLoggers {
-  def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultReporterConfiguration)
+  def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new ReporterConfiguration)
 
   def runStarting(examplesCount: Int) = {}
   def exampleStarting(exampleName: String) = incrementPadding
@@ -170,7 +170,7 @@ trait TestLoggers {
   def logStatus(name: String, color: String, status: String) = {
     logInfo(padding + status + " " + name, color)
   }
-  def logErrorDetails(e: Throwable, configuration: Configuration) = {
+  def logErrorDetails(e: Throwable, configuration: ReporterConfiguration) = {
     logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     if (configuration.stacktrace) {
       e.getStackTrace().foreach { trace =>
