@@ -53,7 +53,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Cont
     "report failures and errors as test failed, skipped as ignored and the rest as success" in {
       sampleSuite.run(None, reporter, stopper, Filter(), Map(), None, new Tracker())
       got {
-        atLeastOne(reporter).apply(any[SuiteStarting])
+        one(reporter).apply(any[SuiteStarting])
         atLeastOne(reporter).apply(any[TestFailed])
         one(reporter).apply(any[TestIgnored])
         one(reporter).apply(any[TestSucceeded])
@@ -71,7 +71,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Cont
     "use the tags defined on the examples, and not executing excluded groups" in {
       suiteWithGroups.run(None, reporter, stopper, new Filter(None, Set("functional")), Map(), None, new Tracker())
       got {
-        atLeastOne(reporter).apply(any[SuiteStarting]) 
+        atLeastOne(reporter).apply(any[SuiteStarting])
         two(reporter).apply(any[TestSucceeded]) 
         atLeastOne(reporter).apply(any[SuiteCompleted]) 
 	  }
@@ -80,7 +80,7 @@ class scalaTestSpec extends SpecificationWithJUnit with ScalaTestMocks with Cont
   def suite(behaviours: that.Value*) = new ScalaTestSuite(new SimpleSpecification(behaviours.toList))
   object sampleSuite extends ScalaTestSuite(sampleSpecification)
   object sampleSpecification extends Specification {
-    "the first system" should {
+	"the first system" should {
       "skip one example" in { skip("skipped") }
       "have one example ok" in {  1 must_== 1 }
       "have one example ko" in { 1 mustBe 2 }
@@ -106,4 +106,11 @@ trait ScalaTestMocks extends Mockito { this: BaseSpecification with Contexts =>
      reporter = mock[org.scalatest.Reporter]
      stopper = mock[org.scalatest.Stopper]
    }
+}
+/** this class can be used to print out the events that will be applied to a reporter */
+case class ReporterSpy(r: org.scalatest.Reporter) extends org.scalatest.Reporter {
+  def apply(e: Event) = {
+	println("got "+e)
+	r.apply(e)
+  }
 }

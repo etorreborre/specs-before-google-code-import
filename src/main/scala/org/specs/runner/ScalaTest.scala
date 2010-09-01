@@ -60,12 +60,10 @@ trait ScalaTest extends SpecsFilter with FailOrSkip with org.scalatest.Suite {
    * @return the subspecifications or the systems as ScalaTest suites
    */
   override def nestedSuites: List[org.scalatest.Suite] = {
-    var result: List[org.scalatest.Suite] = Nil
-    filteredSpecs foreach { specification =>
-      specification.subSpecifications.foreach { s: Specification => result = new ScalaTestSuite(s)::result }
-      specification.systems foreach {sus => result = new SusSuite(sus)::result }
+    filteredSpecs flatMap { specification =>
+      specification.subSpecifications.map(new ScalaTestSuite(_)) ++
+      specification.systems.map(new SusSuite(_))
     }
-    result.reverse
   }
 
   /**
@@ -112,9 +110,7 @@ class SusSuite(sus: Sus) extends Suite {
    * @return the descriptions of the examples to report. Subexamples names are not returned and will be run with their parent example
    */
   override def testNames: Set[java.lang.String] = {
-    var result: Set[String] = Set()
-    sus.examples foreach {e => result = result + e.description}
-    result
+    sus.examples.map(_.description).toSet
   }
   private def current: Ordinal = new Ordinal(0)
   /**
@@ -137,13 +133,11 @@ class SusSuite(sus: Sus) extends Suite {
                 !filter.tagsToExclude.exists(tagsForName.contains(_))
         r
       }
-      reporter.apply(SuiteStarting(current.next, suiteName, None))
       testName filter(isIncluded(_)) map { name => 
         runTest(name, reporter, stopper, properties, tracker) 
       } getOrElse {
         testNames filter(isIncluded(_)) map { name => runTest(name, reporter, stopper, properties, tracker) }
       }
-      reporter.apply(SuiteCompleted(current.next, suiteName, None))
     }
     /**
      * Report the result of an example given its description to the reporter.
