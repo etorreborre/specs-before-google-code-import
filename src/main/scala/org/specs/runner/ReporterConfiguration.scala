@@ -36,7 +36,6 @@ class ReporterConfiguration extends Configuration[ReporterConfiguration] with De
 		  failedAndErrorsOnlyValue, finalStatisticsValue, planOnlyValue, colorValue, examplesWithoutExpectationsMustBePendingValue,
 		  smartDiffsValue, acceptedTagsValue, rejectedTagsValue, systemValue, exampleValue)
   
-  val values = new ConfigurationValues(List())
   /** this value declares that the errors stacktrace should be printed. */
   def stacktrace = !noStacktrace
   /** this value declares that the errors stacktrace should not be printed. */
@@ -63,15 +62,12 @@ class ReporterConfiguration extends Configuration[ReporterConfiguration] with De
  * This trait provides a Configuration that's either the default configuration, 
  * or a set of properties coming from a file
  */
-trait AReporterConfiguration extends ConfigurationLocation { outer =>
-  private lazy val factory = new ConfigurationFactory[ReporterConfiguration] {
-    override lazy val configurationFilePath = outer.configurationFilePath
-    override lazy val configurationClass = outer.configurationClass
+trait AReporterConfiguration { outer =>
+  protected[specs] lazy val factory = new ConfigurationFactory[ReporterConfiguration] {
     def getDefaultConfiguration = new ReporterConfiguration
   }
-    
-  protected[specs] lazy val configuration: ReporterConfiguration =  factory.getUserConfiguration
+  protected implicit lazy val configuration: ReporterConfiguration =  factory.getUserConfiguration
 }
 trait ADefaultReporterConfiguration extends AReporterConfiguration {
-  protected[specs] lazy val configuration = new ReporterConfiguration
+  override protected[specs] implicit lazy val configuration = new ReporterConfiguration
 } 

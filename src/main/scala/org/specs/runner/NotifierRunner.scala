@@ -45,8 +45,8 @@ trait Notifier {
 class NotifierRunner(val specifications: Array[Specification], val notifiers: Array[Notifier]) extends Reporter {
   val specs = specifications.toList
   def this(s: Specification, n: Notifier) = this(Array(s), Array(n))
-  override def report(specs: Seq[Specification]): this.type = {
-    super.report(specs)
+  override def report(specs: Seq[Specification])(implicit configuration: ReporterConfiguration): this.type = {
+    super.report(specs)(configuration)
     val filteredSpecs = specs.flatMap(_.filteredSpecs)
     val specToRun = if (filteredSpecs.size == 1)
                       filteredSpecs(0)

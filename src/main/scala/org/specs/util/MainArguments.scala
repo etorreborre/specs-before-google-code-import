@@ -61,4 +61,17 @@ trait Arguments { this: Log =>
       }
     }
   }
+  protected def argumentsMap(arguments: Array[String]): Map[String, String] = {
+	val args = arguments.map(_.toLowerCase).toList
+	(Map[String, String]() /: args.zip(args.drop(1))) { (res, cur) => 
+	  val (current, next) = cur
+	  if (!current.startsWith("-"))
+	 	res
+	  else if (next.startsWith("-"))
+	 	res + (current -> "true")
+	  else
+	 	res + (current -> next)
+	}
+	
+  }
 }

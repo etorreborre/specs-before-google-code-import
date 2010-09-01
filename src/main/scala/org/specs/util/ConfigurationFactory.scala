@@ -47,7 +47,9 @@ trait ConfigurationFactory[T <: Configuration[T]] extends PropertiesFileReader[C
   protected def getConfigurationFromClass(className: String)(implicit m: ClassManifest[T]): Option[T] = {
     createObject[T](className, false, false)
   } 
-  protected def getConfigurationValuesFromArgs(args: Array[String]): ConfigurationValues 
+  protected def getConfigurationValuesFromArgs(args: Array[String]): ConfigurationValues = {
+	new ConfigurationValues(argumentsMap(args).toList.map(a => new ConfigurationValue(a._1)(a._2)))
+  }
   /** @return the user configuration object from a properties file */
   protected def getConfigurationValuesFromPropertiesFile(filePath: String): Option[ConfigurationValues] =
 	readProperties(filePath, p => Some(getConfigurationValuesFromProperties(p)))
@@ -72,8 +74,8 @@ trait Decoder[T] extends PropertiesValues {
   def decode(stringValue: String): Option[T]
 }
 trait ConfigurationLocation {
-  lazy val configurationClass = "configuration$"
-  lazy val configurationFilePath = "configuration.properties"
+  val configurationClass = "configuration$"
+  val configurationFilePath = "configuration.properties"
 }
 /** A configuration object is something that can be created from a properties file, or a specific class
  *  or a default configuration in the code, by using the Configuration Factory

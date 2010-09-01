@@ -76,10 +76,10 @@ trait TeamCityReporter extends OutputReporter with TeamCityOutput {
   private val currentSpec = new scala.util.DynamicVariable[Specification](null)
 
   /** report a specification, on the TeamCity output. */
-  override def reportSpec(spec: Specification, padding: String) = {
+  override def reportSpec(spec: Specification, padding: String)(implicit configuration: ReporterConfiguration) = {
     testSuiteStarted(spec.name)
     currentSpec.withValue(spec) {
-      super.report(spec.subSpecifications, padding)
+      super.report(spec.subSpecifications, padding)(configuration)
       super.reportSystems(spec.systems, padding)
     }
     testSuiteFinished(spec.name)

@@ -44,9 +44,9 @@ trait Html extends File {
   def htmlDir = "target"
 
   /** report the specification held by this runner. */
-  override def report(specifications: Seq[Specification]) = {
+  override def report(specifications: Seq[Specification])(implicit configuration: ReporterConfiguration) = {
     // reuse the inherited method using the specOutput method
-    super.report(specifications)
+    super.report(specifications)(configuration)
     // provide the additional resources for the html files
     copySpecResourcesDir("images", outputDir)
     copySpecResourcesDir("css", outputDir)

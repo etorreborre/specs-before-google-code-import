@@ -51,7 +51,7 @@ import org.specs.util._
  * to allow the chaining of several reporters as traits:
  * object runner extends Runner(spec) with Html with Xml for example
  */
-trait Reporter extends SpecsFilter with MainArguments with ConsoleLog with CommandLineOptions {
+trait Reporter extends SpecsFilter with MainArguments with ConsoleLog with CommandLineOptions with AReporterConfiguration {
 
   val usage = "usage scala -cp <classpath> package.mySpecificationObject [options]\n" +
               "      scala -cp <classpath> run package.mySpecificationClass [options]\n"   
@@ -64,10 +64,11 @@ trait Reporter extends SpecsFilter with MainArguments with ConsoleLog with Comma
     -config, --configuration        class name of an object extending the org.specs.util.Configuration trait\n""".stripMargin +
      configuration.optionsDescription
 
-  protected[specs] implicit val configuration = new AReporterConfiguration {
-    override lazy val configurationFilePath = argValue(args, List("-config", "--configuration"))
-    override lazy val configurationClass = argValue(args, List("-config", "--configuration"))
-  }.configuration
+  override protected[specs] lazy val factory = new ConfigurationFactory[ReporterConfiguration] {
+    override val configurationFilePath = argValue(args, List("-config", "--configuration")).getOrElse("configuration.properties")
+    override val configurationClass = argValue(args, List("-config", "--configuration")).getOrElse("configuration$")
+    def getDefaultConfiguration = new ReporterConfiguration
+  } 
   
   def executeMain = {
     reportSpecs

@@ -49,15 +49,15 @@ class ClassRunner extends Classes with OutputReporter {
     else 
 	  super.main(arguments)
   }
-  override protected def displayUsage = {
+  override def displayUsage = {
     println("usage java <classpath> run [className|-k classNames]")
   }
-  override protected def displayOptions = {
+  override def displayOptions = {
     super.displayOptions
     println("    [-k|--classes]")
     println("    [-p|--packages]")
   }
-  override protected def displayOptionsDescription = {
+  override def displayOptionsDescription = {
     super.displayOptionsDescription
     println("-k, --classes                   comma-separated list of specification class names instead")
     println("-p, --packages                  comma-separated list of specification package names to append to class names")

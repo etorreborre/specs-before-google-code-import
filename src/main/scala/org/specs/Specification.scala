@@ -27,7 +27,6 @@ import org.specs.SpecUtils._
 import org.specs.specification._
 import org.specs.util.ExtendedThrowable._
 import org.specs.execute._
-import org.specs.runner.AReporterConfiguration
 
 /**
  * This class is the main class for declaring a new specification<br>
