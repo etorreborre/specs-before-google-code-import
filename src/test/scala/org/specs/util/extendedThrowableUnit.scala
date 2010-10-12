@@ -71,6 +71,15 @@ class extendedThrowableUnit extends SpecificationWithJUnit with ExceptionSamples
       }
     }
   }
+  "an extended Throwable" should {
+    "return the full stacktrace of an exception including all causes recursively" in {
+	  val cause2 = new Exception("cause2")
+	  val cause1 = new Exception("cause1", cause2)
+	  val e = new Exception("root", cause1)
+	  val fullStack = e.getFullStackTrace.map(_.toString).filter(_.contains("JUnitSuiteRunner"))
+	  fullStack.size must_== 3
+	}
+  }
   def provide = addToSusVerb("provide")
 }
 trait ExceptionSamples extends Contexts { this: BaseSpecification => 

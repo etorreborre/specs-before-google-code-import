@@ -95,8 +95,21 @@ object ExtendedThrowable {
       t.initCause(other.getCause)
       t
     }
+	/**
+	 * @return the stack trace elements of all the chained exceptions
+	 */
+	 def getFullStackTrace: List[java.lang.StackTraceElement] = {
+	   (t :: t.chainedExceptions).flatMap(_.getStackTrace.toList)
+	 }
+	/**
+	 * @return the list of chained exceptions
+	 */
+	def chainedExceptions: List[Throwable] = {
+	  if (t.getCause == null) Nil
+	  else t.getCause :: t.getCause.chainedExceptions
+	}
     /**
-     * return the class name of an object without $.
+     * @return the class name of an object without $.
      */
     private def getClassName(o: Object) = o.getClass.getName.split("\\.").last.replace("$", "")
   }

@@ -50,7 +50,7 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
   import Classes._
   
   def run(classname: String, fingerprint: TestFingerprint, handler: EventHandler, args: Array[String]) = {
-    val specification: Either[Throwable, Specification] = create[Specification](classname + "$") match {
+    val specification: Either[Throwable, Specification] = create[Specification](classname + "$", loader) match {
       case Right(s) => Right(s)
       case Left(e) => create[Specification](classname)
     }
@@ -58,9 +58,7 @@ class TestInterfaceRunner(loader: ClassLoader, val loggers: Array[Logger]) exten
       handler.handle(error(classname, e))
       logError("Could not create an instance of "+classname+"\n")
       logError("  "+e.getMessage+"\n")
-      e.getStackTrace foreach { s => logError("  "+s.toString) }
-      if (e.getCause != null)
-		e.getCause.getStackTrace foreach { s => logError("  "+s.toString) }
+      e.getFullStackTrace foreach { s => logError("  "+s.toString) }
     }
     val specificationOption = specification.right.toOption
     specificationOption.map(_.args = args)

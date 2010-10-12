@@ -33,9 +33,9 @@ trait Classes extends ConsoleOutput {
   /**
    * Create an instance of a given class, returning either the instance, or an exception
    */
-  def create[T <: AnyRef](className: String)(implicit m: ClassManifest[T]): Either[Throwable, T] = {
+  def create[T <: AnyRef](className: String, loader: ClassLoader = getClass.getClassLoader)(implicit m: ClassManifest[T]): Either[Throwable, T] = {
     try {
-      return Right(createInstanceFor(loadClassOf[T](className)))
+      return Right(createInstanceFor(loadClassOf[T](className, loader)))
     } catch {
       case e => return Left(e)
     }
@@ -98,8 +98,8 @@ trait Classes extends ConsoleOutput {
   /**
    * Load a class, given the class name, without catching exceptions
    */
-  private[util] def loadClassOf[T <: AnyRef](className: String): Class[T] = {
-    getClass.getClassLoader.loadClass(className).asInstanceOf[Class[T]]
+  private[util] def loadClassOf[T <: AnyRef](className: String = "", loader: ClassLoader = getClass.getClassLoader): Class[T] = {
+    loader.loadClass(className).asInstanceOf[Class[T]]
   }
   /**
    * Try to create an instance of a given class by using whatever constructor is available
