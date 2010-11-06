@@ -156,7 +156,7 @@ trait Classes extends ConsoleOutput {
    * @return the class name without the package name
    */
   def className(klass: Class[_]): String = {
-    val result = className(klass.getSimpleName)
+    val result = className(klass.getName.split("\\.").last)
     if (result.contains("anon") && klass.getSuperclass != null)
       className(klass.getSuperclass)
     else
