@@ -34,25 +34,25 @@ class testInterfaceRunnerSpec extends SpecificationWithJUnit {
       }
     }
     "report a sus" in {
-      logOutput must include("[info] x this sus should")      
+      logOutput must include("[error] x this sus should")      
     }
     "report a success" in {
       logOutput must include("[info]   + success")      
     }
     "report a failure" in {
-      logOutput must include("[info]   x failure")      
+      logOutput must include("[error]   x failure")      
     }
     "report a message" in {
-      logOutput must include("[info]     '1' is not equal to '2'")      
+      logOutput must include("[error]     '1' is not equal to '2'")      
     }
     "report the location of the failure" in {
       logOutput must beMatching("'1' is not equal to '2'.*testInterfaceRunnerSpec.scala")      
     }
     "report an error" in {
-      logOutput must include("[info]   x error")      
+      logOutput must include("[error]   x error")      
     }
     "report the stacktrace of an error" in {
-      logOutput must include("[info]     " + testInterfaceSpecification.exception.getStackTrace()(0))      
+      logOutput must include("[error]     " + testInterfaceSpecification.exception.getStackTrace()(0))      
     }
     "report the location of the error" in {
       logOutput must beMatching("bad.*testInterfaceRunnerSpec.scala")      
@@ -76,7 +76,7 @@ class testInterfaceRunnerSpec extends SpecificationWithJUnit {
       events must include("Skipped")      
     }
     "work ok with a specification created as an object" in {
-      logOutput$ must include("[info] x this sus should")      
+      logOutput$ must include("[error] x this sus should")      
     }
     "display a failure message for a failing sus - issue 111" in {
       logOutput("org.specs.runner.issue111Specification") must include("error in sus")

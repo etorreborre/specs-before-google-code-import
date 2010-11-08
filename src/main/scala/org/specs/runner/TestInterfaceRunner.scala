@@ -88,39 +88,39 @@ class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], c
   def exampleCompleted(exampleName: String) = decrementPadding
 
   def exampleSucceeded(testName: String) = {
-    logStatus(testName, AnsiColors.green, "+")
+    logInfoStatus(testName, AnsiColors.green, "+")
     handler.handle(succeeded(testName))
   }
   def exampleFailed(testName: String, e: Throwable) = {
-    logStatus(testName, AnsiColors.red, "x")
-    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
+    logErrorStatus(testName, AnsiColors.red, "x")
+    logErrorStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     handler.handle(failure(testName, e))
   }
   def exampleError(testName: String, e: Throwable) = {
-    logStatus(testName, AnsiColors.red, "x")
+    logErrorStatus(testName, AnsiColors.red, "x")
     logErrorDetails(e, configuration)
     handler.handle(error(testName, e))
   }
   def exampleSkipped(testName: String) = {
-    logStatus(testName, AnsiColors.yellow, "o")
+    logInfoStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
   }
   def systemStarting(systemName: String) = {}
 
   def systemSucceeded(testName: String) = {
-    logStatus(testName, AnsiColors.green, "+")
+    logInfoStatus(testName, AnsiColors.green, "+")
     handler.handle(succeeded(testName))
   }
   def systemFailed(testName: String, e: Throwable) = {
-    logStatus(testName, AnsiColors.red, "x")
+    logErrorStatus(testName, AnsiColors.red, "x")
     handler.handle(failure(testName, e))
   }
   def systemError(testName: String, e: Throwable) = {
-    logStatus(testName, AnsiColors.red, "x")
+    logErrorStatus(testName, AnsiColors.red, "x")
     handler.handle(error(testName, e))
   }
   def systemSkipped(testName: String) = {
-    logStatus(testName, AnsiColors.yellow, "o")
+    logInfoStatus(testName, AnsiColors.yellow, "o")
     handler.handle(skipped(testName))
   }
   def systemCompleted(systemName: String) = {}
@@ -153,9 +153,9 @@ trait HandlerEvents {
 }
 trait TestLoggers {
   val loggers: Array[Logger]
-  def logError(message: String) = loggers.foreach { logger =>
+  def logError(message: String, color: String = AnsiColors.red) = loggers.foreach { logger =>
     if (logger.ansiCodesSupported)
-      logger.error(AnsiColors.red + message + AnsiColors.reset)
+      logger.error(color + message + AnsiColors.reset)
     else
       logger.error(message)
   }
@@ -165,14 +165,17 @@ trait TestLoggers {
     else
       logger.info(message)
   }
-  def logStatus(name: String, color: String, status: String) = {
+  def logInfoStatus(name: String, color: String, status: String) = {
     logInfo(padding + status + " " + name, color)
   }
+  def logErrorStatus(name: String, color: String, status: String) = {
+    logError(padding + status + " " + name, color)
+  }
   def logErrorDetails(e: Throwable, configuration: Configuration) = {
-    logStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
+    logErrorStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     if (configuration.stacktrace) {
       e.getStackTrace().foreach { trace =>
-        logStatus(trace.toString, AnsiColors.red, " ")
+        logErrorStatus(trace.toString, AnsiColors.red, " ")
       }
     }
   }
