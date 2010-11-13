@@ -64,7 +64,7 @@ trait HasResults {
   /** @return issues as a list of messages, comma-separated */
   def issueMessages = issues.map(_.getMessage).mkString(", ")
   /** @return true if there are issues */
-  def hasIssues = !issues.isEmpty
+  def hasIssues = !failureAndErrors.isEmpty
   /** @return true if there are no issues */
   def isOk = issues.isEmpty
   /** copy the results of another HasResult object */
