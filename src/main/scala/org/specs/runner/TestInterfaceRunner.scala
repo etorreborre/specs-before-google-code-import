@@ -171,13 +171,14 @@ trait TestLoggers {
   def logErrorStatus(name: String, color: String, status: String) = {
     logError(padding + status + " " + name, color)
   }
-  def logErrorDetails(e: Throwable, configuration: Configuration) = {
+  def logErrorDetails(e: Throwable, configuration: Configuration): Unit = {
     logErrorStatus(e.getMessage + " (" + e.location + ")", AnsiColors.red, " ")
     if (configuration.stacktrace) {
-      e.getStackTrace().foreach { trace =>
+      e.getStackTrace.foreach { trace =>
         logErrorStatus(trace.toString, AnsiColors.red, " ")
       }
     }
+	e.chainedExceptions.foreach(logErrorDetails(_, configuration))
   }
 
 var padding = ""

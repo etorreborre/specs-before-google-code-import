@@ -247,7 +247,14 @@ trait OutputReporter extends Reporter with Output {
 	    else
 	      println(padding + errorType(f) + parens(f))
 	  }
-	  if (stacktrace() && example.errors.size > 0) example.errors foreach { printStackTrace(_) }
+	  if (stacktrace() && example.errors.size > 0) 
+	    example.errors foreach { e => 
+		  printStackTrace(e) 
+		  e.chainedExceptions.foreach { chained =>
+		    println(padding + " " + chained.getMessage)
+            printStackTrace(chained)
+		  }
+		}
     }
   }
   /** @return true if the results should be printed
