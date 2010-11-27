@@ -139,7 +139,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
     * and indicates if the generation should be verbose or not
     */
    private [matcher] def checkProperty(prop: Prop)(p: Parameters) = {
-     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, p(workers), p(wrkSize)), p.verbose)
+     checkScalaCheckProperty(prop)(Params(p(minTestsOk), p(maxDiscarded), p(minSize), p(maxSize), StdRand, p(workers)), p.verbose)
    }
 
   /**
@@ -148,18 +148,22 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    */
   private [matcher] def checkScalaCheckProperty(prop: Prop)(params: Params, verbose: Boolean) = {
      // will print the result of each test if verbose = true
-     def printResult(succeeded: Int, discarded: Int): Unit = {
-       if (!verbose) return
-       if (discarded == 0)
-         printf("\rPassed %d tests", succeeded)
-       else
-         printf("\rPassed %d tests; %d discarded", succeeded, discarded)
-       flush
-     }
+    // will print the result of each test if verbose = true
+    val callback = new Test.TestCallback {
+      override def onPropEval(name: String, threadXdx: Int, succeeded: Int, discarded: Int): Unit = {
+        if (verbose) {
+          if (discarded == 0)
+            printf("\rPassed %d tests", succeeded)
+          else
+            printf("\rPassed %d tests; %d discarded", succeeded, discarded)
+          flush
+        }
+      }
+    }
 
      // check the property
      def propToCheck = if (!shouldCountExpectations) prop else (prop && Prop.forAll((t: Boolean) => true.isExpectation))
-     val results = checkProp(params, propToCheck, printResult)
+     val results = checkProp(params, propToCheck, callback)
 
      // display the final result if verbose = true
      if (verbose) {
@@ -168,15 +172,15 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
      }
 
      results match {
-       case Result(Proved(as), succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded))
-       case Result(Passed, succeeded, discarded, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded))
-       case r@Result(GenException(e), n, _, _) => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
-       case r@Result(Exhausted, n, _, _)     => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
-       case Result(Failed(args, labels), n, _, _) =>
+       case Result(Proved(as), succeeded, discarded, _, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded))
+       case Result(Passed, succeeded, discarded, _, _) => (true,  noCounterExample(succeeded), "A counter-example was found " + afterNTries(succeeded))
+       case r@Result(GenException(e), n, _, _, _) => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
+       case r@Result(Exhausted, n, _, _, _)     => (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams))
+       case Result(Failed(args, labels), n, _, _, _) =>
          (false, noCounterExample(n), "A counter-example is "+counterExample(args)+" (" + afterNTries(n) + afterNShrinks(args) + ")" + failedLabels(labels))
-       case Result(PropException(args, FailureException(ex), labels), n, _, _) =>
+       case Result(PropException(args, FailureException(ex), labels), n, _, _, _) =>
          (false, noCounterExample(n), "A counter-example is "+counterExample(args)+": " + ex + " ("+afterNTries(n)+")"+ failedLabels(labels))
-       case r@Result(PropException(m, ex, labels), n, _, _) =>
+       case r@Result(PropException(m, ex, labels), n, _, _, _) =>
          (false, noCounterExample(n), prettyTestRes(r)(defaultPrettyParams)+ failedLabels(labels))
      }
    }
@@ -216,7 +220,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
  * This trait is used to facilitate testing by mocking ScalaCheck functionalities
  */
 trait ScalaCheckFunctions {
-  def checkProp(params: Params, prop: Prop, printResult: (Int, Int) => Unit) = Test.check(params, prop, printResult)
+  def checkProp(params: Params, prop: Prop, callback: Test.TestCallback) = Test.check(params.copy(testCallback = callback), prop)
   def forAllProp[A,P](g: Gen[A])(f: A => Prop): Prop = Prop.forAll(g)(f)
 }
 /**
@@ -230,7 +234,7 @@ trait ScalaCheckParameters {
    *  <li>maxDiscarded == maxDiscardedTests
    *  <li>minSize and maxSize keep their name <code><ul>
    */
-  val (minSize, maxSize, maxDiscarded, minTestsOk, workers, wrkSize) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk, 'workers, 'wrkSize)
+  val (minSize, maxSize, maxDiscarded, minTestsOk, workers) = ('minSize, 'maxSize, 'maxDiscarded, 'minTestsOk, 'workers)
 
   /** This variable is used to track if we need to add an expectation each time a property is evaluated */
   private var countExpectations = true
@@ -242,7 +246,7 @@ trait ScalaCheckParameters {
   /**
    * Default values for ScalaCheck parameters
    */
-  def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100, workers->1, wrkSize->20)
+  def defaultValues = Map(minTestsOk->100, maxDiscarded ->500, minSize->0, maxSize->100, workers->1)
 
   /**
    * This object is used to set parameters but nothing will be printed to the console<br>
