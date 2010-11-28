@@ -18,8 +18,7 @@
  */
 package org.specs.util
 import org.specs.util.ExtendedString._
-import java.io.StringWriter
-import java.io.PrintWriter
+import java.io. { StringWriter, PrintWriter }
 
 /**
  * This object allows to add some utility methods to </code>Throwable</code> objects.
@@ -101,6 +100,16 @@ object ExtendedThrowable {
 	 def getFullStackTrace: List[java.lang.StackTraceElement] = {
 	   (t :: t.chainedExceptions).flatMap(_.getStackTrace.toList)
 	 }
+	/**
+	 * @return the full stack trace as a string
+	 */
+	 def getFullStackTraceAsString: String = {
+       val stringWriter = new java.io.StringWriter
+       val pr = new PrintWriter(stringWriter)
+       try { t.printStackTrace(pr) } finally { pr.close }
+       stringWriter.toString
+     } 
+
 	/**
 	 * @return the list of chained exceptions
 	 */

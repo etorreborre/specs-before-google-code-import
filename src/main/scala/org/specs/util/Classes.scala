@@ -17,10 +17,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.util
+import ExtendedThrowable._
 import org.specs.io.Output
 import org.specs.io.ConsoleOutput
 import scala.reflect.ClassManifest
 import scala.reflect.NameTransformer
+
 /**
  * This object provides simple functions to instantiate classes.
  */
@@ -57,8 +59,15 @@ trait Classes extends ConsoleOutput {
       return createInstanceOf[T](loadClass[T](className))
     } catch {
       case e => {
-        if (printMessage || System.getProperty("debugCreateObject") != null) println("Could not instantiate class " + className + ": " + e.getMessage)
-        if (printStackTrace || System.getProperty("debugCreateObject") != null) e.getStackTrace() foreach (println(_))
+        val debugCreateObject = System.getProperty("debugCreateObject") != null
+        val shouldPrintStackTrace = printStackTrace || debugCreateObject
+        val shouldPrintMessage = printMessage || debugCreateObject
+        val msg = (shouldPrintMessage, shouldPrintStackTrace) match {
+          case (_, true) => "Could not instantiate class: " + e.getFullStackTraceAsString
+          case (true, false) => "Could not instantiate class: " + className + ": " + e.getMessage
+          case (false, false) => ""
+        }
+        println(msg)
       }
     }
     return None
@@ -173,5 +182,4 @@ trait Classes extends ConsoleOutput {
    * @return the class name without the package name of any object
    */
   def getClassName[T](a: T): String = className(a.asInstanceOf[java.lang.Object].getClass)
-
 }
