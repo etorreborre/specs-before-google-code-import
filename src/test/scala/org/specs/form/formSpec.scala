@@ -154,7 +154,7 @@ class formUnit extends SpecificationWithJUnit with PersonBusinessEntities {
       }
       "format its values when changed formatter" in {
         form.formatterIs(s => "v: "+s.toString)
-        form.p.formattedValue.toString must_== "v: 1"
+        form.p.formattedValue.toString must include("v: 1")
       }
     }
   }

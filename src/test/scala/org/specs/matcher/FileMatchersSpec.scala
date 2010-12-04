@@ -21,7 +21,7 @@ import java.io.File
 
 class fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
 
-  "The PathMatchers trait" should {
+  "The PathMatchers trait" should { doAfter { reset }
     "provide an beEqualToIgnoringSep matcher checking if two paths are the same regardless of their separators" in {
       "c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp/hello")
       expectation("c:\\temp\\hello" must beEqualToIgnoringSep("c:/temp2/hello")) must failWith("'c:\\temp\\hello' is not equal ignoring separators to 'c:/temp2/hello'")
@@ -134,7 +134,7 @@ class fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
       "c:/tmp/dir/test.txt" must have parentPath("c:/tmp/dir")
     }
   }
-  "The File matchers" should { 
+  "The File matchers" should { doAfter { reset }
     "provide an exist matcher to check if a file exists" in {
       new File(okPath) must exist
     }
@@ -211,7 +211,7 @@ class fileMatchersSpec extends MatchersSpecification with TestFileSystem  {
       new File("c:/tmp") must have paths("c:/tmp/test.txt")
     }
   }
-  "The File matchers" can {
+  "The File matchers" can { doAfter { reset }
     "be used from string using the path function, like 'c:/projects'.path must exist" in {
       okPath.path must exist
     }
