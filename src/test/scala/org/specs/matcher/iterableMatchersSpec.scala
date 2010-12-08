@@ -48,6 +48,7 @@ class iterableMatchersSpec extends MatchersSpecification {
     }
     "provide a 'must containInOrder' matcher on iterables checking if one sequence is included inside another" in {
       List("one", "two", "three") must containInOrder(List("one", "two"))
+      List("one", "two", "three") must containInOrder("one", "two")
       expectation(List("one", "two") must containInOrder(List("two", "one"))) must failWith("'List(one, two)' doesn't contain all of 'List(two, one)' in order")
     }
     "provide a 'must beIn' matcher on iterables: 'one' must beIn(List('one', 'two'))" in {

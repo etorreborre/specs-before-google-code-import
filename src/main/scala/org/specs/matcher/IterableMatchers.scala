@@ -65,7 +65,7 @@ trait IterableBaseMatchers { outer =>
   /**
    * Matches if all the elements of l are included in the actual iterable in that order
    */
-  def containInOrder[T](l: Iterable[T])(implicit details: Detailed) = new Matcher[Iterable[T]](){
+  def containInOrder[T](l: T*)(implicit details: Detailed) = new Matcher[Iterable[T]](){
     def apply(v: => Iterable[T]) = {
       val iterable = v;
       val failureMessage = if (iterable.toString.size >= 30) 
