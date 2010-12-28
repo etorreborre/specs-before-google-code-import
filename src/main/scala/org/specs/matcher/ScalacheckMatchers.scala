@@ -102,7 +102,7 @@ trait ScalaCheckMatchers extends ConsoleOutput with ScalaCheckFunctions with Sca
    /** adds a validates method to a generator so that gen validates partialFunction can be written */
    implicit def aGen[T](g: Gen[T]) = new AGen(g)
    class AGen[T](g: Gen[T]) {
-     def validates(f: Function[T, SuccessValue])(implicit params: Parameters) = outer.validate(f)(params).apply(g)
+     def validates(f: Function[T, SuccessValue])(implicit params: Parameters) = new Expectation(g) must outer.validate(f)(params)
    }
    /** 
     * workaround class used to avoid an ambiguous definition of the pass method with

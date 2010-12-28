@@ -93,6 +93,9 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     "be used with a 'validates' shorthand: gen validates partialFunction" in {
 	  constantPair validates { case (x, y) => true }
 	}
+    "be used with a 'validates' shorthand and fail if the function returns false" in {
+	   expectation(constantPair validates { case (x, y) => 1 must_== 2 }) must failWithMatch("'1' is not equal to '2'")
+	}
   }
   "A ScalaCheck property" should {
     "not add new expectations during evaluation if isExpectation is off" in {
