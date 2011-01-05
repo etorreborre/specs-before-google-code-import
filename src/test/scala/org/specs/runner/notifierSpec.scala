@@ -28,7 +28,8 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
   "A notifier for a specification" should beNotifiedOf { 
     new NotifierRunner(s, notifier).reportSpecs
     "the start of a run with the total number of examples" in {
-      there was one(notifier).runStarting(5)
+      new NotifierRunner(s, countingNotifier).reportSpecs
+      countingNotifier.count must_== 5
     }
     "the start of a system" in {
       there was one(notifier).systemStarting("system1 should")
@@ -105,4 +106,20 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     }
   }
   def beNotifiedOf = addToSusVerb(" be notified of ")
+  val countingNotifier = new Notifier {
+    var count: Int = 0
+    def runStarting(examplesCount: =>Int) = count = examplesCount
+    def exampleStarting(exampleName: String) {}
+    def exampleSucceeded(testName: String) {}
+    def exampleFailed(testName: String, e: Throwable) {}
+    def exampleError(testName: String, e: Throwable) {}
+    def exampleSkipped(testName: String) {}
+    def exampleCompleted(exampleName: String) {}
+    def systemStarting(systemName: String) {}
+    def systemSucceeded(name: String) {}
+    def systemFailed(name: String, e: Throwable)  {}
+    def systemError(name: String, e: Throwable) {}
+    def systemSkipped(name: String) {}
+    def systemCompleted(systemName: String) {}
+  }
 }

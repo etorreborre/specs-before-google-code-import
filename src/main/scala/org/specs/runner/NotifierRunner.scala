@@ -25,7 +25,7 @@ import org.specs.util.LazyParameter
  * This is a generic trait for defining a notified object which will know about the state of a run.
  */
 trait Notifier {
-  def runStarting(examplesCount: Int)
+  def runStarting(examplesCount: =>Int)
   def exampleStarting(exampleName: String)
   def exampleSucceeded(testName: String)
   def exampleFailed(testName: String, e: Throwable)

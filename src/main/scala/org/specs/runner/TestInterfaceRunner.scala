@@ -83,7 +83,7 @@ class TestInterfaceNotifier(handler: EventHandler, val loggers: Array[Logger], c
   with HandlerEvents with TestLoggers {
   def this(handler: EventHandler, loggers: Array[Logger]) = this(handler, loggers, new DefaultConfiguration)
 
-  def runStarting(examplesCount: Int) = {}
+  def runStarting(examplesCount: =>Int) = {}
   def exampleStarting(exampleName: String) = incrementPadding
   def exampleCompleted(exampleName: String) = decrementPadding
 
