@@ -76,8 +76,11 @@ abstract class Examples(var exampleDescription: ExampleDescription, val parentCy
 
   /** execute this example to  be able to get all subexamples if any. */
   def executeExamples = {
-    if (!executed) 
+    if (!executed) {
       parent.map(_.executeExample(this))
+      if (topParent.map(_.isSequential).getOrElse(false))
+        exampleList.lastOption.map(executeLastActions(_))
+    }
   }
   /**
    * @return all the examples from this example, this is either this if there are no subexamples or the recursive list of

@@ -44,6 +44,12 @@ import org.specs.util.ExtendedThrowable._
 trait LifeCycle extends SequentialExecution {
   /** lifecycles can be chained via parent-child relationships */
   private[specs] var parent: Option[LifeCycle] = None
+  /** @return the oldest ancestor */
+  def topParent: Option[LifeCycle] = parent match {
+    case Some(p) => p.topParent
+    case None => Some(this)
+  }
+
   /** 
    * current list of examples defining the context of this execution. Every example created during by the executeExpectations method
    * will be attached to this list
