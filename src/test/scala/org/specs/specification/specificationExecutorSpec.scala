@@ -245,7 +245,7 @@ object testNotifier extends Notifier {
   var errors = 0
   var succeeded = 0
   def reset = failures = Nil; errors = 0; succeeded = 0
-  def runStarting(examplesCount: =>Int) = ()
+  def runStarting(examplesCount: Int) = ()
   def exampleStarting(exampleName: String)  = ()
   def exampleSucceeded(testName: String) = {succeeded += 1}
   def exampleCompleted(testName: String) = {}

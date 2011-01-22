@@ -19,7 +19,7 @@
 package org.specs.specification
 
 class executionSpec extends org.spex.Specification {
-  include(new execution0, new execution1, new execution2, new execution3)
+  include(new execution0, new execution1, new execution2, new execution3, new execution4, new execution5, new execution6)
 }
 class execution0 extends org.spex.Specification {
   var x = 1
@@ -102,5 +102,17 @@ class execution5 extends org.spex.Specification {
   }
   "A sus" should {
     "execute this other example" in { x must_== 1 }
+  }
+}
+class execution6 extends org.spex.Specification {
+  var x = 1
+  "example" in {
+    "1" in {
+      "1.1 must not be executed twice" in {
+        x must_== 1
+        x = x + 1
+      }
+      "1.2" in { 1 must_== 1 }
+    }
   }
 }

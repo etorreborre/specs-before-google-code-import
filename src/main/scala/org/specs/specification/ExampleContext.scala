@@ -89,7 +89,8 @@ trait ExampleContext extends ExampleLifeCycle {
       if (!ex.hasSubExamples)
         executeActions(after, "After example:\n")
       this match {
-        case composite: Examples if !topParent.map(_.isSequential).getOrElse(false) && exampleList.lastOption == Some(ex) => executeLastActions(ex)
+        case composite: Examples if !topParent.map(_.isSequential).getOrElse(false) && !ex.hasSubExamples =>
+          executeLastActions(ex)
         case other => ()
       }
     }
@@ -97,13 +98,11 @@ trait ExampleContext extends ExampleLifeCycle {
   }
 
   protected def executeLastActions(ex: Examples) = {
-    if (!(executeOneExampleOnly && ex.hasSubExamples)) {
-      // force the execution of nested examples if there are last actions
-      ex.exampleList.foreach(_.failures)
-      executeActions(Some(() => {
-        lastActions.map(_.apply)
-      }), "After system:\n")
-    }
+    if (lastNested == Some(ex))
+      executeActions(Some(() => { lastActions.map(_.apply) }), "After system:\n")
+  }
+  private def lastNested: Option[ExampleContext] = {
+    exampleList.lastOption.flatMap(_.lastNested).orElse(Some(this))
   }
   /**
    * when an example has been executed in another specification to guarantee its isolation

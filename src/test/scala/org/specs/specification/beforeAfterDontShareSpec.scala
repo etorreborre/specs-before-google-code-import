@@ -23,6 +23,7 @@ import org.specs._
 import org.specs.runner._
 
 class beforeAfterDontShareSpec extends specWithBeforeAfterExamples {
+  noDetailedDiffs()
   "A specification with before clauses" should { msgs.clear.before
     "have each example using the doBefore method before being executed" in {
       doBeforeExample.reportSpecs
@@ -136,6 +137,7 @@ class beforeAfterDontShareSpec extends specWithBeforeAfterExamples {
     "execute the before / after methods only around the leaves examples" in {
       specWithBeforeAfterAndNestedExamples.reportSpecs
       msgs().filter(_.startsWith("msg")).mkString("\n", "\n", "\n") must_== List(
+      "msg first",
       "msg example 1",
         "msg before",
         "msg 1.1",
@@ -152,7 +154,8 @@ class beforeAfterDontShareSpec extends specWithBeforeAfterExamples {
         "msg example 2",
         "msg before",
         "msg 2.2",
-        "msg after").mkString("\n", "\n", "\n")
+        "msg after",
+      "msg last").mkString("\n", "\n", "\n")
     }
     "execute the beforeSpec / afterSpec around the examples" in {
       specWithDoBeforeSpecAfterSpecAndNestedExamples.reportSpecs
@@ -262,6 +265,8 @@ class specWithBeforeAfterExamples extends SpecificationWithJUnit {
   }
   object specWithBeforeAfterAndNestedExamples extends specWithBeforeAfter {
     "A specification" should {
+      doFirst { msgs.add("msg first") }
+      doLast  { msgs.add("msg last") }
       doBefore { msgs.add("msg before") }
       doAfter  { msgs.add("msg after") }
       "example 1" in { 

@@ -93,6 +93,15 @@ class beforeAfterSpec extends SpecificationWithJUnit {
         notContainMatch("example 2") and
         containMatch("doLast"))
     }
+    "specify a doLast method after the examples even if the specification is sequential" in {
+      sequentialSpecWithDoLast.execute
+      sequentialSpecWithDoLast.messages.filter(_.startsWith("msg")) must containMatch("doLast")
+      sequentialSpecWithDoLast.messages.filter(_.startsWith("msg")).drop(2) must (
+        notContainMatch("example 1") and
+        notContainMatch("example 2") and
+        containMatch("doLast"))
+    }
+
     "specify a before/after clauses before and after: specification, systems, examples" in {
       specWithAll.execute
       specWithAll.messages.filter(_.startsWith("msg")).toList must_== List(
@@ -350,6 +359,17 @@ object specWithDoFirstAndNestedExamples extends beforeAfterSpecification {
 }
 object specWithDoLast extends beforeAfterSpecification {
   override def executeSpec = {
+    "A specification" should {
+      doLast { println("msg doLast") }
+      "have example 1 ok" in { println("msg example 1") }
+      "have example 2 ok" in { println("msg example 2") }
+    }
+    reportSpecs
+  }
+}
+object sequentialSpecWithDoLast extends beforeAfterSpecification {
+  override def executeSpec = {
+    setSequential
     "A specification" should {
       doLast { println("msg doLast") }
       "have example 1 ok" in { println("msg example 1") }
