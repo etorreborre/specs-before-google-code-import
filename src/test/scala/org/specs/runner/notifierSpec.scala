@@ -108,7 +108,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
   def beNotifiedOf = addToSusVerb(" be notified of ")
   val countingNotifier = new Notifier {
     var count: Int = 0
-    def runStarting(examplesCount: =>Int) = count = examplesCount
+    def runStarting(examplesCount: Int) = count = examplesCount
     def exampleStarting(exampleName: String) {}
     def exampleSucceeded(testName: String) {}
     def exampleFailed(testName: String, e: Throwable) {}

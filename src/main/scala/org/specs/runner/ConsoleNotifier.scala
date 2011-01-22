@@ -22,7 +22,7 @@ package org.specs.runner
  * Simple implementation of the Notifier trait to display messages in the console
  */
 class ConsoleNotifier extends Notifier {
-  def runStarting(examplesCount: =>Int) = println("runStarting - count is " + examplesCount)
+  def runStarting(examplesCount: Int) = println("runStarting - count is " + examplesCount)
   def exampleStarting(name: String) = println("exampleStarting: " + name)
   def exampleSucceeded(name: String) = println("exampleSucceeded: " + name)
   def exampleCompleted(name: String) = println("exampleCompleted: " + name)

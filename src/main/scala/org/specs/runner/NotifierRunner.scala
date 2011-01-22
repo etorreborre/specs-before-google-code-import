@@ -25,7 +25,7 @@ import org.specs.util.LazyParameter
  * This is a generic trait for defining a notified object which will know about the state of a run.
  */
 trait Notifier {
-  def runStarting(examplesCount: =>Int)
+  def runStarting(examplesCount: Int)
   def exampleStarting(exampleName: String)
   def exampleSucceeded(testName: String)
   def exampleFailed(testName: String, e: Throwable)
@@ -54,9 +54,11 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
                       object totalSpecification extends Specification { include(filteredSpecs.map(s => new LazyParameter(() => s)):_*) }
                       totalSpecification
                     }
-    
-    notifiers.foreach { _.runStarting(specToRun.firstLevelExamplesNb) } 
+    countExamples(specToRun)
     reportASpecification(specToRun, specToRun.planOnly())
+  }
+  protected def countExamples(specToRun: Specification) = {
+    notifiers.foreach { _.runStarting(specToRun.firstLevelExamplesNb) }
   }
   def reportASpecification(spec: Specification, planOnly: Boolean): this.type = {
     notifiers.foreach { _.systemStarting(spec.description) }
