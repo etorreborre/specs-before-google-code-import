@@ -57,6 +57,7 @@ class notifierSpec extends SpecificationWithJUnit with Mockito {
     }
     "a skipped example" in {
       there was one(notifier).exampleSkipped("ex2-3")
+      there was no(notifier).exampleSucceeded("ex2-3")
     }
     "the end of a system" in {
       there was one(notifier).systemCompleted("system1 should")

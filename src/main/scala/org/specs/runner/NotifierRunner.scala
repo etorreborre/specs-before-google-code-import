@@ -109,7 +109,7 @@ class NotifierRunner(val specifications: Array[Specification], val notifiers: Ar
   def reportExample(example: Examples, planOnly: Boolean): this.type = {
     notifiers.foreach { _.exampleStarting(example.description) }
     
-    if (!planOnly && example.isOk)
+    if (!planOnly && example.isOk && example.skipped.isEmpty)
       notifiers.foreach { _.exampleSucceeded(example.description) }
     if (!planOnly && !example.failures.isEmpty)
       notifiers.foreach { notifier =>
