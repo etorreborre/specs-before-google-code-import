@@ -49,24 +49,27 @@ import org.specs.execute._
  */
 trait PendingUntilFixed { outer =>
   /** implicit definition to add pendingUntilFixed ability to an example*/
-  implicit def toPendingExample(e: Examples) = new PendingExample(e)
+  implicit def toPendingExample(e: Examples): PendingExample = new PendingExample(e)
   class PendingExample(e: Examples) {
-    def pendingUntilFixed = {
-      def makePending(a: =>Any) = outer.pendingUntilFixed(a)
+    def pendingUntilFixed: Examples = pendingUntilFixed("")
+    def pendingUntilFixed(message: String): Examples = {
+      def makePending(a: =>Any) = outer.pendingUntilFixed(message)(a)
       e.aroundExpectations = Some(makePending(_)) 
       e
     }
   }
-  def pendingUntilFixed(f: =>Any) { 
+  def pendingUntilFixed(f: =>Any) { pendingUntilFixed("")(f) }
+  def pendingUntilFixed(message: String)(f: =>Any) {
     val isPassing = 
       try { 
         f 
         true
       } 
-      catch { case _ => false } 
+      catch { case _ => false }
+      val displayMessage = if (message.isEmpty) message else message + ". "
       if (isPassing) 
-        throw new FailureException("Fixed now. You should remove the 'pending until fixed' declaration") 
+        throw new FailureException(displayMessage + "Fixed now, you should remove the 'pending until fixed' declaration")
       else 
-        throw new SkippedException("Pending until fixed") 
+        throw new SkippedException(displayMessage + "Pending until fixed")
   } 
 }

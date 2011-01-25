@@ -23,21 +23,29 @@ class pendingUntilFixedSpec extends SpecificationWithJUnit {
    "A specification extending PendingUntilFixed" should {
      "mark failing examples as skipped" in {
        object s extends Specification with PendingUntilFixed { 
-         "ex" in {       
-           pendingUntilFixed { 1 must_== 2 }
-         }
+         "ex" in { pendingUntilFixed { 1 must_== 2 } }
        } 
        s.skipped must have size(1)
      }
+     "mark failing examples as skipped, with a specific message" in {
+       object s extends Specification with PendingUntilFixed {
+         "ex" in { pendingUntilFixed("ISSUE-123") { 1 must_== 2 } }
+       }
+       s.skipped.head.message must_== "ISSUE-123. Pending until fixed"
+     }
      "mark passing examples as failed - with a message to remove the pending block" in {
        object s extends Specification with PendingUntilFixed { 
-         "ex" in {       
-           pendingUntilFixed { 1 must_== 1 }
-         }
+         "ex" in { pendingUntilFixed { 1 must_== 1 } }
        } 
        s.skipped must be empty;
        s.failures must have size(1)
-       s.failures(0).getMessage must_== "Fixed now. You should remove the 'pending until fixed' declaration"
+       s.failures(0).getMessage must_== "Fixed now, you should remove the 'pending until fixed' declaration"
+     }
+     "mark passing examples as failed - with a specific message" in {
+       object s extends Specification with PendingUntilFixed {
+         "ex" in { pendingUntilFixed("ISSUE-123") { 1 must_== 1 } }
+       }
+       s.failures.head.message must_== "ISSUE-123. Fixed now, you should remove the 'pending until fixed' declaration"
      }
    }
    "A specification extending PendingUntilFixed" can {
@@ -57,6 +65,12 @@ class pendingUntilFixedSpec extends SpecificationWithJUnit {
          } pendingUntilFixed
        } 
        s.skipped must have size(2)
+     }
+     "use the pendingUntilFixed method on Examples with a specific message" in {
+       object s extends Specification with PendingUntilFixed {
+         "ex" in { 1 must_== 2 } pendingUntilFixed "ISSUE-123"
+       }
+       s.skipped.head.message must_== "ISSUE-123. Pending until fixed"
      }
    }
 }
