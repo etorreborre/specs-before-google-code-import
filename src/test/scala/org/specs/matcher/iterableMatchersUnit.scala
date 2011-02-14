@@ -46,7 +46,7 @@ class iterableMatchersUnit extends MatchersSpecification {
   }
   "The containInOrder matcher" should {
     "not fail with duplicates" in {
-      List("Un", "Deux", "Un") must containInOrder(List("Un", "Deux", "Un"))
+      List("Un", "Deux", "Un") must containInOrder("Un", "Deux", "Un")
     }
   }
   "Iterable matchers" should {
