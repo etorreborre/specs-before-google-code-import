@@ -33,7 +33,10 @@ trait IterableBaseMatchers { outer =>
    * Matches if iterable.exists(_ == a)
    */
   def contain[T](a: T) = new Matcher[Iterable[Any]](){
-    def apply(v: => Iterable[Any]) = {val iterable = v; (iterable.exists(_ == a), d(iterable) + " contains " + q(a), d(iterable) + " doesn't contain " + q(a))}
+    def apply(v: => Iterable[Any]) = {
+      val iterable = v
+      (iterable.exists(_ == a), d(iterable) + " contains " + q(a), d(iterable) + " doesn't contain " + q(a))
+    }
   }
 
   /**
@@ -71,9 +74,9 @@ trait IterableBaseMatchers { outer =>
       val failureMessage = if (iterable.toString.size >= 30) 
         d(iterable.toString.split(",").mkString("\n")) + "\n\ndoesn't contain all of\n\n" + l.mkString("\n") + " in order"
       else
-        d(iterable) + " doesn't contain all of " + q(l) + " in order"  
+        d(iterable) + " doesn't contain all of " + q(l.toList) + " in order"
       (iterable.containsInOrder(l), 
-       d(iterable) + " contains all of " + q(l) + " in order", 
+       d(iterable) + " contains all of " + q(l.toList) + " in order",
        failureMessage)
     }
   }
