@@ -207,7 +207,7 @@ class ExampleTestCase(specification: BaseSpecification, val example: Examples, d
     def report(ex: Examples, context: String) = {
       ex.ownFailures foreach {
         failure: FailureException =>
-                result.addFailure(this, new SpecAssertionFailedError(UserError(failure, context)))
+          result.addFailure(this, SpecFailedError(failure, context))
       }
       ex.ownSkipped foreach {
         skipped: SkippedException =>
@@ -241,11 +241,35 @@ case class UserError(t: Throwable, context: String) extends Throwable {
   }
 }
 
+case class SpecsComparisonFailure(expected: String, actual: String) extends ComparisonFailure("\nExpected: \"%s\"\n     got: \"%s\"\n" format (expected, actual), actual, expected)
+
+object SpecFailedError {
+  val COMPARISON = "'([^']*)' is not equal to '([^']*)'".r
+
+  def apply(failure: FailureException, context: String): AssertionFailedError = failure.getMessage match {
+    case msg@COMPARISON(actual, expected) => MyComparisonFailure(expected, actual)
+    case msg@_ => new SpecAssertionFailedError(UserError(failure, context))
+  } 
+}
+
 /**
  * This class refines the <code>AssertionFailedError</code> from junit
  * and provides the stackTrace of an exception which occured during the specification execution
  */
 class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage) {
+  override def getStackTrace = t.getStackTrace
+  override def getCause = t.getCause
+
+  override def printStackTrace = t.printStackTrace
+
+  override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
+
+  override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
+
+  def asAssertionError = new AssertionErrorProxy(t)
+}
+
+class AssertionErrorProxy(t: Throwable) extends AssertionError(t.getMessage) {
   override def getStackTrace = t.getStackTrace
   override def getCause = t.getCause
 
