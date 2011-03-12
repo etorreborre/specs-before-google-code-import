@@ -241,13 +241,14 @@ case class UserError(t: Throwable, context: String) extends Throwable {
   }
 }
 
-case class SpecsComparisonFailure(expected: String, actual: String) extends ComparisonFailure("\nExpected: \"%s\"\n     got: \"%s\"\n" format (expected, actual), actual, expected)
+case class SpecsComparisonFailure(original: Throwable, expected: String, actual: String)
+  extends ComparisonFailure("\nExpected: \"%s\"\n     got: \"%s\"\n" format (expected, actual), actual, expected) with ThrowableProxy
 
 object SpecFailedError {
   val COMPARISON = "'([^']*)' is not equal to '([^']*)'".r
 
   def apply(failure: FailureException, context: String): AssertionFailedError = failure.getMessage match {
-    case msg@COMPARISON(actual, expected) => MyComparisonFailure(expected, actual)
+    case msg@COMPARISON(actual, expected) => SpecsComparisonFailure(failure, expected, actual)
     case msg@_ => new SpecAssertionFailedError(UserError(failure, context))
   }
 }
