@@ -167,12 +167,15 @@ class OldTestClassAdaptingListener(notifier: RunNotifier)  extends TestListener 
    */
   def addFailure(test: Test, t: AssertionFailedError) = {
     t match {
+      case SpecsComparisonFailure(orig, expected, actual) =>
+        addNewFailure(test, new org.junit.ComparisonFailure(t.getMessage, expected, actual) with ThrowableProxy { def original = orig } )
       // unfortunately the skip message can not be included for display in a description object
       // otherwise the description created when running the test and the description creating when
       // parsing the whole suite for the first time will not match
       case skipped: SkippedAssertionError => {
         notifier.fireTestIgnored(makeDescription(test))
       }
+      case e: SpecAssertionFailedError => addNewFailure(test, e.asAssertionError)
       case _ => addNewFailure(test, t)
     }
   }
