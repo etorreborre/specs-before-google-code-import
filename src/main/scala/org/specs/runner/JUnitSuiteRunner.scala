@@ -76,8 +76,8 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
 trait TestDescription extends Stacktraces {
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
-  /** return true if the current test is executed with Intellij */
-  lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt")
+  /** return true if the current test is executed with eclipse */
+  lazy val isExecutedFromEclipse = isExecutedFrom("org.eclipse.jdt")
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
@@ -99,10 +99,10 @@ trait TestDescription extends Stacktraces {
     def testcode(test: Test) = {
       if (isExecutedFromMaven)
         ""
-      else if (isExecutedFromIntellij) 
-       "("+test.getClass.getName+")"
+      else if (isExecutedFromEclipse)
+        "("+test.hashCode+")"
       else
-       "("+test.hashCode+")"
+        "("+test.getClass.getName+")"
 
     }
     createSuiteDescription(getName(test) + testcode(test), new UnusedAnnotation)
