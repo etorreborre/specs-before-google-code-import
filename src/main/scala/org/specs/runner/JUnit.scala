@@ -146,7 +146,7 @@ class JUnit4(val specifications: Specification*) extends JUnit {
  * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
  * run the example during the initialization time.
  */
-class ExamplesTestSuite(specification: BaseSpecification, description: String, examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with ExtendedJUnitSuite {
+class ExamplesTestSuite(val specification: BaseSpecification, val description: String, val examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with ExtendedJUnitSuite {
 
   /**
    * create one TestCase per example
@@ -200,7 +200,7 @@ trait ExtendedJUnitSuite extends Stacktraces {
  *
  * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
-class ExampleTestCase(specification: BaseSpecification, val example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
+class ExampleTestCase(val specification: BaseSpecification, val example: Examples, val description: String) extends TestCase(description.replaceAll("\n", " ")) {
   override def run(result: TestResult) = {
     if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
       result.startTest(this)

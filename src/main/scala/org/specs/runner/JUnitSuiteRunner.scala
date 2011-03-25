@@ -40,9 +40,9 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
    * runs the test suite by passing a JUnit4 RunNotifier which is wrapped in a JUnit3 TestListener to be able to run JUnit3 tests
    */
   override def run(notifier: RunNotifier) = {
-	val result = new TestResult
-	result.addListener(createAdaptingListener(notifier));
-	testSuite.run(result);
+	  val result = new TestResult
+	  result.addListener(createAdaptingListener(notifier));
+	  testSuite.run(result);
   }
 
   /**
@@ -78,6 +78,8 @@ trait TestDescription extends Stacktraces {
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
   /** return true if the current test is executed with eclipse */
   lazy val isExecutedFromEclipse = isExecutedFrom("org.eclipse.jdt")
+  /** return true if the current test is executed with Intellij */
+  lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt")
   /**
    * Describe a test including its hashCode instead of its class name. If the class name is included, some tests may
    * not render properly as there can only be one test with a given in a given class.
@@ -91,7 +93,7 @@ trait TestDescription extends Stacktraces {
    */
   def asDescription(test: Test) = {
     def getName(test: Test) = {
-	  if (test.isInstanceOf[TestCase])
+  	  if (test.isInstanceOf[TestCase])
          test.asInstanceOf[TestCase].getName
       else
          test.toString
@@ -99,11 +101,16 @@ trait TestDescription extends Stacktraces {
     def testcode(test: Test) = {
       if (isExecutedFromMaven)
         ""
-      else if (isExecutedFromEclipse)
+      else if (isExecutedFromEclipse || isExecutedFromIntellij)
         "("+test.hashCode+")"
-      else
-        "("+test.getClass.getName+")"
-
+      else {
+        if (test.isInstanceOf[ExampleTestCase])
+           "("+test.asInstanceOf[ExampleTestCase].specification.getClass.getName+")"
+        else if (test.isInstanceOf[ExamplesTestSuite])
+           "("+test.asInstanceOf[ExamplesTestSuite].specification.getClass.getName+")"
+        else
+          "("+test.getClass.getName+")"
+      }
     }
     createSuiteDescription(getName(test) + testcode(test), new UnusedAnnotation)
   }

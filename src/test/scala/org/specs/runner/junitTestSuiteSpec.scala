@@ -30,8 +30,8 @@ import org.specs._
 
 class junitTestSuiteSpec extends SpecificationWithJUnit {
   "A junit test suite execution" should {
-	"trigger the afterSpec actions after all the examples if the specification is sequential" in {
-	  val sequential = new SequentialSpecification
+	  "trigger the afterSpec actions after all the examples if the specification is sequential" in {
+	    val sequential = new SequentialSpecification
       val result = new TestResult
       sequential.run(result)
       sequential.messages must containInOrder("ex2", "afterSpec")
