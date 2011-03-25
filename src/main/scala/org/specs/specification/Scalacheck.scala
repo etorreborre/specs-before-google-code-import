@@ -96,31 +96,27 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
                                                     a2: Arbitrary[A2],
                                                     s1: Shrink[A1], 
                                                     s2: Shrink[A2]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, P](f: AnyWithParameters[(A1, A2) => Boolean])(implicit 
-                                                         p: P => Prop,
+     def verifies[A1, A2](f: AnyWithParameters[(A1, A2) => Boolean])(implicit 
                                                          a1: Arbitrary[A1], 
                                                          a2: Arbitrary[A2],
                                                          s1: Shrink[A1], 
                                                          s2: Shrink[A2]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, P](f: (A1, A2, A3) => Boolean)(implicit 
-                                                          p: P => Prop,
+     def verifies[A1, A2, A3](f: (A1, A2, A3) => Boolean)(implicit 
                                                           a1: Arbitrary[A1], 
                                                           a2: Arbitrary[A2], 
                                                           a3: Arbitrary[A3],
                                                           s1: Shrink[A1], 
                                                           s2: Shrink[A2], 
                                                           s3: Shrink[A3]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, P](f: AnyWithParameters[(A1, A2, A3) => Boolean])(implicit 
-                                                                               p: P => Prop,
-                                                                               a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3](f: AnyWithParameters[(A1, A2, A3) => Boolean])(implicit 
+                                                                               a1: Arbitrary[A1],
                                                                                a2: Arbitrary[A2], 
                                                                                a3: Arbitrary[A3],
                                                                                s1: Shrink[A1], 
                                                                                s2: Shrink[A2],	 
                                                                                s3: Shrink[A3]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, P](f: (A1, A2, A3, A4) => Boolean)(implicit 
-                                                          p: P => Prop,
-                                                                  a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3, A4](f: (A1, A2, A3, A4) => Boolean)(implicit 
+                                                                  a1: Arbitrary[A1],
                                                                   a2: Arbitrary[A2], 
                                                                   a3: Arbitrary[A3],
                                                                   a4: Arbitrary[A4],
@@ -128,9 +124,8 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
                                                                   s2: Shrink[A2], 
                                                                   s3: Shrink[A3], 
                                                                   s4: Shrink[A4]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, P](f: AnyWithParameters[(A1, A2, A3, A4) => Boolean])(implicit 
-                                                                                     p: P => Prop,
-                                                                                     a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3, A4](f: AnyWithParameters[(A1, A2, A3, A4) => Boolean])(implicit 
+                                                                                     a1: Arbitrary[A1],
                                                                                      a2: Arbitrary[A2], 
                                                                                      a3: Arbitrary[A3],
                                                                                      a4: Arbitrary[A4],
@@ -138,9 +133,8 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
                                                                                      s2: Shrink[A2], 
                                                                                      s3: Shrink[A3], 
                                                                                      s4: Shrink[A4]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, P](f: (A1, A2, A3, A4, A5) => Boolean)(implicit 
-                                                             p: P => Prop,
-                                                             a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3, A4, A5](f: (A1, A2, A3, A4, A5) => Boolean)(implicit 
+                                                             a1: Arbitrary[A1],
                                                              a2: Arbitrary[A2], 
                                                              a3: Arbitrary[A3],
                                                              a4: Arbitrary[A4],
@@ -150,9 +144,8 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
                                                              s3: Shrink[A3], 
                                                              s4: Shrink[A4], 
                                                              s5: Shrink[A5]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, A5, P](f: AnyWithParameters[(A1, A2, A3, A4, A5) => Boolean])(implicit 
-                                                             p: P => Prop,
-                                                             a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3, A4, A5](f: AnyWithParameters[(A1, A2, A3, A4, A5) => Boolean])(implicit 
+                                                             a1: Arbitrary[A1],
                                                              a2: Arbitrary[A2], 
                                                              a3: Arbitrary[A3],
                                                              a4: Arbitrary[A4],
@@ -188,9 +181,8 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
                                                              s4: Shrink[A4], 
                                                              s5: Shrink[A5], 
                                                              s6: Shrink[A6]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, A6, A7, P](f: (A1, A2, A3, A4, A5, A6, A7) => Boolean)(implicit 
-                                                          p: P => Prop,
-                                                          a1: Arbitrary[A1], 
+     def verifies[A1, A2, A3, A4, A5, A6, A7](f: (A1, A2, A3, A4, A5, A6, A7) => Boolean)(implicit 
+                                                          a1: Arbitrary[A1],
                                                           a2: Arbitrary[A2], 
                                                           a3: Arbitrary[A3],
                                                           a4: Arbitrary[A4],
