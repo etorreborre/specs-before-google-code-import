@@ -112,7 +112,40 @@ class scalacheckMatchersSpec extends MatchersSpecification with ScalaCheckExampl
     }
   }
   "Functions" can {
-    "be checked directly, without creating an example, using the verifies operator. startsWith" verifies { (a: String, b: String) => (a+b).startsWith(a) }
+    "be checked directly, without creating an example, using the verifies operator." in {
+      "without parameters" in {
+        "with 1 argument" verifies { (a: String) => a.startsWith(a.substring(0, math.min(0, a.length))) }
+        "with 2 arguments" verifies { (a: String, b: String) => (a+b).startsWith(a) }
+        "with 3 arguments" verifies { (a: String, b: String, c: String) => (a+b+c).startsWith(a) }
+        "with 4 arguments" verifies { (a: String, b: String, c: String, d: String) => (a+b+c+d).startsWith(a) }
+        "with 5 arguments" verifies { (a: String, b: String, c: String, d: String, e: String) => (a+b+c+d+e).startsWith(a) }
+        "with 6 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String) => (a+b+c+d+e+f).startsWith(a) }
+        "with 7 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String) => (a+b+c+d+e+f+g).startsWith(a) }
+        "with 8 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String, h: String) => (a+b+c+d+e+f+g+h).startsWith(a) }
+      }
+
+      "with parameters" in {
+        "with 1 argument" verifies { (a: String) => a.startsWith(a.substring(0, math.min(0, a.length))) }.set(minTestsOk->250)
+        "with 2 arguments" verifies { (a: String, b: String) => (a+b).startsWith(a) }.set(minTestsOk->250)
+        "with 3 arguments" verifies { (a: String, b: String, c: String) => (a+b+c).startsWith(a) }.set(minTestsOk->250)
+        "with 4 arguments" verifies { (a: String, b: String, c: String, d: String) => (a+b+c+d).startsWith(a) }.set(minTestsOk->250)
+        "with 5 arguments" verifies { (a: String, b: String, c: String, d: String, e: String) => (a+b+c+d+e).startsWith(a) }.set(minTestsOk->250)
+        "with 6 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String) => (a+b+c+d+e+f).startsWith(a) }.set(minTestsOk->250)
+        "with 7 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String) => (a+b+c+d+e+f+g).startsWith(a) }.set(minTestsOk->250)
+        "with 8 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String, h: String) => (a+b+c+d+e+f+g+h).startsWith(a) }.set(minTestsOk->250)
+      }
+
+      "with function returning a Prop" in {
+        "with 1 argument" verifies { (a: String) => a.startsWith(a.substring(0, math.min(0, a.length))) :| "startsWith" }
+        "with 2 arguments" verifies { (a: String, b: String) => (a+b).startsWith(a) :| "startsWith" }
+        "with 3 arguments" verifies { (a: String, b: String, c: String) => (a+b+c).startsWith(a) :| "startsWith" }
+        "with 4 arguments" verifies { (a: String, b: String, c: String, d: String) => (a+b+c+d).startsWith(a) :| "startsWith" }
+        "with 5 arguments" verifies { (a: String, b: String, c: String, d: String, e: String) => (a+b+c+d+e).startsWith(a) :| "startsWith" }
+        "with 6 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String) => (a+b+c+d+e+f).startsWith(a) :| "startsWith" }
+        "with 7 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String) => (a+b+c+d+e+f+g).startsWith(a) :| "startsWith" }
+        "with 8 arguments" verifies { (a: String, b: String, c: String, d: String, e: String, f: String, g: String, h: String) => (a+b+c+d+e+f+g+h).startsWith(a) :| "startsWith" }
+      }
+    }
   }
 }
 object spec extends Specification with ScalaCheck {

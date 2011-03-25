@@ -85,174 +85,101 @@ trait ScalaCheckVerifications { outer: ExpectableFactory with BaseSpecification 
    * Class supporting the verification of a function with ScalaCheck, up to 6 parameters.
    */
   case class VerifiableExpectation(e: String) {
-     def verifies[A1](f: (A1) => Boolean)(implicit a1: Arbitrary[A1],
-                                             s1: Shrink[A1]) = forExample(e) in { Prop.forAll(f) must pass }     
-     def verifies[A1](f: AnyWithParameters[A1 => Boolean])(implicit 
-                                                          a1: Arbitrary[A1],
-                                                          s1: Shrink[A1]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
+    def verifies[A1: Arbitrary: Shrink, P <% Prop](f: (A1) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[A1 => P]) =
+      forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
      
-     def verifies[A1, A2](f: (A1, A2) => Boolean)(implicit 
-                                                    a1: Arbitrary[A1], 
-                                                    a2: Arbitrary[A2],
-                                                    s1: Shrink[A1], 
-                                                    s2: Shrink[A2]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, P](f: AnyWithParameters[(A1, A2) => Boolean])(implicit 
-                                                         p: P => Prop,
-                                                         a1: Arbitrary[A1], 
-                                                         a2: Arbitrary[A2],
-                                                         s1: Shrink[A1], 
-                                                         s2: Shrink[A2]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, P](f: (A1, A2, A3) => Boolean)(implicit 
-                                                          p: P => Prop,
-                                                          a1: Arbitrary[A1], 
-                                                          a2: Arbitrary[A2], 
-                                                          a3: Arbitrary[A3],
-                                                          s1: Shrink[A1], 
-                                                          s2: Shrink[A2], 
-                                                          s3: Shrink[A3]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, P](f: AnyWithParameters[(A1, A2, A3) => Boolean])(implicit 
-                                                                               p: P => Prop,
-                                                                               a1: Arbitrary[A1], 
-                                                                               a2: Arbitrary[A2], 
-                                                                               a3: Arbitrary[A3],
-                                                                               s1: Shrink[A1], 
-                                                                               s2: Shrink[A2],	 
-                                                                               s3: Shrink[A3]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, P](f: (A1, A2, A3, A4) => Boolean)(implicit 
-                                                          p: P => Prop,
-                                                                  a1: Arbitrary[A1], 
-                                                                  a2: Arbitrary[A2], 
-                                                                  a3: Arbitrary[A3],
-                                                                  a4: Arbitrary[A4],
-                                                                  s1: Shrink[A1], 
-                                                                  s2: Shrink[A2], 
-                                                                  s3: Shrink[A3], 
-                                                                  s4: Shrink[A4]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, P](f: AnyWithParameters[(A1, A2, A3, A4) => Boolean])(implicit 
-                                                                                     p: P => Prop,
-                                                                                     a1: Arbitrary[A1], 
-                                                                                     a2: Arbitrary[A2], 
-                                                                                     a3: Arbitrary[A3],
-                                                                                     a4: Arbitrary[A4],
-                                                                                     s1: Shrink[A1], 
-                                                                                     s2: Shrink[A2], 
-                                                                                     s3: Shrink[A3], 
-                                                                                     s4: Shrink[A4]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, P](f: (A1, A2, A3, A4, A5) => Boolean)(implicit 
-                                                             p: P => Prop,
-                                                             a1: Arbitrary[A1], 
-                                                             a2: Arbitrary[A2], 
-                                                             a3: Arbitrary[A3],
-                                                             a4: Arbitrary[A4],
-                                                             a5: Arbitrary[A5],
-                                                             s1: Shrink[A1], 
-                                                             s2: Shrink[A2], 
-                                                             s3: Shrink[A3], 
-                                                             s4: Shrink[A4], 
-                                                             s5: Shrink[A5]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, A5, P](f: AnyWithParameters[(A1, A2, A3, A4, A5) => Boolean])(implicit 
-                                                             p: P => Prop,
-                                                             a1: Arbitrary[A1], 
-                                                             a2: Arbitrary[A2], 
-                                                             a3: Arbitrary[A3],
-                                                             a4: Arbitrary[A4],
-                                                             a5: Arbitrary[A5],
-                                                             s1: Shrink[A1], 
-                                                             s2: Shrink[A2], 
-                                                             s3: Shrink[A3], 
-                                                             s4: Shrink[A4], 
-                                                             s5: Shrink[A5]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, A6](f: (A1, A2, A3, A4, A5, A6) => Boolean)(implicit 
-                                                          a1: Arbitrary[A1], 
-                                                          a2: Arbitrary[A2], 
-                                                          a3: Arbitrary[A3],
-                                                          a4: Arbitrary[A4],
-                                                          a5: Arbitrary[A5],
-                                                          a6: Arbitrary[A6],
-                                                          s1: Shrink[A1], 
-                                                          s2: Shrink[A2], 
-                                                          s3: Shrink[A3], 
-                                                          s4: Shrink[A4], 
-                                                          s5: Shrink[A5], 
-                                                          s6: Shrink[A6]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, A5, A6](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6) => Boolean])(implicit 
-                                                             a1: Arbitrary[A1], 
-                                                             a2: Arbitrary[A2], 
-                                                             a3: Arbitrary[A3],
-                                                             a4: Arbitrary[A4],
-                                                             a5: Arbitrary[A5],
-                                                             a6: Arbitrary[A6],
-                                                             s1: Shrink[A1], 
-                                                             s2: Shrink[A2], 
-                                                             s3: Shrink[A3], 
-                                                             s4: Shrink[A4], 
-                                                             s5: Shrink[A5], 
-                                                             s6: Shrink[A6]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, A6, A7, P](f: (A1, A2, A3, A4, A5, A6, A7) => Boolean)(implicit 
-                                                          p: P => Prop,
-                                                          a1: Arbitrary[A1], 
-                                                          a2: Arbitrary[A2], 
-                                                          a3: Arbitrary[A3],
-                                                          a4: Arbitrary[A4],
-                                                          a5: Arbitrary[A5],
-                                                          a6: Arbitrary[A6],
-                                                          a7: Arbitrary[A7],
-                                                          s1: Shrink[A1], 
-                                                          s2: Shrink[A2], 
-                                                          s3: Shrink[A3], 
-                                                          s4: Shrink[A4], 
-                                                          s5: Shrink[A5], 
-                                                          s6: Shrink[A6],
-                                                          s7: Shrink[A7]) = forExample(e) in { Prop.forAll(f) must pass }
-     def verifies[A1, A2, A3, A4, A5, A6, A7](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6, A7) => Boolean])(implicit 
-                                                             a1: Arbitrary[A1], 
-                                                             a2: Arbitrary[A2], 
-                                                             a3: Arbitrary[A3],
-                                                             a4: Arbitrary[A4],
-                                                             a5: Arbitrary[A5],
-                                                             a6: Arbitrary[A6],
-                                                             a7: Arbitrary[A7],
-                                                             s1: Shrink[A1], 
-                                                             s2: Shrink[A2], 
-                                                             s3: Shrink[A3], 
-                                                             s4: Shrink[A4], 
-                                                             s5: Shrink[A5], 
-                                                             s6: Shrink[A6],
-                                                             s7: Shrink[A7]) = forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
-     def verifies[A1, A2, A3, A4, A5, A6, A7, A8](f: (A1, A2, A3, A4, A5, A6, A7, A8) => Boolean)(implicit 
-                                                          a1: Arbitrary[A1], 
-                                                          a2: Arbitrary[A2], 
-                                                          a3: Arbitrary[A3],
-                                                          a4: Arbitrary[A4],
-                                                          a5: Arbitrary[A5],
-                                                          a6: Arbitrary[A6],
-                                                          a7: Arbitrary[A7],
-                                                          a8: Arbitrary[A8],
-                                                          s1: Shrink[A1], 
-                                                          s2: Shrink[A2], 
-                                                          s3: Shrink[A3], 
-                                                          s4: Shrink[A4], 
-                                                          s5: Shrink[A5], 
-                                                          s6: Shrink[A6],
-                                                          s7: Shrink[A7],
-                                                          s8: Shrink[A8]) = forExample(e) in { theValue(Prop.forAll(f)).must(pass) }
-     def verifies[A1, A2, A3, A4, A5, A6, A7, A8](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6, A7, A8) => Boolean])(implicit 
-                                                             a1: Arbitrary[A1], 
-                                                             a2: Arbitrary[A2], 
-                                                             a3: Arbitrary[A3],
-                                                             a4: Arbitrary[A4],
-                                                             a5: Arbitrary[A5],
-                                                             a6: Arbitrary[A6],
-                                                             a7: Arbitrary[A7],
-                                                             a8: Arbitrary[A8],
-                                                             s1: Shrink[A1], 
-                                                             s2: Shrink[A2], 
-                                                             s3: Shrink[A3], 
-                                                             s4: Shrink[A4], 
-                                                             s5: Shrink[A5], 
-                                                             s6: Shrink[A6],
-                                                             s7: Shrink[A7],
-                                                             s8: Shrink[A8]) = forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink, P <% Prop](f: (A1, A2) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2) => P]) =
+      forExample(e) in { Prop.forAll(f.function) must pass(f.params) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3, A4) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3, A4) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3, A4, A5) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3, A4, A5) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3, A4, A5, A6) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink,
+                 A7: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3, A4, A5, A6, A7) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink,
+                 A7: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6, A7) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
+
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink,
+                 A7: Arbitrary: Shrink,
+                 A8: Arbitrary: Shrink, P <% Prop](f: (A1, A2, A3, A4, A5, A6, A7, A8) => P) =
+      forExample(e) in { Prop.forAll(f) must pass }
+    def verifies[A1: Arbitrary: Shrink,
+                 A2: Arbitrary: Shrink,
+                 A3: Arbitrary: Shrink,
+                 A4: Arbitrary: Shrink,
+                 A5: Arbitrary: Shrink,
+                 A6: Arbitrary: Shrink,
+                 A7: Arbitrary: Shrink,
+                 A8: Arbitrary: Shrink, P <% Prop](f: AnyWithParameters[(A1, A2, A3, A4, A5, A6, A7, A8) => P]) =
+      forExample(e) in { theValue(Prop.forAll(f.function)).must(pass(f.params)) }
    }
 
 }
