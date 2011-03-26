@@ -239,8 +239,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <arg>-unchecked</arg>
           </args>
           <jvmArgs>
-            <jvmArg>-Xmx512m</jvmArg>
-            <jvmArg>-Xms64m</jvmArg>
+            <jvmArg>-Xmx1012m</jvmArg>
+            <jvmArg>-Xms512m</jvmArg>
           </jvmArgs>
         </configuration>
       </plugin>
