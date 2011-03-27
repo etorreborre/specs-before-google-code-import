@@ -97,8 +97,8 @@ object ExtendedThrowable {
 	/**
 	 * @return the stack trace elements of all the chained exceptions
 	 */
-	 def getFullStackTrace: List[java.lang.StackTraceElement] = {
-	   (t :: t.chainedExceptions).flatMap(_.getStackTrace.toList)
+	 def getFullStackTrace: List[String] = {
+	   t.getStackTrace.toList.map(_.toString) ::: t.chainedExceptions.flatMap(e => e.getMessage :: e.getStackTrace.toList.map(_.toString))
 	 }
 	/**
 	 * @return the full stack trace as a string

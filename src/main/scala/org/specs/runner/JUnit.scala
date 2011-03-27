@@ -146,7 +146,7 @@ class JUnit4(val specifications: Specification*) extends JUnit {
  * If an example has subExamples, they won't be shown as sub tests because that would necessitate to
  * run the example during the initialization time.
  */
-class ExamplesTestSuite(specification: BaseSpecification, description: String, examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with ExtendedJUnitSuite {
+class ExamplesTestSuite(val specification: BaseSpecification, val description: String, val examples: Iterable[Examples], skipped: Option[Throwable]) extends JUnitSuite with ExtendedJUnitSuite {
 
   /**
    * create one TestCase per example
@@ -200,14 +200,14 @@ trait ExtendedJUnitSuite extends Stacktraces {
  *
  * When possible, the description of the subexamples are added to their failures and skipped exceptions
  */
-class ExampleTestCase(specification: BaseSpecification, val example: Examples, description: String) extends TestCase(description.replaceAll("\n", " ")) {
+class ExampleTestCase(val specification: BaseSpecification, val example: Examples, val description: String) extends TestCase(description.replaceAll("\n", " ")) {
   override def run(result: TestResult) = {
     if (JUnitOptions.planOnly() || example.ownSkipped.isEmpty)
       result.startTest(this)
     def report(ex: Examples, context: String) = {
       ex.ownFailures foreach {
         failure: FailureException =>
-                result.addFailure(this, new SpecAssertionFailedError(UserError(failure, context)))
+          result.addFailure(this, SpecFailedError(failure, context))
       }
       ex.ownSkipped foreach {
         skipped: SkippedException =>
@@ -241,36 +241,42 @@ case class UserError(t: Throwable, context: String) extends Throwable {
   }
 }
 
+case class SpecsComparisonFailure(original: Throwable, expected: String, actual: String)
+  extends ComparisonFailure("\nExpected: \"%s\"\n     got: \"%s\"\n" format (expected, actual), actual, expected) with ThrowableProxy
+
+object SpecFailedError {
+  val COMPARISON = "'([^']*)' is not equal to '([^']*)'".r
+
+  def apply(failure: FailureException, context: String): AssertionFailedError = failure.getMessage match {
+    case msg@COMPARISON(actual, expected) => SpecsComparisonFailure(failure, expected, actual)
+    case msg@_ => new SpecAssertionFailedError(UserError(failure, context))
+  }
+}
+
+trait ThrowableProxy { self: Throwable =>
+  protected def original: Throwable
+
+  override def getStackTrace = original.getStackTrace
+  override def getCause = original.getCause
+  override def printStackTrace = original.printStackTrace
+  override def printStackTrace(w: java.io.PrintStream) = original.printStackTrace(w)
+  override def printStackTrace(w: java.io.PrintWriter) = original.printStackTrace(w)
+}
+
 /**
  * This class refines the <code>AssertionFailedError</code> from junit
  * and provides the stackTrace of an exception which occured during the specification execution
  */
-class SpecAssertionFailedError(t: Throwable) extends AssertionFailedError(t.getMessage) {
-  override def getStackTrace = t.getStackTrace
-  override def getCause = t.getCause
-
-  override def printStackTrace = t.printStackTrace
-
-  override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
-
-  override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
+class SpecAssertionFailedError(val original: Throwable) extends AssertionFailedError(original.getMessage) with ThrowableProxy { outer =>
+  def asAssertionError: AssertionError = new AssertionError(original.getMessage) with ThrowableProxy { def original = outer.original }
 }
 
 /**
  * This class represents errors thrown in an example. It needs to be set as something
  * different from an AssertionFailedError so that tools like Ant can make the distinction between failures and errors
  */
-class SpecError(t: Throwable) extends java.lang.Error(t.getMessage) {
-  override def getStackTrace = t.getStackTrace
+class SpecError(val original: Throwable) extends java.lang.Error(original.getMessage) with ThrowableProxy
 
-  override def getCause = t.getCause
-
-  override def printStackTrace = t.printStackTrace
-
-  override def printStackTrace(w: java.io.PrintStream) = t.printStackTrace(w)
-
-  override def printStackTrace(w: java.io.PrintWriter) = t.printStackTrace(w)
-}
 class SkippedAssertionError(t: Throwable) extends SpecAssertionFailedError(t)
 
 /**

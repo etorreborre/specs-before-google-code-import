@@ -40,9 +40,9 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
    * runs the test suite by passing a JUnit4 RunNotifier which is wrapped in a JUnit3 TestListener to be able to run JUnit3 tests
    */
   override def run(notifier: RunNotifier) = {
-	val result = new TestResult
-	result.addListener(createAdaptingListener(notifier));
-	testSuite.run(result);
+	  val result = new TestResult
+	  result.addListener(createAdaptingListener(notifier));
+	  testSuite.run(result);
   }
 
   /**
@@ -76,6 +76,8 @@ class JUnitSuiteRunner(klass: java.lang.Class[T] forSome {type T <: Test}) exten
 trait TestDescription extends Stacktraces {
   /** return true if the current test is executed with Maven */
   lazy val isExecutedFromMaven = isExecutedFrom("org.apache.maven.surefire.Surefire.run")
+  /** return true if the current test is executed with eclipse */
+  lazy val isExecutedFromEclipse = isExecutedFrom("org.eclipse.jdt")
   /** return true if the current test is executed with Intellij */
   lazy val isExecutedFromIntellij = isExecutedFrom("com.intellij.rt")
   /**
@@ -91,7 +93,7 @@ trait TestDescription extends Stacktraces {
    */
   def asDescription(test: Test) = {
     def getName(test: Test) = {
-	  if (test.isInstanceOf[TestCase])
+  	  if (test.isInstanceOf[TestCase])
          test.asInstanceOf[TestCase].getName
       else
          test.toString
@@ -99,11 +101,16 @@ trait TestDescription extends Stacktraces {
     def testcode(test: Test) = {
       if (isExecutedFromMaven)
         ""
-      else if (isExecutedFromIntellij) 
-       "("+test.getClass.getName+")"
-      else
-       "("+test.hashCode+")"
-
+      else if (isExecutedFromEclipse || isExecutedFromIntellij)
+        "("+test.hashCode+")"
+      else {
+        if (test.isInstanceOf[ExampleTestCase])
+           "("+test.asInstanceOf[ExampleTestCase].specification.getClass.getName+")"
+        else if (test.isInstanceOf[ExamplesTestSuite])
+           "("+test.asInstanceOf[ExamplesTestSuite].specification.getClass.getName+")"
+        else
+          "("+test.getClass.getName+")"
+      }
     }
     createSuiteDescription(getName(test) + testcode(test), new UnusedAnnotation)
   }
@@ -167,12 +174,15 @@ class OldTestClassAdaptingListener(notifier: RunNotifier)  extends TestListener 
    */
   def addFailure(test: Test, t: AssertionFailedError) = {
     t match {
+      case SpecsComparisonFailure(orig, expected, actual) =>
+        addNewFailure(test, new org.junit.ComparisonFailure(t.getMessage, expected, actual) with ThrowableProxy { def original = orig } )
       // unfortunately the skip message can not be included for display in a description object
       // otherwise the description created when running the test and the description creating when
       // parsing the whole suite for the first time will not match
       case skipped: SkippedAssertionError => {
         notifier.fireTestIgnored(makeDescription(test))
       }
+      case e: SpecAssertionFailedError => addNewFailure(test, e.asAssertionError)
       case _ => addNewFailure(test, t)
     }
   }
