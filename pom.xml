@@ -28,7 +28,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.scala-tools.testing</groupId>
-  <artifactId>specs_2.8.1</artifactId>
+  <artifactId>specs_2.9.0.RC1</artifactId>
   <version>1.6.8-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
@@ -175,8 +175,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>scalacheck_2.8.1</artifactId>
-      <version>1.8</version>
+      <artifactId>scalacheck_2.9.0.RC1</artifactId>
+      <version>1.9-SNAPSHOT</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -259,7 +259,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <version>2.4.3</version>
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
-          <argLine>-Xmx1524m</argLine>
+          <argLine>-XX:PermSize=1024m</argLine>
+          <argLine>-Xmx1024m</argLine>
           <includes>
             <include>**/*Unit.java</include>
             <include>**/*Spec.java</include>

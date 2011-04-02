@@ -51,7 +51,6 @@ object allUnits extends Specification {
 	collectionUnits,
 	formUnits,
 	ioUnits,
-    literateUnits,
 	matcherUnits,
 	mockUnits,
 	runnerUnits,

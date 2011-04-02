@@ -10,13 +10,13 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   override def testJavaCompileOptions = JavaCompileOption("-Xmx256m -Xms64m") :: Nil
   override def includeTest(s: String) = { s.endsWith("Spec") || s.endsWith("Unit") }
 
-  val junit 		= "junit" % "junit" % "4.5"
-  val wikitext 		= "org.eclipse.mylyn.wikitext" % "wikitext" % "0.9.4.I20090220-1600-e3x" 
-  val wikitextile 	= "org.eclipse.mylyn.wikitext" % "wikitext.textile" % "0.9.4.I20090220-1600-e3x" 
-  val scalatest 	= "org.scalatest" % "scalatest" % "1.2"
-  val scalacheck 	= "org.scala-tools.testing" % "scalacheck_2.8.1" % "1.8" 
+  val junit         = "junit" % "junit" % "4.5"
+  val wikitext 		  = "org.eclipse.mylyn.wikitext" % "wikitext" % "0.9.4.I20090220-1600-e3x" 
+  val wikitextile   = "org.eclipse.mylyn.wikitext" % "wikitext.textile" % "0.9.4.I20090220-1600-e3x" 
+  val scalatest 	  = "org.scalatest" % "scalatest" % "1.2"
+  val scalacheck 	  = "org.scala-tools.testing" % "scalacheck_2.8.1" % "1.8" 
   val testinterface = "org.scala-tools.testing" % "test-interface" % "0.5" 
-  val jmock 		= "org.jmock" % "jmock" % "2.5.1" 
+  val jmock 		    = "org.jmock" % "jmock" % "2.5.1" 
   val jmocklegacy   = "org.jmock" % "jmock-legacy" % "2.5.1" 
   val easymock 		= "org.easymock" % "easymock" % "2.5.1" 
   val easymockclass	= "org.easymock" % "easymockclassextension" % "2.4" 

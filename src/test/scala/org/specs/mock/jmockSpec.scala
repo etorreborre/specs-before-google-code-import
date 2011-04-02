@@ -85,23 +85,21 @@ object jmockGoodSpecification extends Mocked {
       expect { 1.of(list).get(anyInt) }
       list.get(0)
     }
-    class Param(name: String)
-    class ToMockWithParams { def method(p: Param*) = () }
     "provide an any[Type] matcher which can match any parameter of a given type with vargs" in {
       val mocked: ToMockWithParams = mock[ToMockWithParams]
       expect { 1.of(mocked).method(any[Param]) }
       mocked.method(new Param("hello"))
     }
     "provide an a[T] matcher which can be used to specify that any instance of type T will match - alias an[T]" in {
-      val listString: List[String] = mock[List[String]]
-      expect { 0.atLeastOf(listString).mkString(a[String]) }
-      listString.mkString(",")
-      listString.mkString("+")
+      val mocked: ToMockWithParams = mock[ToMockWithParams]
+      expect { 0.atLeastOf(mocked).method(a[Param]) }
+      mocked.method(new Param("hello"))
+      mocked.method(new Param("hello"))
     }
     "provide an aNull[X] matcher which can be used to specify that a null value of class X will be used as a parameter" in {
-      val listString: List[String] = mockAs[List[String]]("list of strings")
-      expect { 1.of(listString).mkString(aNull[String]) }
-      listString.mkString(null)
+      val mocked: ToMockWithParams = mock[ToMockWithParams]
+      expect { 1.of(mocked).method(aNull[Param]) }
+      mocked.method(null)
     }
     "provide an equal matcher which can be used to specify that a specific value will be used as a parameter" in {
       expect { 1.of(list).get(equal(0)) }
@@ -122,17 +120,13 @@ object jmockGoodSpecification extends Mocked {
       list.get(0)
     }
     "provide a willReturn method to specify the value which must be returned" in {
-      expect { 1.of(list).get(will(beEqualTo(0))) willReturn "new" }
-      list.get(0) must_== "new"
+      val mocked = mock[ToMock]
+      expect { 1.of(mocked).method0(will(beEqualTo("s"))) willReturn "new" }
+      mocked.method0("s") must_== "new"
     }
     "provide a willThrow method to specify the exception which must be thrown" in {
       expect { 1.of(list).get(will(beEqualTo(0))) willThrow new java.lang.Exception("ouch") }
       list.get(0) must throwAn[Exception]
-    }
-    "provide a willReturn method to specify the a returned iterator" in {
-      val expected = List[String]("hey")
-      expect { 1.of(scalaList).iterator willReturn expected.iterator }
-      scalaList.iterator.next must_== "hey"
     }
     "provide a willReturn method to specify a returned iterable" in {
       expect { 1.of(scalaList).take(anyInt) willReturn List("hey") }
@@ -362,3 +356,8 @@ class Mocked extends Specification with JMocker with ClassMocker {
   val scalaList: List[String] = mockAs[List[String]]("scalaList")
 }
 
+class Param(name: String)
+class ToMockWithParams { 
+  def method(p: Param): String = ""
+  def multiArgsMethod(p: Param*) = ""
+}

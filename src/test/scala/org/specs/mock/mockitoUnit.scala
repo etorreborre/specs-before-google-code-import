@@ -158,11 +158,11 @@ class mockitoUnit extends SpecificationWithJUnit with Mockito with ExpectationMa
     }
   }
   "Allow multiple return values" in {
-    val mockedList = mock[scala.List[String]]
-    mockedList.take(1) returns scala.List("hello")
-    mockedList(0) returns ("hello", "world")
-    mockedList(0) must_== "hello"
-    mockedList(0) must_== "world"
+    class ToMock { def method = "" }
+    val mocked = mock[ToMock]
+    mocked.method returns ("hello", "world")
+    mocked.method must_== "hello"
+    mocked.method must_== "world"
   }
   "Allow smart return values on traits" in {
     trait Hello {

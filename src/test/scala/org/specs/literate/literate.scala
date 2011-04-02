@@ -28,7 +28,3 @@ object literateSpecifications extends Specification {
         new wikiFormatterSpec
     )
 }
-object literateUnits extends Specification {
-    "The literate unit tests" areSpecifiedBy (
-         new literateSpecUnit)
-}

@@ -92,7 +92,7 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
       expectation(<a><b name="value"></b></a> must \("b", Map("name"->"value", "name2"->"value2"))) must failWith("<a><b name=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value\" name2=\"value2\"")
     }
     "not match a node contained in another given its label and a missing attributes when matching exactly" in {
-      expectation(<a><b name="value" name2="value"></b></a> must \("b", "name"->"value").exactly) must failWith("<a><b name2=\"value\" name=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value\"")
+      expectation(<a><b name="value" name2="value"></b></a> must \("b", "name"->"value").exactly) must failWith("<a><b name=\"value\" name2=\"value\"></b></a> doesn't contain subnode b with attributes: name=\"value\"")
     }
     "match a node <b><c></c></b> contained in the node a" in {
       <a><b><c></c></b></a> must \(<b><c></c></b>)
