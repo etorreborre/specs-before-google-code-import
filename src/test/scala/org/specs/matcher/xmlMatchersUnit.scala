@@ -39,6 +39,9 @@ class xmlMatchersUnit extends MatchersSpecification with XmlMatchers {
     "not fail if nodes are not in the same order" in {
       <a><b/><c/></a> must ==/(<a> <c/><b/></a>)
     }
+    "not fail if nodes attributes are not in the same order" in {
+      <a><b t="1" s="2"/><c/></a> must ==/(<a> <c/><b s="2" t="1"/></a>)
+    }
     "provide a way to specify that the comparison should be ordered" in {
       <a><b/><c/></a> must ==/(<a> <c/><b/></a>).ordered
     }
