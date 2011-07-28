@@ -36,7 +36,7 @@ trait LazyParameters {
   implicit def toLazyParameter[T](value: =>T) = new LazyParameter(() => value)
 }
 /** class holding a value to be evaluated lazily */
-class LazyParameter[T](value: ()=>T) {
+class LazyParameter[+T](value: ()=>T) {
   private lazy val v = value()
   def getValue() = v
 }
