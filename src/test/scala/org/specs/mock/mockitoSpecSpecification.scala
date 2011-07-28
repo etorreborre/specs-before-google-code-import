@@ -21,7 +21,7 @@ import org.specs._
 import org.specs.literate._
 import org.specs.execute._
 
-class mockitoSpecification extends HtmlSpecificationWithJUnit("Mockito Specification") with MockitoSpecification {
+class MockitoSpecSpecification extends HtmlSpecificationWithJUnit("Mockito Specification") with MockitoSpecification {
 
   <wiki>
 Mockito is a Java library for mocking.
