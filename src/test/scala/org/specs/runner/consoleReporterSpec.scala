@@ -26,7 +26,9 @@ import org.specs.Sugar._
 import org.specs.matcher.MatcherUtils._
 import org.specs.util.ExtendedString._
 import org.specs.execute._
+import org.junit.runner.RunWith
 
+@RunWith(classOf[JUnitSuiteRunner])
 class consoleReporterSpec extends SpecificationWithJUnit {
   include(new reporterSpecification, new consoleTraitSpecification)
 }
@@ -132,6 +134,9 @@ class reporterSpecification extends TestSpecs {
     "execute the actions after a specification even if the specification is sequential" in {
 	  new SequentialSpecWithAfterSpecification().run.toList must containInOrder("  + ex2", "afterSpec")
 	}
+    "report the issues of a failed sus" in {
+      new SpecWithAFailedSus().run.toList must containMatch("1 error")
+    }
   }
 }
 class consoleTraitSpecification extends TestSpecs {
@@ -306,6 +311,16 @@ class SequentialSpecWithAfterSpecification extends TestSpecification {
 class SpecWithAnEmptySus extends TestSpecification {
   def run = {
     "An empty system" should {
+    }
+    reportSpecs
+    messages
+  }
+}
+class SpecWithAFailedSus extends TestSpecification {
+  def run = {
+    "A failed sus" should {
+	  error("error here")
+	  "" in {}
     }
     reportSpecs
     messages
