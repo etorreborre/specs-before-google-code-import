@@ -117,7 +117,7 @@ trait OutputReporter extends Reporter with Output {
    * by collecting those numbers on examples
    */
   def stats(sus: Sus): (Int, Int, Int, Int, Int)  = {
-    sus.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
+    sus.examples.foldLeft(ownStats(sus))(_ + stats(_))
   }
 
   /**
@@ -126,10 +126,13 @@ trait OutputReporter extends Reporter with Output {
    */
   def stats(example: Example): (Int, Int, Int, Int, Int) = {
     if (!planOnly()) {
-     (if (example.examples.isEmpty) 1 else 0, example.ownExpectationsNb, example.ownFailures.size, example.ownErrors.size, example.ownSkipped.size) +
-     example.examples.foldLeft((0, 0, 0, 0, 0))(_ + stats(_))
+      example.examples.foldLeft(ownStats(example))(_ + stats(_))
     } else
      (1, 0, 0, 0, 0)
+  }
+  
+  private def ownStats(example: Examples) = {
+    (if (example.examples.isEmpty) 1 else 0, example.ownExpectationsNb, example.ownFailures.size, example.ownErrors.size, example.ownSkipped.size)
   }
 
   /**
