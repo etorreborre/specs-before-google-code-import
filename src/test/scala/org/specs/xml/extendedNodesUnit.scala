@@ -80,6 +80,9 @@ class extendedNodeUnit extends SpecificationWithJUnit {
     "false for Text(1) ==/ Text(2)" in {
       Text("1").isEqualIgnoringSpace(Text("2")) must beFalse
     }
+    "false for <a>{'b'}</a> ==/ <a>{'c'}</a>" in {
+      <a>{"b"}</a> ==/ <a>{"c"}</a> mustBe false
+    }
   }
   "An isEqualIgnoringSpaceOrdered function" should `return` {
     "true for <a><b/><c/></a> ==/ <a><b/><c/></a>" in {
