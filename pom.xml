@@ -29,7 +29,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.scala-tools.testing</groupId>
   <artifactId>specs_2.9.1</artifactId>
-  <version>1.6.9-SNAPSHOT</version>
+  <version>1.6.9</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <description>specs is a Behaviour-Driven-Design
@@ -157,8 +157,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest</artifactId>
-      <version>1.2</version>
+      <artifactId>scalatest_2.9.1</artifactId>
+      <version>1.6.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -175,7 +175,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </dependency>
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>scalacheck_2.9.1.RC3</artifactId>
+      <artifactId>scalacheck_2.9.1</artifactId>
       <version>1.9</version>
       <optional>true</optional>
     </dependency>
