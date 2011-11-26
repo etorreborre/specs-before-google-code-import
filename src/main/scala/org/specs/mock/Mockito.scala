@@ -155,9 +155,10 @@ trait CalledMatchers extends ExpectableFactory with NumberOfTimes with TheMockit
       try { 
         v 
       } catch {
-        case e => { 
+        case e: AssertionError => { 
           result = (false, "The mock was called as expected", "The mock was not called as expected: " + e.getMessage)
         }
+        case e => throw e
       }
       result
     }
