@@ -25,15 +25,15 @@ libraryDependencies ++= Seq(
 
 testOptions := Seq(Tests.Filter(s => s.endsWith("Spec")))
 
-publishArtifact in packageDoc := false
-
 resolvers ++= Seq("Sonatype-snapshots" at "http://oss.sonatype.org/content/repositories/snapshots")
 
 /** Publishing */
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+
 publishTo <<= version { v: String =>
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else                             Some("staging" at nexus + "service/local/staging/deploy/maven2")
+  if (v.trim.endsWith("SNAPSHOT")) Some("sonatype-snapshots" at nexus + "content/repositories/snapshots")
+  else                             Some("sonatype-staging" at nexus + "service/local/staging/deploy/maven2")
 }
 
 publishMavenStyle := true
