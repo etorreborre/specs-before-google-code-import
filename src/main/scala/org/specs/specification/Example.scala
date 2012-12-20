@@ -84,7 +84,7 @@ class Example(var exampleDesc: ExampleDescription, private var p: Option[Example
 /**
  * Description of the example. It can possibly be a piece of html code to display in a literate specification
  */
-case class ExampleDescription(desc: String, toXhtml: Node) {
+case class ExampleDescription(desc: String, toXhtml: xml.Node) {
   override def toString = desc
   def format: String = toXhtml.toString
 }

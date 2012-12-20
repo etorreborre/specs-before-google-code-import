@@ -98,6 +98,6 @@ case class Sus(desc: String, specification: BaseSpecification) extends Examples(
 }
 
 /** support class representing the formatted literate description of a SUS */
-case class LiterateDescription(desc: Node) {
+case class LiterateDescription(desc: xml.Node) {
   def toXhtml: NodeSeq = desc
 }

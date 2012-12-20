@@ -4,7 +4,7 @@ organization := "org.scala-tools.testing"
 
 version := "1.6.9"
 
-scalaVersion := "2.9.2"
+scalaVersion := "2.10.0"
 
 libraryDependencies ++= Seq(
   "junit" % "junit" % "4.7" % "optional",
@@ -21,11 +21,13 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.8.5" % "optional",
   "cglib" % "cglib" % "2.1_3" % "optional",
   "org.objenesis" % "objenesis" % "1.0" % "optional",
-  "org.scala-lang" % "scala-compiler" % "2.9.2" % "optional")
+  "org.scala-lang" % "scala-compiler" % "2.10.0" % "optional")
 
 testOptions := Seq(Tests.Filter(s => s.endsWith("Spec")))
 
-resolvers ++= Seq("Sonatype-snapshots" at "http://oss.sonatype.org/content/repositories/snapshots")
+resolvers ++= Seq(
+    "Sonatype-releases" at "http://oss.sonatype.org/content/repositories/releases",
+    "Sonatype-snapshots" at "http://oss.sonatype.org/content/repositories/snapshots")
 
 /** Publishing */
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")

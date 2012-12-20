@@ -17,7 +17,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 package org.specs.util
-import scala.Math._
+import scala.math._
 import org.specs.collection.ExtendedList._
 import org.specs.collection.ExtendedIterable._
 

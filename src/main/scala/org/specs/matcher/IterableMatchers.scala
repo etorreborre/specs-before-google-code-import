@@ -207,7 +207,7 @@ trait IterableBeHaveMatchers { outer: IterableBaseMatchers =>
     val javalist = new java.util.ArrayList[U]()
     javalist.addAll(c)
     val list = new scala.collection.mutable.ListBuffer[U]()
-    for (a <- asList(javalist)) list.append(a)
+    for (a <- asScalaBuffer(javalist)) list.append(a)
     list.toList
   }
 /*

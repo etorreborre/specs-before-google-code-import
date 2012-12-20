@@ -135,8 +135,8 @@ trait MapBeHaveMatchers { outer: MapBaseMatchers =>
 
   implicit def toJavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) = new JavaMapResultMatcher[S, U](result)
   class JavaMapResultMatcher[S, U](result: Result[java.util.Map[S, U]]) {
-    def key(k: S) = result.matchWithMatcher(haveKey(k) ^^ ((m: java.util.Map[S, U]) => asMap(m))) 
-    def value(k: U) = result.matchWithMatcher(haveValue(k) ^^ ((m: java.util.Map[S, U]) => asMap(m))) 
+    def key(k: S) = result.matchWithMatcher(haveKey(k) ^^ ((m: java.util.Map[S, U]) => asScalaMap(m))) 
+    def value(k: U) = result.matchWithMatcher(haveValue(k) ^^ ((m: java.util.Map[S, U]) => asScalaMap(m))) 
   }
   implicit def toMapResultMatcher[S, T](result: Result[Map[S, T]]) = new MapResultMatcher(result)
   class MapResultMatcher[S, T](result: Result[Map[S, T]]) {

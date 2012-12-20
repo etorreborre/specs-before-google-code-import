@@ -100,10 +100,6 @@ trait Snippets extends ScalaInterpreter {
   def formatCode(code: String): String = code
 
 }
-/**
- * This object can be used to import Snippets functionalities 
- */
-object Snippets extends Snippets
 
 /**
  * A Snippet is an object representing a piece of code with:
